@@ -9,13 +9,14 @@ export type MemberUser = {
   email: string;
   displayName: string;
   emailVerified: boolean;
+  avatarUrl: string;
 };
 
 type SupabaseUser = {
   id: string;
   email?: string;
   email_confirmed_at?: string | null;
-  user_metadata?: { full_name?: string; name?: string; avatar_url?: string };
+  user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string };
 };
 
 type TokenResponse = {
@@ -61,11 +62,13 @@ async function authRequest<T>(path: string, init: RequestInit = {}, accessToken?
 
 export function mapMember(user: SupabaseUser): MemberUser {
   const displayName = user.user_metadata?.full_name?.trim() || user.user_metadata?.name?.trim() || 'عضو دليل العسيرات';
+  const avatarUrl = user.user_metadata?.avatar_url?.trim() || user.user_metadata?.picture?.trim() || '';
   return {
     localId: user.id,
     email: user.email || '',
     displayName,
     emailVerified: Boolean(user.email_confirmed_at),
+    avatarUrl,
   };
 }
 
