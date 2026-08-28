@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import { categories, directoryStats } from '@/lib/data';
+import { MobileNav } from './mobile-nav';
+
+export { MobileNav };
 
 export function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
@@ -32,6 +35,13 @@ export function SiteHeader() {
         </nav>
 
         <div className="header-actions">
+          <Link href="/directory" className="header-mobile-action" aria-label="البحث في دليل العسيرات">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="5.7" />
+              <path d="m14.8 14.8 4.2 4.2" />
+            </svg>
+            <span>بحث</span>
+          </Link>
           <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
             <span className="header-emergency__dot" aria-hidden="true" />
             <span className="header-emergency__label">أرقام مهمة</span>
@@ -136,16 +146,5 @@ export function Footer() {
         </a>
       </div>
     </footer>
-  );
-}
-
-export function MobileNav() {
-  return (
-    <nav className="mobile-nav" aria-label="تنقل الجوال">
-      <Link href="/"><span>الرئيسية</span></Link>
-      <Link href="/directory"><span>الدليل</span></Link>
-      <Link href="/villages"><span>القرى</span></Link>
-      <Link href="/emergency"><span>الطوارئ</span></Link>
-    </nav>
   );
 }
