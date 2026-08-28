@@ -7,6 +7,7 @@ import { MemberProfileForm } from './member-profile-form';
 import { BusinessSubmissionPanel } from './business-submission-panel';
 import { OwnershipClaimPanel } from './ownership-claim-panel';
 import { MyBusinessesPanel } from './my-businesses-panel';
+import { NotificationCenter } from './notification-center';
 import { AdminAccessCard } from './admin-access-card';
 
 type User = {
@@ -129,17 +130,19 @@ export function AccountPanel() {
         </div>
       )}
 
+      <NotificationCenter />
+
       <MemberProfileForm
         onSaved={(profile) => {
           setUser((current) => current ? { ...current, displayName: profile.fullName, avatarUrl: profile.avatarUrl || current.avatarUrl } : current);
         }}
       />
 
-      <BusinessSubmissionPanel />
+      <div id="business-submissions"><BusinessSubmissionPanel /></div>
 
-      <OwnershipClaimPanel />
+      <div id="ownership-claims"><OwnershipClaimPanel /></div>
 
-      <MyBusinessesPanel />
+      <div id="my-businesses"><MyBusinessesPanel /></div>
 
       <section className="account-favorites-card" aria-labelledby="favorites-title">
         <div className="account-favorites-heading">
