@@ -18,6 +18,29 @@ async function submitAuth(path: string, payload: Record<string, string>) {
   return data;
 }
 
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.87h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.9-1.75 2.98-4.33 2.98-7.35Z" />
+      <path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.51c-.9.6-2.05.96-3.38.96-2.61 0-4.82-1.76-5.61-4.13H3.04v2.6A10 10 0 0 0 12 22Z" />
+      <path fill="#FBBC05" d="M6.39 13.9A6.01 6.01 0 0 1 6.08 12c0-.66.11-1.3.31-1.9V7.5H3.04A10 10 0 0 0 2 12c0 1.61.38 3.14 1.04 4.5l3.35-2.6Z" />
+      <path fill="#EA4335" d="M12 5.97c1.47 0 2.79.51 3.83 1.5l2.87-2.88C16.96 2.97 14.7 2 12 2a10 10 0 0 0-8.96 5.5l3.35 2.6C7.18 7.73 9.39 5.97 12 5.97Z" />
+    </svg>
+  );
+}
+
+function SocialAuth() {
+  return (
+    <>
+      <a className="auth-google" href="/api/auth/google">
+        <span className="auth-google__icon"><GoogleIcon /></span>
+        <span>المتابعة باستخدام Google</span>
+      </a>
+      <div className="auth-divider" aria-hidden="true"><span>أو</span></div>
+    </>
+  );
+}
+
 export function LoginForm() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -41,13 +64,16 @@ export function LoginForm() {
   }
 
   return (
-    <form className="auth-form" onSubmit={onSubmit}>
-      <div className="auth-field"><label htmlFor="login-email">البريد الإلكتروني</label><input id="login-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
-      <div className="auth-field"><div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div><input id="login-password" name="password" type="password" autoComplete="current-password" required minLength={8} placeholder="••••••••" /></div>
-      {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
-      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الدخول…' : 'تسجيل الدخول'}</button>
-      <p className="auth-switch">ليس لديك حساب؟ <Link href="/account/register">أنشئ حسابًا جديدًا</Link></p>
-    </form>
+    <div className="auth-form-stack">
+      <SocialAuth />
+      <form className="auth-form" onSubmit={onSubmit}>
+        <div className="auth-field"><label htmlFor="login-email">البريد الإلكتروني</label><input id="login-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
+        <div className="auth-field"><div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div><input id="login-password" name="password" type="password" autoComplete="current-password" required minLength={8} placeholder="••••••••" /></div>
+        {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
+        <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الدخول…' : 'تسجيل الدخول'}</button>
+        <p className="auth-switch">ليس لديك حساب؟ <Link href="/account/register">أنشئ حسابًا جديدًا</Link></p>
+      </form>
+    </div>
   );
 }
 
@@ -87,16 +113,19 @@ export function RegisterForm() {
   if (verificationSent) return <div className="auth-success"><strong>تم إنشاء حسابك</strong><p>أرسلنا رابط تأكيد إلى بريدك الإلكتروني. افتح الرسالة واضغط رابط التأكيد، ثم سجّل الدخول.</p><Link href="/account/login">الذهاب إلى تسجيل الدخول</Link></div>;
 
   return (
-    <form className="auth-form" onSubmit={onSubmit}>
-      <div className="auth-field"><label htmlFor="register-name">الاسم</label><input id="register-name" name="name" type="text" autoComplete="name" required minLength={2} maxLength={80} placeholder="اسمك كما تحب أن يظهر" /></div>
-      <div className="auth-field"><label htmlFor="register-email">البريد الإلكتروني</label><input id="register-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
-      <div className="auth-field"><label htmlFor="register-password">كلمة المرور</label><input id="register-password" name="password" type="password" autoComplete="new-password" required minLength={8} placeholder="8 أحرف على الأقل" /><small>استخدم كلمة مرور قوية لا تقل عن 8 أحرف.</small></div>
-      <div className="auth-field"><label htmlFor="register-confirm">تأكيد كلمة المرور</label><input id="register-confirm" name="confirmPassword" type="password" autoComplete="new-password" required minLength={8} placeholder="أعد كتابة كلمة المرور" /></div>
-      <label className="auth-consent"><input name="consent" type="checkbox" value="yes" required /><span>أوافق على استخدام الاسم والبريد وبيانات الجلسة اللازمة لتشغيل عضويتي في دليل العسيرات.</span></label>
-      {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
-      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري إنشاء الحساب…' : 'إنشاء الحساب'}</button>
-      <p className="auth-switch">لديك حساب بالفعل؟ <Link href="/account/login">تسجيل الدخول</Link></p>
-    </form>
+    <div className="auth-form-stack">
+      <SocialAuth />
+      <form className="auth-form" onSubmit={onSubmit}>
+        <div className="auth-field"><label htmlFor="register-name">الاسم</label><input id="register-name" name="name" type="text" autoComplete="name" required minLength={2} maxLength={80} placeholder="اسمك كما تحب أن يظهر" /></div>
+        <div className="auth-field"><label htmlFor="register-email">البريد الإلكتروني</label><input id="register-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
+        <div className="auth-field"><label htmlFor="register-password">كلمة المرور</label><input id="register-password" name="password" type="password" autoComplete="new-password" required minLength={8} placeholder="8 أحرف على الأقل" /><small>استخدم كلمة مرور قوية لا تقل عن 8 أحرف.</small></div>
+        <div className="auth-field"><label htmlFor="register-confirm">تأكيد كلمة المرور</label><input id="register-confirm" name="confirmPassword" type="password" autoComplete="new-password" required minLength={8} placeholder="أعد كتابة كلمة المرور" /></div>
+        <label className="auth-consent"><input name="consent" type="checkbox" value="yes" required /><span>أوافق على استخدام الاسم والبريد وبيانات الجلسة اللازمة لتشغيل عضويتي في دليل العسيرات.</span></label>
+        {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
+        <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري إنشاء الحساب…' : 'إنشاء الحساب'}</button>
+        <p className="auth-switch">لديك حساب بالفعل؟ <Link href="/account/login">تسجيل الدخول</Link></p>
+      </form>
+    </div>
   );
 }
 
