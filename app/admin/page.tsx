@@ -18,7 +18,11 @@ export default async function AdminPage() {
   return (
     <main id="main-content" className="admin-page">
       <div className="shell">
-        <AdminDashboard />
+        <nav className="admin-section-nav" aria-label="أقسام لوحة الإدارة">
+          <a href="#admin-requests">طلبات ومراجعات الأعضاء</a>
+          <a href="#listing-reports">بلاغات بيانات الأنشطة</a>
+        </nav>
+        <div id="admin-requests"><AdminDashboard /></div>
         <AdminListingReports />
       </div>
     </main>
