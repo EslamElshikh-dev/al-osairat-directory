@@ -9,6 +9,13 @@ type ReportResponse = {
   rows?: ReportRow[];
 };
 
+type ComparisonMetrics = {
+  activeUsers: number;
+  sessions: number;
+  views: number;
+  keyEvents: number;
+};
+
 export type Ga4AdminData = {
   connected: boolean;
   reason?: 'not_configured' | 'api_error';
@@ -22,16 +29,40 @@ export type Ga4AdminData = {
     keyEvents: number;
     engagementRate: number;
   };
+  comparison7d?: {
+    current: ComparisonMetrics;
+    previous: ComparisonMetrics;
+  };
   topPages?: Array<{ title: string; views: number; activeUsers: number }>;
+  topVillages?: Array<{ title: string; views: number; activeUsers: number }>;
+  topCategories?: Array<{ title: string; views: number; activeUsers: number }>;
   sources?: Array<{ sourceMedium: string; sessions: number; activeUsers: number }>;
   locations?: Array<{ country: string; city: string; activeUsers: number }>;
   events?: Array<{ name: string; count: number; keyEvents: number }>;
+  conversions?: Array<{ name: string; count: number; keyEvents: number }>;
 };
 
 const analyticsScope = 'https://www.googleapis.com/auth/analytics.readonly';
 const tokenAudience = 'https://oauth2.googleapis.com/token';
 // Property ID is public configuration; service-account credentials stay in Vercel secrets.
 const defaultPropertyId = '552007678';
+const conversionEventNames = [
+  'sign_up',
+  'business_submission',
+  'ownership_claim',
+  'phone_click',
+  'whatsapp_click',
+  'maps_click',
+];
+const trackedEventNames = [
+  ...conversionEventNames,
+  'login',
+  'listing_report',
+  'directory_search',
+  'view_listing',
+  'favorite_add',
+  'favorite_remove',
+];
 
 function base64Url(value: string | Buffer) {
   return Buffer.from(value).toString('base64url');
@@ -103,6 +134,24 @@ function readSummary(report: ReportResponse) {
   };
 }
 
+function readComparison(report: ReportResponse): ComparisonMetrics {
+  const values = report.rows?.[0]?.metricValues || [];
+  return {
+    activeUsers: numberValue(values[0]?.value),
+    sessions: numberValue(values[1]?.value),
+    views: numberValue(values[2]?.value),
+    keyEvents: numberValue(values[3]?.value),
+  };
+}
+
+function pageRows(report: ReportResponse) {
+  return (report.rows || []).map((row) => ({
+    title: row.dimensionValues?.[0]?.value || '—',
+    views: numberValue(row.metricValues?.[0]?.value),
+    activeUsers: numberValue(row.metricValues?.[1]?.value),
+  }));
+}
+
 export async function getGa4AdminData(): Promise<Ga4AdminData> {
   const propertyId = process.env.GA4_PROPERTY_ID?.trim() || defaultPropertyId;
   const clientEmail = process.env.GA4_SERVICE_ACCOUNT_EMAIL?.trim();
@@ -116,8 +165,24 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
     const privateKey = rawPrivateKey.replace(/\\n/g, '\n');
     const token = await getAccessToken(clientEmail, privateKey);
     const dateRanges = [{ startDate: '30daysAgo', endDate: 'today' }];
+    const comparisonMetrics = [
+      { name: 'activeUsers' },
+      { name: 'sessions' },
+      { name: 'screenPageViews' },
+      { name: 'keyEvents' },
+    ];
 
-    const [summaryReport, pageReport, sourceReport, locationReport, eventReport] = await Promise.all([
+    const [
+      summaryReport,
+      current7dReport,
+      previous7dReport,
+      pageReport,
+      villageReport,
+      categoryReport,
+      sourceReport,
+      locationReport,
+      eventReport,
+    ] = await Promise.all([
       runReport(token, propertyId, {
         dateRanges,
         metrics: [
@@ -132,11 +197,45 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
         ],
       }),
       runReport(token, propertyId, {
+        dateRanges: [{ startDate: '6daysAgo', endDate: 'today' }],
+        metrics: comparisonMetrics,
+      }),
+      runReport(token, propertyId, {
+        dateRanges: [{ startDate: '13daysAgo', endDate: '7daysAgo' }],
+        metrics: comparisonMetrics,
+      }),
+      runReport(token, propertyId, {
         dateRanges,
         dimensions: [{ name: 'pageTitle' }],
         metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
         limit: '8',
+      }),
+      runReport(token, propertyId, {
+        dateRanges,
+        dimensions: [{ name: 'pageTitle' }],
+        metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+        dimensionFilter: {
+          filter: {
+            fieldName: 'pagePath',
+            stringFilter: { matchType: 'BEGINS_WITH', value: '/villages/', caseSensitive: false },
+          },
+        },
+        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: '6',
+      }),
+      runReport(token, propertyId, {
+        dateRanges,
+        dimensions: [{ name: 'pageTitle' }],
+        metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+        dimensionFilter: {
+          filter: {
+            fieldName: 'pagePath',
+            stringFilter: { matchType: 'BEGINS_WITH', value: '/directory/', caseSensitive: false },
+          },
+        },
+        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: '6',
       }),
       runReport(token, propertyId, {
         dateRanges,
@@ -159,13 +258,7 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
         dimensionFilter: {
           filter: {
             fieldName: 'eventName',
-            inListFilter: {
-              values: [
-                'sign_up', 'login', 'business_submission', 'ownership_claim', 'listing_report',
-                'phone_click', 'whatsapp_click', 'maps_click', 'directory_search', 'view_listing',
-                'favorite_add', 'favorite_remove',
-              ],
-            },
+            inListFilter: { values: trackedEventNames },
           },
         },
         orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
@@ -173,14 +266,25 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
       }),
     ]);
 
+    const events = (eventReport.rows || []).map((row) => ({
+      name: row.dimensionValues?.[0]?.value || '—',
+      count: numberValue(row.metricValues?.[0]?.value),
+      keyEvents: numberValue(row.metricValues?.[1]?.value),
+    }));
+    const conversions = events
+      .filter((item) => conversionEventNames.includes(item.name))
+      .sort((a, b) => b.count - a.count);
+
     return {
       connected: true,
       summary: readSummary(summaryReport),
-      topPages: (pageReport.rows || []).map((row) => ({
-        title: row.dimensionValues?.[0]?.value || '—',
-        views: numberValue(row.metricValues?.[0]?.value),
-        activeUsers: numberValue(row.metricValues?.[1]?.value),
-      })),
+      comparison7d: {
+        current: readComparison(current7dReport),
+        previous: readComparison(previous7dReport),
+      },
+      topPages: pageRows(pageReport),
+      topVillages: pageRows(villageReport),
+      topCategories: pageRows(categoryReport),
       sources: (sourceReport.rows || []).map((row) => ({
         sourceMedium: row.dimensionValues?.[0]?.value || '—',
         sessions: numberValue(row.metricValues?.[0]?.value),
@@ -191,11 +295,8 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
         city: row.dimensionValues?.[1]?.value || '—',
         activeUsers: numberValue(row.metricValues?.[0]?.value),
       })),
-      events: (eventReport.rows || []).map((row) => ({
-        name: row.dimensionValues?.[0]?.value || '—',
-        count: numberValue(row.metricValues?.[0]?.value),
-        keyEvents: numberValue(row.metricValues?.[1]?.value),
-      })),
+      events,
+      conversions,
     };
   } catch {
     return { connected: false, reason: 'api_error' };
