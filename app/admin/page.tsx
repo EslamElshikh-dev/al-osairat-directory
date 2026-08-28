@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
+import { AdminListingReports } from '@/components/admin/admin-listing-reports';
 import { resolveAdminSession } from '@/lib/auth/admin-server';
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default async function AdminPage() {
     <main id="main-content" className="admin-page">
       <div className="shell">
         <AdminDashboard />
+        <AdminListingReports />
       </div>
     </main>
   );
