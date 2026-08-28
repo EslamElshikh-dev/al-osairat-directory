@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { categoryById, listings } from '@/lib/data';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListingById, getPublishedListings } from '@/lib/published-listings';
 import {
   AUTH_ACCESS_COOKIE,
@@ -106,8 +107,11 @@ export async function GET(request: Request) {
 
     if (!includeItems) return respond({ authenticated: true, ids }, session);
 
-    const publishedListings = await getPublishedListings();
-    const listingIndex = new Map([...listings, ...publishedListings].map((listing) => [listing.id, listing]));
+    const [publishedListings, staticListings] = await Promise.all([
+      getPublishedListings(),
+      applyListingOverrides(listings),
+    ]);
+    const listingIndex = new Map([...staticListings, ...publishedListings].map((listing) => [listing.id, listing]));
     const items = rows.flatMap((row) => {
       const listing = listingIndex.get(row.listing_id);
       if (!listing) return [];
