@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MemberProfileForm } from './member-profile-form';
 import { BusinessSubmissionPanel } from './business-submission-panel';
+import { OwnershipClaimPanel } from './ownership-claim-panel';
 
 type User = {
   localId: string;
@@ -24,10 +25,6 @@ type FavoriteItem = {
   village: string;
   createdAt: string;
 };
-
-function ClaimIcon() {
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.5 19 6v5.3c0 4.2-2.7 7.5-7 9.2-4.3-1.7-7-5-7-9.2V6l7-2.5Z" /><path d="m8.8 12 2.1 2.1 4.5-4.5" /></svg>;
-}
 
 function HeartIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.2 5.8c-2.3-2.3-6-2.2-8.2.3-2.2-2.5-5.9-2.6-8.2-.3-2.4 2.4-2.2 6.3.3 8.7L12 21l7.9-6.5c2.5-2.4 2.7-6.3.3-8.7Z" /></svg>;
@@ -124,7 +121,7 @@ export function AccountPanel() {
       {!user.emailVerified && (
         <div className="account-notice">
           <strong>أكد بريدك الإلكتروني</strong>
-          <p>أرسلنا رابط التأكيد عند إنشاء الحساب. التأكيد يحمي عضويتك ويساعدنا في تفعيل إرسال الأنشطة والمزايا المرتبطة بالعضوية بأمان.</p>
+          <p>أرسلنا رابط التأكيد عند إنشاء الحساب. التأكيد يحمي عضويتك ويساعدنا في تفعيل إرسال الأنشطة والمطالبة بالملكية بأمان.</p>
         </div>
       )}
 
@@ -135,6 +132,8 @@ export function AccountPanel() {
       />
 
       <BusinessSubmissionPanel />
+
+      <OwnershipClaimPanel />
 
       <section className="account-favorites-card" aria-labelledby="favorites-title">
         <div className="account-favorites-heading">
@@ -182,25 +181,6 @@ export function AccountPanel() {
         )}
       </section>
 
-      <section className="account-member-hub" aria-labelledby="member-hub-title">
-        <div className="account-section-heading">
-          <div>
-            <span>المرحلة التالية</span>
-            <h2 id="member-hub-title">المطالبة بملكية نشاط</h2>
-          </div>
-          <p>بعد تفعيل المفضلة وبيانات العضو وطلبات الإضافة، يتبقى ربط الأنشطة المنشورة بأصحابها عبر مسار تحقق منفصل.</p>
-        </div>
-        <div className="account-feature-grid account-feature-grid--single">
-          <article className="account-feature-card">
-            <div className="account-feature-icon"><ClaimIcon /></div>
-            <div className="account-feature-copy">
-              <div><h3>المطالبة بملكية نشاط</h3><span>قريبًا</span></div>
-              <p>اطلب ربط نشاط منشور بحسابك بعد مراجعة بيانات الملكية والتحقق منها.</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section className="account-actions-card">
         <div><span>اختصارات العضو</span><h2>واصل استكشاف العسيرات</h2></div>
         <div className="account-quick-links">
@@ -211,7 +191,7 @@ export function AccountPanel() {
       </section>
 
       <div className="account-footer-actions">
-        <span>طلبات إضافة الأنشطة تخضع للمراجعة ولا تغيّر بيانات الدليل العامة تلقائيًا.</span>
+        <span>طلبات إضافة الأنشطة ومطالبات الملكية تخضع للمراجعة ولا تغيّر بيانات الدليل العامة تلقائيًا.</span>
         <button className="account-logout" type="button" onClick={logout} disabled={loggingOut}>{loggingOut ? 'جاري تسجيل الخروج…' : 'تسجيل الخروج'}</button>
       </div>
     </div>
