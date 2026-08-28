@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-// مسار الاستدعاء المضبوط بناءً على هيكلة ملفاتك الحالية
-import { initialListings } from '../../lib/data';
+// تم استخدام مسار Next.js الذكي لتجنب أي مشاكل في بناء المشروع
+import { initialListings } from '@/lib/data';
 
 export default function DirectoryPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
