@@ -30,6 +30,7 @@ export type Ga4AdminData = {
 
 const analyticsScope = 'https://www.googleapis.com/auth/analytics.readonly';
 const tokenAudience = 'https://oauth2.googleapis.com/token';
+const defaultPropertyId = '552007678';
 
 function base64Url(value: string | Buffer) {
   return Buffer.from(value).toString('base64url');
@@ -102,11 +103,11 @@ function readSummary(report: ReportResponse) {
 }
 
 export async function getGa4AdminData(): Promise<Ga4AdminData> {
-  const propertyId = process.env.GA4_PROPERTY_ID?.trim();
+  const propertyId = process.env.GA4_PROPERTY_ID?.trim() || defaultPropertyId;
   const clientEmail = process.env.GA4_SERVICE_ACCOUNT_EMAIL?.trim();
   const rawPrivateKey = process.env.GA4_SERVICE_ACCOUNT_PRIVATE_KEY;
 
-  if (!propertyId || !clientEmail || !rawPrivateKey) {
+  if (!clientEmail || !rawPrivateKey) {
     return { connected: false, reason: 'not_configured' };
   }
 
