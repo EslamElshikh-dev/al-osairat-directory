@@ -69,7 +69,15 @@ export function googleMapsHref(listing: DirectoryListing) {
 }
 
 export function sourceLabel(listing: DirectoryListing) {
-  if (listing.sourceStatus === 'google_verified') return 'بيانات خرائط Google';
-  if (listing.sourceStatus === 'cross_checked') return 'تمت مطابقة البيانات';
+  if (listing.sourceStatus === 'google_verified') return 'مرجع خرائط Google';
+  if (listing.sourceStatus === 'cross_checked') return 'تمت مراجعة البيانات بواسطة دليل العسيرات';
+  if (listing.sourceStatus === 'needs_review') return 'بحاجة إلى مراجعة حديثة';
   return 'بيانات الدليل المحلي';
+}
+
+export function sourceDescription(listing: DirectoryListing) {
+  if (listing.sourceStatus === 'google_verified') return 'السجل مرتبط بمرجع منشور على خرائط Google. يُفضّل التأكد من المواعيد ووسائل التواصل قبل الزيارة.';
+  if (listing.sourceStatus === 'cross_checked') return 'تمت مراجعة هذا السجل ضمن مسار النشر الداخلي للدليل، ولا يعني ذلك توثيقًا أو اعتمادًا من Google.';
+  if (listing.sourceStatus === 'needs_review') return 'هذه البيانات تحتاج إلى مراجعة أحدث قبل الاعتماد عليها في زيارة أو تواصل مهم.';
+  return 'البيانات واردة من أرشيف الدليل المحلي وقد تتغير بمرور الوقت؛ يُفضّل التأكد مباشرة من مقدم الخدمة.';
 }
