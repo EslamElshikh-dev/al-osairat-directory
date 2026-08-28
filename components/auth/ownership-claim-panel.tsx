@@ -104,9 +104,18 @@ export function OwnershipClaimPanel() {
     ])
       .then(([claimData, profileData]) => {
         if (!active) return;
-        setListings(claimData.listings || []);
+        const nextListings = (claimData.listings || []) as ClaimableListing[];
+        setListings(nextListings);
         setClaims(claimData.claims || []);
         if (profileData.profile?.phone) setPhone(profileData.profile.phone);
+
+        const requestedClaimId = new URLSearchParams(window.location.search).get('claim') || '';
+        const requestedListing = requestedClaimId ? nextListings.find((listing) => listing.id === requestedClaimId) : null;
+        if (requestedListing) {
+          setSelectedId(requestedListing.id);
+          setQuery(requestedListing.title);
+          setMessage('تم اختيار هذا النشاط مباشرة من صفحة السجل. أكمل بيانات الإثبات لإرسال مطالبة الملكية.');
+        }
       })
       .catch(() => { if (active) setError('تعذر تحميل بيانات المطالبة الآن. حدّث الصفحة وحاول مرة أخرى.'); })
       .finally(() => { if (active) setLoading(false); });
