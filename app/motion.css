@@ -1,0 +1,248 @@
+/* Lightweight motion layer: CSS-only, performance-conscious, reduced-motion friendly */
+:root {
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-ease-soft: cubic-bezier(.2, .7, .2, 1);
+}
+
+@keyframes osairat-fade-up {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes osairat-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes osairat-panel-in {
+  from { opacity: 0; transform: translate3d(-18px, 10px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes osairat-card-in {
+  from { opacity: 0; transform: translate3d(0, 14px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes osairat-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes osairat-ambient {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .92; }
+  50% { transform: translate3d(10px, 8px, 0) scale(1.035); opacity: .72; }
+}
+
+@keyframes osairat-faq-reveal {
+  from { opacity: 0; transform: translate3d(0, -6px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes osairat-view-reveal {
+  from { opacity: 0; transform: translate3d(0, 22px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Hero entrance */
+.hero__content > .eyebrow,
+.hero__content > h1,
+.hero__content > p,
+.hero-search,
+.hero__trust {
+  opacity: 0;
+  animation: osairat-fade-up .7s var(--motion-ease) forwards;
+}
+.hero__content > .eyebrow { animation-delay: .04s; }
+.hero__content > h1 { animation-delay: .11s; }
+.hero__content > p { animation-delay: .19s; }
+.hero-search { animation-delay: .27s; }
+.hero__trust { animation-delay: .35s; }
+.hero__panel {
+  opacity: 0;
+  animation: osairat-panel-in .78s var(--motion-ease) .25s forwards;
+}
+.hero::before {
+  animation: osairat-ambient 14s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Brand/search polish */
+.hero-search,
+.search-field,
+.select-field {
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s var(--motion-ease-soft), background .22s ease;
+}
+.hero-search:focus-within,
+.explorer__tools:focus-within .search-field {
+  box-shadow: 0 20px 52px rgba(16, 42, 36, .14), 0 0 0 4px rgba(215, 168, 60, .11);
+}
+.hero-search:focus-within { transform: translateY(-2px); }
+.hero-search__brand .brand-mark__ring,
+.search-field__brand .brand-mark__ring {
+  animation: osairat-orbit 10s linear infinite;
+  transform-origin: center;
+}
+
+/* Homepage sections */
+.section-heading,
+.data-note > div:first-child {
+  animation: osairat-fade-up .65s var(--motion-ease) both;
+}
+.category-grid .category-card {
+  opacity: 0;
+  animation: osairat-card-in .62s var(--motion-ease) forwards;
+}
+.category-grid .category-card:nth-child(1) { animation-delay: .04s; }
+.category-grid .category-card:nth-child(2) { animation-delay: .09s; }
+.category-grid .category-card:nth-child(3) { animation-delay: .14s; }
+.category-grid .category-card:nth-child(4) { animation-delay: .19s; }
+.category-grid .category-card:nth-child(5) { animation-delay: .24s; }
+.category-grid .category-card:nth-child(6) { animation-delay: .29s; }
+.category-grid .category-card:nth-child(7) { animation-delay: .34s; }
+.category-grid .category-card:nth-child(8) { animation-delay: .39s; }
+.category-grid .category-card:nth-child(9) { animation-delay: .44s; }
+
+.listing-grid--featured .listing-card {
+  opacity: 0;
+  animation: osairat-card-in .58s var(--motion-ease) forwards;
+}
+.listing-grid--featured .listing-card:nth-child(1) { animation-delay: .06s; }
+.listing-grid--featured .listing-card:nth-child(2) { animation-delay: .12s; }
+.listing-grid--featured .listing-card:nth-child(3) { animation-delay: .18s; }
+.listing-grid--featured .listing-card:nth-child(4) { animation-delay: .24s; }
+.listing-grid--featured .listing-card:nth-child(5) { animation-delay: .30s; }
+.listing-grid--featured .listing-card:nth-child(6) { animation-delay: .36s; }
+
+/* Hover motion: only when the device actually has hover */
+@media (hover: hover) and (pointer: fine) {
+  .category-card,
+  .listing-card,
+  .village-card,
+  .emergency-card,
+  .faq-item,
+  .category-pill,
+  .button,
+  .desktop-nav a,
+  .village-cloud a,
+  .footer__links a,
+  .footer__signature {
+    transition-timing-function: var(--motion-ease-soft);
+  }
+
+  .category-card:hover,
+  .listing-card:hover,
+  .village-card:hover {
+    transform: translate3d(0, -5px, 0);
+  }
+
+  .category-card:hover .category-visual,
+  .listing-card:hover .category-visual,
+  .emergency-card:hover .category-visual {
+    transform: translate3d(0, -3px, 0) scale(1.035) rotate(-1deg);
+    box-shadow: 0 18px 34px rgba(16, 42, 36, .13), inset 0 1px 0 rgba(255,255,255,.95);
+  }
+
+  .category-card:hover .category-visual__halo,
+  .listing-card:hover .category-visual__halo {
+    transform: rotate(18deg) scale(1.05);
+    border-left-color: rgba(215, 168, 60, .9);
+  }
+
+  .listing-card:hover .listing-card__watermark,
+  .category-card:hover .category-card__brand,
+  .village-card:hover .village-card__visual {
+    transform: rotate(-3deg) scale(1.05);
+  }
+
+  .button:hover {
+    transform: translate3d(0, -2px, 0);
+  }
+  .button:active { transform: translate3d(0, 0, 0) scale(.985); }
+
+  .desktop-nav a:hover { transform: translateY(-1px); }
+  .village-cloud a:hover { transform: translateY(-2px); background: rgba(255,255,255,.13); }
+  .footer__signature:hover { transform: translateY(-1px); color: #f1d58e; }
+}
+
+.category-visual,
+.category-visual__halo,
+.listing-card__watermark,
+.category-card__brand,
+.village-card__visual {
+  transition: transform .28s var(--motion-ease), box-shadow .28s ease, border-color .28s ease;
+}
+
+/* FAQ: one-at-a-time accordion already handled by details[name], this adds soft answer motion */
+.faq-item[open] .faq-item__answer {
+  animation: osairat-faq-reveal .26s var(--motion-ease) both;
+}
+.faq-item[open] summary {
+  color: #102f27;
+}
+.faq-item summary:active {
+  transform: scale(.995);
+}
+
+/* Page-level polish */
+.page-hero,
+.detail-hero > .shell,
+.village-hero > .shell,
+.emergency-hero > .shell {
+  animation: osairat-fade-up .66s var(--motion-ease) both;
+}
+.explorer__tools {
+  animation: osairat-fade-up .6s var(--motion-ease) .08s both;
+}
+.category-pills {
+  animation: osairat-fade-in .7s ease .16s both;
+}
+
+/* Progressive scroll reveal where supported — no JS, graceful fallback elsewhere */
+@supports (animation-timeline: view()) {
+  .listing-grid:not(.listing-grid--featured) .listing-card,
+  .village-grid .village-card,
+  .emergency-grid .emergency-card,
+  .faq-list .faq-item {
+    opacity: 0;
+    animation: osairat-view-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 5% cover 20%;
+  }
+}
+
+/* Mobile/touch: keep effects subtle and avoid accidental motion */
+@media (max-width: 760px) {
+  .hero__content > .eyebrow,
+  .hero__content > h1,
+  .hero__content > p,
+  .hero-search,
+  .hero__trust,
+  .hero__panel {
+    animation-duration: .55s;
+  }
+  .category-grid .category-card { animation-duration: .48s; }
+  .mobile-nav a { transition: transform .16s ease, background .16s ease, color .16s ease; }
+  .mobile-nav a:active { transform: scale(.96); }
+}
+
+/* Accessibility: completely disable non-essential motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+  .hero__content > .eyebrow,
+  .hero__content > h1,
+  .hero__content > p,
+  .hero-search,
+  .hero__trust,
+  .hero__panel,
+  .category-grid .category-card,
+  .listing-grid--featured .listing-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
