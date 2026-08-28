@@ -106,7 +106,7 @@ export function ListingReport({ listingId, listingTitle }: { listingId: string; 
           {error && (
             <div className="listing-report__feedback is-error" role="alert">
               <span>{error}</span>
-              {needsLogin && <Link href={`/account/login?next=${encodeURIComponent(`/listing/${listingId}`)}`}>تسجيل الدخول</Link>}
+              {needsLogin && <Link href="/account">تسجيل الدخول</Link>}
             </div>
           )}
           {message && <div className="listing-report__feedback is-success" role="status">{message}</div>}
