@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getListingsByVillage, villageBySlug, villages } from '@/lib/data';
+import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
@@ -21,11 +22,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function VillagePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
-  const villageListings = getListingsByVillage(village.name);
+
+  const [publishedListings] = await Promise.all([
+    getPublishedListings({ village: village.name }),
+  ]);
+  const villageListings = [...getListingsByVillage(village.name), ...publishedListings];
 
   const structuredData = {
     '@context': 'https://schema.org',
