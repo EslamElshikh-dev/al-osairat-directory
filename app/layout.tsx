@@ -9,6 +9,7 @@ import './shell-upgrade.css';
 import './blog.css';
 import './blog-home.css';
 import './mobile-polish.css';
+import './auth.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 

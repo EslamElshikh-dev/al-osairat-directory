@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { categories, directoryStats } from '@/lib/data';
 import { MobileNav } from './mobile-nav';
+import { AccountButton } from './auth/account-button';
 
 export { MobileNav };
 
@@ -15,6 +16,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
 }
 
 export function SiteHeader() {
+  const membershipsEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED === 'true';
   return (
     <header className="site-header">
       <div className="shell site-header__inner">
@@ -42,6 +44,7 @@ export function SiteHeader() {
             </svg>
             <span>بحث</span>
           </Link>
+          {membershipsEnabled && <AccountButton />}
           <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
             <span className="header-emergency__dot" aria-hidden="true" />
             <span className="header-emergency__label">أرقام مهمة</span>
