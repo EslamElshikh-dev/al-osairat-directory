@@ -16,6 +16,7 @@ type PublishedBusinessRow = {
   description: string | null;
   google_maps_url: string | null;
   published_at: string;
+  updated_at: string;
 };
 
 export type PublishedListing = DirectoryListing & { publishedAt: string };
@@ -46,14 +47,16 @@ function serialize(row: PublishedBusinessRow): PublishedListing {
     sourceStatus: 'cross_checked',
     googleMapsUrl: row.google_maps_url || undefined,
     publishedAt: row.published_at,
-    lastUpdatedAt: row.published_at,
+    lastUpdatedAt: row.updated_at || row.published_at,
   };
 }
+
+const publishedSelect = 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,published_at,updated_at';
 
 export async function getPublishedListings(filters?: { category?: DirectoryCategory; village?: string }) {
   try {
     const params = new URLSearchParams({
-      select: 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,published_at',
+      select: publishedSelect,
       order: 'published_at.desc',
     });
     if (filters?.category) params.set('category', `eq.${filters.category}`);
@@ -74,7 +77,7 @@ export async function getPublishedListings(filters?: { category?: DirectoryCateg
 export async function getPublishedListingBySlug(slug: string) {
   try {
     const params = new URLSearchParams({
-      select: 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,published_at',
+      select: publishedSelect,
       slug: `eq.${slug}`,
       limit: '1',
     });
@@ -93,7 +96,7 @@ export async function getPublishedListingBySlug(slug: string) {
 export async function getPublishedListingById(listingId: string) {
   try {
     const params = new URLSearchParams({
-      select: 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,published_at',
+      select: publishedSelect,
       listing_id: `eq.${listingId}`,
       limit: '1',
     });
