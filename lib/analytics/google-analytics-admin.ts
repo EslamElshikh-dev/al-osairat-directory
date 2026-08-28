@@ -30,6 +30,7 @@ export type Ga4AdminData = {
 
 const analyticsScope = 'https://www.googleapis.com/auth/analytics.readonly';
 const tokenAudience = 'https://oauth2.googleapis.com/token';
+// Property ID is public configuration; service-account credentials stay in Vercel secrets.
 const defaultPropertyId = '552007678';
 
 function base64Url(value: string | Buffer) {
