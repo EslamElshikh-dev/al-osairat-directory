@@ -36,10 +36,51 @@
 .category-visual--government svg { transform: translateY(.5px) scale(.95); }
 .category-visual--emergency svg { transform: translateY(.5px) scale(.94); }
 
+/* Homepage category-card brand mark.
+   The compact logo used to be a scaled 42px element inside a 32px rounded square.
+   Drawing it at its final size removes the small optical drift that becomes obvious
+   on high-DPI phones and browser zoom, while keeping the card layout unchanged. */
+.category-card__brand {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(215, 168, 60, .13);
+  background: radial-gradient(circle at 34% 28%, #fffdf7 0 30%, #faf4e5 76%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 4px 12px rgba(16,42,36,.035);
+  opacity: 1;
+}
+
+.category-card__brand .brand-mark {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  transform: none;
+  transform-origin: center center;
+}
+
+.category-card__brand .brand-mark__ring {
+  inset: 1px;
+  border-width: 3px;
+}
+
+.category-card__brand .brand-mark__dot {
+  width: 5px;
+  height: 5px;
+}
+
 @media (max-width: 760px) {
   .category-visual svg {
     width: 63%;
     height: 63%;
+  }
+
+  .category-card__brand {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
   }
 }
 
