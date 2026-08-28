@@ -27,6 +27,12 @@ type Submission = {
   createdAt: string;
   updatedAt: string;
   reviewedAt: string | null;
+  publishedAt: string | null;
+  publishedListing: {
+    listingId: string;
+    slug: string;
+    title: string;
+  } | null;
 };
 
 type Claim = {
@@ -59,6 +65,7 @@ type DashboardData = {
     pendingSubmissions: number;
     pendingClaims: number;
     approvedOwnerships: number;
+    publishedBusinesses: number;
     totalSubmissions: number;
     totalClaims: number;
   };
@@ -137,7 +144,14 @@ export function AdminDashboard() {
     if (!data) return [] as Array<Submission | Claim>;
     const items: Array<Submission | Claim> = tab === 'submissions' ? data.submissions : data.claims;
     if (filter === 'all') return items;
-    if (filter === 'open') return items.filter((item) => item.status === 'pending' || item.status === 'needs_changes');
+    if (filter === 'open') {
+      if (tab === 'submissions') {
+        return (items as Submission[]).filter((item) =>
+          item.status === 'pending' || item.status === 'needs_changes' || (item.status === 'approved' && !item.publishedListing),
+        );
+      }
+      return items.filter((item) => item.status === 'pending' || item.status === 'needs_changes');
+    }
     return items.filter((item) => item.status === filter);
   }, [data, tab, filter]);
 
@@ -180,6 +194,37 @@ export function AdminDashboard() {
     }
   }
 
+  async function publishSubmission(item: Submission) {
+    if (savingKey || item.publishedListing) return;
+    if (item.status === 'rejected') {
+      setError('لا يمكن نشر طلب مرفوض.');
+      return;
+    }
+    if (!window.confirm(`سيتم اعتماد «${item.businessName}» ونشره فورًا في الدليل العام. هل تريد المتابعة؟`)) return;
+
+    setSavingKey(`publish:${item.id}`);
+    setError('');
+    setMessage('');
+    try {
+      const response = await fetch('/api/admin/publish', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ id: item.id, note: (notes[item.id] || '').trim() }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'تعذر نشر النشاط.');
+      setMessage(payload.alreadyPublished
+        ? 'النشاط منشور بالفعل وتم تحديث حالة اللوحة.'
+        : 'تم اعتماد النشاط ونشره في الدليل العام بنجاح.');
+      await load();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'تعذر نشر النشاط.');
+    } finally {
+      setSavingKey('');
+    }
+  }
+
   if (loading && !data) {
     return <div className="admin-loading"><span /><p>جاري فتح لوحة الإدارة…</p></div>;
   }
@@ -208,7 +253,7 @@ export function AdminDashboard() {
         <div className="admin-hero__copy">
           <span>إدارة خاصة · غير مفهرسة</span>
           <h1>لوحة إدارة دليل العسيرات</h1>
-          <p>راجع طلبات إضافة الأنشطة ومطالبات الملكية واتخذ القرار من مكان واحد.</p>
+          <p>راجع طلبات إضافة الأنشطة ومطالبات الملكية، واعتمد الأنشطة وانشرها مباشرة من مكان واحد.</p>
         </div>
         <div className="admin-hero__actions">
           <button type="button" onClick={load} disabled={loading}>{loading ? 'جاري التحديث…' : 'تحديث البيانات'}</button>
@@ -217,7 +262,8 @@ export function AdminDashboard() {
       </section>
 
       <section className="admin-stats" aria-label="إحصائيات المراجعة">
-        <article><span>طلبات إضافة مفتوحة</span><strong>{data.stats.pendingSubmissions}</strong><small>من {data.stats.totalSubmissions} طلب</small></article>
+        <article><span>طلبات تحتاج إجراء</span><strong>{data.stats.pendingSubmissions}</strong><small>من {data.stats.totalSubmissions} طلب</small></article>
+        <article><span>أنشطة منشورة من الطلبات</span><strong>{data.stats.publishedBusinesses}</strong><small>سجلات حية في الدليل</small></article>
         <article><span>مطالبات ملكية مفتوحة</span><strong>{data.stats.pendingClaims}</strong><small>من {data.stats.totalClaims} مطالبة</small></article>
         <article><span>ملكيات معتمدة</span><strong>{data.stats.approvedOwnerships}</strong><small>روابط ملكية فعالة</small></article>
       </section>
@@ -235,7 +281,7 @@ export function AdminDashboard() {
             <button className={tab === 'claims' ? 'is-active' : ''} type="button" onClick={() => setTab('claims')}>مطالبات الملكية <b>{data.stats.pendingClaims}</b></button>
           </div>
           <select value={filter} onChange={(event) => setFilter(event.target.value as typeof filter)} aria-label="تصفية حسب الحالة">
-            <option value="open">المفتوحة فقط</option>
+            <option value="open">تحتاج إجراء</option>
             <option value="all">كل الحالات</option>
             <option value="pending">قيد المراجعة</option>
             <option value="needs_changes">يحتاج استكمال</option>
@@ -252,7 +298,7 @@ export function AdminDashboard() {
               <article className="admin-review-card" key={item.id}>
                 <div className="admin-card__head">
                   <div><span>طلب إضافة نشاط</span><h2>{item.businessName}</h2><p>{item.memberName} · {item.categoryLabel} · {item.village}{item.locality ? ` · ${item.locality}` : ''}</p></div>
-                  <StatusBadge status={item.status} />
+                  {item.publishedListing ? <span className="admin-status admin-status--published">منشور</span> : <StatusBadge status={item.status} />}
                 </div>
 
                 <div className="admin-detail-grid">
@@ -267,14 +313,24 @@ export function AdminDashboard() {
                 {item.description && <div className="admin-long-text"><span>وصف النشاط</span><p>{item.description}</p></div>}
                 {item.googleMapsUrl && <a className="admin-map-link" href={item.googleMapsUrl} target="_blank" rel="noreferrer">فتح رابط خرائط Google ↗</a>}
 
-                <div className="admin-review-box">
-                  <label><span>ملاحظة المراجعة للعضو</span><textarea rows={3} value={notes[item.id] || ''} onChange={(event) => setNotes((current) => ({ ...current, [item.id]: event.target.value }))} maxLength={1200} placeholder="اكتب سبب طلب الاستكمال أو الرفض، أو ملاحظة الاعتماد إن لزم." /></label>
-                  <div className="admin-review-actions">
-                    <button className="needs" type="button" onClick={() => review('submission', item.id, 'needs_changes')} disabled={Boolean(savingKey)}>طلب استكمال</button>
-                    <button className="approve" type="button" onClick={() => review('submission', item.id, 'approved')} disabled={Boolean(savingKey)}>قبول</button>
-                    <button className="reject" type="button" onClick={() => review('submission', item.id, 'rejected')} disabled={Boolean(savingKey)}>رفض</button>
+                {item.publishedListing && (
+                  <div className="admin-listing-reference admin-published-reference">
+                    <div><span>تم النشر</span><strong>{formatDate(item.publishedAt)}</strong></div>
+                    <Link href={`/listing/${item.publishedListing.slug}`} target="_blank">فتح النشاط المنشور ↗</Link>
                   </div>
-                  {item.status === 'approved' && <small>اعتماد الطلب لا يضيف السجل تلقائيًا إلى ملفات الدليل البرمجية حتى يتم تنفيذ مسار النشر الإداري.</small>}
+                )}
+
+                <div className="admin-review-box">
+                  <label><span>ملاحظة المراجعة للعضو</span><textarea rows={3} value={notes[item.id] || ''} onChange={(event) => setNotes((current) => ({ ...current, [item.id]: event.target.value }))} maxLength={1200} placeholder="اكتب سبب طلب الاستكمال أو الرفض، أو ملاحظة الاعتماد إن لزم." disabled={Boolean(item.publishedListing)} /></label>
+                  {item.publishedListing ? (
+                    <small>هذا الطلب تحوّل بالفعل إلى سجل منشور في الدليل العام. لن يتم نشر نسخة ثانية من نفس الطلب.</small>
+                  ) : (
+                    <div className="admin-review-actions">
+                      <button className="needs" type="button" onClick={() => review('submission', item.id, 'needs_changes')} disabled={Boolean(savingKey)}>طلب استكمال</button>
+                      <button className="approve publish" type="button" onClick={() => publishSubmission(item)} disabled={Boolean(savingKey)}>{savingKey === `publish:${item.id}` ? 'جاري النشر…' : 'اعتماد ونشر النشاط'}</button>
+                      <button className="reject" type="button" onClick={() => review('submission', item.id, 'rejected')} disabled={Boolean(savingKey)}>رفض</button>
+                    </div>
+                  )}
                 </div>
               </article>
             ))
