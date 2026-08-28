@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DirectoryExplorer } from '@/components/directory-explorer';
+import { getPublishedListings } from '@/lib/published-listings';
 
 export const metadata: Metadata = {
   title: 'الدليل الشامل لخدمات وأنشطة العسيرات',
@@ -7,12 +8,12 @@ export const metadata: Metadata = {
   alternates: { canonical: '/directory' },
 };
 
-export default async function DirectoryPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
+export const dynamic = 'force-dynamic';
+
+export default async function DirectoryPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const params = await searchParams;
+  const publishedListings = await getPublishedListings();
+
   return (
     <main id="main-content" className="page-main">
       <section className="page-hero shell">
@@ -21,7 +22,7 @@ export default async function DirectoryPage({
         <p>ابحث بالاسم أو التخصص أو الخدمة أو القرية، ثم صفِّ النتائج حسب نطاقك.</p>
       </section>
       <section className="shell page-section">
-        <DirectoryExplorer initialQuery={params.q || ''} />
+        <DirectoryExplorer initialQuery={params.q || ''} extraListings={publishedListings} />
       </section>
     </main>
   );
