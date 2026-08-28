@@ -1,73 +1,70 @@
-'use client';
-
-import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { categories, listings, villages, type DirectoryCategory, type DirectoryListing } from '@/lib/data';
-import { normalizeArabic } from '@/lib/site';
+import { categories, villages, type DirectoryCategory } from '@/lib/data';
+import { createDirectoryHref, type DirectoryQueryResult } from '@/lib/directory-query';
 import { ListingCard } from './listing-card';
 import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
 
+function pageNumbers(current: number, total: number) {
+  if (total <= 5) return Array.from({ length: total }, (_, index) => index + 1);
+  const values = new Set([1, total, current - 1, current, current + 1]);
+  return Array.from(values)
+    .filter((page) => page >= 1 && page <= total)
+    .sort((a, b) => a - b);
+}
+
 export function DirectoryExplorer({
   category,
-  initialQuery = '',
-  extraListings = [],
-  baseListings = listings,
+  query = '',
+  village = 'all',
+  result,
+  pathname,
 }: {
   category?: DirectoryCategory;
-  initialQuery?: string;
-  extraListings?: DirectoryListing[];
-  baseListings?: DirectoryListing[];
+  query?: string;
+  village?: string;
+  result: DirectoryQueryResult;
+  pathname: string;
 }) {
-  const [query, setQuery] = useState(initialQuery);
-  const [village, setVillage] = useState('all');
-
-  const allListings = useMemo(() => {
-    if (!extraListings.length) return baseListings;
-    const index = new Map<string, DirectoryListing>();
-    [...baseListings, ...extraListings].forEach((listing) => index.set(listing.id, listing));
-    return Array.from(index.values());
-  }, [baseListings, extraListings]);
-
-  const results = useMemo(() => {
-    const q = normalizeArabic(query);
-    return allListings.filter((listing) => {
-      if (category && listing.category !== category) return false;
-      if (village !== 'all' && listing.village !== village) return false;
-      if (!q) return true;
-      const haystack = normalizeArabic(
-        [listing.title, listing.subCategory, listing.location, listing.village, listing.description]
-          .filter(Boolean)
-          .join(' '),
-      );
-      return haystack.includes(q);
-    });
-  }, [allListings, category, query, village]);
+  const pages = pageNumbers(result.page, result.totalPages);
 
   return (
     <div className="explorer">
-      <div className="explorer__tools">
+      <form className="explorer__tools" action={pathname} method="get" role="search">
         <label className="search-field">
           <span className="search-field__brand" aria-hidden="true"><BrandMark compact /></span>
           <span className="sr-only">ابحث في الدليل</span>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..." inputMode="search" autoComplete="off" />
+          <input
+            name="q"
+            defaultValue={query}
+            placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..."
+            inputMode="search"
+            autoComplete="off"
+          />
           <span className="search-field__hint">بحث ذكي</span>
         </label>
 
         <label className="select-field">
           <span className="select-field__brand" aria-hidden="true"><BrandMark compact /></span>
           <span>القرية</span>
-          <select value={village} onChange={(event) => setVillage(event.target.value)}>
+          <select name="village" defaultValue={village}>
             <option value="all">كل نطاق العسيرات</option>
             {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
           </select>
         </label>
-      </div>
+
+        <button type="submit" className="button button--primary">بحث وتصفية</button>
+        {(query || village !== 'all') && <Link href={pathname} className="button button--ghost">مسح الفلاتر</Link>}
+      </form>
 
       {!category && (
         <div className="category-pills" aria-label="فئات الدليل">
           {categories.map((item) => (
-            <Link key={item.id} href={`/directory/${item.id}`} className={`category-pill category-pill--${item.id}`}>
+            <Link
+              key={item.id}
+              href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
+              className={`category-pill category-pill--${item.id}`}
+            >
               <CategoryVisual category={item.id} size="sm" />
               <span>{item.shortLabel}</span>
               <span className="category-pill__brand" aria-hidden="true"><BrandMark compact /></span>
@@ -76,12 +73,66 @@ export function DirectoryExplorer({
         </div>
       )}
 
-      <div className="results-bar"><strong>{results.length.toLocaleString('ar-EG')}</strong><span>نتيجة مطابقة</span></div>
+      <div className="results-bar">
+        <strong>{result.total.toLocaleString('ar-EG')}</strong>
+        <span>نتيجة مطابقة</span>
+        {result.total > result.pageSize && (
+          <span>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')}</span>
+        )}
+      </div>
 
-      {results.length ? (
-        <div className="listing-grid">{results.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
+      {result.items.length ? (
+        <>
+          <div className="listing-grid">
+            {result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
+          </div>
+
+          {result.totalPages > 1 && (
+            <nav className="detail-actions" aria-label="صفحات نتائج الدليل">
+              {result.page > 1 && (
+                <Link
+                  className="button button--ghost"
+                  href={createDirectoryHref(pathname, { query, village, page: result.page - 1 })}
+                  rel="prev"
+                >
+                  السابق
+                </Link>
+              )}
+
+              {pages.map((page, index) => {
+                const previous = pages[index - 1];
+                const showGap = previous && page - previous > 1;
+                return (
+                  <span key={page} style={{ display: 'contents' }}>
+                    {showGap && <span aria-hidden="true">…</span>}
+                    <Link
+                      className={`button ${page === result.page ? 'button--primary' : 'button--soft'}`}
+                      href={createDirectoryHref(pathname, { query, village, page })}
+                      aria-current={page === result.page ? 'page' : undefined}
+                    >
+                      {page.toLocaleString('ar-EG')}
+                    </Link>
+                  </span>
+                );
+              })}
+
+              {result.page < result.totalPages && (
+                <Link
+                  className="button button--ghost"
+                  href={createDirectoryHref(pathname, { query, village, page: result.page + 1 })}
+                  rel="next"
+                >
+                  التالي
+                </Link>
+              )}
+            </nav>
+          )}
+        </>
       ) : (
-        <div className="empty-state"><strong>لا توجد نتائج مطابقة</strong><p>جرّب كلمة أقصر أو اختر قرية أخرى.</p></div>
+        <div className="empty-state">
+          <strong>لا توجد نتائج مطابقة</strong>
+          <p>جرّب كلمة أقصر، مرادفًا آخر، أو اختر قرية أخرى.</p>
+        </div>
       )}
     </div>
   );
