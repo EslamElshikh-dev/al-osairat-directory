@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BlogCard } from '@/components/blog-card';
 import { BrandMark } from '@/components/site-shell';
-import { blogArticles, blogBySlug } from '@/lib/blog';
+import { blogArticles, blogBySlug } from '@/lib/blog-published';
 import { siteConfig } from '@/lib/site';
 
 const authorName = 'المهندس إسلام الشيخ';
