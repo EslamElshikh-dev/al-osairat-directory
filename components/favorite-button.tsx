@@ -10,14 +10,29 @@ type FavoriteButtonProps = {
 };
 
 type FavoritesPayload = { authenticated?: boolean; ids?: string[] };
+type FavoriteChangedDetail = { listingId: string; favorite: boolean };
 
 let favoriteIds: Set<string> | null = null;
 let authenticated: boolean | null = null;
 let loadPromise: Promise<void> | null = null;
+let eventBridgeReady = false;
 const listeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((listener) => listener());
+}
+
+function ensureEventBridge() {
+  if (eventBridgeReady || typeof window === 'undefined') return;
+  window.addEventListener('favorites:changed', (event) => {
+    const detail = (event as CustomEvent<FavoriteChangedDetail>).detail;
+    if (!detail?.listingId) return;
+    if (!favoriteIds) favoriteIds = new Set();
+    if (detail.favorite) favoriteIds.add(detail.listingId);
+    else favoriteIds.delete(detail.listingId);
+    emit();
+  });
+  eventBridgeReady = true;
 }
 
 async function ensureFavoritesLoaded() {
@@ -63,6 +78,7 @@ export function FavoriteButton({ listingId, variant = 'card', showLabel = false 
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    ensureEventBridge();
     const listener = () => rerender((value) => value + 1);
     listeners.add(listener);
     void ensureFavoritesLoaded();
