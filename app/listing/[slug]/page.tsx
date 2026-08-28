@@ -7,6 +7,8 @@ import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceLabel,
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
 
+export const dynamic = 'force-dynamic';
+
 export function generateStaticParams() {
   return listings.filter((listing) => listing.category !== 'emergency').map((listing) => ({ slug: listing.slug }));
 }
