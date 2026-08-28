@@ -3,6 +3,7 @@ import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
 import './visual-upgrade.css';
+import './faq.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
