@@ -50,10 +50,10 @@ type ResolvedSession = {
 };
 
 const allowedCategories = categories.filter((category) => !['emergency', 'government'].includes(category.id));
-const categoryIds = new Set(allowedCategories.map((category) => category.id));
-const categoryLabels = new Map(allowedCategories.map((category) => [category.id, category.shortLabel]));
+const categoryIds: Set<string> = new Set(allowedCategories.map((category) => category.id));
+const categoryLabels: Map<string, string> = new Map(allowedCategories.map((category) => [category.id, category.shortLabel]));
 const allowedVillages = villages.filter((village) => village.name !== 'مركز العسيرات');
-const villageNames = new Set(allowedVillages.map((village) => village.name));
+const villageNames: Set<string> = new Set(allowedVillages.map((village) => village.name));
 
 function restHeaders(accessToken: string, json = false) {
   return {
@@ -209,7 +209,7 @@ export async function POST(request: Request) {
   const googleMapsUrl = normalizeMapsUrl(rawMapsUrl);
 
   if (businessName.length < 2) return respond({ error: 'اكتب اسم النشاط بشكل صحيح.' }, session, 400);
-  if (!categoryIds.has(category as never)) return respond({ error: 'اختر قسمًا صحيحًا للنشاط.' }, session, 400);
+  if (!categoryIds.has(category)) return respond({ error: 'اختر قسمًا صحيحًا للنشاط.' }, session, 400);
   if (!villageNames.has(village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
   if (locationDetails.length < 3) return respond({ error: 'اكتب وصفًا واضحًا لموقع النشاط داخل القرية.' }, session, 400);
   if (!validPhone(phone) || !validPhone(whatsapp)) return respond({ error: 'راجع رقم الهاتف أو واتساب واستخدم أرقامًا صحيحة.' }, session, 400);
