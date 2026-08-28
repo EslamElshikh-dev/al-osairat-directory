@@ -12,20 +12,22 @@ export function DirectoryExplorer({
   category,
   initialQuery = '',
   extraListings = [],
+  baseListings = listings,
 }: {
   category?: DirectoryCategory;
   initialQuery?: string;
   extraListings?: DirectoryListing[];
+  baseListings?: DirectoryListing[];
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [village, setVillage] = useState('all');
 
   const allListings = useMemo(() => {
-    if (!extraListings.length) return listings;
+    if (!extraListings.length) return baseListings;
     const index = new Map<string, DirectoryListing>();
-    [...listings, ...extraListings].forEach((listing) => index.set(listing.id, listing));
+    [...baseListings, ...extraListings].forEach((listing) => index.set(listing.id, listing));
     return Array.from(index.values());
-  }, [extraListings]);
+  }, [baseListings, extraListings]);
 
   const results = useMemo(() => {
     const q = normalizeArabic(query);
@@ -46,32 +48,18 @@ export function DirectoryExplorer({
     <div className="explorer">
       <div className="explorer__tools">
         <label className="search-field">
-          <span className="search-field__brand" aria-hidden="true">
-            <BrandMark compact />
-          </span>
+          <span className="search-field__brand" aria-hidden="true"><BrandMark compact /></span>
           <span className="sr-only">ابحث في الدليل</span>
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..."
-            inputMode="search"
-            autoComplete="off"
-          />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..." inputMode="search" autoComplete="off" />
           <span className="search-field__hint">بحث ذكي</span>
         </label>
 
         <label className="select-field">
-          <span className="select-field__brand" aria-hidden="true">
-            <BrandMark compact />
-          </span>
+          <span className="select-field__brand" aria-hidden="true"><BrandMark compact /></span>
           <span>القرية</span>
           <select value={village} onChange={(event) => setVillage(event.target.value)}>
             <option value="all">كل نطاق العسيرات</option>
-            {villages.map((item) => (
-              <option key={item.slug} value={item.name}>
-                {item.name}
-              </option>
-            ))}
+            {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
           </select>
         </label>
       </div>
@@ -88,22 +76,12 @@ export function DirectoryExplorer({
         </div>
       )}
 
-      <div className="results-bar">
-        <strong>{results.length.toLocaleString('ar-EG')}</strong>
-        <span>نتيجة مطابقة</span>
-      </div>
+      <div className="results-bar"><strong>{results.length.toLocaleString('ar-EG')}</strong><span>نتيجة مطابقة</span></div>
 
       {results.length ? (
-        <div className="listing-grid">
-          {results.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
+        <div className="listing-grid">{results.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
       ) : (
-        <div className="empty-state">
-          <strong>لا توجد نتائج مطابقة</strong>
-          <p>جرّب كلمة أقصر أو اختر قرية أخرى.</p>
-        </div>
+        <div className="empty-state"><strong>لا توجد نتائج مطابقة</strong><p>جرّب كلمة أقصر أو اختر قرية أخرى.</p></div>
       )}
     </div>
   );
