@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categoryById, listingBySlug, listings } from '@/lib/data';
+import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
+import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
@@ -10,9 +11,14 @@ export function generateStaticParams() {
   return listings.filter((listing) => listing.category !== 'emergency').map((listing) => ({ slug: listing.slug }));
 }
 
+async function resolveListing(rawSlug: string) {
+  const slug = normalizeRouteSlug(rawSlug);
+  return listingBySlug[slug] || await getPublishedListingBySlug(slug);
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const listing = listingBySlug[normalizeRouteSlug(slug)];
+  const listing = await resolveListing(slug);
   if (!listing) return {};
   const category = categoryById[listing.category];
   const title = `${listing.title} - ${listing.village}`;
@@ -25,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-function schemaTypeFor(listing: (typeof listings)[number]) {
+function schemaTypeFor(listing: DirectoryListing) {
   if (listing.category === 'doctors') {
     if (/معمل|مركز|مستشف|خدمات تمريض/.test(listing.title)) return 'MedicalBusiness';
     return 'Physician';
@@ -40,13 +46,17 @@ function schemaTypeFor(listing: (typeof listings)[number]) {
 
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const listing = listingBySlug[normalizeRouteSlug(slug)];
+  const listing = await resolveListing(slug);
   if (!listing) notFound();
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
   const whatsapp = whatsappHref(listing);
   const maps = googleMapsHref(listing);
-  const nearby = listings
+
+  const publishedNearby = listing.id.startsWith('published-')
+    ? await getPublishedListings({ category: listing.category, village: listing.village })
+    : [];
+  const nearby = [...listings, ...publishedNearby]
     .filter((item) => item.id !== listing.id && item.category === listing.category && item.village === listing.village)
     .slice(0, 3);
 
@@ -64,7 +74,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
       addressCountry: 'EG',
     },
     url: `${siteConfig.url}/listing/${listing.slug}`,
-    ...(listing.googlePlaceId ? { hasMap: maps } : {}),
+    ...((listing.googlePlaceId || listing.googleMapsUrl) ? { hasMap: maps } : {}),
   };
 
   const structuredData = {
