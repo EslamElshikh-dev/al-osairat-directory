@@ -7,10 +7,12 @@ import './faq.css';
 import './motion.css';
 import './shell-upgrade.css';
 
+const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: 'دليل وموسوعة العسيرات | خدمات وقرى مركز العسيرات بسوهاج',
+    default: rootTitle,
     template: '%s | دليل العسيرات',
   },
   description: siteConfig.description,
@@ -19,17 +21,21 @@ export const metadata: Metadata = {
     'العسيرات', 'مركز العسيرات', 'دليل العسيرات', 'قرى العسيرات', 'سوهاج',
     'أطباء العسيرات', 'صيدليات العسيرات', 'محلات العسيرات', 'حرفيين العسيرات',
   ],
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    shortcut: '/icon.svg',
+  },
   openGraph: {
     type: 'website',
     locale: siteConfig.locale,
     url: siteConfig.url,
-    title: 'دليل وموسوعة العسيرات',
+    title: rootTitle,
     description: siteConfig.description,
     siteName: siteConfig.name,
   },
   twitter: {
     card: 'summary',
-    title: 'دليل وموسوعة العسيرات',
+    title: rootTitle,
     description: siteConfig.description,
   },
   robots: { index: true, follow: true },
