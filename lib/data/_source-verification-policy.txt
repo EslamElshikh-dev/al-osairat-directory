@@ -1,1 +1,0 @@
-Public records must have an identified name and category. Unidentified short links remain pending and are never imported into listings.
