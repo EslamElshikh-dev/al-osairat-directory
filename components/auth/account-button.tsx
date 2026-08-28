@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-type SessionUser = { displayName: string; email: string } | null;
+type SessionUser = { displayName: string; email: string; avatarUrl: string } | null;
 
 function AccountIcon() {
   return (
@@ -38,8 +38,14 @@ export function AccountButton() {
       aria-label={user ? `حساب ${user.displayName}` : 'تسجيل الدخول أو إنشاء حساب'}
       title={ready && user ? user.displayName : 'حساب الأعضاء'}
     >
-      <span className="account-trigger__icon" aria-hidden="true">
-        {initial ? <b>{initial}</b> : <AccountIcon />}
+      <span className={`account-trigger__icon${user?.avatarUrl ? ' has-photo' : ''}`} aria-hidden="true">
+        {user?.avatarUrl ? (
+          <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" />
+        ) : initial ? (
+          <b>{initial}</b>
+        ) : (
+          <AccountIcon />
+        )}
       </span>
       <span className="account-trigger__label">{ready ? label : 'حسابي'}</span>
     </Link>
