@@ -100,7 +100,7 @@ export const initialListings: DirectoryListing[] = [
     phone: '01111005223',
     openingHours: 'مفتوح 24 ساعة في أغلب أيام الأسبوع؛ الجمعة 7:00 ص – 12:00 م وفق بيانات خرائط Google المفهرسة',
     dataSource: 'google_maps',
-    verificationStatus: 'verified',
+    verificationStatus: 'cross_checked',
   },
   {
     id: 'shop-gazirat-3',
@@ -113,7 +113,7 @@ export const initialListings: DirectoryListing[] = [
     openingHours: '24 ساعة وفق بيانات خرائط Google المفهرسة',
     delivery: true,
     dataSource: 'google_maps',
-    verificationStatus: 'verified',
+    verificationStatus: 'cross_checked',
   },
   {
     id: 'shop-gazirat-4',
