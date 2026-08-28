@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getListingsByVillage, villages } from '@/lib/data';
+import { BrandMark } from '@/components/site-shell';
 
 export const metadata: Metadata = {
   title: 'قرى مركز العسيرات وتوابعها',
@@ -23,7 +24,10 @@ export default function VillagesPage() {
             const count = getListingsByVillage(village.name).length;
             return (
               <Link href={`/villages/${village.slug}`} key={village.slug} className="village-card">
-                <span className="village-card__index">{String(index + 1).padStart(2, '0')}</span>
+                <div className="village-card__head">
+                  <span className="village-card__visual" aria-hidden="true"><BrandMark compact /></span>
+                  <span className="village-card__index">{String(index + 1).padStart(2, '0')}</span>
+                </div>
                 <h2>{village.name}</h2>
                 <p>{village.description}</p>
                 <div className="village-card__meta"><span>{count} سجل</span><span>{village.localities.length} تابع/نجع مسجل بالاسم</span></div>
