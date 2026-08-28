@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { categories, listings, villages, type DirectoryCategory } from '@/lib/data';
 import { normalizeArabic } from '@/lib/site';
 import { ListingCard } from './listing-card';
+import { BrandMark } from './site-shell';
 
 export function DirectoryExplorer({
   category,
@@ -22,13 +23,11 @@ export function DirectoryExplorer({
       if (category && listing.category !== category) return false;
       if (village !== 'all' && listing.village !== village) return false;
       if (!q) return true;
-      const haystack = normalizeArabic([
-        listing.title,
-        listing.subCategory,
-        listing.location,
-        listing.village,
-        listing.description,
-      ].filter(Boolean).join(' '));
+      const haystack = normalizeArabic(
+        [listing.title, listing.subCategory, listing.location, listing.village, listing.description]
+          .filter(Boolean)
+          .join(' '),
+      );
       return haystack.includes(q);
     });
   }, [category, query, village]);
@@ -37,6 +36,9 @@ export function DirectoryExplorer({
     <div className="explorer">
       <div className="explorer__tools">
         <label className="search-field">
+          <span className="search-field__brand" aria-hidden="true">
+            <BrandMark compact />
+          </span>
           <span className="sr-only">ابحث في الدليل</span>
           <input
             value={query}
@@ -45,13 +47,17 @@ export function DirectoryExplorer({
             inputMode="search"
             autoComplete="off"
           />
-          <span className="search-field__hint">بحث</span>
+          <span className="search-field__hint">بحث ذكي</span>
         </label>
         <label className="select-field">
           <span>القرية</span>
           <select value={village} onChange={(event) => setVillage(event.target.value)}>
             <option value="all">كل نطاق العسيرات</option>
-            {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
+            {villages.map((item) => (
+              <option key={item.slug} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </select>
         </label>
       </div>
@@ -59,7 +65,12 @@ export function DirectoryExplorer({
       {!category && (
         <div className="category-pills" aria-label="فئات الدليل">
           {categories.map((item) => (
-            <Link key={item.id} href={`/directory/${item.id}`}>{item.shortLabel}</Link>
+            <Link key={item.id} href={`/directory/${item.id}`} className={`category-pill category-pill--${item.id}`}>
+              <span className="category-pill__mark" aria-hidden="true">
+                <BrandMark compact />
+              </span>
+              <span>{item.shortLabel}</span>
+            </Link>
           ))}
         </div>
       )}
@@ -71,7 +82,9 @@ export function DirectoryExplorer({
 
       {results.length ? (
         <div className="listing-grid">
-          {results.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
+          {results.map((listing) => (
+            <ListingCard key={listing.id} listing={listing} />
+          ))}
         </div>
       ) : (
         <div className="empty-state">
