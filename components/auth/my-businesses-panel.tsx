@@ -51,7 +51,7 @@ const allowedVillages = villages.filter((item) => item.name !== 'مركز الع
 
 const statusMeta: Record<ReviewStatus, { label: string; hint: string }> = {
   pending: { label: 'قيد المراجعة', hint: 'التعديلات لم تُنشر بعد.' },
-  needs_changes: { label: 'يحتاج استكمال', hint: 'راجع ملاحظة الإدارة ثم أرسل طلبًا جديدًا بعد إغلاق الطلب الحالي.' },
+  needs_changes: { label: 'يحتاج استكمال', hint: 'راجع ملاحظة الإدارة، عدّل البيانات، ثم أعد إرسال نفس الطلب.' },
   approved: { label: 'تم الاعتماد', hint: 'تم تطبيق التعديلات المعتمدة على النشاط.' },
   rejected: { label: 'غير مقبول', hint: 'لم يتم تطبيق التعديلات المطلوبة.' },
 };
@@ -104,6 +104,7 @@ export function MyBusinessesPanel() {
   const [requests, setRequests] = useState<ChangeRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState('');
+  const [editingRequestId, setEditingRequestId] = useState('');
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -139,11 +140,18 @@ export function MyBusinessesPanel() {
     return map;
   }, [requests]);
 
-  function startEditing(business: Business) {
+  function startEditing(business: Business, requestId = '') {
     setEditingId(business.listingId);
+    setEditingRequestId(requestId);
     setForm(formFromBusiness(business));
     setError('');
     setMessage('');
+  }
+
+  function cancelEditing() {
+    setEditingId('');
+    setEditingRequestId('');
+    setForm(null);
   }
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -172,13 +180,14 @@ export function MyBusinessesPanel() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({ listingId: editingId, ...form }),
+        body: JSON.stringify({ listingId: editingId, requestId: editingRequestId || undefined, ...form }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر إرسال طلب التعديل.');
-      setMessage('تم إرسال التعديلات للمراجعة. ستبقى بيانات النشاط الحالية كما هي حتى الاعتماد.');
-      setEditingId('');
-      setForm(null);
+      setMessage(editingRequestId
+        ? 'تم استكمال التعديلات وإعادة إرسال الطلب للمراجعة.'
+        : 'تم إرسال التعديلات للمراجعة. ستبقى بيانات النشاط الحالية كما هي حتى الاعتماد.');
+      cancelEditing();
       await load();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر إرسال طلب التعديل.');
@@ -208,6 +217,7 @@ export function MyBusinessesPanel() {
           {businesses.map((business) => {
             const openRequest = openRequestByListing.get(business.listingId);
             const isEditing = editingId === business.listingId && form;
+            const canRevise = openRequest?.status === 'needs_changes';
             return (
               <article className="my-business-card" key={business.listingId}>
                 <div className="my-business-card__head">
@@ -221,8 +231,18 @@ export function MyBusinessesPanel() {
 
                 <div className="my-business-card__actions">
                   <Link href={`/listing/${business.slug}`}>عرض النشاط</Link>
-                  <button type="button" onClick={() => startEditing(business)} disabled={Boolean(openRequest)}>
-                    {openRequest ? 'يوجد طلب تعديل مفتوح' : isEditing ? 'تعديل البيانات مفتوح' : 'طلب تعديل البيانات'}
+                  <button
+                    type="button"
+                    onClick={() => startEditing(business, canRevise ? openRequest?.id : '')}
+                    disabled={openRequest?.status === 'pending'}
+                  >
+                    {openRequest?.status === 'pending'
+                      ? 'طلب التعديل قيد المراجعة'
+                      : canRevise
+                        ? 'استكمال التعديل'
+                        : isEditing
+                          ? 'تعديل البيانات مفتوح'
+                          : 'طلب تعديل البيانات'}
                   </button>
                 </div>
 
@@ -250,8 +270,8 @@ export function MyBusinessesPanel() {
                     </div>
                     <div className="my-business-edit-note">لن يتم تغيير الصفحة العامة الآن. ستظهر التعديلات فقط بعد اعتمادها من إدارة الدليل.</div>
                     <div className="my-business-edit-actions">
-                      <button type="button" onClick={() => { setEditingId(''); setForm(null); }} disabled={saving}>إلغاء</button>
-                      <button type="submit" disabled={saving}>{saving ? 'جاري إرسال التعديلات…' : 'إرسال التعديلات للمراجعة'}</button>
+                      <button type="button" onClick={cancelEditing} disabled={saving}>إلغاء</button>
+                      <button type="submit" disabled={saving}>{saving ? 'جاري إرسال التعديلات…' : editingRequestId ? 'إعادة إرسال للمراجعة' : 'إرسال التعديلات للمراجعة'}</button>
                     </div>
                   </form>
                 )}
