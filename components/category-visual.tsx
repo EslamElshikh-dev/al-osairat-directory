@@ -41,6 +41,17 @@ function StoreIcon() {
   );
 }
 
+function EducationIcon() {
+  return (
+    <>
+      <path d="M15 28 32 17l17 11-17 11z" />
+      <path d="M22 34v12c6 5 14 5 20 0V34" />
+      <path d="M49 28v15" className="category-visual__accent category-visual__bold" />
+      <circle cx="49" cy="46" r="2" className="category-visual__accent-fill" />
+    </>
+  );
+}
+
 function CraftsIcon() {
   return (
     <>
@@ -96,6 +107,18 @@ function GovernmentIcon() {
   );
 }
 
+function CommunityIcon() {
+  return (
+    <>
+      <path d="M16 31 32 18l16 13v20H16z" />
+      <path d="M25 51V39h14v12" />
+      <circle cx="25" cy="30" r="4" className="category-visual__accent" />
+      <circle cx="39" cy="30" r="4" className="category-visual__accent" />
+      <path d="M21 39c1-4 7-5 9-1M43 39c-1-4-7-5-9-1" />
+    </>
+  );
+}
+
 function EmergencyIcon() {
   return (
     <>
@@ -112,11 +135,13 @@ function IconForCategory({ category }: { category: DirectoryCategory }) {
     case 'doctors': return <DoctorIcon />;
     case 'pharmacies': return <PharmacyIcon />;
     case 'shops': return <StoreIcon />;
+    case 'education': return <EducationIcon />;
     case 'crafts': return <CraftsIcon />;
     case 'restaurants': return <RestaurantIcon />;
     case 'lawyers': return <LawyersIcon />;
     case 'clerics': return <ClericsIcon />;
     case 'government': return <GovernmentIcon />;
+    case 'community': return <CommunityIcon />;
     case 'emergency': return <EmergencyIcon />;
   }
 }
