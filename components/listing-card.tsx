@@ -11,16 +11,11 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
 
   return (
     <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
-      <div className="listing-card__utility-stack" aria-label="اختصارات البطاقة">
-        {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
-        <CategoryVisual
-          category={listing.category}
-          size="md"
-          className="listing-card__category-visual"
-        />
-      </div>
+      {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
 
       <div className="listing-card__header">
+        <CategoryVisual category={listing.category} size={compact ? 'md' : 'lg'} />
+
         <div className="listing-card__identity">
           <span className="listing-card__category">{category.shortLabel}</span>
           <span className="listing-card__specialty">{listing.subCategory || category.shortLabel}</span>
