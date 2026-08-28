@@ -4,11 +4,13 @@ import { categories, villages } from './base';
 import { doctors } from './doctors';
 import { pharmacies } from './pharmacies';
 import { shops } from './shops';
+import { education } from './education';
 import { crafts } from './crafts';
 import { restaurants } from './restaurants';
 import { lawyers } from './lawyers';
 import { clerics } from './clerics';
 import { government } from './government';
+import { community } from './community';
 import { emergency } from './emergency';
 
 export * from '../types';
@@ -18,11 +20,13 @@ const rawListings: DirectoryListing[] = [
   ...doctors,
   ...pharmacies,
   ...shops,
+  ...education,
   ...crafts,
   ...restaurants,
   ...lawyers,
   ...clerics,
   ...government,
+  ...community,
   ...emergency,
 ];
 

@@ -46,9 +46,11 @@ function schemaTypeFor(listing: DirectoryListing) {
     return 'Physician';
   }
   if (listing.category === 'pharmacies') return 'Pharmacy';
+  if (listing.category === 'education') return 'School';
   if (listing.category === 'restaurants') return 'Restaurant';
   if (listing.category === 'lawyers') return 'LegalService';
   if (listing.category === 'government') return 'GovernmentOrganization';
+  if (listing.category === 'community') return 'Place';
   if (listing.category === 'emergency') return 'GovernmentService';
   return 'LocalBusiness';
 }
