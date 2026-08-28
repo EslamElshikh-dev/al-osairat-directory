@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { categories, directoryStats, listings, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
+import { CategoryVisual } from '@/components/category-visual';
+import { BrandMark } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 
 export default function HomePage() {
@@ -38,6 +40,7 @@ export default function HomePage() {
               مبني على بيانات محلية ونتائج خرائط Google مع فصل السجلات غير المؤكدة عن المحتوى المنشور.
             </p>
             <form action="/directory" className="hero-search">
+              <span className="hero-search__brand" aria-hidden="true"><BrandMark compact /></span>
               <label className="sr-only" htmlFor="home-search">ابحث في دليل العسيرات</label>
               <input id="home-search" name="q" placeholder="مثال: دكتور أطفال، سباك، صيدلية، أولاد حمزة..." />
               <button type="submit">ابحث الآن</button>
@@ -73,6 +76,10 @@ export default function HomePage() {
             const count = listings.filter((item) => item.category === category.id).length;
             return (
               <Link key={category.id} href={`/directory/${category.id}`} className={`category-card category-card--${category.id}`}>
+                <div className="category-card__visual-row">
+                  <CategoryVisual category={category.id} size="md" />
+                  <span className="category-card__brand" aria-hidden="true"><BrandMark compact /></span>
+                </div>
                 <span className="category-card__number">{String(count).padStart(2, '0')}</span>
                 <h3>{category.shortLabel}</h3>
                 <p>{category.description}</p>
@@ -97,6 +104,7 @@ export default function HomePage() {
 
       <section className="section shell">
         <div className="emergency-strip">
+          <CategoryVisual category="emergency" size="lg" className="emergency-strip__visual" />
           <div>
             <span className="eyebrow eyebrow--light">اتصال سريع</span>
             <h2>أرقام الطوارئ والخدمات المهمة</h2>
