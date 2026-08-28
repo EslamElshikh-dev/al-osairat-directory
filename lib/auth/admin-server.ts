@@ -44,7 +44,8 @@ async function checkAdmin(accessToken: string) {
   return Boolean(await response.json());
 }
 
-export async function resolveAdminSession(): Promise<AdminSession | null> {
+export async function resolveAdminSession(options: { allowRefresh?: boolean } = {}): Promise<AdminSession | null> {
+  const allowRefresh = options.allowRefresh ?? true;
   const store = await cookies();
   const accessToken = store.get(AUTH_ACCESS_COOKIE)?.value;
   const refreshToken = store.get(AUTH_REFRESH_COOKIE)?.value;
@@ -63,11 +64,11 @@ export async function resolveAdminSession(): Promise<AdminSession | null> {
       }
       return null;
     } catch {
-      // Continue with refresh token if available.
+      // Continue with refresh token only from route handlers that can persist rotated cookies.
     }
   }
 
-  if (!refreshToken) return null;
+  if (!allowRefresh || !refreshToken) return null;
 
   try {
     const session = await refreshSession(refreshToken);
