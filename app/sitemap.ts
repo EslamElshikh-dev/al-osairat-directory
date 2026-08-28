@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
 import { blogArticles } from '@/lib/blog';
+import { getPublishedListings } from '@/lib/published-listings';
 import { siteConfig } from '@/lib/site';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
@@ -8,8 +9,9 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
 const absoluteUrl = (path = '') => `${siteConfig.url}${path}`;
 const encodedSegment = (value: string) => encodeURIComponent(value);
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const detailListings = listings.filter((listing) => listing.category !== 'emergency');
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const publishedListings = await getPublishedListings();
+  const detailListings = [...listings.filter((listing) => listing.category !== 'emergency'), ...publishedListings];
 
   const staticPages: SitemapEntry[] = [
     { url: absoluteUrl(), changeFrequency: 'weekly', priority: 1 },
@@ -42,6 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const listingPages: SitemapEntry[] = detailListings.map((listing) => ({
     url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
+    ...('publishedAt' in listing && listing.publishedAt ? { lastModified: listing.publishedAt } : {}),
     changeFrequency: 'monthly',
     priority: listing.sourceStatus === 'google_verified' ? 0.75 : 0.7,
   }));
