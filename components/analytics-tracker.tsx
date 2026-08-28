@@ -4,6 +4,16 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { trackEvent } from '@/lib/analytics';
 
+type OperationalEvent = {
+  eventType: string;
+  listingId?: string;
+  listingSlug?: string;
+  searchTerm?: string;
+  village?: string;
+  category?: string;
+  resultCount?: number;
+};
+
 function classifyLink(href: string) {
   const value = href.trim().toLowerCase();
   if (value.startsWith('tel:')) return 'phone_click';
@@ -26,6 +36,48 @@ function parseJsonBody(body: BodyInit | null | undefined) {
 
 function stringParam(value: unknown) {
   return typeof value === 'string' ? value.trim().slice(0, 80) : '';
+}
+
+function operationalSessionId() {
+  if (typeof window === 'undefined') return '';
+  const key = 'osayrat:analytics-session';
+  const existing = window.sessionStorage.getItem(key);
+  if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
+  const created = typeof crypto?.randomUUID === 'function'
+    ? crypto.randomUUID().replace(/-/g, '')
+    : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 18)}`;
+  window.sessionStorage.setItem(key, created);
+  return created;
+}
+
+function sendOperationalEvent(event: OperationalEvent) {
+  if (typeof window === 'undefined') return;
+  const sessionId = operationalSessionId();
+  if (!sessionId) return;
+  void window.fetch('/api/analytics/events', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    credentials: 'same-origin',
+    keepalive: true,
+    body: JSON.stringify({
+      ...event,
+      sessionId,
+      sourcePath: window.location.pathname,
+    }),
+  }).catch(() => null);
+}
+
+function listingSlugFromPath(pathname: string) {
+  if (!pathname.startsWith('/listing/')) return '';
+  return decodeURIComponent(pathname.split('/')[2] || '').slice(0, 180);
+}
+
+function parseArabicNumber(value: string) {
+  const western = value
+    .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
+    .replace(/[٬,\s]/g, '');
+  const parsed = Number(western);
+  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
 }
 
 function trackMutation(path: string, body: Record<string, unknown>) {
@@ -63,8 +115,15 @@ function trackMutation(path: string, body: Record<string, unknown>) {
   }
   if (path === '/api/favorites') {
     const action = stringParam(body.action);
-    if (action === 'add') trackEvent('favorite_add', { content_type: 'directory_listing' });
-    if (action === 'remove') trackEvent('favorite_remove', { content_type: 'directory_listing' });
+    const listingId = stringParam(body.listingId);
+    if (action === 'add') {
+      trackEvent('favorite_add', { content_type: 'directory_listing' });
+      if (listingId) sendOperationalEvent({ eventType: 'favorite_add', listingId });
+    }
+    if (action === 'remove') {
+      trackEvent('favorite_remove', { content_type: 'directory_listing' });
+      if (listingId) sendOperationalEvent({ eventType: 'favorite_remove', listingId });
+    }
   }
 }
 
@@ -73,7 +132,28 @@ export function AnalyticsTracker() {
 
   useEffect(() => {
     if (pathname.startsWith('/listing/')) {
+      const listingSlug = listingSlugFromPath(pathname);
       trackEvent('view_listing', { content_type: 'directory_listing' });
+      if (listingSlug) sendOperationalEvent({ eventType: 'view_listing', listingSlug });
+    }
+
+    if (pathname === '/directory' || pathname.startsWith('/directory/')) {
+      const params = new URLSearchParams(window.location.search);
+      const query = String(params.get('q') || '').trim().slice(0, 120);
+      const village = String(params.get('village') || 'all').trim().slice(0, 100);
+      const category = pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all';
+      if (query || village !== 'all') {
+        window.setTimeout(() => {
+          const resultText = document.querySelector('.results-bar strong')?.textContent || '0';
+          sendOperationalEvent({
+            eventType: 'directory_search',
+            searchTerm: query,
+            village,
+            category,
+            resultCount: parseArabicNumber(resultText),
+          });
+        }, 0);
+      }
     }
   }, [pathname]);
 
@@ -88,7 +168,7 @@ export function AnalyticsTracker() {
         try {
           const rawUrl = typeof input === 'string' || input instanceof URL ? String(input) : input.url;
           const path = new URL(rawUrl, window.location.origin).pathname;
-          trackMutation(path, parseJsonBody(init?.body));
+          if (path !== '/api/analytics/events') trackMutation(path, parseJsonBody(init?.body));
         } catch {
           // Analytics must never interfere with a successful product action.
         }
@@ -107,10 +187,12 @@ export function AnalyticsTracker() {
       const eventName = classifyLink(link.getAttribute('href') || '');
       if (!eventName) return;
 
+      const listingSlug = listingSlugFromPath(pathname);
       trackEvent(eventName, {
-        content_type: pathname.startsWith('/listing/') ? 'directory_listing' : 'site',
+        content_type: listingSlug ? 'directory_listing' : 'site',
         transport_type: 'beacon',
       });
+      if (listingSlug) sendOperationalEvent({ eventType: eventName, listingSlug });
     }
 
     function handleSubmit(event: SubmitEvent) {
