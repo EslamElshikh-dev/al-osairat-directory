@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { categoryById, type DirectoryListing } from '@/lib/data';
 import { googleMapsHref, phoneHref, sourceLabel } from '@/lib/site';
 import { BrandMark } from './site-shell';
+import { CategoryVisual } from './category-visual';
 
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
   const category = categoryById[listing.category];
@@ -9,17 +10,23 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
 
   return (
     <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
+      <div className="listing-card__header">
+        <CategoryVisual category={listing.category} size={compact ? 'md' : 'lg'} />
+
+        <div className="listing-card__identity">
+          <span className="listing-card__category">{category.shortLabel}</span>
+          <span className="listing-card__specialty">{listing.subCategory || category.shortLabel}</span>
+        </div>
+
+        <span className="listing-card__watermark" aria-hidden="true">
+          <BrandMark compact />
+        </span>
+      </div>
+
       <div className="listing-card__top">
-        <div className="listing-card__brand">
-          <span className="listing-card__brand-mark" aria-hidden="true">
-            <BrandMark compact />
-          </span>
-          <span>{category.shortLabel}</span>
-        </div>
-        <div className="listing-card__eyebrow">
-          <span>{listing.subCategory || category.shortLabel}</span>
-          {listing.sourceStatus === 'google_verified' && <span className="source-chip">خرائط Google</span>}
-        </div>
+        {listing.sourceStatus === 'google_verified' && (
+          <span className="source-chip source-chip--maps">مرجع خرائط Google</span>
+        )}
         <h3>
           <Link href={`/listing/${listing.slug}`}>{listing.title}</Link>
         </h3>
@@ -49,6 +56,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
           </a>
         )}
       </div>
+
       <span className="listing-card__source">{sourceLabel(listing)}</span>
     </article>
   );
