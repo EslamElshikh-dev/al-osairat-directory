@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { categories, listings, villages, type DirectoryCategory } from '@/lib/data';
+import { categories, listings, villages, type DirectoryCategory, type DirectoryListing } from '@/lib/data';
 import { normalizeArabic } from '@/lib/site';
 import { ListingCard } from './listing-card';
 import { BrandMark } from './site-shell';
@@ -11,16 +11,25 @@ import { CategoryVisual } from './category-visual';
 export function DirectoryExplorer({
   category,
   initialQuery = '',
+  extraListings = [],
 }: {
   category?: DirectoryCategory;
   initialQuery?: string;
+  extraListings?: DirectoryListing[];
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [village, setVillage] = useState('all');
 
+  const allListings = useMemo(() => {
+    if (!extraListings.length) return listings;
+    const index = new Map<string, DirectoryListing>();
+    [...listings, ...extraListings].forEach((listing) => index.set(listing.id, listing));
+    return Array.from(index.values());
+  }, [extraListings]);
+
   const results = useMemo(() => {
     const q = normalizeArabic(query);
-    return listings.filter((listing) => {
+    return allListings.filter((listing) => {
       if (category && listing.category !== category) return false;
       if (village !== 'all' && listing.village !== village) return false;
       if (!q) return true;
@@ -31,7 +40,7 @@ export function DirectoryExplorer({
       );
       return haystack.includes(q);
     });
-  }, [category, query, village]);
+  }, [allListings, category, query, village]);
 
   return (
     <div className="explorer">
