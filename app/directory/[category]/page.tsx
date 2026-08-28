@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
-import { categories, categoryById, type DirectoryCategory } from '@/lib/data';
+import { categories, categoryById, listings, type DirectoryCategory } from '@/lib/data';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { siteConfig } from '@/lib/site';
 
@@ -34,7 +35,11 @@ export default async function CategoryPage({
   const query = await searchParams;
   const info = categoryById[category as DirectoryCategory];
   if (!info) notFound();
-  const publishedListings = await getPublishedListings({ category: info.id });
+
+  const [publishedListings, baseListings] = await Promise.all([
+    getPublishedListings({ category: info.id }),
+    applyListingOverrides(listings),
+  ]);
 
   return (
     <main id="main-content" className="page-main">
@@ -44,7 +49,7 @@ export default async function CategoryPage({
         <p>{info.description}</p>
       </section>
       <section className="shell page-section">
-        <DirectoryExplorer category={info.id} initialQuery={query.q || ''} extraListings={publishedListings} />
+        <DirectoryExplorer category={info.id} initialQuery={query.q || ''} baseListings={baseListings} extraListings={publishedListings} />
       </section>
     </main>
   );
