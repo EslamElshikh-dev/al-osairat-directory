@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
+import { blogArticles } from '@/lib/blog';
 import { siteConfig } from '@/lib/site';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
@@ -13,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: SitemapEntry[] = [
     { url: absoluteUrl(), changeFrequency: 'weekly', priority: 1 },
     { url: absoluteUrl('/directory'), changeFrequency: 'weekly', priority: 0.95 },
+    { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/villages'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/emergency'), changeFrequency: 'monthly', priority: 0.8 },
   ];
@@ -31,13 +33,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
+  const articlePages: SitemapEntry[] = blogArticles.map((article) => ({
+    url: absoluteUrl(`/blog/${article.slug}`),
+    lastModified: article.updatedAt,
+    changeFrequency: 'monthly',
+    priority: 0.85,
+  }));
+
   const listingPages: SitemapEntry[] = detailListings.map((listing) => ({
     url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
     changeFrequency: 'monthly',
     priority: listing.sourceStatus === 'google_verified' ? 0.75 : 0.7,
   }));
 
-  const entries = [...staticPages, ...categoryPages, ...villagePages, ...listingPages];
+  const entries = [...staticPages, ...categoryPages, ...villagePages, ...articlePages, ...listingPages];
 
   // Keep the sitemap deterministic and protect it from accidental duplicate URLs.
   return Array.from(new Map(entries.map((entry) => [entry.url, entry])).values());
