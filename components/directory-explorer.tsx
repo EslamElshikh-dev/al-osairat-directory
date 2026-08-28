@@ -31,10 +31,11 @@ export function DirectoryExplorer({
   return (
     <div className="explorer">
       <form className="explorer__tools" action={pathname} method="get" role="search">
-        <label className="search-field">
+        <div className="search-field">
           <span className="search-field__brand" aria-hidden="true"><BrandMark compact /></span>
-          <span className="sr-only">ابحث في الدليل</span>
+          <label className="sr-only" htmlFor="directory-search">ابحث في الدليل</label>
           <input
+            id="directory-search"
             name="q"
             defaultValue={query}
             placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..."
@@ -42,7 +43,9 @@ export function DirectoryExplorer({
             autoComplete="off"
           />
           <span className="search-field__hint">بحث ذكي</span>
-        </label>
+          <button type="submit" className="button button--primary">بحث</button>
+          {(query || village !== 'all') && <Link href={pathname} className="button button--ghost">مسح</Link>}
+        </div>
 
         <label className="select-field">
           <span className="select-field__brand" aria-hidden="true"><BrandMark compact /></span>
@@ -52,9 +55,6 @@ export function DirectoryExplorer({
             {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
           </select>
         </label>
-
-        <button type="submit" className="button button--primary">بحث وتصفية</button>
-        {(query || village !== 'all') && <Link href={pathname} className="button button--ghost">مسح الفلاتر</Link>}
       </form>
 
       {!category && (
