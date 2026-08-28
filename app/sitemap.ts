@@ -11,7 +11,7 @@ const encodedSegment = (value: string) => encodeURIComponent(value);
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const publishedListings = await getPublishedListings();
-  const detailListings = [...listings.filter((listing) => listing.category !== 'emergency'), ...publishedListings];
+  const staticDetailListings = listings.filter((listing) => listing.category !== 'emergency');
 
   const staticPages: SitemapEntry[] = [
     { url: absoluteUrl(), changeFrequency: 'weekly', priority: 1 },
@@ -42,14 +42,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const listingPages: SitemapEntry[] = detailListings.map((listing) => ({
+  const staticListingPages: SitemapEntry[] = staticDetailListings.map((listing) => ({
     url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
-    ...('publishedAt' in listing && listing.publishedAt ? { lastModified: listing.publishedAt } : {}),
     changeFrequency: 'monthly',
     priority: listing.sourceStatus === 'google_verified' ? 0.75 : 0.7,
   }));
 
-  const entries = [...staticPages, ...categoryPages, ...villagePages, ...articlePages, ...listingPages];
+  const publishedListingPages: SitemapEntry[] = publishedListings.map((listing) => ({
+    url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
+    lastModified: listing.publishedAt,
+    changeFrequency: 'monthly',
+    priority: 0.72,
+  }));
+
+  const entries = [
+    ...staticPages,
+    ...categoryPages,
+    ...villagePages,
+    ...articlePages,
+    ...staticListingPages,
+    ...publishedListingPages,
+  ];
 
   // Keep the sitemap deterministic and protect it from accidental duplicate URLs.
   return Array.from(new Map(entries.map((entry) => [entry.url, entry])).values());
