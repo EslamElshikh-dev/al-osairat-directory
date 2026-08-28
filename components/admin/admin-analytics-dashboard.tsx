@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 type CountGroup = Record<string, number>;
 
 type DatabaseAnalytics = {
-  members: { total: number; verified: number; last7d: number; last30d: number; profiles: number };
+  members: { total: number; verified: number; last7d: number; previous7d: number; last30d: number; profiles: number };
   engagement: { favorites: number; notifications: number; unreadNotifications: number };
   submissions: CountGroup;
   claims: CountGroup;
@@ -15,6 +15,13 @@ type DatabaseAnalytics = {
   registrationSeries: Array<{ date: string; count: number }>;
   activitySeries: Array<{ date: string; submissions: number; claims: number; reports: number }>;
   generatedAt: string;
+};
+
+type ComparisonMetrics = {
+  activeUsers: number;
+  sessions: number;
+  views: number;
+  keyEvents: number;
 };
 
 type Ga4Analytics = {
@@ -30,15 +37,34 @@ type Ga4Analytics = {
     keyEvents: number;
     engagementRate: number;
   };
+  comparison7d?: { current: ComparisonMetrics; previous: ComparisonMetrics };
   topPages?: Array<{ title: string; views: number; activeUsers: number }>;
+  topVillages?: Array<{ title: string; views: number; activeUsers: number }>;
+  topCategories?: Array<{ title: string; views: number; activeUsers: number }>;
   sources?: Array<{ sourceMedium: string; sessions: number; activeUsers: number }>;
   locations?: Array<{ country: string; city: string; activeUsers: number }>;
   events?: Array<{ name: string; count: number; keyEvents: number }>;
+  conversions?: Array<{ name: string; count: number; keyEvents: number }>;
 };
 
 type AnalyticsPayload = {
   database: DatabaseAnalytics;
   ga4: Ga4Analytics;
+};
+
+const eventLabels: Record<string, string> = {
+  sign_up: 'تسجيل عضو جديد',
+  business_submission: 'طلب إضافة نشاط',
+  ownership_claim: 'مطالبة ملكية نشاط',
+  phone_click: 'ضغطات الاتصال',
+  whatsapp_click: 'ضغطات واتساب',
+  maps_click: 'فتح خرائط Google',
+  login: 'تسجيل الدخول',
+  listing_report: 'بلاغ عن بيانات نشاط',
+  directory_search: 'البحث داخل الدليل',
+  view_listing: 'فتح صفحة نشاط',
+  favorite_add: 'إضافة للمفضلة',
+  favorite_remove: 'إزالة من المفضلة',
 };
 
 function n(value: number | undefined) {
@@ -59,12 +85,45 @@ function formatDate(value: string) {
   }
 }
 
+function cleanTitle(value: string) {
+  return value.split('|')[0]?.trim() || value;
+}
+
+function growth(current: number, previous: number) {
+  if (current === previous) return { label: 'بدون تغيير', className: 'is-flat' };
+  if (previous === 0) return { label: current > 0 ? 'بداية جديدة' : 'بدون تغيير', className: current > 0 ? 'is-up' : 'is-flat' };
+  const rate = ((current - previous) / previous) * 100;
+  const sign = rate > 0 ? '+' : '';
+  return {
+    label: `${sign}${rate.toLocaleString('ar-EG', { maximumFractionDigits: 1 })}%`,
+    className: rate > 0 ? 'is-up' : 'is-down',
+  };
+}
+
 function MetricCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <article className="analytics-metric-card">
       <span>{label}</span>
       <strong>{value}</strong>
       {hint && <small>{hint}</small>}
+    </article>
+  );
+}
+
+function GrowthBadge({ current, previous }: { current: number; previous: number }) {
+  const meta = growth(current, previous);
+  return <span className={`analytics-growth ${meta.className}`}>{meta.label}</span>;
+}
+
+function ComparisonCard({ label, current, previous }: { label: string; current: number; previous: number }) {
+  return (
+    <article className="analytics-comparison-card">
+      <div className="analytics-comparison-card__top">
+        <span>{label}</span>
+        <GrowthBadge current={current} previous={previous} />
+      </div>
+      <strong>{n(current)}</strong>
+      <small>الفترة السابقة: {n(previous)}</small>
     </article>
   );
 }
@@ -80,6 +139,43 @@ function MiniBars({ values }: { values: Array<{ date: string; count: number }> }
         </div>
       ))}
     </div>
+  );
+}
+
+function RankedList({
+  eyebrow,
+  title,
+  items,
+}: {
+  eyebrow: string;
+  title: string;
+  items: Array<{ label: string; value: number; secondary?: string }>;
+}) {
+  const max = Math.max(1, ...items.map((item) => item.value));
+  return (
+    <section className="analytics-rank-card">
+      <div className="analytics-rank-card__head">
+        <span>{eyebrow}</span>
+        <h3>{title}</h3>
+      </div>
+      {items.length ? (
+        <div className="analytics-rank-list">
+          {items.map((item, index) => (
+            <div className="analytics-rank-row" key={`${title}-${item.label}-${index}`}>
+              <div className="analytics-rank-row__line">
+                <span className="analytics-rank-index">{(index + 1).toLocaleString('ar-EG')}</span>
+                <div className="analytics-rank-copy">
+                  <strong>{item.label}</strong>
+                  {item.secondary && <small>{item.secondary}</small>}
+                </div>
+                <b>{n(item.value)}</b>
+              </div>
+              <div className="analytics-rank-track"><span style={{ width: `${Math.max(7, (item.value / max) * 100)}%` }} /></div>
+            </div>
+          ))}
+        </div>
+      ) : <div className="analytics-table-empty">لا توجد بيانات كافية بعد.</div>}
+    </section>
   );
 }
 
@@ -157,14 +253,17 @@ export function AdminAnalyticsDashboard() {
 
   const db = data.database;
   const ga = data.ga4;
+  const comparison = ga.comparison7d;
+  const memberGrowth = growth(db.members.last7d, db.members.previous7d);
+  const conversionTotal = (ga.conversions || []).reduce((sum, item) => sum + item.count, 0);
 
   return (
     <section id="analytics-overview" className="analytics-admin" aria-labelledby="analytics-admin-title">
       <div className="analytics-admin__hero">
         <div>
-          <span className="analytics-admin__eyebrow">مركز الإحصاءات</span>
-          <h1 id="analytics-admin-title">نظرة تشغيلية على دليل العسيرات</h1>
-          <p>أرقام العضوية والطلبات من Supabase مباشرة، وبيانات الزيارات من Google Analytics عند اكتمال ربط Data API.</p>
+          <span className="analytics-admin__eyebrow">مركز القرار</span>
+          <h1 id="analytics-admin-title">إحصاءات دليل العسيرات</h1>
+          <p>لوحة تشغيلية تجمع نمو المجتمع، أداء الزيارات، أكثر القرى والأقسام طلبًا، والتحويلات المهمة في مكان واحد.</p>
         </div>
         <div className="analytics-admin__actions">
           <span className="analytics-live-chip">Supabase مباشر</span>
@@ -178,20 +277,79 @@ export function AdminAnalyticsDashboard() {
         <span>طلبات تحتاج تدخلك الآن: <b>{n(openWork)}</b></span>
       </div>
 
-      <div className="analytics-section-heading"><div><span>العضوية</span><h2>الأعضاء والتسجيلات</h2></div></div>
+      {ga.connected && comparison && (
+        <>
+          <div className="analytics-section-heading analytics-section-heading--decision"><div><span>آخر 7 أيام</span><h2>هل الدليل ينمو مقارنة بالأسبوع السابق؟</h2></div></div>
+          <div className="analytics-comparison-grid">
+            <ComparisonCard label="المستخدمون النشطون" current={comparison.current.activeUsers} previous={comparison.previous.activeUsers} />
+            <ComparisonCard label="الجلسات" current={comparison.current.sessions} previous={comparison.previous.sessions} />
+            <ComparisonCard label="المشاهدات" current={comparison.current.views} previous={comparison.previous.views} />
+            <ComparisonCard label="الأحداث الرئيسية" current={comparison.current.keyEvents} previous={comparison.previous.keyEvents} />
+          </div>
+        </>
+      )}
+
+      <div className="analytics-section-heading"><div><span>نمو المجتمع</span><h2>الأعضاء والتسجيلات</h2></div></div>
+      <div className="analytics-member-insight">
+        <div className="analytics-member-insight__summary">
+          <span>تسجيلات آخر 7 أيام</span>
+          <strong>{n(db.members.last7d)}</strong>
+          <div className="analytics-member-insight__change">
+            <span className={`analytics-growth ${memberGrowth.className}`}>{memberGrowth.label}</span>
+            <small>مقابل {n(db.members.previous7d)} في الـ7 أيام السابقة</small>
+          </div>
+        </div>
+        <div className="analytics-member-insight__chart">
+          <div className="analytics-trend-card__head"><div><span>آخر 14 يومًا</span><h3>إيقاع التسجيل اليومي</h3></div><strong>{n(db.registrationSeries.reduce((sum, item) => sum + item.count, 0))}</strong></div>
+          <MiniBars values={db.registrationSeries} />
+        </div>
+      </div>
+
       <div className="analytics-metric-grid">
         <MetricCard label="إجمالي الأعضاء" value={n(db.members.total)} hint="من auth.users" />
         <MetricCard label="حسابات موثقة" value={n(db.members.verified)} />
-        <MetricCard label="تسجيلات آخر 7 أيام" value={n(db.members.last7d)} />
         <MetricCard label="تسجيلات آخر 30 يومًا" value={n(db.members.last30d)} />
         <MetricCard label="ملفات أعضاء" value={n(db.members.profiles)} />
         <MetricCard label="المفضلة" value={n(db.engagement.favorites)} />
+        <MetricCard label="إشعارات غير مقروءة" value={n(db.engagement.unreadNotifications)} />
       </div>
 
-      <div className="analytics-trend-card">
-        <div className="analytics-trend-card__head"><div><span>آخر 14 يومًا</span><h3>التسجيلات الجديدة</h3></div><strong>{n(db.registrationSeries.reduce((sum, item) => sum + item.count, 0))}</strong></div>
-        <MiniBars values={db.registrationSeries} />
-      </div>
+      {ga.connected && (
+        <>
+          <div className="analytics-section-heading analytics-section-heading--demand"><div><span>الطلب الحقيقي</span><h2>أين يذهب اهتمام الزوار؟</h2></div></div>
+          <div className="analytics-insight-grid">
+            <RankedList
+              eyebrow="حسب المشاهدات — 30 يومًا"
+              title="أعلى القرى"
+              items={(ga.topVillages || []).map((item) => ({
+                label: cleanTitle(item.title),
+                value: item.views,
+                secondary: `${n(item.activeUsers)} مستخدم نشط`,
+              }))}
+            />
+            <RankedList
+              eyebrow="حسب المشاهدات — 30 يومًا"
+              title="أعلى الأقسام"
+              items={(ga.topCategories || []).map((item) => ({
+                label: cleanTitle(item.title),
+                value: item.views,
+                secondary: `${n(item.activeUsers)} مستخدم نشط`,
+              }))}
+            />
+          </div>
+
+          <div className="analytics-section-heading"><div><span>التحويلات</span><h2>أكثر الأحداث المهمة استخدامًا</h2></div></div>
+          <RankedList
+            eyebrow={`إجمالي تفاعلات التحويل: ${n(conversionTotal)}`}
+            title="ترتيب التحويلات خلال آخر 30 يومًا"
+            items={(ga.conversions || []).map((item) => ({
+              label: eventLabels[item.name] || item.name,
+              value: item.count,
+              secondary: `${n(item.keyEvents)} حدث رئيسي · ${conversionTotal ? ((item.count / conversionTotal) * 100).toLocaleString('ar-EG', { maximumFractionDigits: 1 }) : '٠'}% من تفاعلات التحويل`,
+            }))}
+          />
+        </>
+      )}
 
       <div className="analytics-section-heading"><div><span>تشغيل الدليل</span><h2>الطلبات والمراجعات</h2></div></div>
       <div className="analytics-metric-grid analytics-metric-grid--operations">
@@ -227,7 +385,7 @@ export function AdminAnalyticsDashboard() {
         />
       </div>
 
-      <div className="analytics-section-heading analytics-section-heading--ga"><div><span>Google Analytics 4</span><h2>الزيارات والتحويلات — آخر 30 يومًا</h2></div></div>
+      <div className="analytics-section-heading analytics-section-heading--ga"><div><span>Google Analytics 4</span><h2>التفاصيل الكاملة — آخر 30 يومًا</h2></div></div>
 
       {ga.connected && ga.summary ? (
         <>
@@ -243,10 +401,10 @@ export function AdminAnalyticsDashboard() {
           </div>
 
           <div className="analytics-table-grid">
-            <DataTable title="أهم الصفحات" columns={['الصفحة', 'المشاهدات', 'المستخدمون']} rows={(ga.topPages || []).map((item) => [item.title, n(item.views), n(item.activeUsers)])} />
+            <DataTable title="أهم الصفحات" columns={['الصفحة', 'المشاهدات', 'المستخدمون']} rows={(ga.topPages || []).map((item) => [cleanTitle(item.title), n(item.views), n(item.activeUsers)])} />
             <DataTable title="مصادر الجلسات" columns={['المصدر / الوسيط', 'الجلسات', 'المستخدمون']} rows={(ga.sources || []).map((item) => [item.sourceMedium, n(item.sessions), n(item.activeUsers)])} />
             <DataTable title="المواقع الجغرافية" columns={['الدولة', 'المدينة', 'المستخدمون']} rows={(ga.locations || []).map((item) => [item.country, item.city, n(item.activeUsers)])} />
-            <DataTable title="أحداث الدليل" columns={['الحدث', 'الإجمالي', 'رئيسي']} rows={(ga.events || []).map((item) => [item.name, n(item.count), n(item.keyEvents)])} />
+            <DataTable title="كل أحداث الدليل" columns={['الحدث', 'الإجمالي', 'رئيسي']} rows={(ga.events || []).map((item) => [eventLabels[item.name] || item.name, n(item.count), n(item.keyEvents)])} />
           </div>
         </>
       ) : (
@@ -254,9 +412,8 @@ export function AdminAnalyticsDashboard() {
           <div className="analytics-ga-setup__icon" aria-hidden="true">G</div>
           <div>
             <strong>{ga.reason === 'api_error' ? 'تعذر الاتصال بـ Google Analytics Data API' : 'بيانات GA4 لم تُربط بلوحة الإدارة بعد'}</strong>
-            <p>تتبّع GA4 على الموقع مستمر ويعمل بالفعل. عرض الأرقام هنا يحتاج صلاحية قراءة منفصلة عبر Data API: رقم Property وحساب خدمة له Viewer access. لا نستخدم Measurement Protocol لأنه مخصص للإرسال وليس قراءة التقارير.</p>
+            <p>تتبّع GA4 على الموقع مستمر ويعمل بالفعل. عرض الأرقام هنا يحتاج صلاحية قراءة منفصلة عبر Data API.</p>
             <div className="analytics-ga-env">
-              <code>GA4_PROPERTY_ID</code>
               <code>GA4_SERVICE_ACCOUNT_EMAIL</code>
               <code>GA4_SERVICE_ACCOUNT_PRIVATE_KEY</code>
             </div>
