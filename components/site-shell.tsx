@@ -16,7 +16,6 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
 }
 
 export function SiteHeader() {
-  const membershipsEnabled = Boolean(process.env.FIREBASE_WEB_API_KEY?.trim());
   return (
     <header className="site-header">
       <div className="shell site-header__inner">
@@ -44,7 +43,7 @@ export function SiteHeader() {
             </svg>
             <span>بحث</span>
           </Link>
-          {membershipsEnabled && <AccountButton />}
+          <AccountButton />
           <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
             <span className="header-emergency__dot" aria-hidden="true" />
             <span className="header-emergency__label">أرقام مهمة</span>
