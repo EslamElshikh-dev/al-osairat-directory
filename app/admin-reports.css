@@ -1,3 +1,41 @@
+.admin-section-nav {
+  position: sticky;
+  top: 10px;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 16px auto 6px;
+  padding: 7px;
+  border: 1px solid rgba(16, 42, 36, .09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 10px 26px rgba(16, 42, 36, .07);
+  backdrop-filter: blur(12px);
+}
+
+.admin-section-nav a {
+  padding: 9px 14px;
+  border-radius: 999px;
+  color: #31443e;
+  font-size: .84rem;
+  font-weight: 850;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-section-nav a:hover,
+.admin-section-nav a:focus-visible {
+  background: #102a24;
+  color: #fff;
+  outline: none;
+}
+
+#admin-requests,
+#listing-reports { scroll-margin-top: 84px; }
+
 .admin-reports {
   margin: 28px 0 48px;
   padding: clamp(20px, 3vw, 32px);
@@ -206,6 +244,14 @@
 }
 
 @media (max-width: 680px) {
+  .admin-section-nav {
+    position: static;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    justify-content: flex-start;
+    border-radius: 18px;
+  }
   .admin-reports { margin-top: 20px; padding: 16px; border-radius: 22px; }
   .admin-reports__head,
   .admin-reports__toolbar,
