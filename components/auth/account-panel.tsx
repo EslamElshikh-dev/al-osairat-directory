@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MemberProfileForm } from './member-profile-form';
 import { BusinessSubmissionPanel } from './business-submission-panel';
 import { OwnershipClaimPanel } from './ownership-claim-panel';
+import { AdminAccessCard } from './admin-access-card';
 
 type User = {
   localId: string;
@@ -117,6 +118,8 @@ export function AccountPanel() {
           </div>
         </div>
       </section>
+
+      <AdminAccessCard />
 
       {!user.emailVerified && (
         <div className="account-notice">
