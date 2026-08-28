@@ -112,6 +112,13 @@ export async function updatePassword(accessToken: string, password: string) {
   }, accessToken);
 }
 
+export async function updateUserMetadata(accessToken: string, data: { full_name?: string }) {
+  return authRequest<SupabaseUser>('user', {
+    method: 'PUT',
+    body: JSON.stringify({ data }),
+  }, accessToken);
+}
+
 export async function remoteSignOut(accessToken: string) {
   return authRequest('logout', { method: 'POST' }, accessToken);
 }
