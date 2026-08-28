@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { categories, directoryStats } from '@/lib/data';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
+import { NotificationBell } from './auth/notification-bell';
 
 export { MobileNav };
 
@@ -43,6 +44,7 @@ export function SiteHeader() {
             </svg>
             <span>بحث</span>
           </Link>
+          <NotificationBell />
           <AccountButton />
           <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
             <span className="header-emergency__dot" aria-hidden="true" />
