@@ -3,6 +3,8 @@ import { categories, directoryStats, listings, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
+import { FaqSection } from '@/components/faq-section';
+import { homeFaq } from '@/lib/faq';
 import { siteConfig } from '@/lib/site';
 
 export default function HomePage() {
@@ -26,6 +28,19 @@ export default function HomePage() {
         addressCountry: 'EG',
       },
     },
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: homeFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
   };
 
   return (
@@ -119,6 +134,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <FaqSection />
+
       <section className="section shell data-note">
         <div><span className="eyebrow eyebrow--dark">منهجية البيانات</span><h2>الدقة قبل العدد</h2></div>
         <div className="data-note__grid">
@@ -129,6 +146,7 @@ export default function HomePage() {
       </section>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     </main>
   );
 }
