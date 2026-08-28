@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { categories, directoryStats, listings, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
+import { BlogCard } from '@/components/blog-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
 import { homeFaq } from '@/lib/faq';
+import { blogArticles } from '@/lib/blog';
 import { siteConfig } from '@/lib/site';
 
 export default function HomePage() {
@@ -131,6 +133,21 @@ export default function HomePage() {
             ))}
           </div>
           <Link href="/emergency" className="button button--light">كل الأرقام المهمة</Link>
+        </div>
+      </section>
+
+      <section className="section section--muted home-blog-section">
+        <div className="shell">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow eyebrow--dark">من مدونة العسيرات</span>
+              <h2>اقرأ المكان قبل أن تبحث فيه</h2>
+            </div>
+            <Link href="/blog" className="text-link">كل المقالات</Link>
+          </div>
+          <div className="blog-grid blog-grid--home">
+            {blogArticles.slice(0, 3).map((article) => <BlogCard key={article.slug} article={article} />)}
+          </div>
         </div>
       </section>
 
