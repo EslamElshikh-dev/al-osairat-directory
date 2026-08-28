@@ -60,6 +60,7 @@ export function whatsappHref(listing: DirectoryListing) {
 }
 
 export function googleMapsHref(listing: DirectoryListing) {
+  if (listing.googleMapsUrl) return listing.googleMapsUrl;
   if (listing.googlePlaceId) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.title)}&query_place_id=${listing.googlePlaceId}`;
   }
