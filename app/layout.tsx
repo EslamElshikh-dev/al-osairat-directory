@@ -11,6 +11,7 @@ import './blog-home.css';
 import './mobile-polish.css';
 import './auth.css';
 import './auth-google.css';
+import './account-upgrade.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
