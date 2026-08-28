@@ -53,7 +53,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
             اتصال
           </a>
         )}
-        {listing.googlePlaceId && (
+        {(listing.googlePlaceId || listing.googleMapsUrl) && (
           <a href={googleMapsHref(listing)} target="_blank" rel="noreferrer" className="button button--ghost">
             الخريطة
           </a>
