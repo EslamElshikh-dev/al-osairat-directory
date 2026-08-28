@@ -17,6 +17,7 @@ import './member-profile.css';
 import './business-submissions.css';
 import './ownership-claims.css';
 import './my-businesses.css';
+import './notifications.css';
 import './admin.css';
 import './admin-changes.css';
 
