@@ -21,6 +21,7 @@ import './notifications.css';
 import './admin.css';
 import './admin-changes.css';
 import './card-polish.css';
+import './community-verification.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
