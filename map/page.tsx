@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { initialListings } from '@/lib/data';
+// تم تعديل المسار هنا ليقرأ ملف البيانات بشكل صحيح على فيرسل
+import { initialListings } from '../../lib/data';
 
 export default function MapPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
