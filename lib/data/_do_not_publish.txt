@@ -1,0 +1,1 @@
+This file intentionally marks the unresolved short Google Maps source as pending verification; it is not imported into the application data graph.
