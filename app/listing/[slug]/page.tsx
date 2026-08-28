@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings } from '@/lib/data';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
+import { FavoriteButton } from '@/components/favorite-button';
 
 export function generateStaticParams() {
   return listings.filter((listing) => listing.category !== 'emergency').map((listing) => ({ slug: listing.slug }));
@@ -94,6 +95,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           <h1>{listing.title}</h1>
           <p>{listing.location}</p>
           <div className="detail-actions">
+            <FavoriteButton listingId={listing.id} variant="hero" showLabel />
             {phone && <a className="button button--light" href={phone}>اتصال مباشر</a>}
             {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer">واتساب</a>}
             <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer">فتح في الخرائط</a>
