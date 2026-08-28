@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { categoryById, listings } from '@/lib/data';
+import { getPublishedListingById, getPublishedListings } from '@/lib/published-listings';
 import {
   AUTH_ACCESS_COOKIE,
   AUTH_REFRESH_COOKIE,
@@ -105,7 +106,8 @@ export async function GET(request: Request) {
 
     if (!includeItems) return respond({ authenticated: true, ids }, session);
 
-    const listingIndex = new Map(listings.map((listing) => [listing.id, listing]));
+    const publishedListings = await getPublishedListings();
+    const listingIndex = new Map([...listings, ...publishedListings].map((listing) => [listing.id, listing]));
     const items = rows.flatMap((row) => {
       const listing = listingIndex.get(row.listing_id);
       if (!listing) return [];
@@ -136,7 +138,9 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const listingId = typeof body?.listingId === 'string' ? body.listingId.trim() : '';
   const action = body?.action === 'remove' ? 'remove' : body?.action === 'add' ? 'add' : '';
-  const listingExists = listings.some((listing) => listing.id === listingId && listing.category !== 'emergency');
+  const staticListingExists = listings.some((listing) => listing.id === listingId && listing.category !== 'emergency');
+  const publishedListing = staticListingExists || !listingId ? null : await getPublishedListingById(listingId);
+  const listingExists = staticListingExists || Boolean(publishedListing);
 
   if (!listingId || !action || !listingExists) {
     return respond({ error: 'بيانات المفضلة غير صالحة.' }, session, 400);
