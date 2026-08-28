@@ -7,6 +7,7 @@ import './faq.css';
 import './motion.css';
 import './shell-upgrade.css';
 import './blog.css';
+import './blog-home.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
