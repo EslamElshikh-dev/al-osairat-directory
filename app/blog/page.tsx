@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogCard } from '@/components/blog-card';
 import { BrandMark } from '@/components/site-shell';
-import { blogArticles } from '@/lib/blog';
+import { blogArticles } from '@/lib/blog-published';
 import { siteConfig } from '@/lib/site';
 
 const title = 'مدونة العسيرات | تاريخ ومعالم وشخصيات وعائلات مركز العسيرات';
