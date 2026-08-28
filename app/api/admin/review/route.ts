@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { categories, listings } from '@/lib/data';
+import { getPublishedListings } from '@/lib/published-listings';
 import { SUPABASE_URL, sameOrigin } from '@/lib/auth/supabase-rest';
 import { adminJson, adminRestHeaders, resolveAdminSession } from '@/lib/auth/admin-server';
 
@@ -27,6 +28,8 @@ type SubmissionRow = {
   created_at: string;
   updated_at: string;
   reviewed_at: string | null;
+  published_listing_id: string | null;
+  published_at: string | null;
 };
 
 type ClaimRow = {
@@ -61,7 +64,6 @@ type OwnershipRow = {
 };
 
 const categoryLabels = new Map<string, string>(categories.map((item) => [item.id, item.shortLabel]));
-const listingIndex = new Map(listings.map((item) => [item.id, item]));
 const statuses = new Set<string>(['pending', 'needs_changes', 'approved', 'rejected']);
 
 async function readRows<T>(path: string, accessToken: string): Promise<T[]> {
@@ -83,36 +85,49 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'غير مصرح بالدخول إلى لوحة الإدارة.' }, { status: 403 });
 
   try {
-    const [submissions, claims, ownerships, profiles] = await Promise.all([
-      readRows<SubmissionRow>('business_submissions?select=id,user_id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,status,review_note,created_at,updated_at,reviewed_at&order=created_at.desc', session.accessToken),
+    const [submissions, claims, ownerships, profiles, publishedListings] = await Promise.all([
+      readRows<SubmissionRow>('business_submissions?select=id,user_id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,status,review_note,created_at,updated_at,reviewed_at,published_listing_id,published_at&order=created_at.desc', session.accessToken),
       readRows<ClaimRow>('business_ownership_claims?select=id,user_id,listing_id,relationship,phone,proof_method,proof_details,status,review_note,created_at,updated_at,reviewed_at&order=created_at.desc', session.accessToken),
       readRows<OwnershipRow>('listing_ownerships?select=listing_id,user_id,relationship,claim_id,approved_at&order=approved_at.desc', session.accessToken),
       readRows<ProfileRow>('profiles?select=id,full_name,phone,village,locality', session.accessToken).catch(() => []),
+      getPublishedListings(),
     ]);
 
     const profileIndex = new Map(profiles.map((profile) => [profile.id, profile]));
-    const serializedSubmissions = submissions.map((row) => ({
-      id: row.id,
-      userId: row.user_id,
-      memberName: profileIndex.get(row.user_id)?.full_name?.trim() || 'عضو الدليل',
-      businessName: row.business_name,
-      category: row.category,
-      categoryLabel: categoryLabels.get(row.category) || row.category,
-      subCategory: row.sub_category || '',
-      village: row.village,
-      locality: row.locality || '',
-      locationDetails: row.location_details,
-      phone: row.phone || '',
-      whatsapp: row.whatsapp || '',
-      hours: row.hours || '',
-      description: row.description || '',
-      googleMapsUrl: row.google_maps_url || '',
-      status: row.status,
-      reviewNote: row.review_note || '',
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-      reviewedAt: row.reviewed_at,
-    }));
+    const listingIndex = new Map([...listings, ...publishedListings].map((item) => [item.id, item]));
+    const publishedIndex = new Map(publishedListings.map((item) => [item.id, item]));
+
+    const serializedSubmissions = submissions.map((row) => {
+      const published = row.published_listing_id ? publishedIndex.get(row.published_listing_id) : null;
+      return {
+        id: row.id,
+        userId: row.user_id,
+        memberName: profileIndex.get(row.user_id)?.full_name?.trim() || 'عضو الدليل',
+        businessName: row.business_name,
+        category: row.category,
+        categoryLabel: categoryLabels.get(row.category) || row.category,
+        subCategory: row.sub_category || '',
+        village: row.village,
+        locality: row.locality || '',
+        locationDetails: row.location_details,
+        phone: row.phone || '',
+        whatsapp: row.whatsapp || '',
+        hours: row.hours || '',
+        description: row.description || '',
+        googleMapsUrl: row.google_maps_url || '',
+        status: row.status,
+        reviewNote: row.review_note || '',
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        reviewedAt: row.reviewed_at,
+        publishedAt: row.published_at,
+        publishedListing: published ? {
+          listingId: published.id,
+          slug: published.slug,
+          title: published.title,
+        } : null,
+      };
+    });
 
     const serializedClaims = claims.map((row) => {
       const listing = listingIndex.get(row.listing_id);
@@ -150,6 +165,7 @@ export async function GET() {
         pendingSubmissions: submissions.filter((item) => item.status === 'pending' || item.status === 'needs_changes').length,
         pendingClaims: claims.filter((item) => item.status === 'pending' || item.status === 'needs_changes').length,
         approvedOwnerships: ownerships.length,
+        publishedBusinesses: publishedListings.length,
         totalSubmissions: submissions.length,
         totalClaims: claims.length,
       },
