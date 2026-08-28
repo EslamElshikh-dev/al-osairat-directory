@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MemberProfileForm } from './member-profile-form';
 import { BusinessSubmissionPanel } from './business-submission-panel';
 import { OwnershipClaimPanel } from './ownership-claim-panel';
+import { MyBusinessesPanel } from './my-businesses-panel';
 import { AdminAccessCard } from './admin-access-card';
 
 type User = {
@@ -138,6 +139,8 @@ export function AccountPanel() {
 
       <OwnershipClaimPanel />
 
+      <MyBusinessesPanel />
+
       <section className="account-favorites-card" aria-labelledby="favorites-title">
         <div className="account-favorites-heading">
           <div>
@@ -194,7 +197,7 @@ export function AccountPanel() {
       </section>
 
       <div className="account-footer-actions">
-        <span>طلبات إضافة الأنشطة ومطالبات الملكية تخضع للمراجعة ولا تغيّر بيانات الدليل العامة تلقائيًا.</span>
+        <span>طلبات إضافة الأنشطة ومطالبات الملكية وتعديلات بيانات الأنشطة تمر بالمراجعة قبل أن تؤثر على الدليل العام.</span>
         <button className="account-logout" type="button" onClick={logout} disabled={loggingOut}>{loggingOut ? 'جاري تسجيل الخروج…' : 'تسجيل الخروج'}</button>
       </div>
     </div>
