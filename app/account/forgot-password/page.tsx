@@ -7,7 +7,7 @@ import { ForgotPasswordForm } from '@/components/auth/auth-forms';
 export const metadata: Metadata = { title: 'استعادة كلمة المرور', robots: { index: false, follow: false } };
 
 export default function ForgotPasswordPage() {
-  if (process.env.NEXT_PUBLIC_AUTH_ENABLED !== 'true') notFound();
+  if (!process.env.FIREBASE_WEB_API_KEY?.trim()) notFound();
   return (
     <main id="main-content" className="auth-page auth-page--compact">
       <div className="shell auth-shell auth-shell--single">

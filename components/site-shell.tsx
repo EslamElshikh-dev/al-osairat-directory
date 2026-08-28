@@ -16,7 +16,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
 }
 
 export function SiteHeader() {
-  const membershipsEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED === 'true';
+  const membershipsEnabled = Boolean(process.env.FIREBASE_WEB_API_KEY?.trim());
   return (
     <header className="site-header">
       <div className="shell site-header__inner">

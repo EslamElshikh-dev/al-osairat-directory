@@ -7,7 +7,7 @@ import { RegisterForm } from '@/components/auth/auth-forms';
 export const metadata: Metadata = { title: 'إنشاء حساب', robots: { index: false, follow: false } };
 
 export default function RegisterPage() {
-  if (process.env.NEXT_PUBLIC_AUTH_ENABLED !== 'true') notFound();
+  if (!process.env.FIREBASE_WEB_API_KEY?.trim()) notFound();
   return (
     <main id="main-content" className="auth-page">
       <div className="shell auth-shell">
