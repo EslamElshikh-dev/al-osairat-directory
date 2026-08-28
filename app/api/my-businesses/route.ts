@@ -209,6 +209,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => ({}));
   const listingId = clean(body?.listingId, 180);
+  const requestId = clean(body?.requestId, 80);
   const liveListings = await getLiveListings();
   const listing = liveListings.find((item) => item.id === listingId);
   if (!listing) return respond({ error: 'النشاط غير موجود أو لم يعد منشورًا.' }, session, 404);
@@ -256,10 +257,14 @@ export async function POST(request: Request) {
   if (!Object.keys(changes).length) return respond({ error: 'لم تغيّر أي بيانات في النشاط.' }, session, 400);
 
   try {
-    const rpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_listing_change`, {
+    const rpc = requestId ? 'revise_listing_change' : 'submit_listing_change';
+    const rpcBody = requestId
+      ? { p_id: requestId, p_snapshot: snapshot, p_changes: changes }
+      : { p_listing_id: listingId, p_snapshot: snapshot, p_changes: changes };
+    const rpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${rpc}`, {
       method: 'POST',
       headers: restHeaders(session.accessToken, true),
-      body: JSON.stringify({ p_listing_id: listingId, p_snapshot: snapshot, p_changes: changes }),
+      body: JSON.stringify(rpcBody),
       cache: 'no-store',
     });
     if (!rpcResponse.ok) {
@@ -267,11 +272,12 @@ export async function POST(request: Request) {
       if (text.includes('OPEN_REQUEST_EXISTS') || rpcResponse.status === 409) {
         return respond({ error: 'لديك طلب تعديل مفتوح بالفعل لهذا النشاط.' }, session, 409);
       }
+      if (text.includes('REVISION_NOT_ALLOWED')) return respond({ error: 'هذا الطلب لم يعد متاحًا للاستكمال.' }, session, 409);
       if (text.includes('OWNERSHIP_REQUIRED')) return respond({ error: 'ملكية النشاط غير معتمدة لهذا الحساب.' }, session, 403);
       throw new Error('CREATE_FAILED');
     }
     const created = await rpcResponse.json();
-    return respond({ saved: true, request: created }, session, 201);
+    return respond({ saved: true, revised: Boolean(requestId), request: created }, session, requestId ? 200 : 201);
   } catch {
     return respond({ error: 'تعذر إرسال طلب التعديل الآن.' }, session, 500);
   }
