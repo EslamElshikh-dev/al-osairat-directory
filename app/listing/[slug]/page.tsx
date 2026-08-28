@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
@@ -15,7 +16,12 @@ export function generateStaticParams() {
 
 async function resolveListing(rawSlug: string) {
   const slug = normalizeRouteSlug(rawSlug);
-  return listingBySlug[slug] || await getPublishedListingBySlug(slug);
+  const staticListing = listingBySlug[slug];
+  if (staticListing) {
+    const [overridden] = await applyListingOverrides([staticListing]);
+    return overridden || staticListing;
+  }
+  return getPublishedListingBySlug(slug);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -55,10 +61,11 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const whatsapp = whatsappHref(listing);
   const maps = googleMapsHref(listing);
 
-  const publishedNearby = listing.id.startsWith('published-')
-    ? await getPublishedListings({ category: listing.category, village: listing.village })
-    : [];
-  const nearby = [...listings, ...publishedNearby]
+  const [publishedNearby, overriddenStatic] = await Promise.all([
+    getPublishedListings({ category: listing.category, village: listing.village }),
+    applyListingOverrides(listings),
+  ]);
+  const nearby = [...overriddenStatic, ...publishedNearby]
     .filter((item) => item.id !== listing.id && item.category === listing.category && item.village === listing.village)
     .slice(0, 3);
 
