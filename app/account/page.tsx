@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AccountPanel } from '@/components/auth/account-panel';
 
+// Member dashboard entry point.
 export const metadata: Metadata = { title: 'حسابي', robots: { index: false, follow: false } };
 
 export default function AccountPage() {
