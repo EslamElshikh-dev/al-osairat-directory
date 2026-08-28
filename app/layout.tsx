@@ -23,6 +23,7 @@ import './admin-changes.css';
 import './admin-reports.css';
 import './card-polish.css';
 import './community-verification.css';
+import './blog-mobile-fix.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
