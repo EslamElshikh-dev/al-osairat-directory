@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
-import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceLabel, whatsappHref } from '@/lib/site';
+import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
 
@@ -52,6 +52,13 @@ function schemaTypeFor(listing: DirectoryListing) {
   return 'LocalBusiness';
 }
 
+function formatListingDate(value?: string) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+}
+
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const listing = await resolveListing(slug);
@@ -60,6 +67,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const phone = phoneHref(listing.phone);
   const whatsapp = whatsappHref(listing);
   const maps = googleMapsHref(listing);
+  const lastUpdated = formatListingDate(listing.lastUpdatedAt);
 
   const [publishedNearby, overriddenStatic] = await Promise.all([
     getPublishedListings({ category: listing.category, village: listing.village }),
@@ -133,10 +141,17 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             {listing.googleMapsPlusCode && <div><span>Plus Code</span><strong dir="ltr">{listing.googleMapsPlusCode}</strong></div>}
           </div>
           {listing.description && <div className="detail-description"><h2>معلومات إضافية</h2><p>{listing.description}</p></div>}
+
           <div className="source-panel">
-            <span>مصدر السجل</span>
+            <span>حالة ومصدر البيانات</span>
             <strong>{sourceLabel(listing)}</strong>
-            <p>قد تتغير أرقام الاتصال أو ساعات العمل بمرور الوقت؛ يُفضّل التأكد مباشرة من مقدم الخدمة قبل الزيارة.</p>
+            {lastUpdated && <p><b>آخر تحديث موثق داخل الدليل:</b> {lastUpdated}</p>}
+            <p>{sourceDescription(listing)}</p>
+            <div className="detail-actions">
+              <Link className="button button--primary" href={`/account?claim=${encodeURIComponent(listing.id)}#ownership-claims`}>امتلك هذا النشاط</Link>
+              <Link className="button button--soft" href="/account#my-businesses">تعديل نشاط تملكه</Link>
+              <Link className="button button--ghost" href="/account#business-submissions">أضف نشاطك</Link>
+            </div>
           </div>
         </article>
 
