@@ -1,0 +1,321 @@
+/* Card alignment refinement.
+   Loaded after all other UI layers to keep category visuals, favorites and card spacing
+   consistent across phones, tablets, desktop browsers and RTL environments. */
+
+/* ---------- Shared category icon geometry ---------- */
+.category-visual {
+  isolation: isolate;
+  align-items: center;
+  justify-items: center;
+}
+
+.category-visual svg {
+  display: block;
+  width: 64%;
+  height: 64%;
+  margin: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Optical centering for drawings whose SVG paths are naturally asymmetric. */
+.category-visual--crafts svg { transform: translate(1px, 1px) scale(.94); }
+.category-visual--restaurants svg { transform: translateY(1px) scale(.94); }
+.category-visual--lawyers svg { transform: translateY(1px) scale(.95); }
+.category-visual--doctors svg { transform: translateY(1px) scale(.95); }
+.category-visual--clerics svg { transform: translateY(1px) scale(.94); }
+
+/* ---------- Homepage category cards ---------- */
+.category-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 258px;
+  padding: 22px !important;
+  border-radius: 24px;
+}
+
+.category-card__visual-row {
+  min-height: 62px;
+  margin: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.category-card__visual-row > .category-visual {
+  width: 62px;
+  height: 62px;
+  border-radius: 19px;
+}
+
+.category-card__brand {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 12px;
+}
+
+.category-card__number {
+  top: 31px;
+  inset-inline-end: 69px;
+  z-index: 2;
+  line-height: 1;
+  font-size: 13px;
+  letter-spacing: .12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.category-card h3 {
+  margin: 4px 0 8px;
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.category-card p {
+  margin: 0;
+  max-width: 100%;
+  padding-bottom: 42px;
+}
+
+.category-card__arrow {
+  inset-inline-start: 22px;
+  right: auto;
+  bottom: 20px;
+}
+
+/* ---------- Directory listing cards ---------- */
+.listing-card {
+  --listing-utility-width: 58px;
+  --listing-utility-gap: 10px;
+  position: relative;
+}
+
+.listing-card__utility-stack {
+  position: absolute;
+  z-index: 6;
+  top: 14px;
+  inset-inline-end: 14px;
+  width: var(--listing-utility-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--listing-utility-gap);
+}
+
+.listing-card__utility-stack .favorite-control--card {
+  position: static;
+  inset: auto;
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+}
+
+.listing-card__utility-stack .favorite-control--card .favorite-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.listing-card__utility-stack .favorite-control--card .favorite-button svg {
+  width: 19px;
+  height: 19px;
+}
+
+.listing-card__category-visual {
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 17px !important;
+  box-shadow: 0 9px 22px rgba(16,42,36,.075), inset 0 1px 0 rgba(255,255,255,.94);
+}
+
+.listing-card__category-visual .category-visual__halo {
+  inset: 14%;
+}
+
+.listing-card__header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 112px;
+  padding-inline-end: calc(var(--listing-utility-width) + 18px);
+  padding-bottom: 14px;
+  align-items: start;
+}
+
+.listing-card__identity {
+  padding-top: 4px;
+}
+
+.listing-card__watermark {
+  margin-top: 2px;
+}
+
+/* The compact cards use the same alignment system so cards do not jump between sections. */
+.listing-card--compact .listing-card__header {
+  min-height: 106px;
+}
+
+/* Emergency cards have no favorite control; keep the category icon in the same anchor column. */
+.listing-card--emergency .listing-card__utility-stack {
+  padding-top: 2px;
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 980px) {
+  .category-card {
+    min-height: 240px;
+  }
+
+  .listing-card {
+    --listing-utility-width: 54px;
+  }
+
+  .listing-card__category-visual {
+    width: 52px !important;
+    height: 52px !important;
+  }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 760px) {
+  .category-card {
+    min-height: 0 !important;
+    padding: 17px !important;
+    border-radius: 21px;
+  }
+
+  .category-card__visual-row {
+    min-height: 56px;
+    margin-bottom: 13px;
+    gap: 14px;
+  }
+
+  .category-card__visual-row > .category-visual {
+    width: 56px;
+    height: 56px;
+    border-radius: 17px;
+  }
+
+  .category-card__brand {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .category-card__number {
+    top: 27px;
+    inset-inline-end: 61px;
+    font-size: 12px;
+  }
+
+  .category-card h3 {
+    margin: 2px 0 6px;
+    font-size: 20px;
+  }
+
+  .category-card p {
+    padding-bottom: 37px;
+    font-size: 12px;
+    line-height: 1.75;
+  }
+
+  .category-card__arrow {
+    inset-inline-start: 17px;
+    bottom: 16px;
+    font-size: 11px;
+  }
+
+  .listing-card {
+    --listing-utility-width: 50px;
+    --listing-utility-gap: 8px;
+  }
+
+  .listing-card__utility-stack {
+    top: 11px;
+    inset-inline-end: 11px;
+  }
+
+  .listing-card__utility-stack .favorite-control--card,
+  .listing-card__utility-stack .favorite-control--card .favorite-button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .listing-card__utility-stack .favorite-control--card .favorite-button {
+    border-radius: 13px;
+  }
+
+  .listing-card__category-visual {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 15px !important;
+  }
+
+  .listing-card__header,
+  .listing-card--compact .listing-card__header {
+    min-height: 101px;
+    padding-inline-end: calc(var(--listing-utility-width) + 14px);
+    gap: 9px;
+  }
+
+  .listing-card__identity {
+    padding-top: 2px;
+  }
+}
+
+/* ---------- Very small phones ---------- */
+@media (max-width: 380px) {
+  .category-card {
+    padding: 15px !important;
+  }
+
+  .category-card__visual-row > .category-visual {
+    width: 52px;
+    height: 52px;
+  }
+
+  .category-card__number {
+    top: 25px;
+    inset-inline-end: 58px;
+  }
+
+  .listing-card {
+    --listing-utility-width: 46px;
+  }
+
+  .listing-card__utility-stack {
+    top: 10px;
+    inset-inline-end: 10px;
+  }
+
+  .listing-card__category-visual {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+  }
+
+  .listing-card__header,
+  .listing-card--compact .listing-card__header {
+    padding-inline-end: calc(var(--listing-utility-width) + 12px);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .category-card:hover .category-visual,
+  .listing-card:hover .listing-card__category-visual {
+    border-color: rgba(16,42,36,.16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-card,
+  .category-visual,
+  .listing-card__category-visual {
+    transition: none !important;
+  }
+}
