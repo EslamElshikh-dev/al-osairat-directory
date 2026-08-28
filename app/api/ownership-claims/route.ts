@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { categoryById, listings, type DirectoryListing } from '@/lib/data';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
+import { isValidEgyptianPhone, normalizeEgyptianPhone } from '@/lib/business-submission-validation';
 import {
   AUTH_ACCESS_COOKIE,
   AUTH_REFRESH_COOKIE,
@@ -118,14 +120,13 @@ function cleanMultiline(value: unknown, maxLength: number) {
   return value.trim().replace(/\r/g, '').replace(/\n{3,}/g, '\n\n').slice(0, maxLength);
 }
 
-function normalizePhone(value: unknown) {
-  return cleanText(value, 32).replace(/[\s()\-]/g, '');
-}
-
 async function getClaimableListings() {
-  const published = await getPublishedListings();
+  const [published, staticListings] = await Promise.all([
+    getPublishedListings(),
+    applyListingOverrides(staticClaimableListings),
+  ]);
   const index = new Map<string, DirectoryListing>();
-  [...staticClaimableListings, ...published].forEach((listing) => index.set(listing.id, listing));
+  [...staticListings, ...published].forEach((listing) => index.set(listing.id, listing));
   return Array.from(index.values());
 }
 
@@ -194,7 +195,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const listingId = cleanText(body?.listingId, 160);
   const relationship = cleanText(body?.relationship, 40);
-  const phone = normalizePhone(body?.phone);
+  const phone = normalizeEgyptianPhone(body?.phone);
   const proofMethod = cleanText(body?.proofMethod, 40);
   const proofDetails = cleanMultiline(body?.proofDetails, 1000);
   const claimableListings = await getClaimableListings();
@@ -203,7 +204,7 @@ export async function POST(request: Request) {
 
   if (!listing) return respond({ error: 'اختر نشاطًا منشورًا من الدليل.' }, session, 400);
   if (!relationshipValues.has(relationship)) return respond({ error: 'حدد صفتك بالنسبة للنشاط.' }, session, 400);
-  if (!/^\+?\d{7,15}$/.test(phone)) return respond({ error: 'اكتب رقم تواصل صحيحًا.' }, session, 400);
+  if (!isValidEgyptianPhone(phone)) return respond({ error: 'اكتب رقم تواصل مصريًا صحيحًا.' }, session, 400);
   if (!proofValues.has(proofMethod)) return respond({ error: 'اختر طريقة إثبات الملكية.' }, session, 400);
   if (proofMethod === 'listing_phone' && !listing.phone) {
     return respond({ error: 'هذا النشاط لا يحتوي رقم هاتف منشورًا. اختر طريقة إثبات أخرى.' }, session, 400);
