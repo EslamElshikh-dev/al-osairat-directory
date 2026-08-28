@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { listings, villageBySlug, villages } from '@/lib/data';
+import { categories, listings, villageBySlug, villages } from '@/lib/data';
 import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
@@ -44,6 +44,15 @@ export default async function VillagePage({
   ]);
 
   const allListings = mergeDirectoryListings(overriddenListings, publishedListings);
+  const villageListings = allListings.filter((item) => item.village === village.name && item.category !== 'emergency');
+  const categorySummary = categories
+    .map((category) => ({
+      category,
+      count: villageListings.filter((item) => item.category === category.id).length,
+    }))
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count);
+
   const result = queryDirectoryListings(allListings, {
     village: village.name,
     page: Number(query.page || 1),
@@ -101,8 +110,34 @@ export default async function VillagePage({
             <div>{village.localities.map((locality) => <span key={locality}>{locality}</span>)}</div>
           </div>
         )}
+
+        {categorySummary.length > 0 && (
+          <section className="village-category-section" aria-labelledby="village-services-title">
+            <div className="village-category-heading">
+              <div>
+                <span className="eyebrow eyebrow--dark">الخدمات داخل القرية</span>
+                <h2 id="village-services-title">استكشف {village.name} حسب القسم</h2>
+              </div>
+              <span>{categorySummary.length.toLocaleString('ar-EG')} أقسام متاحة</span>
+            </div>
+            <div className="village-category-grid">
+              {categorySummary.map(({ category, count }) => (
+                <Link
+                  key={category.id}
+                  className="village-category-link"
+                  href={`/directory/${category.id}?village=${encodeURIComponent(village.name)}`}
+                >
+                  <span>{category.shortLabel}</span>
+                  <strong>{count.toLocaleString('ar-EG')}</strong>
+                  <small>عرض النتائج ←</small>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className="section-heading section-heading--compact">
-          <div><span className="eyebrow eyebrow--dark">الخدمات</span><h2>البيانات المنشورة في {village.name}</h2></div>
+          <div><span className="eyebrow eyebrow--dark">كل الأنشطة</span><h2>البيانات المنشورة في {village.name}</h2></div>
           {result.total > result.pageSize && <p>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')} من {result.total.toLocaleString('ar-EG')}</p>}
         </div>
         {result.items.length ? (
