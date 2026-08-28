@@ -24,6 +24,18 @@ for (const group of synonymGroups) {
   for (const token of group) synonymMap.set(token, canonical);
 }
 
+const displayReplacements: Array<[RegExp, string]> = [
+  [/اخصائية/g, 'أخصائية'],
+  [/اخصائي/g, 'أخصائي'],
+  [/اسنشاري/g, 'استشاري'],
+  [/صيدليه/g, 'صيدلية'],
+  [/مستشفي/g, 'مستشفى'],
+  [/اولاد حمزه/g, 'أولاد حمزة'],
+  [/اولاد حمزة/g, 'أولاد حمزة'],
+  [/امراض/g, 'أمراض'],
+  [/الاعصاب/g, 'الأعصاب'],
+];
+
 function toAsciiDigits(value: string) {
   return value
     .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
@@ -121,24 +133,55 @@ function matchesSearch(listing: DirectoryListing, query: string) {
   );
 }
 
-function cleanText(value?: string) {
+function cleanDisplayText(value?: string) {
   if (!value) return undefined;
-  const cleaned = value.replace(/\s+/g, ' ').trim();
+  let cleaned = toAsciiDigits(value).replace(/\s+/g, ' ').trim();
+  for (const [pattern, replacement] of displayReplacements) cleaned = cleaned.replace(pattern, replacement);
+  cleaned = cleaned
+    .replace(/(^|\s)د\s*\/\s*/g, '$1د/ ')
+    .replace(/دكتور\s*\/\s*/g, 'دكتور/ ')
+    .replace(/\s+([،؛:.])/g, '$1');
   return cleaned || undefined;
 }
 
+function cleanPhone(value?: string) {
+  const cleaned = cleanDisplayText(value);
+  if (!cleaned) return undefined;
+  const compact = cleaned.replace(/[^\d+]/g, '');
+  return /^\+?\d{7,15}$/.test(compact) ? compact : cleaned;
+}
+
+function cleanHours(value: string | undefined, village: string) {
+  const cleaned = cleanDisplayText(value);
+  if (!cleaned) return undefined;
+
+  const normalized = normalizeDirectoryText(cleaned);
+  const normalizedVillage = normalizeDirectoryText(village);
+  const hasTimeSignal = /(السبت|الاحد|الاثنين|الثلاثاء|الاربعاء|الخميس|الجمعه|يوميا|صباح|مساء|عصر|ظهر|ليلا|ساعه|مفتوح|مغلق|حتى|الي)/.test(normalized);
+
+  // Some legacy rows accidentally stored a village/address fragment in the hours field.
+  // Suppress only the clearly invalid pattern instead of guessing business hours.
+  if (!hasTimeSignal && normalizedVillage && normalized.startsWith(normalizedVillage) && /\d/.test(normalized)) {
+    return undefined;
+  }
+
+  return cleaned;
+}
+
 export function normalizeDirectoryListing(listing: DirectoryListing): DirectoryListing {
+  const village = cleanDisplayText(listing.village) || listing.village;
+
   return {
     ...listing,
-    title: cleanText(listing.title) || listing.title,
-    subCategory: cleanText(listing.subCategory),
-    location: cleanText(listing.location) || listing.location,
-    village: cleanText(listing.village) || listing.village,
-    locality: cleanText(listing.locality),
-    hours: cleanText(listing.hours),
-    description: cleanText(listing.description),
-    phone: cleanText(listing.phone),
-    whatsapp: cleanText(listing.whatsapp),
+    title: cleanDisplayText(listing.title) || listing.title,
+    subCategory: cleanDisplayText(listing.subCategory),
+    location: cleanDisplayText(listing.location) || listing.location,
+    village,
+    locality: cleanDisplayText(listing.locality),
+    hours: cleanHours(listing.hours, village),
+    description: cleanDisplayText(listing.description),
+    phone: cleanPhone(listing.phone),
+    whatsapp: cleanPhone(listing.whatsapp),
   };
 }
 
