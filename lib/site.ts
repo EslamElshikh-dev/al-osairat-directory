@@ -23,6 +23,30 @@ export function normalizeArabic(value: string) {
     .trim();
 }
 
+export function normalizeRouteSlug(value: string) {
+  let decoded = value;
+
+  try {
+    decoded = decodeURIComponent(decoded);
+  } catch {
+    // The value may already be decoded by the framework.
+  }
+
+  // Some hosting/runtime paths can surface UTF-8 Arabic bytes as Latin-1
+  // mojibake (for example: Ø¬Ø²Ù...). Repair it without changing valid Arabic.
+  if (/[ØÙÚÛ]/.test(decoded)) {
+    try {
+      const bytes = Uint8Array.from(Array.from(decoded, (char) => char.charCodeAt(0) & 0xff));
+      const repaired = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      if (/[\u0600-\u06ff]/.test(repaired)) decoded = repaired;
+    } catch {
+      // Keep the original route value if repair is not valid UTF-8.
+    }
+  }
+
+  return decoded.normalize('NFC');
+}
+
 export function phoneHref(phone?: string) {
   if (!phone || phone === '0') return undefined;
   return `tel:${phone.replace(/[^\d+]/g, '')}`;
