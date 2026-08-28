@@ -2,6 +2,22 @@ import Link from 'next/link';
 import { homeFaq } from '@/lib/faq';
 import { BrandMark } from './site-shell';
 
+function FaqAnswer({ answer, linkLabel, linkHref }: { answer: string; linkLabel?: string; linkHref?: string }) {
+  if (!linkLabel || !linkHref || !answer.includes(linkLabel)) {
+    return <p>{answer}</p>;
+  }
+
+  const [before, after] = answer.split(linkLabel);
+
+  return (
+    <p>
+      {before}
+      <a href={linkHref} target="_blank" rel="noreferrer">{linkLabel}</a>
+      {after}
+    </p>
+  );
+}
+
 export function FaqSection() {
   return (
     <section className="section section--faq" aria-labelledby="faq-title">
@@ -22,14 +38,14 @@ export function FaqSection() {
 
         <div className="faq-list">
           {homeFaq.map((item, index) => (
-            <details className="faq-item" key={item.question} open={index === 0}>
+            <details className="faq-item" key={item.question} name="home-faq" open={index === 0}>
               <summary>
                 <span className="faq-item__number">{String(index + 1).padStart(2, '0')}</span>
                 <span>{item.question}</span>
                 <span className="faq-item__plus" aria-hidden="true">+</span>
               </summary>
               <div className="faq-item__answer">
-                <p>{item.answer}</p>
+                <FaqAnswer answer={item.answer} linkLabel={item.linkLabel} linkHref={item.linkHref} />
               </div>
             </details>
           ))}
