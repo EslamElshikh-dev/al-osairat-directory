@@ -32,8 +32,10 @@
 .category-visual--doctors svg { transform: translateY(1px) scale(.95); }
 .category-visual--pharmacies svg { transform: translateY(.5px) scale(.96); }
 .category-visual--shops svg { transform: translateY(.5px) scale(.96); }
+.category-visual--education svg { transform: translateY(.5px) scale(.95); }
 .category-visual--clerics svg { transform: translateY(1px) scale(.94); }
 .category-visual--government svg { transform: translateY(.5px) scale(.95); }
+.category-visual--community svg { transform: translateY(.5px) scale(.94); }
 .category-visual--emergency svg { transform: translateY(.5px) scale(.94); }
 
 /* Homepage category-card brand mark.
