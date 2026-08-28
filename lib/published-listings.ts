@@ -46,6 +46,7 @@ function serialize(row: PublishedBusinessRow): PublishedListing {
     sourceStatus: 'cross_checked',
     googleMapsUrl: row.google_maps_url || undefined,
     publishedAt: row.published_at,
+    lastUpdatedAt: row.published_at,
   };
 }
 

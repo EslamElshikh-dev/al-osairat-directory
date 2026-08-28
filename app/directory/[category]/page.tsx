@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { categories, categoryById, listings, type DirectoryCategory } from '@/lib/data';
+import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { siteConfig } from '@/lib/site';
@@ -29,7 +30,7 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; village?: string; page?: string }>;
 }) {
   const { category } = await params;
   const query = await searchParams;
@@ -41,6 +42,15 @@ export default async function CategoryPage({
     applyListingOverrides(listings),
   ]);
 
+  const allListings = mergeDirectoryListings(baseListings, publishedListings);
+  const result = queryDirectoryListings(allListings, {
+    category: info.id,
+    query: query.q,
+    village: query.village,
+    page: Number(query.page || 1),
+  });
+  const pathname = `/directory/${info.id}`;
+
   return (
     <main id="main-content" className="page-main">
       <section className="page-hero shell">
@@ -49,7 +59,13 @@ export default async function CategoryPage({
         <p>{info.description}</p>
       </section>
       <section className="shell page-section">
-        <DirectoryExplorer category={info.id} initialQuery={query.q || ''} baseListings={baseListings} extraListings={publishedListings} />
+        <DirectoryExplorer
+          category={info.id}
+          query={query.q || ''}
+          village={query.village || 'all'}
+          result={result}
+          pathname={pathname}
+        />
       </section>
     </main>
   );

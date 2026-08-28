@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { listings, villageBySlug, villages } from '@/lib/data';
+import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
@@ -25,8 +26,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export const dynamic = 'force-dynamic';
 
-export default async function VillagePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function VillagePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
+}) {
   const { slug } = await params;
+  const query = await searchParams;
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
 
@@ -34,10 +42,14 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
     getPublishedListings({ village: village.name }),
     applyListingOverrides(listings),
   ]);
-  const villageListings = [
-    ...overriddenListings.filter((item) => item.village === village.name && item.category !== 'emergency'),
-    ...publishedListings,
-  ];
+
+  const allListings = mergeDirectoryListings(overriddenListings, publishedListings);
+  const result = queryDirectoryListings(allListings, {
+    village: village.name,
+    page: Number(query.page || 1),
+    excludeEmergency: true,
+  });
+  const pathname = `/villages/${village.slug}`;
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -51,10 +63,10 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
       {
         '@type': 'ItemList',
         name: `دليل ${village.name}`,
-        numberOfItems: villageListings.length,
-        itemListElement: villageListings.slice(0, 50).map((item, index) => ({
+        numberOfItems: result.total,
+        itemListElement: result.items.map((item, index) => ({
           '@type': 'ListItem',
-          position: index + 1,
+          position: (result.page - 1) * result.pageSize + index + 1,
           url: `${siteConfig.url}/listing/${item.slug}`,
           name: item.title,
         })),
@@ -78,7 +90,7 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
           <span className="eyebrow">قرية ضمن نطاق العسيرات</span>
           <h1>{village.name}</h1>
           <p>{village.description}</p>
-          <div className="village-hero__stats"><span><b>{villageListings.length}</b> سجل منشور</span><span><b>{village.localities.length}</b> تابع/نجع مسمى</span></div>
+          <div className="village-hero__stats"><span><b>{result.total}</b> سجل منشور</span><span><b>{village.localities.length}</b> تابع/نجع مسمى</span></div>
         </div>
       </section>
 
@@ -89,9 +101,21 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
             <div>{village.localities.map((locality) => <span key={locality}>{locality}</span>)}</div>
           </div>
         )}
-        <div className="section-heading section-heading--compact"><div><span className="eyebrow eyebrow--dark">الخدمات</span><h2>البيانات المنشورة في {village.name}</h2></div></div>
-        {villageListings.length ? (
-          <div className="listing-grid">{villageListings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
+        <div className="section-heading section-heading--compact">
+          <div><span className="eyebrow eyebrow--dark">الخدمات</span><h2>البيانات المنشورة في {village.name}</h2></div>
+          {result.total > result.pageSize && <p>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')} من {result.total.toLocaleString('ar-EG')}</p>}
+        </div>
+        {result.items.length ? (
+          <>
+            <div className="listing-grid">{result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
+            {result.totalPages > 1 && (
+              <nav className="detail-actions" aria-label={`صفحات دليل ${village.name}`}>
+                {result.page > 1 && <Link className="button button--ghost" rel="prev" href={createDirectoryHref(pathname, { page: result.page - 1 })}>السابق</Link>}
+                <span>صفحة {result.page.toLocaleString('ar-EG')} من {result.totalPages.toLocaleString('ar-EG')}</span>
+                {result.page < result.totalPages && <Link className="button button--primary" rel="next" href={createDirectoryHref(pathname, { page: result.page + 1 })}>التالي</Link>}
+              </nav>
+            )}
+          </>
         ) : (
           <div className="empty-state"><strong>لم تُنشر بيانات مؤكدة لهذه القرية بعد</strong><p>القرية موجودة في هيكل الموسوعة وسيتم ربط الأنشطة بها عند اكتمال المراجعة.</p></div>
         )}
