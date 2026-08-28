@@ -18,6 +18,7 @@ import './business-submissions.css';
 import './ownership-claims.css';
 import './my-businesses.css';
 import './admin.css';
+import './admin-changes.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
