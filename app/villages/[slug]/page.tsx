@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getListingsByVillage, villageBySlug, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
-import { siteConfig } from '@/lib/site';
+import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
 export function generateStaticParams() {
   return villages.map((village) => ({ slug: village.slug }));
@@ -11,7 +11,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const village = villageBySlug[slug];
+  const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) return {};
   return {
     title: `دليل ${village.name} - مركز العسيرات`,
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function VillagePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const village = villageBySlug[slug];
+  const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
   const villageListings = getListingsByVillage(village.name);
 
