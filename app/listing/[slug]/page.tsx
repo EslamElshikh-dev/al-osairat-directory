@@ -7,6 +7,7 @@ import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
+import { ListingReport } from '@/components/listing-report';
 
 export const dynamic = 'force-dynamic';
 
@@ -152,6 +153,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
               <Link className="button button--soft" href="/account#my-businesses">تعديل نشاط تملكه</Link>
               <Link className="button button--ghost" href="/account#business-submissions">أضف نشاطك</Link>
             </div>
+            <ListingReport listingId={listing.id} listingTitle={listing.title} />
           </div>
         </article>
 
