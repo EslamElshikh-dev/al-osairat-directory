@@ -12,14 +12,20 @@ type User = {
   avatarUrl: string;
 };
 
-type FeatureIcon = 'heart' | 'profile' | 'add' | 'claim';
+type FavoriteItem = {
+  listingId: string;
+  slug: string;
+  title: string;
+  category: string;
+  categoryLabel: string;
+  location: string;
+  village: string;
+  createdAt: string;
+};
+
+type FeatureIcon = 'profile' | 'add' | 'claim';
 
 const upcomingFeatures: Array<{ title: string; description: string; icon: FeatureIcon }> = [
-  {
-    title: 'المفضلة',
-    description: 'احفظ الأنشطة والخدمات التي تعتمد عليها وارجع لها بسرعة من حسابك.',
-    icon: 'heart',
-  },
   {
     title: 'بيانات العضو',
     description: 'حدّث اسمك وصورتك وبيانات حسابك الأساسية من مكان واحد.',
@@ -38,9 +44,6 @@ const upcomingFeatures: Array<{ title: string; description: string; icon: Featur
 ];
 
 function FeatureIcon({ type }: { type: FeatureIcon }) {
-  if (type === 'heart') {
-    return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.2 5.8c-2.3-2.3-6-2.2-8.2.3-2.2-2.5-5.9-2.6-8.2-.3-2.4 2.4-2.2 6.3.3 8.7L12 21l7.9-6.5c2.5-2.4 2.7-6.3.3-8.7Z" /></svg>;
-  }
   if (type === 'profile') {
     return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.3" /><path d="M5.5 19.2c.9-3.5 3.2-5.3 6.5-5.3s5.6 1.8 6.5 5.3" /></svg>;
   }
@@ -50,11 +53,18 @@ function FeatureIcon({ type }: { type: FeatureIcon }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.5 19 6v5.3c0 4.2-2.7 7.5-7 9.2-4.3-1.7-7-5-7-9.2V6l7-2.5Z" /><path d="m8.8 12 2.1 2.1 4.5-4.5" /></svg>;
 }
 
+function HeartIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.2 5.8c-2.3-2.3-6-2.2-8.2.3-2.2-2.5-5.9-2.6-8.2-.3-2.4 2.4-2.2 6.3.3 8.7L12 21l7.9-6.5c2.5-2.4 2.7-6.3.3-8.7Z" /></svg>;
+}
+
 export function AccountPanel() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(true);
+  const [removingFavorite, setRemovingFavorite] = useState('');
 
   useEffect(() => {
     fetch('/api/auth/session', { cache: 'no-store', credentials: 'same-origin' })
@@ -66,6 +76,38 @@ export function AccountPanel() {
       .catch(() => router.replace('/account/login'))
       .finally(() => setLoading(false));
   }, [router]);
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    setFavoritesLoading(true);
+    fetch('/api/favorites?include=items', { cache: 'no-store', credentials: 'same-origin' })
+      .then((response) => response.ok ? response.json() : { items: [] })
+      .then((data) => { if (active) setFavorites(data.items || []); })
+      .catch(() => { if (active) setFavorites([]); })
+      .finally(() => { if (active) setFavoritesLoading(false); });
+    return () => { active = false; };
+  }, [user]);
+
+  async function removeFavorite(listingId: string) {
+    if (removingFavorite) return;
+    setRemovingFavorite(listingId);
+    try {
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ listingId, action: 'remove' }),
+      });
+      if (!response.ok) throw new Error('REMOVE_FAILED');
+      setFavorites((items) => items.filter((item) => item.listingId !== listingId));
+      window.dispatchEvent(new CustomEvent('favorites:changed', { detail: { listingId, favorite: false } }));
+    } catch {
+      // Keep the item visible so the member can retry.
+    } finally {
+      setRemovingFavorite('');
+    }
+  }
 
   async function logout() {
     setLoggingOut(true);
@@ -110,13 +152,59 @@ export function AccountPanel() {
         </div>
       )}
 
+      <section className="account-favorites-card" aria-labelledby="favorites-title">
+        <div className="account-favorites-heading">
+          <div>
+            <span>ميزة العضو</span>
+            <h2 id="favorites-title">مفضلتي</h2>
+          </div>
+          <span className="account-favorites-count">{favoritesLoading ? 'جاري التحميل' : `${favorites.length} محفوظ`}</span>
+        </div>
+
+        {favoritesLoading ? (
+          <div className="account-favorites-loading">جاري تحميل العناصر المحفوظة…</div>
+        ) : favorites.length ? (
+          <div className="account-favorites-list">
+            {favorites.map((item) => (
+              <article className="account-favorite-item" key={item.listingId}>
+                <div className="account-favorite-main">
+                  <div>
+                    <Link href={`/listing/${item.slug}`}>{item.title}</Link>
+                    <span className="account-favorite-category">{item.categoryLabel}</span>
+                  </div>
+                  <p>{item.location} · {item.village}</p>
+                </div>
+                <div className="account-favorite-actions">
+                  <Link className="account-favorite-open" href={`/listing/${item.slug}`}>عرض التفاصيل</Link>
+                  <button
+                    className="account-favorite-remove"
+                    type="button"
+                    onClick={() => removeFavorite(item.listingId)}
+                    disabled={removingFavorite === item.listingId}
+                  >
+                    {removingFavorite === item.listingId ? 'جاري الإزالة…' : 'إزالة'}
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="account-favorites-empty">
+            <HeartIcon />
+            <strong>مفضلتك فاضية حاليًا</strong>
+            <p>اضغط علامة القلب على أي نشاط أو خدمة في الدليل، وهتلاقيها محفوظة هنا تلقائيًا في حسابك.</p>
+            <Link href="/directory">استكشف الدليل وأضف أول مفضلة ←</Link>
+          </div>
+        )}
+      </section>
+
       <section className="account-member-hub" aria-labelledby="member-hub-title">
         <div className="account-section-heading">
           <div>
             <span>مساحتك في الدليل</span>
-            <h2 id="member-hub-title">مزايا العضو القادمة</h2>
+            <h2 id="member-hub-title">المزايا القادمة</h2>
           </div>
-          <p>نبنيها تدريجيًا بحيث تكون كل مساهمة مرتبطة بحساب موثوق وقابلة للمراجعة.</p>
+          <p>المفضلة أصبحت متاحة الآن، وباقي المزايا هنربطها بنفس العضوية ومراجعة البيانات.</p>
         </div>
         <div className="account-feature-grid">
           {upcomingFeatures.map((feature) => (
