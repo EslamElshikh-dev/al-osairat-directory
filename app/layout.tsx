@@ -24,6 +24,7 @@ import './admin.css';
 import './admin-changes.css';
 import './admin-reports.css';
 import './admin-analytics.css';
+import './admin-analytics-insights.css';
 import './card-polish.css';
 import './community-verification.css';
 import './blog-mobile-fix.css';
