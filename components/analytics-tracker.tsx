@@ -109,6 +109,7 @@ export function AnalyticsTracker() {
 
       trackEvent(eventName, {
         content_type: pathname.startsWith('/listing/') ? 'directory_listing' : 'site',
+        transport_type: 'beacon',
       });
     }
 
@@ -125,6 +126,7 @@ export function AnalyticsTracker() {
         query_length: Math.min(query.length, 200),
         village_filter: village === 'all' ? 'all' : village.slice(0, 80),
         category_scope: pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all',
+        transport_type: 'beacon',
       });
     }
 
