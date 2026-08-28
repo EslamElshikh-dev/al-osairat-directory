@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
+import './visual-upgrade.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
