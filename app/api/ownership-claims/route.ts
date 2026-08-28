@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { categoryById, listings } from '@/lib/data';
+import { categoryById, listings, type DirectoryListing } from '@/lib/data';
+import { getPublishedListings } from '@/lib/published-listings';
 import {
   AUTH_ACCESS_COOKIE,
   AUTH_REFRESH_COOKIE,
@@ -45,8 +46,7 @@ type ResolvedSession = {
   };
 };
 
-const claimableListings = listings.filter((listing) => !['emergency', 'government'].includes(listing.category));
-const listingIndex = new Map(claimableListings.map((listing) => [listing.id, listing]));
+const staticClaimableListings = listings.filter((listing) => !['emergency', 'government'].includes(listing.category));
 const relationshipValues = new Set<string>(['owner', 'manager', 'authorized_representative']);
 const proofValues = new Set<string>(['listing_phone', 'google_business_profile', 'official_document', 'other']);
 
@@ -122,7 +122,14 @@ function normalizePhone(value: unknown) {
   return cleanText(value, 32).replace(/[\s()\-]/g, '');
 }
 
-function serializeClaim(row: ClaimRow) {
+async function getClaimableListings() {
+  const published = await getPublishedListings();
+  const index = new Map<string, DirectoryListing>();
+  [...staticClaimableListings, ...published].forEach((listing) => index.set(listing.id, listing));
+  return Array.from(index.values());
+}
+
+function serializeClaim(row: ClaimRow, listingIndex: Map<string, DirectoryListing>) {
   const listing = listingIndex.get(row.listing_id);
   return {
     id: row.id,
@@ -151,6 +158,8 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'يلزم تسجيل الدخول أولًا.' }, { status: 401 });
 
   try {
+    const claimableListings = await getClaimableListings();
+    const listingIndex = new Map(claimableListings.map((listing) => [listing.id, listing]));
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/business_ownership_claims?select=id,listing_id,relationship,phone,proof_method,proof_details,status,review_note,created_at,updated_at,reviewed_at&order=created_at.desc`,
       { headers: restHeaders(session.accessToken), cache: 'no-store' },
@@ -159,7 +168,7 @@ export async function GET() {
     const rows = await response.json() as ClaimRow[];
 
     return respond({
-      claims: rows.map(serializeClaim),
+      claims: rows.map((row) => serializeClaim(row, listingIndex)),
       listings: claimableListings.map((listing) => ({
         id: listing.id,
         slug: listing.slug,
@@ -188,6 +197,8 @@ export async function POST(request: Request) {
   const phone = normalizePhone(body?.phone);
   const proofMethod = cleanText(body?.proofMethod, 40);
   const proofDetails = cleanMultiline(body?.proofDetails, 1000);
+  const claimableListings = await getClaimableListings();
+  const listingIndex = new Map(claimableListings.map((listing) => [listing.id, listing]));
   const listing = listingIndex.get(listingId);
 
   if (!listing) return respond({ error: 'اختر نشاطًا منشورًا من الدليل.' }, session, 400);
@@ -239,7 +250,7 @@ export async function POST(request: Request) {
     const rows = await response.json() as ClaimRow[];
     const created = rows[0];
     if (!created) throw new Error('CLAIM_MISSING');
-    return respond({ saved: true, claim: serializeClaim(created) }, session, 201);
+    return respond({ saved: true, claim: serializeClaim(created, listingIndex) }, session, 201);
   } catch {
     return respond({ error: 'تعذر إرسال مطالبة الملكية الآن. حاول مرة أخرى.' }, session, 500);
   }
