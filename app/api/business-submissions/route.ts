@@ -2,6 +2,11 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { categories, villages } from '@/lib/data';
 import {
+  normalizeEgyptianPhone,
+  normalizeGoogleMapsUrl,
+  validateBusinessSubmissionInput,
+} from '@/lib/business-submission-validation';
+import {
   AUTH_ACCESS_COOKIE,
   AUTH_REFRESH_COOKIE,
   SUPABASE_PUBLISHABLE_KEY,
@@ -123,30 +128,6 @@ function cleanMultiline(value: unknown, maxLength: number) {
   return value.trim().replace(/\r/g, '').replace(/\n{3,}/g, '\n\n').slice(0, maxLength);
 }
 
-function normalizePhone(value: unknown) {
-  const raw = cleanText(value, 32);
-  if (!raw) return '';
-  return raw.replace(/[\s()\-]/g, '');
-}
-
-function validPhone(value: string) {
-  return !value || /^\+?\d{7,15}$/.test(value);
-}
-
-function normalizeMapsUrl(value: unknown) {
-  const raw = cleanText(value, 500);
-  if (!raw) return '';
-  try {
-    const url = new URL(raw);
-    if (url.protocol !== 'https:') return '';
-    const host = url.hostname.toLowerCase();
-    const allowed = host === 'maps.app.goo.gl' || host === 'goo.gl' || host === 'google.com' || host.endsWith('.google.com');
-    return allowed ? url.toString() : '';
-  } catch {
-    return '';
-  }
-}
-
 function serialize(row: SubmissionRow) {
   return {
     id: row.id,
@@ -201,20 +182,27 @@ export async function POST(request: Request) {
   const village = cleanText(body?.village, 80);
   const locality = cleanText(body?.locality, 100);
   const locationDetails = cleanText(body?.locationDetails, 240);
-  const phone = normalizePhone(body?.phone);
-  const whatsapp = normalizePhone(body?.whatsapp);
+  const rawPhone = cleanText(body?.phone, 32);
+  const rawWhatsapp = cleanText(body?.whatsapp, 32);
+  const phone = normalizeEgyptianPhone(rawPhone);
+  const whatsapp = normalizeEgyptianPhone(rawWhatsapp);
   const hours = cleanText(body?.hours, 180);
   const description = cleanMultiline(body?.description, 800);
   const rawMapsUrl = cleanText(body?.googleMapsUrl, 500);
-  const googleMapsUrl = normalizeMapsUrl(rawMapsUrl);
+  const googleMapsUrl = normalizeGoogleMapsUrl(rawMapsUrl);
 
-  if (businessName.length < 2) return respond({ error: 'اكتب اسم النشاط بشكل صحيح.' }, session, 400);
+  const validationError = validateBusinessSubmissionInput({
+    businessName,
+    category,
+    village,
+    locationDetails,
+    phone: rawPhone,
+    whatsapp: rawWhatsapp,
+    googleMapsUrl: rawMapsUrl,
+  });
+  if (validationError) return respond({ error: validationError }, session, 400);
   if (!categoryIds.has(category)) return respond({ error: 'اختر قسمًا صحيحًا للنشاط.' }, session, 400);
   if (!villageNames.has(village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
-  if (locationDetails.length < 3) return respond({ error: 'اكتب وصفًا واضحًا لموقع النشاط داخل القرية.' }, session, 400);
-  if (!validPhone(phone) || !validPhone(whatsapp)) return respond({ error: 'راجع رقم الهاتف أو واتساب واستخدم أرقامًا صحيحة.' }, session, 400);
-  if (rawMapsUrl && !googleMapsUrl) return respond({ error: 'رابط خرائط Google غير صحيح.' }, session, 400);
-  if (!phone && !whatsapp && !googleMapsUrl) return respond({ error: 'أضف وسيلة تواصل واحدة على الأقل: هاتف أو واتساب أو رابط خرائط Google.' }, session, 400);
 
   try {
     const pendingResponse = await fetch(
