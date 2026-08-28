@@ -13,6 +13,7 @@ import './auth.css';
 import './auth-google.css';
 import './account-upgrade.css';
 import './favorites.css';
+import './member-profile.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
