@@ -1,0 +1,57 @@
+/* Visual polish update: directory cards, search, tabs, signature */
+.search-field { gap: 12px; }
+.search-field__brand,
+.category-pill__mark,
+.listing-card__brand-mark { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.search-field__brand { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #fff7e4 0%, #f0f4ef 100%); border: 1px solid rgba(16, 42, 36, 0.08); }
+.search-field__brand .brand-mark,
+.category-pill__mark .brand-mark,
+.listing-card__brand-mark .brand-mark { transform: scale(0.72); }
+.search-field__hint { color: #556762; white-space: nowrap; }
+.category-pills { gap: 10px; }
+.category-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px; }
+.category-pill__mark { width: 26px; height: 26px; border-radius: 9px; background: #f5efe0; }
+.listing-card { position: relative; overflow: hidden; padding-top: 22px; }
+.listing-card__top, .listing-card__actions, .listing-card__source, .listing-card__meta { position: relative; z-index: 2; }
+.listing-card::before { position: absolute; top: 18px; inset-inline-start: 18px; width: 70px; height: 70px; border-radius: 24px; display: grid; place-items: center; font-size: 28px; font-weight: 900; color: var(--green-950); border: 1px solid rgba(16, 42, 36, 0.08); box-shadow: inset 0 -18px 30px rgba(255, 255, 255, 0.32), 0 12px 25px rgba(16, 42, 36, 0.08); z-index: 1; }
+.listing-card::after { content: ''; position: absolute; top: 31px; inset-inline-start: 30px; width: 42px; height: 42px; border: 4px solid rgba(16, 42, 36, 0.22); border-left-color: rgba(215, 168, 60, 0.65); border-radius: 999px; z-index: 1; }
+.listing-card--doctors::before { content: '👨‍⚕️'; background: linear-gradient(135deg, #eef8f5 0%, #d6efe7 100%); }
+.listing-card--pharmacies::before { content: '💊'; background: linear-gradient(135deg, #f0fbf3 0%, #dcf2df 100%); }
+.listing-card--shops::before { content: '🛍'; background: linear-gradient(135deg, #fff7ea 0%, #f7e5c7 100%); }
+.listing-card--crafts::before { content: '🛠'; background: linear-gradient(135deg, #edf3ff 0%, #dce7ff 100%); }
+.listing-card--restaurants::before { content: '🍽'; background: linear-gradient(135deg, #fff2ed 0%, #ffd8c7 100%); }
+.listing-card--lawyers::before { content: '⚖'; background: linear-gradient(135deg, #f6f0ff 0%, #e7dbff 100%); }
+.listing-card--clerics::before { content: '✍'; background: linear-gradient(135deg, #f8f5ef 0%, #ece1cf 100%); }
+.listing-card--government::before { content: '🏛'; background: linear-gradient(135deg, #eef2f2 0%, #dde6e6 100%); }
+.listing-card--emergency::before { content: '🚨'; background: linear-gradient(135deg, #fff0f0 0%, #ffd8d8 100%); }
+.listing-card__brand { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: 86px; margin-bottom: 10px; color: #597069; font-size: 11px; font-weight: 800; }
+.listing-card__brand-mark { width: 28px; height: 28px; border-radius: 10px; background: #f7efe0; }
+.listing-card h3 { max-width: calc(100% - 6px); }
+.listing-card--compact::before { width: 64px; height: 64px; top: 16px; }
+.listing-card--compact::after { top: 29px; }
+.listing-card--compact .listing-card__brand { margin-inline-start: 80px; }
+.category-card, .village-card, .emergency-card { position: relative; overflow: hidden; }
+.category-card { padding-top: 90px; }
+.category-card::before { position: absolute; top: 22px; inset-inline-start: 22px; width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; font-size: 24px; background: #f2f5f3; border: 1px solid rgba(16, 42, 36, 0.08); box-shadow: 0 10px 24px rgba(16, 42, 36, 0.08); }
+.category-card--doctors::before { content: '👨‍⚕️'; background: linear-gradient(135deg, #eef8f5 0%, #d6efe7 100%); }
+.category-card--pharmacies::before { content: '💊'; background: linear-gradient(135deg, #f0fbf3 0%, #dcf2df 100%); }
+.category-card--shops::before { content: '🛍'; background: linear-gradient(135deg, #fff7ea 0%, #f7e5c7 100%); }
+.category-card--crafts::before { content: '🛠'; background: linear-gradient(135deg, #edf3ff 0%, #dce7ff 100%); }
+.category-card--restaurants::before { content: '🍽'; background: linear-gradient(135deg, #fff2ed 0%, #ffd8c7 100%); }
+.category-card--lawyers::before { content: '⚖'; background: linear-gradient(135deg, #f6f0ff 0%, #e7dbff 100%); }
+.category-card--clerics::before { content: '✍'; background: linear-gradient(135deg, #f8f5ef 0%, #ece1cf 100%); }
+.category-card--government::before { content: '🏛'; background: linear-gradient(135deg, #eef2f2 0%, #dde6e6 100%); }
+.category-card--emergency::before { content: '🚨'; background: linear-gradient(135deg, #fff0f0 0%, #ffd8d8 100%); }
+.village-card { padding-top: 86px; }
+.village-card::before { content: '◎'; position: absolute; top: 22px; inset-inline-start: 22px; width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; font-size: 24px; color: var(--green-950); background: linear-gradient(135deg, #f7efe0 0%, #e8ece7 100%); border: 1px solid rgba(16, 42, 36, 0.08); box-shadow: 0 10px 24px rgba(16, 42, 36, 0.08); }
+.emergency-card::before { content: '⚠'; position: absolute; top: 20px; inset-inline-end: 20px; width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; font-size: 22px; background: #fff4f4; border: 1px solid #efd2d2; }
+.footer__bottom { align-items: center; }
+.footer__signature { display: inline-flex; align-items: center; gap: 6px; color: #e5c36f; font-size: 11px; font-weight: 800; }
+.footer__signature b { color: #fff; }
+@media (max-width: 760px) {
+  .listing-card::before { width: 62px; height: 62px; top: 15px; inset-inline-start: 15px; }
+  .listing-card::after { top: 27px; inset-inline-start: 26px; }
+  .listing-card__brand { margin-inline-start: 74px; }
+  .category-card, .village-card { padding-top: 84px; }
+  .footer__signature { justify-content: flex-start; }
+}
