@@ -117,6 +117,17 @@
   color: #63716d;
   line-height: 1.95;
 }
+.faq-item__answer a {
+  color: #173a31;
+  font-weight: 900;
+  text-decoration: underline;
+  text-decoration-color: rgba(215,168,60,.75);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.faq-item__answer a:hover {
+  color: #8d6b20;
+}
 @media (max-width: 900px) {
   .faq-shell { grid-template-columns: 1fr; gap: 26px; }
   .faq-intro { position: static; }
