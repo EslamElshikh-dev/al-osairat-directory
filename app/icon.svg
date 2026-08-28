@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="شعار دليل العسيرات">
+  <rect x="2" y="2" width="60" height="60" rx="17" fill="#F6F3EB"/>
+  <circle cx="32" cy="29" r="19" fill="none" stroke="#102A24" stroke-width="7"/>
+  <circle cx="32" cy="29" r="19" fill="none" stroke="#D7A83C" stroke-width="7" stroke-linecap="round" stroke-dasharray="28 92" transform="rotate(118 32 29)"/>
+  <circle cx="32" cy="29" r="4.5" fill="#D7A83C"/>
+  <rect x="10" y="46" width="18" height="6" rx="3" fill="#102A24" transform="rotate(-40 19 49)"/>
+</svg>
