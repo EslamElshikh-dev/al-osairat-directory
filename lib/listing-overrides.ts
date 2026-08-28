@@ -60,6 +60,7 @@ export function applyListingOverride(listing: DirectoryListing, row?: ListingOve
     hours: Object.prototype.hasOwnProperty.call(fields, 'hours') ? optionalValue(fields.hours) : listing.hours,
     description: Object.prototype.hasOwnProperty.call(fields, 'description') ? optionalValue(fields.description) : listing.description,
     googleMapsUrl: Object.prototype.hasOwnProperty.call(fields, 'googleMapsUrl') ? optionalValue(fields.googleMapsUrl) : listing.googleMapsUrl,
+    lastUpdatedAt: row.updated_at || listing.lastUpdatedAt,
   };
 }
 
