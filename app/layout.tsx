@@ -4,6 +4,7 @@ import { siteConfig } from '@/lib/site';
 import './globals.css';
 import './visual-upgrade.css';
 import './faq.css';
+import './motion.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
