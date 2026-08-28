@@ -6,6 +6,7 @@ import { categories, listings, villages, type DirectoryCategory } from '@/lib/da
 import { normalizeArabic } from '@/lib/site';
 import { ListingCard } from './listing-card';
 import { BrandMark } from './site-shell';
+import { CategoryVisual } from './category-visual';
 
 export function DirectoryExplorer({
   category,
@@ -49,7 +50,11 @@ export function DirectoryExplorer({
           />
           <span className="search-field__hint">بحث ذكي</span>
         </label>
+
         <label className="select-field">
+          <span className="select-field__brand" aria-hidden="true">
+            <BrandMark compact />
+          </span>
           <span>القرية</span>
           <select value={village} onChange={(event) => setVillage(event.target.value)}>
             <option value="all">كل نطاق العسيرات</option>
@@ -66,10 +71,9 @@ export function DirectoryExplorer({
         <div className="category-pills" aria-label="فئات الدليل">
           {categories.map((item) => (
             <Link key={item.id} href={`/directory/${item.id}`} className={`category-pill category-pill--${item.id}`}>
-              <span className="category-pill__mark" aria-hidden="true">
-                <BrandMark compact />
-              </span>
+              <CategoryVisual category={item.id} size="sm" />
               <span>{item.shortLabel}</span>
+              <span className="category-pill__brand" aria-hidden="true"><BrandMark compact /></span>
             </Link>
           ))}
         </div>
