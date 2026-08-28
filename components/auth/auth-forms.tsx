@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-type ApiResult = { error?: string };
+type ApiResult = { error?: string; verificationSent?: boolean };
 
 async function submitAuth(path: string, payload: Record<string, string>) {
   const response = await fetch(path, {
@@ -42,14 +42,8 @@ export function LoginForm() {
 
   return (
     <form className="auth-form" onSubmit={onSubmit}>
-      <div className="auth-field">
-        <label htmlFor="login-email">البريد الإلكتروني</label>
-        <input id="login-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" />
-      </div>
-      <div className="auth-field">
-        <div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div>
-        <input id="login-password" name="password" type="password" autoComplete="current-password" required minLength={8} placeholder="••••••••" />
-      </div>
+      <div className="auth-field"><label htmlFor="login-email">البريد الإلكتروني</label><input id="login-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
+      <div className="auth-field"><div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div><input id="login-password" name="password" type="password" autoComplete="current-password" required minLength={8} placeholder="••••••••" /></div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
       <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الدخول…' : 'تسجيل الدخول'}</button>
       <p className="auth-switch">ليس لديك حساب؟ <Link href="/account/register">أنشئ حسابًا جديدًا</Link></p>
@@ -61,6 +55,7 @@ export function RegisterForm() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [verificationSent, setVerificationSent] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,21 +64,27 @@ export function RegisterForm() {
     const confirm = String(form.get('confirmPassword') || '');
     if (password !== confirm) { setError('تأكيد كلمة المرور غير مطابق.'); return; }
     if (!form.get('consent')) { setError('يلزم الموافقة على استخدام بيانات الحساب لتشغيل العضوية.'); return; }
-
     setBusy(true); setError('');
     try {
-      await submitAuth('/api/auth/register', {
+      const result = await submitAuth('/api/auth/register', {
         name: String(form.get('name') || ''),
         email: String(form.get('email') || ''),
         password,
       });
-      router.replace('/account');
-      router.refresh();
+      if (result.verificationSent) {
+        setVerificationSent(true);
+        setBusy(false);
+      } else {
+        router.replace('/account');
+        router.refresh();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذر إنشاء الحساب.');
       setBusy(false);
     }
   }
+
+  if (verificationSent) return <div className="auth-success"><strong>تم إنشاء حسابك</strong><p>أرسلنا رابط تأكيد إلى بريدك الإلكتروني. افتح الرسالة واضغط رابط التأكيد، ثم سجّل الدخول.</p><Link href="/account/login">الذهاب إلى تسجيل الدخول</Link></div>;
 
   return (
     <form className="auth-form" onSubmit={onSubmit}>
@@ -103,7 +104,6 @@ export function ForgotPasswordForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
-
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -115,15 +115,52 @@ export function ForgotPasswordForm() {
       setError(err instanceof Error ? err.message : 'تعذر إرسال الطلب.');
     } finally { setBusy(false); }
   }
-
   if (sent) return <div className="auth-success"><strong>راجع بريدك الإلكتروني</strong><p>إذا كان البريد مرتبطًا بحساب، ستصلك رسالة لإعادة تعيين كلمة المرور.</p><Link href="/account/login">العودة لتسجيل الدخول</Link></div>;
-
   return (
     <form className="auth-form" onSubmit={onSubmit}>
       <div className="auth-field"><label htmlFor="forgot-email">البريد الإلكتروني</label><input id="forgot-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
       <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الإرسال…' : 'إرسال رابط الاستعادة'}</button>
       <p className="auth-switch"><Link href="/account/login">العودة لتسجيل الدخول</Link></p>
+    </form>
+  );
+}
+
+export function ResetPasswordForm() {
+  const router = useRouter();
+  const [accessToken, setAccessToken] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    setAccessToken(hash.get('access_token') || '');
+  }, []);
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const password = String(form.get('password') || '');
+    const confirm = String(form.get('confirmPassword') || '');
+    if (!accessToken) { setError('رابط الاستعادة غير صالح أو انتهت صلاحيته.'); return; }
+    if (password.length < 8) { setError('كلمة المرور يجب ألا تقل عن 8 أحرف.'); return; }
+    if (password !== confirm) { setError('تأكيد كلمة المرور غير مطابق.'); return; }
+    setBusy(true); setError('');
+    try {
+      await submitAuth('/api/auth/reset-password', { accessToken, password });
+      router.replace('/account/login?reset=1');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'تعذر تحديث كلمة المرور.');
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className="auth-form" onSubmit={onSubmit}>
+      <div className="auth-field"><label htmlFor="reset-password">كلمة المرور الجديدة</label><input id="reset-password" name="password" type="password" autoComplete="new-password" required minLength={8} placeholder="8 أحرف على الأقل" /></div>
+      <div className="auth-field"><label htmlFor="reset-confirm">تأكيد كلمة المرور</label><input id="reset-confirm" name="confirmPassword" type="password" autoComplete="new-password" required minLength={8} placeholder="أعد كتابة كلمة المرور" /></div>
+      {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
+      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الحفظ…' : 'حفظ كلمة المرور الجديدة'}</button>
     </form>
   );
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { sameOrigin, sendPasswordReset } from '@/lib/auth/firebase-rest';
+import { authErrorMessage, recoverPassword, sameOrigin } from '@/lib/auth/supabase-rest';
+import { siteConfig } from '@/lib/site';
 
 export const runtime = 'nodejs';
 
@@ -11,9 +12,12 @@ export async function POST(request: Request) {
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       return NextResponse.json({ error: 'اكتب بريدًا إلكترونيًا صحيحًا.' }, { status: 400 });
     }
-    await sendPasswordReset(email).catch(() => null);
+    await recoverPassword(email, `${siteConfig.url}/account/reset-password`);
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
+    // Avoid account enumeration while still handling malformed requests above.
+    const message = authErrorMessage(error);
+    if (message.includes('محاولات كثيرة')) return NextResponse.json({ error: message }, { status: 429 });
     return NextResponse.json({ ok: true });
   }
 }

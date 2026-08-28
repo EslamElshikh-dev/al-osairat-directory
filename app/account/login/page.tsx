@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { BrandMark } from '@/components/site-shell';
 import { LoginForm } from '@/components/auth/auth-forms';
 
 export const metadata: Metadata = { title: 'تسجيل الدخول', robots: { index: false, follow: false } };
 
 export default function LoginPage() {
-  if (!process.env.FIREBASE_WEB_API_KEY?.trim()) notFound();
   return (
     <main id="main-content" className="auth-page">
       <div className="shell auth-shell">
