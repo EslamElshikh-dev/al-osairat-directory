@@ -26,9 +26,15 @@ function formatDate(value: string) {
 }
 
 function iconFor(type: string) {
-  if (type.includes('approved') || type.includes('published')) return '✓';
+  if (
+    type.includes('approved') ||
+    type.includes('published') ||
+    type.includes('corrected') ||
+    type.includes('resolved')
+  ) return '✓';
   if (type.includes('rejected')) return '×';
   if (type.includes('needs_changes')) return '!';
+  if (type.includes('reviewing')) return '…';
   return '•';
 }
 
@@ -121,7 +127,7 @@ export function NotificationCenter() {
         <div>
           <span>مركز المتابعة</span>
           <h2 id="notifications-title">الإشعارات</h2>
-          <p>نتائج مراجعة طلباتك وملكياتك وتعديلات أنشطتك تظهر هنا تلقائيًا.</p>
+          <p>نتائج مراجعة طلباتك وملكياتك وتعديلات أنشطتك وبلاغات البيانات تظهر هنا تلقائيًا.</p>
         </div>
         <div className="notification-center__actions">
           <span>{loading ? '...' : unreadCount ? `${unreadCount} غير مقروء` : 'كلها مقروءة'}</span>
@@ -157,7 +163,7 @@ export function NotificationCenter() {
       ) : (
         <div className="notification-center__empty">
           <strong>لا توجد إشعارات حتى الآن</strong>
-          <p>عند مراجعة أي طلب أو مطالبة أو تعديل ستظهر النتيجة هنا تلقائيًا.</p>
+          <p>عند مراجعة أي طلب أو مطالبة أو تعديل أو بلاغ بيانات ستظهر النتيجة هنا تلقائيًا.</p>
         </div>
       )}
     </section>
