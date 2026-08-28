@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings } from '@/lib/data';
-import { googleMapsHref, phoneHref, siteConfig, sourceLabel, whatsappHref } from '@/lib/site';
+import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 
 export function generateStaticParams() {
@@ -11,7 +11,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const listing = listingBySlug[slug];
+  const listing = listingBySlug[normalizeRouteSlug(slug)];
   if (!listing) return {};
   const category = categoryById[listing.category];
   const title = `${listing.title} - ${listing.village}`;
@@ -39,7 +39,7 @@ function schemaTypeFor(listing: (typeof listings)[number]) {
 
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const listing = listingBySlug[slug];
+  const listing = listingBySlug[normalizeRouteSlug(slug)];
   if (!listing) notFound();
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
