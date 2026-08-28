@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 
 type SessionUser = { displayName: string; email: string; avatarUrl: string } | null;
 
+type ProfileUpdatedDetail = { displayName?: string; avatarUrl?: string };
+
 function AccountIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -25,7 +27,21 @@ export function AccountButton() {
       .then((data) => { if (active) setUser(data.user || null); })
       .catch(() => null)
       .finally(() => { if (active) setReady(true); });
-    return () => { active = false; };
+
+    const handleProfileUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<ProfileUpdatedDetail>).detail || {};
+      setUser((current) => current ? {
+        ...current,
+        displayName: detail.displayName || current.displayName,
+        avatarUrl: detail.avatarUrl ?? current.avatarUrl,
+      } : current);
+    };
+    window.addEventListener('member:profile-updated', handleProfileUpdated);
+
+    return () => {
+      active = false;
+      window.removeEventListener('member:profile-updated', handleProfileUpdated);
+    };
   }, []);
 
   const label = user ? (user.displayName?.split(' ')[0] || 'حسابي') : 'دخول';
