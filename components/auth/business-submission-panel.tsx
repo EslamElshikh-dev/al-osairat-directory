@@ -1,6 +1,7 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { FormEvent } from 'react';
 import { categories, villages } from '@/lib/data/base';
 
 type SubmissionStatus = 'pending' | 'needs_changes' | 'approved' | 'rejected';
@@ -196,8 +197,9 @@ export function BusinessSubmissionPanel() {
             <select
               value={form.village}
               onChange={(event) => {
-                update('village', event.target.value);
                 setForm((current) => ({ ...current, village: event.target.value, locality: '' }));
+                setError('');
+                setMessage('');
               }}
               required
             >
