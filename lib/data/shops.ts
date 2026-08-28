@@ -1,0 +1,9 @@
+import {shops1} from './shops-1';
+import {shops2} from './shops-2';
+import {shops3} from './shops-3';
+import {shops4} from './shops-4';
+import {shops5} from './shops-5';
+import {shops6} from './shops-6';
+import {shops7} from './shops-7';
+import {shops8} from './shops-8';
+export const shops=[...shops1,...shops2,...shops3,...shops4,...shops5,...shops6,...shops7,...shops8];
