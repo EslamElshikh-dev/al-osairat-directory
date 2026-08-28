@@ -74,8 +74,8 @@ export function Footer() {
       <div className="shell footer__bottom">
         <span>© {new Date().getFullYear()} دليل العسيرات</span>
         <span>البيانات قابلة للتحديث والمراجعة المستمرة</span>
-        <a href="https://eslam-elshikh.com" target="_blank" rel="noreferrer" className="footer__signature">
-          توقيع وتطوير: <b>المهندس إسلام الشيخ</b>
+        <a href="https://www.eslam-elshikh.com/about/" target="_blank" rel="noreferrer" className="footer__signature">
+          تصميم وتطوير: <b>المهندس إسلام الشيخ</b>
         </a>
       </div>
     </footer>
