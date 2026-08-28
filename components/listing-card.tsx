@@ -3,6 +3,7 @@ import { categoryById, type DirectoryListing } from '@/lib/data';
 import { googleMapsHref, phoneHref, sourceLabel } from '@/lib/site';
 import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
+import { FavoriteButton } from './favorite-button';
 
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
   const category = categoryById[listing.category];
@@ -10,6 +11,8 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
 
   return (
     <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
+      {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
+
       <div className="listing-card__header">
         <CategoryVisual category={listing.category} size={compact ? 'md' : 'lg'} />
 
