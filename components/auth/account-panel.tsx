@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { MemberProfileForm } from './member-profile-form';
 
 type User = {
   localId: string;
@@ -23,14 +24,9 @@ type FavoriteItem = {
   createdAt: string;
 };
 
-type FeatureIcon = 'profile' | 'add' | 'claim';
+type FeatureIcon = 'add' | 'claim';
 
 const upcomingFeatures: Array<{ title: string; description: string; icon: FeatureIcon }> = [
-  {
-    title: 'بيانات العضو',
-    description: 'حدّث اسمك وصورتك وبيانات حسابك الأساسية من مكان واحد.',
-    icon: 'profile',
-  },
   {
     title: 'طلب إضافة نشاط',
     description: 'أرسل نشاطًا محليًا جديدًا للمراجعة والإضافة إلى دليل العسيرات.',
@@ -44,9 +40,6 @@ const upcomingFeatures: Array<{ title: string; description: string; icon: Featur
 ];
 
 function FeatureIcon({ type }: { type: FeatureIcon }) {
-  if (type === 'profile') {
-    return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.3" /><path d="M5.5 19.2c.9-3.5 3.2-5.3 6.5-5.3s5.6 1.8 6.5 5.3" /></svg>;
-  }
   if (type === 'add') {
     return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4.5 20V8.8L12 4l7.5 4.8V20" /><path d="M8.2 20v-5.2h7.6V20M12 8.2v4M10 10.2h4" /></svg>;
   }
@@ -87,7 +80,7 @@ export function AccountPanel() {
       .catch(() => { if (active) setFavorites([]); })
       .finally(() => { if (active) setFavoritesLoading(false); });
     return () => { active = false; };
-  }, [user]);
+  }, [user?.localId]);
 
   async function removeFavorite(listingId: string) {
     if (removingFavorite) return;
@@ -152,6 +145,12 @@ export function AccountPanel() {
         </div>
       )}
 
+      <MemberProfileForm
+        onSaved={(profile) => {
+          setUser((current) => current ? { ...current, displayName: profile.fullName, avatarUrl: profile.avatarUrl || current.avatarUrl } : current);
+        }}
+      />
+
       <section className="account-favorites-card" aria-labelledby="favorites-title">
         <div className="account-favorites-heading">
           <div>
@@ -204,7 +203,7 @@ export function AccountPanel() {
             <span>مساحتك في الدليل</span>
             <h2 id="member-hub-title">المزايا القادمة</h2>
           </div>
-          <p>المفضلة أصبحت متاحة الآن، وباقي المزايا هنربطها بنفس العضوية ومراجعة البيانات.</p>
+          <p>المفضلة وبيانات العضو أصبحتا متاحتين الآن، وباقي المزايا سنربطها بنفس العضوية ومراجعة البيانات.</p>
         </div>
         <div className="account-feature-grid">
           {upcomingFeatures.map((feature) => (
