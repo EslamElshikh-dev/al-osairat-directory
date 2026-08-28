@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { categories, categoryById, type DirectoryCategory } from '@/lib/data';
+import { getPublishedListings } from '@/lib/published-listings';
 import { siteConfig } from '@/lib/site';
 
 export function generateStaticParams() {
@@ -20,6 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
   };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoryPage({
   params,
   searchParams,
@@ -31,6 +34,7 @@ export default async function CategoryPage({
   const query = await searchParams;
   const info = categoryById[category as DirectoryCategory];
   if (!info) notFound();
+  const publishedListings = await getPublishedListings({ category: info.id });
 
   return (
     <main id="main-content" className="page-main">
@@ -40,7 +44,7 @@ export default async function CategoryPage({
         <p>{info.description}</p>
       </section>
       <section className="shell page-section">
-        <DirectoryExplorer category={info.id} initialQuery={query.q || ''} />
+        <DirectoryExplorer category={info.id} initialQuery={query.q || ''} extraListings={publishedListings} />
       </section>
     </main>
   );
