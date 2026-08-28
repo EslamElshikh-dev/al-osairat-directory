@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { categories, villages } from '@/lib/data/base';
+import { validateBusinessSubmissionInput } from '@/lib/business-submission-validation';
 
 type SubmissionStatus = 'pending' | 'needs_changes' | 'approved' | 'rejected';
 
@@ -130,6 +131,14 @@ export function BusinessSubmissionPanel() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (saving) return;
+
+    const validationError = validateBusinessSubmissionInput(form);
+    if (validationError) {
+      setError(validationError);
+      setMessage('');
+      return;
+    }
+
     setSaving(true);
     setError('');
     setMessage('');
@@ -176,7 +185,7 @@ export function BusinessSubmissionPanel() {
         <div className="business-submission-grid">
           <label>
             <span>اسم النشاط <b>*</b></span>
-            <input value={form.businessName} onChange={(event) => update('businessName', event.target.value)} maxLength={120} placeholder="مثال: صيدلية الدكتور..." required />
+            <input value={form.businessName} onChange={(event) => update('businessName', event.target.value)} minLength={2} maxLength={120} placeholder="مثال: صيدلية الدكتور..." required />
           </label>
 
           <label>
@@ -225,17 +234,35 @@ export function BusinessSubmissionPanel() {
 
           <label className="business-submission-field--wide">
             <span>وصف الموقع داخل القرية <b>*</b></span>
-            <input value={form.locationDetails} onChange={(event) => update('locationDetails', event.target.value)} maxLength={240} placeholder="مثال: شارع المستشفى بجوار..." required />
+            <input value={form.locationDetails} onChange={(event) => update('locationDetails', event.target.value)} minLength={3} maxLength={240} placeholder="مثال: شارع المستشفى بجوار..." required />
           </label>
 
           <label>
             <span>رقم الهاتف</span>
-            <input dir="ltr" inputMode="tel" value={form.phone} onChange={(event) => update('phone', event.target.value)} maxLength={32} placeholder="01xxxxxxxxx" />
+            <input
+              dir="ltr"
+              inputMode="tel"
+              autoComplete="tel"
+              value={form.phone}
+              onChange={(event) => update('phone', event.target.value)}
+              maxLength={18}
+              placeholder="01012345678 أو +201012345678"
+            />
+            <small>موبايل مصري أو رقم أرضي مصري.</small>
           </label>
 
           <label>
             <span>رقم واتساب</span>
-            <input dir="ltr" inputMode="tel" value={form.whatsapp} onChange={(event) => update('whatsapp', event.target.value)} maxLength={32} placeholder="اختياري" />
+            <input
+              dir="ltr"
+              inputMode="tel"
+              autoComplete="tel"
+              value={form.whatsapp}
+              onChange={(event) => update('whatsapp', event.target.value)}
+              maxLength={18}
+              placeholder="01012345678"
+            />
+            <small>يجب أن يكون رقم موبايل مصريًا صحيحًا.</small>
           </label>
 
           <label>
@@ -245,7 +272,16 @@ export function BusinessSubmissionPanel() {
 
           <label>
             <span>رابط خرائط Google</span>
-            <input dir="ltr" inputMode="url" value={form.googleMapsUrl} onChange={(event) => update('googleMapsUrl', event.target.value)} maxLength={500} placeholder="https://maps.app.goo.gl/..." />
+            <input
+              type="url"
+              dir="ltr"
+              inputMode="url"
+              value={form.googleMapsUrl}
+              onChange={(event) => update('googleMapsUrl', event.target.value)}
+              maxLength={500}
+              placeholder="https://maps.app.goo.gl/..."
+            />
+            <small>يُقبل رابط مباشر من Google Maps فقط.</small>
           </label>
 
           <label className="business-submission-field--wide">
