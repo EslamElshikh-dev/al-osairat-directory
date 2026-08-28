@@ -1,0 +1,16 @@
+.blog-grid--home { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.blog-grid--home .blog-card { display: flex; flex-direction: column; }
+.blog-grid--home .blog-card__visual { min-height: 190px; }
+.blog-grid--home .blog-card__body { flex: 1; }
+.home-blog-section { border-block: 1px solid rgba(16,42,36,.055); }
+
+@media (max-width: 980px) {
+  .blog-grid--home { grid-template-columns: 1fr; }
+  .blog-grid--home .blog-card { display: grid; grid-template-columns: 190px minmax(0, 1fr); }
+  .blog-grid--home .blog-card__visual { min-height: 220px; }
+}
+
+@media (max-width: 620px) {
+  .blog-grid--home .blog-card { grid-template-columns: 1fr; }
+  .blog-grid--home .blog-card__visual { min-height: 190px; }
+}
