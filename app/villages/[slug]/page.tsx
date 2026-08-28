@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { listingBySlug, listings, villageBySlug, villages } from '@/lib/data';
+import { listings, villageBySlug, villages } from '@/lib/data';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
