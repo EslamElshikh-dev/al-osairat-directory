@@ -1,0 +1,61 @@
+import type {DirectoryListing} from '../types';
+
+export const shops9:DirectoryListing[]=[
+  {
+    id:'shops-ابناء-حسن-سعاده',
+    slug:'سوبر-ماركت-ابناء-حسن-سعاده',
+    title:'سوبر ماركت أبناء حسن سعادة',
+    category:'shops',
+    subCategory:'سوبر ماركت',
+    location:'9RRV+983، جزيرة أولاد حمزة، مركز العسيرات، سوهاج',
+    village:'جزيرة أولاد حمزة',
+    hours:'24 ساعة',
+    description:'سوبر ماركت في جزيرة أولاد حمزة ضمن نطاق مركز العسيرات.',
+    rating:4.2,
+    reviewCount:14,
+    ratingSource:'google',
+    source:'google_maps',
+    sourceStatus:'google_verified',
+    googlePlaceId:'ChIJ6_RsFtNPTxQRNx1hO_KjutI',
+    googleMapsPlusCode:'9RRV+983',
+    googleMapsUrl:'https://maps.app.goo.gl/v8d7j4LfLthoXimQA?g_st=afm',
+    lastUpdatedAt:'2026-08-29'
+  },
+  {
+    id:'shops-معرض-ابناء-الشيخ-للاجهزة-الكهربائيه',
+    slug:'معرض-ابناء-الشيخ-للاجهزة-الكهربائيه',
+    title:'معرض أبناء الشيخ للأجهزة الكهربائية',
+    category:'shops',
+    subCategory:'أجهزة كهربائية وإلكترونيات',
+    location:'9RRV+47F، جزيرة أولاد حمزة، مركز العسيرات، سوهاج',
+    village:'جزيرة أولاد حمزة',
+    phone:'01125606840',
+    hours:'يوميًا 09:00–23:00',
+    description:'متجر أجهزة كهربائية وإلكترونيات في جزيرة أولاد حمزة، وتظهر بيانات Google توفر خدمة التوصيل.',
+    rating:5,
+    reviewCount:6,
+    ratingSource:'google',
+    source:'google_maps',
+    sourceStatus:'google_verified',
+    deliveryAvailable:true,
+    googlePlaceId:'ChIJk29nuKpPTxQR-2MQrr3lXbg',
+    googleMapsPlusCode:'9RRV+47F',
+    googleMapsUrl:'https://maps.app.goo.gl/gEYfSfseesS1mGmJ7?g_st=afm',
+    lastUpdatedAt:'2026-08-29'
+  },
+  {
+    id:'shops-مكتبة-عمر',
+    slug:'مكتبة-عمر-العسيرات',
+    title:'مكتبة عمر',
+    category:'shops',
+    subCategory:'مكتبة وأدوات مكتبية',
+    location:'مركز العسيرات، محافظة سوهاج',
+    village:'مركز العسيرات',
+    description:'مكتبة داخل نطاق مركز العسيرات. يحتاج تحديد القرية أو التابع بدقة عند توفر مصدر إضافي.',
+    reviewCount:0,
+    source:'google_maps',
+    sourceStatus:'needs_review',
+    googleMapsUrl:'https://maps.app.goo.gl/aMixdRSEeqWqaT9L6?g_st=afm',
+    lastUpdatedAt:'2026-08-29'
+  }
+] as DirectoryListing[];
