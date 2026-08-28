@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { listings } from '@/lib/data';
+import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 
@@ -12,12 +13,23 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function DirectoryPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+export default async function DirectoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; village?: string; page?: string }>;
+}) {
   const params = await searchParams;
   const [publishedListings, baseListings] = await Promise.all([
     getPublishedListings(),
     applyListingOverrides(listings),
   ]);
+
+  const allListings = mergeDirectoryListings(baseListings, publishedListings);
+  const result = queryDirectoryListings(allListings, {
+    query: params.q,
+    village: params.village,
+    page: Number(params.page || 1),
+  });
 
   return (
     <main id="main-content" className="page-main">
@@ -27,7 +39,12 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
         <p>ابحث بالاسم أو التخصص أو الخدمة أو القرية، ثم صفِّ النتائج حسب نطاقك.</p>
       </section>
       <section className="shell page-section">
-        <DirectoryExplorer initialQuery={params.q || ''} baseListings={baseListings} extraListings={publishedListings} />
+        <DirectoryExplorer
+          query={params.q || ''}
+          village={params.village || 'all'}
+          result={result}
+          pathname="/directory"
+        />
       </section>
     </main>
   );
