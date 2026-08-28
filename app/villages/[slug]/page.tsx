@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getListingsByVillage, villageBySlug, villages } from '@/lib/data';
+import { listingBySlug, listings, villageBySlug, villages } from '@/lib/data';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
@@ -29,10 +30,14 @@ export default async function VillagePage({ params }: { params: Promise<{ slug: 
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
 
-  const [publishedListings] = await Promise.all([
+  const [publishedListings, overriddenListings] = await Promise.all([
     getPublishedListings({ village: village.name }),
+    applyListingOverrides(listings),
   ]);
-  const villageListings = [...getListingsByVillage(village.name), ...publishedListings];
+  const villageListings = [
+    ...overriddenListings.filter((item) => item.village === village.name && item.category !== 'emergency'),
+    ...publishedListings,
+  ];
 
   const structuredData = {
     '@context': 'https://schema.org',
