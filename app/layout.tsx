@@ -6,6 +6,7 @@ import './visual-upgrade.css';
 import './faq.css';
 import './motion.css';
 import './shell-upgrade.css';
+import './blog.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
   keywords: [
     'العسيرات', 'مركز العسيرات', 'دليل العسيرات', 'قرى العسيرات', 'سوهاج',
     'أطباء العسيرات', 'صيدليات العسيرات', 'محلات العسيرات', 'حرفيين العسيرات',
+    'تاريخ العسيرات', 'معالم العسيرات', 'مشاهير العسيرات', 'عائلات العسيرات',
   ],
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
