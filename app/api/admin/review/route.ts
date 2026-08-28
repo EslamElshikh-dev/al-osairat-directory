@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { categories, listings } from '@/lib/data';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { SUPABASE_URL, sameOrigin } from '@/lib/auth/supabase-rest';
 import { adminJson, adminRestHeaders, resolveAdminSession } from '@/lib/auth/admin-server';
@@ -47,6 +48,20 @@ type ClaimRow = {
   reviewed_at: string | null;
 };
 
+type ChangeRequestRow = {
+  id: string;
+  user_id: string;
+  listing_id: string;
+  snapshot: Record<string, unknown>;
+  changes: Record<string, unknown>;
+  status: ReviewStatus;
+  review_note: string | null;
+  created_at: string;
+  updated_at: string;
+  reviewed_at: string | null;
+  applied_at: string | null;
+};
+
 type ProfileRow = {
   id: string;
   full_name: string | null;
@@ -85,16 +100,18 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'غير مصرح بالدخول إلى لوحة الإدارة.' }, { status: 403 });
 
   try {
-    const [submissions, claims, ownerships, profiles, publishedListings] = await Promise.all([
+    const [submissions, claims, ownerships, profiles, publishedListings, changeRequests, staticListings] = await Promise.all([
       readRows<SubmissionRow>('business_submissions?select=id,user_id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,status,review_note,created_at,updated_at,reviewed_at,published_listing_id,published_at&order=created_at.desc', session.accessToken),
       readRows<ClaimRow>('business_ownership_claims?select=id,user_id,listing_id,relationship,phone,proof_method,proof_details,status,review_note,created_at,updated_at,reviewed_at&order=created_at.desc', session.accessToken),
       readRows<OwnershipRow>('listing_ownerships?select=listing_id,user_id,relationship,claim_id,approved_at&order=approved_at.desc', session.accessToken),
       readRows<ProfileRow>('profiles?select=id,full_name,phone,village,locality', session.accessToken).catch(() => []),
       getPublishedListings(),
+      readRows<ChangeRequestRow>('listing_change_requests?select=id,user_id,listing_id,snapshot,changes,status,review_note,created_at,updated_at,reviewed_at,applied_at&order=created_at.desc', session.accessToken),
+      applyListingOverrides(listings),
     ]);
 
     const profileIndex = new Map(profiles.map((profile) => [profile.id, profile]));
-    const listingIndex = new Map([...listings, ...publishedListings].map((item) => [item.id, item]));
+    const listingIndex = new Map([...staticListings, ...publishedListings].map((item) => [item.id, item]));
     const publishedIndex = new Map(publishedListings.map((item) => [item.id, item]));
 
     const serializedSubmissions = submissions.map((row) => {
@@ -156,6 +173,31 @@ export async function GET() {
       };
     });
 
+    const serializedChangeRequests = changeRequests.map((row) => {
+      const listing = listingIndex.get(row.listing_id);
+      return {
+        id: row.id,
+        userId: row.user_id,
+        memberName: profileIndex.get(row.user_id)?.full_name?.trim() || 'عضو الدليل',
+        listingId: row.listing_id,
+        listing: listing ? {
+          slug: listing.slug,
+          title: listing.title,
+          categoryLabel: categoryLabels.get(listing.category) || listing.category,
+          village: listing.village,
+          location: listing.location,
+        } : null,
+        snapshot: row.snapshot || {},
+        changes: row.changes || {},
+        status: row.status,
+        reviewNote: row.review_note || '',
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        reviewedAt: row.reviewed_at,
+        appliedAt: row.applied_at,
+      };
+    });
+
     return adminJson({
       admin: {
         displayName: session.displayName,
@@ -164,13 +206,16 @@ export async function GET() {
       stats: {
         pendingSubmissions: submissions.filter((item) => item.status === 'pending' || item.status === 'needs_changes').length,
         pendingClaims: claims.filter((item) => item.status === 'pending' || item.status === 'needs_changes').length,
+        pendingChanges: changeRequests.filter((item) => item.status === 'pending' || item.status === 'needs_changes').length,
         approvedOwnerships: ownerships.length,
         publishedBusinesses: publishedListings.length,
         totalSubmissions: submissions.length,
         totalClaims: claims.length,
+        totalChanges: changeRequests.length,
       },
       submissions: serializedSubmissions,
       claims: serializedClaims,
+      changeRequests: serializedChangeRequests,
       ownerships,
     }, session);
   } catch {
@@ -190,14 +235,18 @@ export async function POST(request: Request) {
   const status = typeof body?.status === 'string' ? body.status.trim() : '';
   const note = cleanNote(body?.note);
 
-  if (!['submission', 'claim'].includes(kind) || !id || !statuses.has(status)) {
+  if (!['submission', 'claim', 'change'].includes(kind) || !id || !statuses.has(status)) {
     return adminJson({ error: 'بيانات المراجعة غير صحيحة.' }, session, 400);
   }
   if ((status === 'needs_changes' || status === 'rejected') && note.length < 3) {
     return adminJson({ error: 'أضف ملاحظة واضحة للعضو عند طلب الاستكمال أو الرفض.' }, session, 400);
   }
 
-  const rpc = kind === 'submission' ? 'review_business_submission' : 'review_ownership_claim';
+  const rpc = kind === 'submission'
+    ? 'review_business_submission'
+    : kind === 'claim'
+      ? 'review_ownership_claim'
+      : 'review_listing_change';
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${rpc}`, {
       method: 'POST',
