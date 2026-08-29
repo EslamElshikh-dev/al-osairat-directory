@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
 import { blogArticles } from '@/lib/blog';
 import { getPublishedListings } from '@/lib/published-listings';
+import { listingSitemapPriority } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
@@ -32,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const villagePages: SitemapEntry[] = villages.map((village) => ({
     url: absoluteUrl(`/villages/${encodedSegment(village.slug)}`),
     changeFrequency: 'weekly',
-    priority: 0.85,
+    priority: village.name === 'مركز العسيرات' ? 0.72 : 0.85,
   }));
 
   const articlePages: SitemapEntry[] = blogArticles.map((article) => ({
@@ -44,15 +45,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticListingPages: SitemapEntry[] = staticDetailListings.map((listing) => ({
     url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
-    changeFrequency: 'monthly',
-    priority: listing.sourceStatus === 'google_verified' ? 0.75 : 0.7,
+    ...(listing.lastUpdatedAt ? { lastModified: listing.lastUpdatedAt } : {}),
+    changeFrequency: listing.sourceStatus === 'needs_review' ? 'yearly' : 'monthly',
+    priority: listingSitemapPriority(listing),
   }));
 
   const publishedListingPages: SitemapEntry[] = publishedListings.map((listing) => ({
     url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
-    lastModified: listing.publishedAt,
+    lastModified: listing.lastUpdatedAt || listing.publishedAt,
     changeFrequency: 'monthly',
-    priority: 0.72,
+    priority: listingSitemapPriority(listing),
   }));
 
   const entries = [
@@ -64,6 +66,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...publishedListingPages,
   ];
 
-  // Keep the sitemap deterministic and protect it from accidental duplicate URLs.
+  // Keep the sitemap deterministic, quality-aware and protected from accidental duplicate URLs.
   return Array.from(new Map(entries.map((entry) => [entry.url, entry])).values());
 }
