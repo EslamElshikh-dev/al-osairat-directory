@@ -36,6 +36,7 @@ export default async function DirectoryPage({
   searchParams: Promise<DirectorySearchParams>;
 }) {
   const params = await searchParams;
+  const filtered = isFilteredDirectoryState(params);
   const [publishedListings, baseListings] = await Promise.all([
     getPublishedListings(),
     applyListingOverrides(listings),
@@ -119,7 +120,7 @@ export default async function DirectoryPage({
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+      {!filtered && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />}
     </main>
   );
 }
