@@ -110,7 +110,9 @@ jobs:
               if (new URL(record.url).searchParams.get('en') === name) return true;
             } catch {}
             const body = String(record.postData || '');
-            return body.includes(`en=${name}`) || body.includes(`en%3D${name}`) || decodeURIComponent(body).includes(`en=${name}`);
+            let decoded = body;
+            try { decoded = decodeURIComponent(body); } catch {}
+            return body.includes(`en=${name}`) || body.includes(`en%3D${name}`) || decoded.includes(`en=${name}`);
           };
 
           (async () => {
@@ -125,8 +127,7 @@ jobs:
                 if (isTag(rec.url) || isCollect(rec.url)) delayedRequests.push(rec);
               });
               delayedPage.on('response', response => {
-                const req = response.request();
-                const rec = recordRequest(req);
+                const rec = recordRequest(response.request());
                 if (isCollect(rec.url)) delayedResponses.push({ request: rec, status: response.status() });
               });
               delayedPage.on('console', msg => { if (msg.type() === 'error') delayedErrors.push(msg.text()); });
@@ -140,7 +141,6 @@ jobs:
               const delayedTag = delayedRequests.some(r => isTag(r.url));
               const delayedPageViewRequest = delayedRequests.some(r => isCollect(r.url) && hasEvent(r, 'page_view'));
               const delayedPageView204 = delayedResponses.some(r => hasEvent(r.request, 'page_view') && r.status === 204);
-              console.log('[GA4_PASSIVE_DEBUG]', JSON.stringify({ delayedRequests, delayedResponses, delayedErrors }));
               if (!delayedTag) throw new Error('Deferred GA4 tag never loaded');
               if (!delayedPageViewRequest) throw new Error('Deferred GA4 page_view request was not emitted');
               if (!delayedPageView204) throw new Error('Deferred GA4 page_view did not receive HTTP 204');
@@ -165,27 +165,45 @@ jobs:
               if (queuedRequests.some(r => isTag(r.url))) throw new Error('GA4 loaded before queued-event test');
 
               await queuedPage.evaluate(() => {
-                window.gtag?.('event', 'ci_queue_probe', { test_scope: 'deferred-ga4' });
+                window.__gaPhoneProbeCallback = false;
+                window.gtag?.('event', 'phone_click', {
+                  test_scope: 'deferred-ga4',
+                  event_timeout: 3000,
+                  event_callback: () => { window.__gaPhoneProbeCallback = true; },
+                });
+              });
+
+              const queuedBeforeInteraction = await queuedPage.evaluate(() =>
+                Array.isArray(window.dataLayer) && window.dataLayer.some(item => item && item[0] === 'event' && item[1] === 'phone_click')
+              );
+              if (!queuedBeforeInteraction) throw new Error('phone_click was not present in dataLayer before interaction');
+
+              await queuedPage.evaluate(() => {
                 window.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
               });
               await wait(5000);
 
               const interactionTag = queuedRequests.some(r => isTag(r.url));
-              const queuedProbeRequest = queuedRequests.some(r => isCollect(r.url) && hasEvent(r, 'ci_queue_probe'));
-              const queuedProbe204 = queuedResponses.some(r => hasEvent(r.request, 'ci_queue_probe') && r.status === 204);
-              console.log('[GA4_QUEUE_DEBUG]', JSON.stringify({ queuedRequests, queuedResponses, queuedErrors }));
+              const queuedPhoneRequest = queuedRequests.some(r => isCollect(r.url) && hasEvent(r, 'phone_click'));
+              const queuedPhone204 = queuedResponses.some(r => hasEvent(r.request, 'phone_click') && r.status === 204);
+              const eventCallbackFired = await queuedPage.evaluate(() => Boolean(window.__gaPhoneProbeCallback));
+
+              console.log('[GA4_QUEUE_DEBUG]', JSON.stringify({ queuedBeforeInteraction, queuedRequests, queuedResponses, queuedErrors, eventCallbackFired }));
               if (!interactionTag) throw new Error('First interaction did not trigger GA4 loading');
-              if (!queuedProbeRequest) throw new Error('Pre-load queued event was not emitted after GA4 loaded');
-              if (!queuedProbe204) throw new Error('Pre-load queued event did not receive HTTP 204');
+              if (!queuedPhoneRequest) throw new Error('Queued phone_click was not emitted after GA4 loaded');
+              if (!queuedPhone204) throw new Error('Queued phone_click did not receive HTTP 204');
+              if (!eventCallbackFired) throw new Error('Queued phone_click event_callback did not fire');
 
               console.log('[GA4_BROWSER_VERIFICATION]', JSON.stringify({
                 earlyTagCount,
                 delayedTag,
                 delayedPageViewRequest,
                 delayedPageView204,
+                queuedBeforeInteraction,
                 interactionTag,
-                queuedProbeRequest,
-                queuedProbe204,
+                queuedPhoneRequest,
+                queuedPhone204,
+                eventCallbackFired,
               }));
             } finally {
               await browser.close();
