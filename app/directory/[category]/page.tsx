@@ -8,6 +8,13 @@ import { categories, categoryById, listings, villages, type DirectoryCategory } 
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
+import {
+  categorySearchProfiles,
+  getEligibleServiceIntents,
+  getTopSubCategories,
+  isVillageCategoryLandingEligible,
+  villageCategoryLandingPath,
+} from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
 
@@ -28,11 +35,14 @@ export async function generateMetadata({
   const info = categoryById[category as DirectoryCategory];
   if (!info) return {};
   const filtered = isFilteredDirectoryState(query);
+  const profile = categorySearchProfiles[info.id];
+  const title = profile?.title || `${info.label} في العسيرات`;
+  const description = profile?.description || info.description;
   return {
-    title: `${info.label} في العسيرات`,
-    description: info.description,
+    title,
+    description,
     alternates: { canonical: `/directory/${info.id}` },
-    openGraph: { title: `${info.label} في العسيرات`, description: info.description, url: `${siteConfig.url}/directory/${info.id}` },
+    openGraph: { title, description, url: `${siteConfig.url}/directory/${info.id}` },
     ...(filtered ? { robots: { index: false, follow: true } } : {}),
   };
 }
@@ -66,14 +76,24 @@ export default async function CategoryPage({
   });
   const pathname = `/directory/${info.id}`;
   const categoryListings = allListings.filter((item) => item.category === info.id);
+  const profile = categorySearchProfiles[info.id];
+  const title = profile?.title || `${info.label} في العسيرات`;
+  const description = profile?.description || info.description;
+  const headingBase = profile?.heading.replace(/\s+في العسيرات$/, '') || info.label;
+  const topSpecialties = getTopSubCategories(categoryListings, 8);
+  const specialistIntents = getEligibleServiceIntents(allListings).filter(({ intent }) => intent.category === info.id);
   const villageLinks = villages
-    .map((village) => ({ village, count: categoryListings.filter((item) => item.village === village.name).length }))
+    .map((village) => ({
+      village,
+      count: categoryListings.filter((item) => item.village === village.name).length,
+      qualified: isVillageCategoryLandingEligible(allListings, village.name, info.id),
+    }))
     .filter((item) => item.count > 0)
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => Number(b.qualified) - Number(a.qualified) || b.count - a.count);
   const villageCount = villageLinks.length;
   const collectionSchema = buildCollectionStructuredData({
-    title: `${info.label} في العسيرات`,
-    description: info.description,
+    title,
+    description,
     path: pathname,
     items: result.items,
     totalItems: result.total,
@@ -98,8 +118,8 @@ export default async function CategoryPage({
                 <span className="catalog-hero__category-name">{info.shortLabel}</span>
               </div>
             </div>
-            <h1>{info.label} <em>في العسيرات</em></h1>
-            <p>{info.description}</p>
+            <h1>{headingBase} <em>في العسيرات</em></h1>
+            <p>{description}</p>
             <div className="catalog-hero__actions">
               <Link href="#directory-results" className="button button--light">عرض النتائج</Link>
               <Link href="/directory" className="button button--outline-light">كل أقسام الدليل</Link>
@@ -120,6 +140,21 @@ export default async function CategoryPage({
         </div>
       </section>
 
+      {profile && (
+        <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="category-authority-title">
+          <div className="seo-growth-hub__heading">
+            <span>صفحة القسم الأساسية</span>
+            <h2 id="category-authority-title">{profile.primaryQuery}</h2>
+            <p>{profile.editorial}</p>
+          </div>
+          {topSpecialties.length > 0 && (
+            <div className="seo-growth-hub__links" aria-label={`أبرز تخصصات ${info.shortLabel}`}>
+              {topSpecialties.map((item) => <span key={item.label} className="button button--ghost">{item.label} · {item.count.toLocaleString('ar-EG')}</span>)}
+            </div>
+          )}
+        </section>
+      )}
+
       <section id="directory-results" className="shell page-section interior-results-section">
         <DirectoryExplorer
           category={info.id}
@@ -130,17 +165,36 @@ export default async function CategoryPage({
         />
       </section>
 
+      {specialistIntents.length > 0 && (
+        <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="specialist-intents-title">
+          <div className="seo-growth-hub__heading">
+            <span>بحث حسب التخصص</span>
+            <h2 id="specialist-intents-title">صفحات أكثر دقة داخل {info.shortLabel}</h2>
+            <p>هذه الصفحات لا تُنشأ إلا للتخصصات التي لديها عدد كافٍ من السجلات وبيانات قابلة للاستخدام.</p>
+          </div>
+          <nav className="seo-growth-hub__links" aria-label={`تخصصات داخل ${info.shortLabel}`}>
+            {specialistIntents.map(({ intent, listings: matched }) => (
+              <Link key={intent.id} href={`/services/${intent.id}`}><span>{intent.label}</span><small>{matched.length.toLocaleString('ar-EG')} سجل</small></Link>
+            ))}
+          </nav>
+        </section>
+      )}
+
       {villageLinks.length > 0 && (
-        <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="category-villages-title">
+        <section className="shell seo-growth-hub" aria-labelledby="category-villages-title">
           <div className="seo-growth-hub__heading">
             <span>تغطية محلية</span>
             <h2 id="category-villages-title">{info.shortLabel} حسب قرى العسيرات</h2>
-            <p>انتقل إلى صفحات القرى الثابتة لاستكشاف الأنشطة والخدمات المحلية المرتبطة بكل نطاق.</p>
+            <p>التركيبات التي تمتلك بيانات كافية تفتح صفحة محلية متخصصة، أما النتائج الأقل اكتمالًا فتوجّه إلى صفحة القرية الأساسية بدل إنشاء صفحة ضعيفة.</p>
           </div>
           <nav className="seo-growth-hub__links" aria-label={`${info.shortLabel} حسب القرية`}>
-            {villageLinks.map(({ village, count }) => (
-              <Link key={village.slug} href={`/villages/${encodeURIComponent(village.slug)}`}>
-                <span>{village.name}</span><small>{count.toLocaleString('ar-EG')} سجل</small>
+            {villageLinks.map(({ village, count, qualified }) => (
+              <Link
+                key={village.slug}
+                href={qualified ? villageCategoryLandingPath(village, info) : `/villages/${encodeURIComponent(village.slug)}`}
+              >
+                <span>{qualified ? `${info.shortLabel} في ${village.name}` : village.name}</span>
+                <small>{count.toLocaleString('ar-EG')} سجل{qualified ? ' · صفحة متخصصة' : ''}</small>
               </Link>
             ))}
           </nav>
