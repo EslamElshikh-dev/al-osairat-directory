@@ -1,7 +1,10 @@
 import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
 import { blogArticles } from '@/lib/blog';
+import { mergeDirectoryListings } from '@/lib/directory-query';
+import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
+import { getEligibleServiceIntents, getEligibleVillageCategoryLandings, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { listingSitemapPriority } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
 
@@ -10,15 +13,27 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
 const absoluteUrl = (path = '') => `${siteConfig.url}${path}`;
 const encodedSegment = (value: string) => encodeURIComponent(value);
 
+function latestListingUpdate(items: typeof listings) {
+  const dates = items.map((listing) => listing.lastUpdatedAt).filter((value): value is string => Boolean(value)).sort();
+  return dates.at(-1);
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const publishedListings = await getPublishedListings();
-  const staticDetailListings = listings.filter((listing) => listing.category !== 'emergency');
+  const [publishedListings, baseListings] = await Promise.all([
+    getPublishedListings(),
+    applyListingOverrides(listings),
+  ]);
+  const allListings = mergeDirectoryListings(baseListings, publishedListings);
+  const staticDetailListings = baseListings.filter((listing) => listing.category !== 'emergency');
+  const eligibleServiceIntents = getEligibleServiceIntents(allListings);
+  const eligibleLocalLandings = getEligibleVillageCategoryLandings(allListings);
 
   const staticPages: SitemapEntry[] = [
     { url: absoluteUrl(), changeFrequency: 'weekly', priority: 1 },
     { url: absoluteUrl('/directory'), changeFrequency: 'weekly', priority: 0.95 },
     { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/villages'), changeFrequency: 'weekly', priority: 0.9 },
+    { url: absoluteUrl('/services'), changeFrequency: 'weekly', priority: 0.84 },
     { url: absoluteUrl('/emergency'), changeFrequency: 'monthly', priority: 0.8 },
   ];
 
@@ -34,6 +49,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: absoluteUrl(`/villages/${encodedSegment(village.slug)}`),
     changeFrequency: 'weekly',
     priority: village.name === 'مركز العسيرات' ? 0.72 : 0.85,
+  }));
+
+  const servicePages: SitemapEntry[] = eligibleServiceIntents.map(({ intent, listings: matched }) => ({
+    url: absoluteUrl(`/services/${intent.id}`),
+    ...(latestListingUpdate(matched) ? { lastModified: latestListingUpdate(matched) } : {}),
+    changeFrequency: 'weekly',
+    priority: Math.min(0.88, Number((0.8 + Math.min(matched.length, 12) / 150).toFixed(2))),
+  }));
+
+  const localLandingPages: SitemapEntry[] = eligibleLocalLandings.map(({ village, category, listings: matched, averageQuality }) => ({
+    url: absoluteUrl(villageCategoryLandingPath(village, category)),
+    ...(latestListingUpdate(matched) ? { lastModified: latestListingUpdate(matched) } : {}),
+    changeFrequency: 'weekly',
+    priority: Math.min(0.87, Number((0.72 + Math.min(matched.length, 12) / 160 + averageQuality / 1000).toFixed(2))),
   }));
 
   const articlePages: SitemapEntry[] = blogArticles.map((article) => ({
@@ -61,11 +90,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...categoryPages,
     ...villagePages,
+    ...servicePages,
+    ...localLandingPages,
     ...articlePages,
     ...staticListingPages,
     ...publishedListingPages,
   ];
 
-  // Keep the sitemap deterministic, quality-aware and protected from accidental duplicate URLs.
+  // Keep the sitemap deterministic, quality-gated and protected from duplicate or thin programmatic URLs.
   return Array.from(new Map(entries.map((entry) => [entry.url, entry])).values());
 }
