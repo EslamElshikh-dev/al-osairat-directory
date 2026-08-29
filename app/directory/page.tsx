@@ -4,6 +4,7 @@ import { DirectoryExplorer } from '@/components/directory-explorer';
 import { BrandMark } from '@/components/site-shell';
 import { categories, listings, villages } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
+import { queryCanonicalDirectory } from '@/lib/directory-repository';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { getEligibleServiceIntents } from '@/lib/programmatic-seo';
@@ -38,17 +39,20 @@ export default async function DirectoryPage({
 }) {
   const params = await searchParams;
   const filtered = isFilteredDirectoryState(params);
-  const [publishedListings, baseListings] = await Promise.all([
+  const queryOptions = {
+    query: params.q,
+    village: params.village,
+    page: Number(params.page || 1),
+  };
+
+  const [canonicalResult, publishedListings, baseListings] = await Promise.all([
+    queryCanonicalDirectory(queryOptions),
     getPublishedListings(),
     applyListingOverrides(listings),
   ]);
 
   const allListings = mergeDirectoryListings(baseListings, publishedListings);
-  const result = queryDirectoryListings(allListings, {
-    query: params.q,
-    village: params.village,
-    page: Number(params.page || 1),
-  });
+  const result = canonicalResult || queryDirectoryListings(allListings, queryOptions);
   const coreVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
   const serviceIntents = getEligibleServiceIntents(allListings);
   const collectionSchema = buildCollectionStructuredData({
