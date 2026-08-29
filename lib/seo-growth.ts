@@ -55,9 +55,8 @@ export function listingDataQualityScore(listing: DirectoryListing) {
 
 /**
  * Keep thin/ambiguous records discoverable inside the directory without asking
- * search engines to index them as standalone entity pages. This deliberately
- * favors stable identity signals over title length alone so useful local
- * records are not discarded just because their names are short.
+ * search engines to index them as standalone entity pages. Verified Google Maps
+ * entities are treated as strong identities even when descriptive copy is thin.
  */
 export function isListingIndexable(listing: DirectoryListing) {
   if (listing.category === 'emergency' || listing.sourceStatus === 'needs_review') return false;
@@ -74,8 +73,16 @@ export function isListingIndexable(listing: DirectoryListing) {
     listing.subCategory?.trim()
       && (listing.locality?.trim() || listing.sourceStatus === 'cross_checked' || listing.sourceStatus === 'google_verified'),
   );
+  const quality = listingDataQualityScore(listing);
 
-  return listingDataQualityScore(listing) >= 58
+  if (listing.sourceStatus === 'google_verified' && hasMap) return true;
+  if (
+    listing.sourceStatus === 'cross_checked'
+    && quality >= 50
+    && (hasPhone || hasMap || hasSubstantiveDescription)
+  ) return true;
+
+  return quality >= 58
     && (hasPhone || hasMap || hasSubstantiveDescription || hasStructuredIdentity);
 }
 
