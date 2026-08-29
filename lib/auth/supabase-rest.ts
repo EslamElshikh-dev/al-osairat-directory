@@ -142,7 +142,7 @@ export function authErrorMessage(error: unknown) {
   if (raw.includes('user_already_exists') || raw.includes('already registered')) return 'يوجد حساب مسجل بهذا البريد بالفعل.';
   if (raw.includes('invalid_credentials') || raw.includes('invalid login credentials')) return 'بيانات الدخول غير صحيحة.';
   if (raw.includes('email_not_confirmed')) return 'أكد بريدك الإلكتروني أولًا ثم سجل الدخول.';
-  if (raw.includes('weak_password') || raw.includes('password should be')) return 'كلمة المرور ضعيفة. استخدم 8 أحرف على الأقل.';
+  if (raw.includes('weak_password') || raw.includes('password should be')) return 'كلمة المرور لا تستوفي متطلبات الأمان. استخدم 10 أحرف على الأقل مع حرف ورقم.';
   if (raw.includes('rate') || error.status === 429) return 'محاولات كثيرة. حاول مرة أخرى بعد قليل.';
   if (raw.includes('email_address_invalid')) return 'صيغة البريد الإلكتروني غير صحيحة.';
   return error.message === 'AUTH_REQUEST_FAILED' ? 'تعذر إتمام العملية الآن. حاول مرة أخرى.' : error.message;
