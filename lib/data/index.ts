@@ -11,6 +11,7 @@ import { lawyers } from './lawyers';
 import { clerics } from './clerics';
 import { government } from './government';
 import { community } from './community';
+import { transport } from './transport';
 import { emergency } from './emergency';
 import { googleMapsIntake20260829 } from './google-maps-intake-2026-08-29';
 
@@ -28,6 +29,7 @@ const rawListings: DirectoryListing[] = [
   ...clerics,
   ...government,
   ...community,
+  ...transport,
   ...emergency,
   ...googleMapsIntake20260829,
 ];
