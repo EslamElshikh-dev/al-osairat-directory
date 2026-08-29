@@ -126,6 +126,9 @@ export default async function CategoryPage({
             <p>{description}</p>
             <div className="catalog-hero__actions">
               <Link href="#directory-results" className="button button--light">عرض النتائج</Link>
+              {info.id === 'transport' && (
+                <Link href="/transport/add" className="button button--outline-light">أضف سائقًا أو وسيلة مواصلات</Link>
+              )}
               <Link href="/directory" className="button button--outline-light">كل أقسام الدليل</Link>
             </div>
           </div>
