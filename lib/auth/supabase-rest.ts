@@ -150,11 +150,13 @@ export async function recoverPassword(email: string, redirectTo: string) {
 }
 
 export async function updatePassword(accessToken: string, password: string) {
+  const currentUser = await getUser(accessToken);
   return authRequest<SupabaseUser>('user', {
     method: 'PUT',
     body: JSON.stringify({
       password,
       data: {
+        ...(currentUser.user_metadata || {}),
         password_policy_version: PASSWORD_POLICY_VERSION,
         password_policy_updated_at: new Date().toISOString(),
       },
