@@ -41,7 +41,6 @@ jobs:
           npm run build
           node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-main.log 2>&1 &
           SERVER_PID=$!
-          echo "$SERVER_PID" > /tmp/osairat-main.pid
           READY=0
           for i in {1..60}; do
             if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
@@ -72,7 +71,6 @@ jobs:
           npm run build
           node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-candidate.log 2>&1 &
           SERVER_PID=$!
-          echo "$SERVER_PID" > /tmp/osairat-candidate.pid
           READY=0
           for i in {1..60}; do
             if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
@@ -107,14 +105,7 @@ jobs:
             const requests = a['network-requests']?.details?.items || [];
             const googleRequests = requests
               .filter((item) => /google(tagmanager|-analytics)|analytics\.google/i.test(String(item.url || '')))
-              .map((item) => ({
-                url: item.url,
-                statusCode: item.statusCode,
-                transferSize: item.transferSize,
-                resourceType: item.resourceType,
-                startTime: item.networkRequestTime,
-                endTime: item.networkEndTime,
-              }));
+              .map((item) => ({ url: item.url, statusCode: item.statusCode, transferSize: item.transferSize, resourceType: item.resourceType }));
             return {
               scores: {
                 performance: Math.round((lhr.categories.performance.score || 0) * 100),
@@ -138,8 +129,102 @@ jobs:
               bestPracticeFailures: categoryFailures(lhr, 'best-practices'),
             };
           };
-          const baseline = pick(read('/tmp/lh-main.json'));
-          const candidate = pick(read('/tmp/lh-candidate.json'));
           console.log('[FOCUSED_DIAGNOSTICS]');
-          console.log(JSON.stringify({ baseline, candidate }, null, 2));
+          console.log(JSON.stringify({
+            baseline: pick(read('/tmp/lh-main.json')),
+            candidate: pick(read('/tmp/lh-candidate.json')),
+          }, null, 2));
           NODE
+
+      - name: Verify deferred GA4 delivery in Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24.16.0
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME_BIN"
+          node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-ga4-browser.log 2>&1 &
+          SERVER_PID=$!
+          READY=0
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then cat /tmp/osairat-ga4-browser.log; exit 1; fi
+          CHROME_BIN="$CHROME_BIN" node <<'NODE'
+          const puppeteer = require('puppeteer-core');
+          const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const isTag = (url) => url.includes('googletagmanager.com/gtag/js');
+          const isCollect = (url) => url.includes('google-analytics.com/g/collect') || url.includes('analytics.google.com/g/collect');
+
+          (async () => {
+            const browser = await puppeteer.launch({
+              executablePath: process.env.CHROME_BIN,
+              headless: true,
+              args: ['--no-sandbox', '--disable-dev-shm-usage'],
+            });
+
+            try {
+              // Test 1: a passive visit must not load GA during the early window,
+              // then must deliver the queued initial page_view after the delay.
+              const delayedPage = await browser.newPage();
+              const delayedRequests = [];
+              const delayedErrors = [];
+              delayedPage.on('requestfinished', (request) => {
+                const url = request.url();
+                if (isTag(url) || isCollect(url)) delayedRequests.push(url);
+              });
+              delayedPage.on('console', (msg) => {
+                if (msg.type() === 'error') delayedErrors.push(msg.text());
+              });
+              await delayedPage.goto('http://127.0.0.1:3000/', { waitUntil: 'load' });
+              await wait(1200);
+              const earlyTagCount = delayedRequests.filter(isTag).length;
+              if (earlyTagCount !== 0) throw new Error(`GA4 loaded too early: ${earlyTagCount} tag request(s)`);
+              await wait(4200);
+              const delayedTag = delayedRequests.some(isTag);
+              const delayedPageView = delayedRequests.some((url) => isCollect(url) && new URL(url).searchParams.get('en') === 'page_view');
+              if (!delayedTag) throw new Error('Deferred GA4 tag never loaded');
+              if (!delayedPageView) throw new Error('Deferred GA4 initial page_view was not delivered');
+
+              // Test 2: events queued before the external tag arrives must survive,
+              // and a first interaction must trigger loading immediately.
+              const queuedPage = await browser.newPage();
+              await queuedPage.setRequestInterception(true);
+              const queuedRequests = [];
+              queuedPage.on('request', (request) => {
+                const url = request.url();
+                if (isTag(url) || isCollect(url)) queuedRequests.push(url);
+                if (isCollect(url)) request.abort();
+                else request.continue();
+              });
+              await queuedPage.goto('http://127.0.0.1:3000/', { waitUntil: 'load' });
+              await queuedPage.waitForFunction(() => typeof window.gtag === 'function');
+              await wait(250);
+              await queuedPage.evaluate(() => {
+                window.gtag?.('event', 'ci_queue_probe', { test_scope: 'deferred-ga4' });
+                window.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+              });
+              await wait(1800);
+              const interactionTag = queuedRequests.some(isTag);
+              const queuedProbe = queuedRequests.some((url) => isCollect(url) && new URL(url).searchParams.get('en') === 'ci_queue_probe');
+              if (!interactionTag) throw new Error('First interaction did not trigger GA4 loading');
+              if (!queuedProbe) throw new Error('Pre-load queued event was not flushed after GA4 loaded');
+
+              console.log('[GA4_BROWSER_VERIFICATION]', JSON.stringify({
+                earlyTagCount,
+                delayedTag,
+                delayedPageView,
+                delayedConsoleErrors: delayedErrors,
+                interactionTag,
+                queuedProbe,
+              }));
+            } finally {
+              await browser.close();
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+          kill "$SERVER_PID"
+          wait "$SERVER_PID" 2>/dev/null || true
