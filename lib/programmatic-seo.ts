@@ -36,7 +36,7 @@ export type CategorySearchProfile = {
 };
 
 export const PROGRAMMATIC_MIN_LISTINGS = 3;
-export const PROGRAMMATIC_MIN_AVERAGE_QUALITY = 58;
+export const PROGRAMMATIC_MIN_AVERAGE_QUALITY = 62;
 
 const LOCAL_LANDING_CATEGORIES = new Set<DirectoryCategory>([
   'doctors',
