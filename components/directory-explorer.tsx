@@ -29,36 +29,46 @@ export function DirectoryExplorer({
   const pages = pageNumbers(result.page, result.totalPages);
 
   return (
-    <div className="explorer">
-      <form className="explorer__tools" action={pathname} method="get" role="search">
-        <div className="search-field">
-          <span className="search-field__brand" aria-hidden="true"><BrandMark compact /></span>
-          <label className="sr-only" htmlFor="directory-search">ابحث في الدليل</label>
-          <input
-            id="directory-search"
-            name="q"
-            defaultValue={query}
-            placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..."
-            inputMode="search"
-            autoComplete="off"
-          />
-          <span className="search-field__hint">بحث ذكي</span>
-          <button type="submit" className="button button--primary">بحث</button>
-          {(query || village !== 'all') && <Link href={pathname} className="button button--ghost">مسح</Link>}
+    <div className="explorer explorer--premium">
+      <div className="explorer__toolbar-shell">
+        <div className="explorer__toolbar-heading">
+          <div>
+            <span className="explorer__toolbar-kicker">بحث وتصفية</span>
+            <strong>وصّل للنتيجة الأقرب لاحتياجك</strong>
+          </div>
+          <span className="explorer__toolbar-mark" aria-hidden="true"><BrandMark compact /></span>
         </div>
 
-        <label className="select-field">
-          <span className="select-field__brand" aria-hidden="true"><BrandMark compact /></span>
-          <span>القرية</span>
-          <select name="village" defaultValue={village}>
-            <option value="all">كل نطاق العسيرات</option>
-            {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
-          </select>
-        </label>
-      </form>
+        <form className="explorer__tools" action={pathname} method="get" role="search">
+          <div className="search-field">
+            <span className="search-field__brand" aria-hidden="true"><BrandMark compact /></span>
+            <label className="sr-only" htmlFor="directory-search">ابحث في الدليل</label>
+            <input
+              id="directory-search"
+              name="q"
+              defaultValue={query}
+              placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..."
+              inputMode="search"
+              autoComplete="off"
+            />
+            <span className="search-field__hint">بحث ذكي</span>
+            <button type="submit" className="button button--primary">بحث</button>
+            {(query || village !== 'all') && <Link href={pathname} className="button button--ghost">مسح</Link>}
+          </div>
+
+          <label className="select-field">
+            <span className="select-field__brand" aria-hidden="true"><BrandMark compact /></span>
+            <span>القرية</span>
+            <select name="village" defaultValue={village}>
+              <option value="all">كل نطاق العسيرات</option>
+              {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
+            </select>
+          </label>
+        </form>
+      </div>
 
       {!category && (
-        <div className="category-pills" aria-label="فئات الدليل">
+        <div className="category-pills category-pills--premium" aria-label="فئات الدليل">
           {categories.map((item) => (
             <Link
               key={item.id}
@@ -73,12 +83,16 @@ export function DirectoryExplorer({
         </div>
       )}
 
-      <div className="results-bar">
-        <strong>{result.total.toLocaleString('ar-EG')}</strong>
-        <span>نتيجة مطابقة</span>
-        {result.total > result.pageSize && (
-          <span>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')}</span>
-        )}
+      <div className="results-bar results-bar--premium">
+        <div className="results-bar__identity">
+          <span className="results-bar__mark" aria-hidden="true"><BrandMark compact /></span>
+          <div><strong>{result.total.toLocaleString('ar-EG')}</strong><span>نتيجة مطابقة</span></div>
+        </div>
+        <div className="results-bar__context">
+          {query && <span>بحث: <b>«{query}»</b></span>}
+          {village !== 'all' && <span>النطاق: <b>{village}</b></span>}
+          {result.total > result.pageSize && <span>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')}</span>}
+        </div>
       </div>
 
       {result.items.length ? (
@@ -88,7 +102,7 @@ export function DirectoryExplorer({
           </div>
 
           {result.totalPages > 1 && (
-            <nav className="detail-actions" aria-label="صفحات نتائج الدليل">
+            <nav className="detail-actions detail-actions--pagination" aria-label="صفحات نتائج الدليل">
               {result.page > 1 && (
                 <Link
                   className="button button--ghost"
@@ -104,7 +118,7 @@ export function DirectoryExplorer({
                 const showGap = previous && page - previous > 1;
                 return (
                   <span key={page} style={{ display: 'contents' }}>
-                    {showGap && <span aria-hidden="true">…</span>}
+                    {showGap && <span className="pagination-gap" aria-hidden="true">…</span>}
                     <Link
                       className={`button ${page === result.page ? 'button--primary' : 'button--soft'}`}
                       href={createDirectoryHref(pathname, { query, village, page })}
@@ -129,9 +143,11 @@ export function DirectoryExplorer({
           )}
         </>
       ) : (
-        <div className="empty-state">
+        <div className="empty-state empty-state--premium">
+          <span className="empty-state__mark" aria-hidden="true"><BrandMark /></span>
           <strong>لا توجد نتائج مطابقة</strong>
           <p>جرّب كلمة أقصر، مرادفًا آخر، أو اختر قرية أخرى.</p>
+          <Link href={pathname} className="button button--soft">عرض كل النتائج</Link>
         </div>
       )}
     </div>

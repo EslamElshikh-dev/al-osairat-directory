@@ -6,6 +6,8 @@ import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } f
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
+import { CategoryVisual } from '@/components/category-visual';
+import { BrandMark } from '@/components/site-shell';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
 export function generateStaticParams() {
@@ -92,27 +94,50 @@ export default async function VillagePage({
   };
 
   return (
-    <main id="main-content" className="page-main">
-      <section className="village-hero">
-        <div className="shell">
-          <nav className="breadcrumbs" aria-label="مسار التنقل"><Link href="/villages">القرى</Link><span>/</span><span>{village.name}</span></nav>
-          <span className="eyebrow">قرية ضمن نطاق العسيرات</span>
-          <h1>{village.name}</h1>
-          <p>{village.description}</p>
-          <div className="village-hero__stats"><span><b>{result.total}</b> سجل منشور</span><span><b>{village.localities.length}</b> تابع/نجع مسمى</span></div>
+    <main id="main-content" className="page-main interior-redesign">
+      <section className="village-hero village-hero--premium">
+        <div className="shell village-hero__premium-grid">
+          <div className="village-hero__content">
+            <nav className="breadcrumbs" aria-label="مسار التنقل"><Link href="/villages">القرى</Link><span>/</span><span>{village.name}</span></nav>
+            <div className="village-hero__identity">
+              <span className="village-hero__brand" aria-hidden="true"><BrandMark /></span>
+              <div>
+                <span className="eyebrow">قرية ضمن نطاق العسيرات</span>
+                <span className="village-hero__scope">مركز العسيرات · سوهاج</span>
+              </div>
+            </div>
+            <h1>{village.name}</h1>
+            <p>{village.description}</p>
+            <div className="catalog-hero__actions">
+              <Link href="#village-listings" className="button button--light">عرض الأنشطة</Link>
+              <Link href="/villages" className="button button--outline-light">كل القرى</Link>
+            </div>
+          </div>
+
+          <aside className="village-hero__summary" aria-label={`ملخص ${village.name}`}>
+            <span className="catalog-hero__summary-label">ملخص القرية</span>
+            <div className="catalog-hero__metrics">
+              <span><b>{result.total.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
+              <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابع/نجع</small></span>
+              <span><b>{categorySummary.length.toLocaleString('ar-EG')}</b><small>أقسام متاحة</small></span>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <section className="shell page-section">
+      <section className="shell page-section village-detail-content">
         {village.localities.length > 0 && (
-          <div className="localities-panel">
-            <h2>التوابع والنجوع المسجلة بالاسم</h2>
+          <div className="localities-panel localities-panel--premium">
+            <div className="localities-panel__heading">
+              <span className="localities-panel__mark" aria-hidden="true"><BrandMark compact /></span>
+              <div><span>نطاقات محلية</span><h2>التوابع والنجوع المسجلة بالاسم</h2></div>
+            </div>
             <div>{village.localities.map((locality) => <span key={locality}>{locality}</span>)}</div>
           </div>
         )}
 
         {categorySummary.length > 0 && (
-          <section className="village-category-section" aria-labelledby="village-services-title">
+          <section className="village-category-section village-category-section--premium" aria-labelledby="village-services-title">
             <div className="village-category-heading">
               <div>
                 <span className="eyebrow eyebrow--dark">الخدمات داخل القرية</span>
@@ -127,24 +152,24 @@ export default async function VillagePage({
                   className="village-category-link"
                   href={`/directory/${category.id}?village=${encodeURIComponent(village.name)}`}
                 >
-                  <span>{category.shortLabel}</span>
+                  <CategoryVisual category={category.id} size="sm" />
+                  <span className="village-category-link__copy"><span>{category.shortLabel}</span><small>عرض النتائج ←</small></span>
                   <strong>{count.toLocaleString('ar-EG')}</strong>
-                  <small>عرض النتائج ←</small>
                 </Link>
               ))}
             </div>
           </section>
         )}
 
-        <div className="section-heading section-heading--compact">
+        <div id="village-listings" className="section-heading section-heading--compact interior-section-heading">
           <div><span className="eyebrow eyebrow--dark">كل الأنشطة</span><h2>البيانات المنشورة في {village.name}</h2></div>
-          {result.total > result.pageSize && <p>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')} من {result.total.toLocaleString('ar-EG')}</p>}
+          {result.total > result.pageSize ? <p>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')} من {result.total.toLocaleString('ar-EG')}</p> : <span className="interior-section-heading__count">{result.total.toLocaleString('ar-EG')} نتيجة</span>}
         </div>
         {result.items.length ? (
           <>
             <div className="listing-grid">{result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
             {result.totalPages > 1 && (
-              <nav className="detail-actions" aria-label={`صفحات دليل ${village.name}`}>
+              <nav className="detail-actions detail-actions--pagination" aria-label={`صفحات دليل ${village.name}`}>
                 {result.page > 1 && <Link className="button button--ghost" rel="prev" href={createDirectoryHref(pathname, { page: result.page - 1 })}>السابق</Link>}
                 <span>صفحة {result.page.toLocaleString('ar-EG')} من {result.totalPages.toLocaleString('ar-EG')}</span>
                 {result.page < result.totalPages && <Link className="button button--primary" rel="next" href={createDirectoryHref(pathname, { page: result.page + 1 })}>التالي</Link>}

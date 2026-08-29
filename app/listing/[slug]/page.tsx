@@ -8,6 +8,8 @@ import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescri
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
 import { ListingReport } from '@/components/listing-report';
+import { CategoryVisual } from '@/components/category-visual';
+import { BrandMark } from '@/components/site-shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -71,6 +73,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const whatsapp = whatsappHref(listing);
   const maps = googleMapsHref(listing);
   const lastUpdated = formatListingDate(listing.lastUpdatedAt);
+  const dataSourceLabel = sourceLabel(listing);
 
   const [publishedNearby, overriddenStatic] = await Promise.all([
     getPublishedListings({ category: listing.category, village: listing.village }),
@@ -113,28 +116,53 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   };
 
   return (
-    <main id="main-content" className="page-main">
-      <section className="detail-hero">
-        <div className="shell">
-          <nav className="breadcrumbs" aria-label="مسار التنقل">
-            <Link href="/">الرئيسية</Link><span>/</span>
-            <Link href={`/directory/${listing.category}`}>{category.shortLabel}</Link><span>/</span>
-            <span>{listing.title}</span>
-          </nav>
-          <span className="eyebrow">{listing.subCategory || category.shortLabel}</span>
-          <h1>{listing.title}</h1>
-          <p>{listing.location}</p>
-          <div className="detail-actions">
-            <FavoriteButton listingId={listing.id} variant="hero" showLabel />
-            {phone && <a className="button button--light" href={phone}>اتصال مباشر</a>}
-            {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer">واتساب</a>}
-            <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer">فتح في الخرائط</a>
+    <main id="main-content" className="page-main interior-redesign">
+      <section className="detail-hero detail-hero--premium">
+        <div className="shell detail-hero__premium-grid">
+          <div className="detail-hero__content">
+            <nav className="breadcrumbs" aria-label="مسار التنقل">
+              <Link href="/">الرئيسية</Link><span>/</span>
+              <Link href={`/directory/${listing.category}`}>{category.shortLabel}</Link><span>/</span>
+              <span>{listing.title}</span>
+            </nav>
+
+            <div className="detail-hero__identity">
+              <CategoryVisual category={listing.category} size="lg" />
+              <div>
+                <span className="eyebrow">{listing.subCategory || category.shortLabel}</span>
+                <span className="detail-hero__scope">{listing.village} · مركز العسيرات</span>
+              </div>
+            </div>
+
+            <h1>{listing.title}</h1>
+            <p>{listing.location}</p>
+            <div className="detail-actions detail-actions--hero">
+              <FavoriteButton listingId={listing.id} variant="hero" showLabel />
+              {phone && <a className="button button--light" href={phone}>اتصال مباشر</a>}
+              {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer">واتساب</a>}
+              <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer">فتح في الخرائط</a>
+            </div>
           </div>
+
+          <aside className="detail-hero__summary" aria-label="ملخص بيانات النشاط">
+            <span className="catalog-hero__summary-label">بيانات موثقة داخل الدليل</span>
+            <div className="detail-hero__summary-brand"><span aria-hidden="true"><BrandMark compact /></span><strong>{dataSourceLabel}</strong></div>
+            <div className="detail-hero__summary-list">
+              <span><small>القسم</small><b>{category.shortLabel}</b></span>
+              <span><small>النطاق</small><b>{listing.village}</b></span>
+              {lastUpdated && <span><small>آخر تحديث</small><b>{lastUpdated}</b></span>}
+            </div>
+          </aside>
         </div>
       </section>
 
-      <section className="shell detail-layout">
-        <article className="detail-card">
+      <section className="shell detail-layout detail-layout--premium">
+        <article className="detail-card detail-card--premium">
+          <div className="detail-card__heading">
+            <span className="detail-card__mark" aria-hidden="true"><BrandMark compact /></span>
+            <div><span>بيانات النشاط</span><h2>المعلومات الأساسية</h2></div>
+          </div>
+
           <div className="detail-grid">
             <div><span>القسم</span><strong>{category.label}</strong></div>
             <div><span>القرية / النطاق</span><strong>{listing.village}</strong></div>
@@ -143,14 +171,17 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             {listing.deliveryAvailable && <div><span>التوصيل</span><strong>متاح بحسب المصدر</strong></div>}
             {listing.googleMapsPlusCode && <div><span>Plus Code</span><strong dir="ltr">{listing.googleMapsPlusCode}</strong></div>}
           </div>
-          {listing.description && <div className="detail-description"><h2>معلومات إضافية</h2><p>{listing.description}</p></div>}
 
-          <div className="source-panel">
-            <span>حالة ومصدر البيانات</span>
-            <strong>{sourceLabel(listing)}</strong>
+          {listing.description && <div className="detail-description"><span className="detail-section-label">نبذة</span><h2>معلومات إضافية</h2><p>{listing.description}</p></div>}
+
+          <div className="source-panel source-panel--premium">
+            <div className="source-panel__heading">
+              <span className="source-panel__icon" aria-hidden="true">✓</span>
+              <div><span>حالة ومصدر البيانات</span><strong>{dataSourceLabel}</strong></div>
+            </div>
             {lastUpdated && <p><b>آخر تحديث موثق داخل الدليل:</b> {lastUpdated}</p>}
             <p>{sourceDescription(listing)}</p>
-            <div className="detail-actions">
+            <div className="detail-actions detail-actions--management">
               <Link className="button button--primary" href={`/account?claim=${encodeURIComponent(listing.id)}#ownership-claims`}>امتلك هذا النشاط</Link>
               <Link className="button button--soft" href="/account#my-businesses">تعديل نشاط تملكه</Link>
               <Link className="button button--ghost" href="/account#business-submissions">أضف نشاطك</Link>
@@ -159,10 +190,14 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </div>
         </article>
 
-        <aside className="detail-aside">
-          <h2>خدمات قريبة في {listing.village}</h2>
+        <aside className="detail-aside detail-aside--premium">
+          <div className="detail-aside__heading">
+            <span className="eyebrow eyebrow--dark">في نفس النطاق</span>
+            <h2>خدمات قريبة في {listing.village}</h2>
+            <p>نتائج من نفس القسم والقرية لمساعدتك على المقارنة والوصول بسرعة.</p>
+          </div>
           <div className="detail-aside__list">
-            {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p>لا توجد سجلات مشابهة منشورة حاليًا.</p>}
+            {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
           </div>
         </aside>
       </section>
