@@ -6,19 +6,34 @@ import { categories, listings, villages } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
+import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
 
-export const metadata: Metadata = {
-  title: 'الدليل الشامل لخدمات وأنشطة العسيرات',
-  description: 'ابحث في دليل مركز العسيرات عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والمحامين والخدمات.',
-  alternates: { canonical: '/directory' },
-};
+const directoryTitle = 'الدليل الشامل لخدمات وأنشطة العسيرات';
+const directoryDescription = 'ابحث في دليل مركز العسيرات عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والمحامين والخدمات.';
+
+type DirectorySearchParams = { q?: string; village?: string; page?: string };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<DirectorySearchParams>;
+}): Promise<Metadata> {
+  const query = await searchParams;
+  const filtered = isFilteredDirectoryState(query);
+  return {
+    title: directoryTitle,
+    description: directoryDescription,
+    alternates: { canonical: '/directory' },
+    ...(filtered ? { robots: { index: false, follow: true } } : {}),
+  };
+}
 
 export const dynamic = 'force-dynamic';
 
 export default async function DirectoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; village?: string; page?: string }>;
+  searchParams: Promise<DirectorySearchParams>;
 }) {
   const params = await searchParams;
   const [publishedListings, baseListings] = await Promise.all([
@@ -32,7 +47,20 @@ export default async function DirectoryPage({
     village: params.village,
     page: Number(params.page || 1),
   });
-  const coreVillages = villages.filter((item) => item.name !== 'مركز العسيرات').length;
+  const coreVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
+  const collectionSchema = buildCollectionStructuredData({
+    title: directoryTitle,
+    description: directoryDescription,
+    path: '/directory',
+    items: result.items,
+    totalItems: result.total,
+    page: result.page,
+    pageSize: result.pageSize,
+    breadcrumbs: [
+      { name: 'الرئيسية', path: '' },
+      { name: 'الدليل', path: '/directory' },
+    ],
+  });
 
   return (
     <main id="main-content" className="page-main interior-redesign">
@@ -53,7 +81,7 @@ export default async function DirectoryPage({
             <div className="catalog-hero__metrics">
               <span><b>{result.total.toLocaleString('ar-EG')}</b><small>نتيجة حالية</small></span>
               <span><b>{categories.length.toLocaleString('ar-EG')}</b><small>قسمًا</small></span>
-              <span><b>{coreVillages.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
+              <span><b>{coreVillages.length.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
             </div>
             <div className="catalog-hero__quick-links">
               {categories.slice(0, 4).map((category) => (
@@ -72,6 +100,26 @@ export default async function DirectoryPage({
           pathname="/directory"
         />
       </section>
+
+      <section className="shell seo-growth-hub" aria-labelledby="directory-discovery-title">
+        <div className="seo-growth-hub__heading">
+          <span>روابط استكشاف مباشرة</span>
+          <h2 id="directory-discovery-title">استكشف الدليل حسب القسم أو القرية</h2>
+          <p>صفحات ثابتة تساعد الزائر ومحركات البحث على الانتقال بين أهم كيانات دليل العسيرات بدون الاعتماد على نتائج البحث والفلاتر.</p>
+        </div>
+        <div className="seo-growth-hub__columns">
+          <nav aria-label="أقسام دليل العسيرات">
+            <strong>الأقسام</strong>
+            <div>{categories.filter((category) => category.id !== 'emergency').map((category) => <Link key={category.id} href={`/directory/${category.id}`}>{category.label}</Link>)}</div>
+          </nav>
+          <nav aria-label="قرى مركز العسيرات">
+            <strong>القرى</strong>
+            <div>{coreVillages.map((village) => <Link key={village.slug} href={`/villages/${encodeURIComponent(village.slug)}`}>دليل {village.name}</Link>)}</div>
+          </nav>
+        </div>
+      </section>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
     </main>
   );
 }
