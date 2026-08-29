@@ -10,6 +10,7 @@ import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import {
   categorySearchProfiles,
+  getEligibleVillageCategoryLandings,
   getProgrammaticCollectionStats,
   getTopSubCategories,
   getVillageCategoryListings,
@@ -22,6 +23,15 @@ import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 import type { DirectoryCategory } from '@/lib/types';
 
 type LocalSearchParams = { page?: string };
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getEligibleVillageCategoryLandings(listings).map(({ village, category }) => ({
+    slug: village.slug,
+    category: category.id,
+  }));
+}
 
 async function loadAllListings() {
   const [publishedListings, baseListings] = await Promise.all([
