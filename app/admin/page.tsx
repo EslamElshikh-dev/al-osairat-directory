@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AdminAnalyticsDashboard } from '@/components/admin/admin-analytics-dashboard';
+import { AdminAuthorityBatch } from '@/components/admin/admin-authority-batch';
 import { AdminDataQuality } from '@/components/admin/admin-data-quality';
 import { AdminDirectoryIntelligence } from '@/components/admin/admin-directory-intelligence';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
@@ -63,6 +64,7 @@ export default async function AdminPage() {
         <AdminAnalyticsDashboard />
         <AdminDirectoryIntelligence />
         <AdminDataQuality />
+        <AdminAuthorityBatch />
         <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
         <AdminListingReports />
       </div>
