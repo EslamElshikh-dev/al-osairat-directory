@@ -5,7 +5,7 @@ export const siteConfig = {
   shortName: 'دليل العسيرات',
   description:
     'دليل رقمي شامل لمركز العسيرات وقراه بمحافظة سوهاج: أطباء وصيدليات ومحلات وحرفيون ومطاعم ومحامون وخدمات وأرقام مهمة.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://al-osairat-directory.vercel.app',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://usayrat.online',
   locale: 'ar_EG',
 };
 
