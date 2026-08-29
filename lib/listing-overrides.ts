@@ -1,5 +1,5 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
-import type { DirectoryListing } from '@/lib/types';
+import type { DirectoryListing, SourceStatus } from '@/lib/types';
 
 type EditableListingFields = {
   title?: string;
@@ -7,11 +7,13 @@ type EditableListingFields = {
   location?: string;
   village?: string;
   locality?: string;
-  phone?: string;
-  whatsapp?: string;
-  hours?: string;
-  description?: string;
-  googleMapsUrl?: string;
+  phone?: string | null;
+  whatsapp?: string | null;
+  hours?: string | null;
+  description?: string | null;
+  googleMapsUrl?: string | null;
+  googlePlaceId?: string | null;
+  sourceStatus?: SourceStatus;
 };
 
 type ListingOverrideRow = {
@@ -45,6 +47,13 @@ function optionalValue(value: unknown) {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }
 
+function isSourceStatus(value: unknown): value is SourceStatus {
+  return value === 'source_only'
+    || value === 'cross_checked'
+    || value === 'google_verified'
+    || value === 'needs_review';
+}
+
 export function applyListingOverride(listing: DirectoryListing, row?: ListingOverrideRow | null): DirectoryListing {
   if (!row?.fields) return listing;
   const fields = row.fields;
@@ -60,6 +69,8 @@ export function applyListingOverride(listing: DirectoryListing, row?: ListingOve
     hours: Object.prototype.hasOwnProperty.call(fields, 'hours') ? optionalValue(fields.hours) : listing.hours,
     description: Object.prototype.hasOwnProperty.call(fields, 'description') ? optionalValue(fields.description) : listing.description,
     googleMapsUrl: Object.prototype.hasOwnProperty.call(fields, 'googleMapsUrl') ? optionalValue(fields.googleMapsUrl) : listing.googleMapsUrl,
+    googlePlaceId: Object.prototype.hasOwnProperty.call(fields, 'googlePlaceId') ? optionalValue(fields.googlePlaceId) : listing.googlePlaceId,
+    sourceStatus: isSourceStatus(fields.sourceStatus) ? fields.sourceStatus : listing.sourceStatus,
     lastUpdatedAt: row.updated_at || listing.lastUpdatedAt,
   };
 }
