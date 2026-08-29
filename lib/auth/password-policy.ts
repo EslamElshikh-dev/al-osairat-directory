@@ -35,7 +35,7 @@ export function evaluatePassword(password: string): PasswordPolicyResult {
   const length = password.length >= PASSWORD_MIN_LENGTH;
   const letter = /\p{L}/u.test(password);
   const number = /\p{N}/u.test(password);
-  const uncommon = !COMMON_PASSWORDS.has(normalizedForComparison(password));
+  const uncommon = password.length > 0 && !COMMON_PASSWORDS.has(normalizedForComparison(password));
   const hasSymbol = /[^\p{L}\p{N}\s]/u.test(password);
   const valid = length && letter && number && uncommon;
 
