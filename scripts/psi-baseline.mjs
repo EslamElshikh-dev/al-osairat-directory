@@ -1,5 +1,5 @@
-const target = 'https://al-osairat-directory.vercel.app/';
-const domain = 'al-osairat-directory.vercel.app';
+const target = 'https://al-osairat-directory.vercel.app/?psi=step2-58e7bbd';
+const domain = 'al-osairat-directory.vercel.app?psi=step2-58e7bbd';
 
 async function runOfficial() {
   const params = new URLSearchParams({ url: target, strategy: 'mobile', locale: 'en' });
@@ -39,7 +39,7 @@ async function runOfficial() {
 }
 
 async function runFallback() {
-  const response = await fetch(`https://page-speed.dev/api/run/${domain}`, { cache: 'no-store' });
+  const response = await fetch(`https://page-speed.dev/api/run/${encodeURIComponent(domain)}`, { cache: 'no-store' });
   const data = await response.json();
   if (!response.ok) throw new Error(data?.statusMessage || `Fallback HTTP ${response.status}`);
 
