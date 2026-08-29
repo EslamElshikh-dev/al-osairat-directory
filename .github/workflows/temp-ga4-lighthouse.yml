@@ -36,53 +36,28 @@ jobs:
           set -euo pipefail
           git checkout --force origin/main
           git clean -fdx
-          echo "Measuring main: $(git rev-parse HEAD)"
           npm ci
           npm run build
           node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-main.log 2>&1 &
           SERVER_PID=$!
-          READY=0
-          for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then cat /tmp/osairat-main.log; exit 1; fi
-          lighthouse http://127.0.0.1:3000/ \
-            --output=json \
-            --output-path=/tmp/lh-main.json \
-            --quiet \
-            --chrome-flags="--headless --no-sandbox" \
-            --only-categories=performance,accessibility,best-practices,seo
+          for i in {1..60}; do curl -fsS http://127.0.0.1:3000/ >/dev/null && break; sleep 1; done
+          lighthouse http://127.0.0.1:3000/ --output=json --output-path=/tmp/lh-main.json --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo
           kill "$SERVER_PID"
           wait "$SERVER_PID" 2>/dev/null || true
-          for i in {1..20}; do
-            if ! curl -fsS http://127.0.0.1:3000/ > /dev/null 2>&1; then break; fi
-            sleep 0.25
-          done
-          if curl -fsS http://127.0.0.1:3000/ > /dev/null 2>&1; then echo 'Baseline server still alive'; exit 1; fi
+          for i in {1..20}; do ! curl -fsS http://127.0.0.1:3000/ >/dev/null 2>&1 && break; sleep 0.25; done
+          if curl -fsS http://127.0.0.1:3000/ >/dev/null 2>&1; then echo 'Baseline server still alive'; exit 1; fi
 
       - name: Measure GA4 candidate
         run: |
           set -euo pipefail
           git checkout --force "$CANDIDATE_SHA"
           git clean -fdx
-          echo "Measuring candidate: $(git rev-parse HEAD)"
           npm ci
           npm run build
           node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-candidate.log 2>&1 &
           SERVER_PID=$!
-          READY=0
-          for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then cat /tmp/osairat-candidate.log; exit 1; fi
-          lighthouse http://127.0.0.1:3000/ \
-            --output=json \
-            --output-path=/tmp/lh-candidate.json \
-            --quiet \
-            --chrome-flags="--headless --no-sandbox" \
-            --only-categories=performance,accessibility,best-practices,seo
+          for i in {1..60}; do curl -fsS http://127.0.0.1:3000/ >/dev/null && break; sleep 1; done
+          lighthouse http://127.0.0.1:3000/ --output=json --output-path=/tmp/lh-candidate.json --quiet --chrome-flags="--headless --no-sandbox" --only-categories=performance,accessibility,best-practices,seo
           kill "$SERVER_PID"
           wait "$SERVER_PID" 2>/dev/null || true
 
@@ -90,50 +65,27 @@ jobs:
         run: |
           node <<'NODE'
           const fs = require('fs');
-          const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
-          const categoryFailures = (lhr, categoryId) => {
-            const category = lhr.categories[categoryId];
-            if (!category) return [];
-            return category.auditRefs
-              .filter((ref) => ref.weight > 0)
-              .map((ref) => ({ ref, audit: lhr.audits[ref.id] }))
-              .filter(({ audit }) => audit && audit.score !== null && audit.score < 1)
-              .map(({ ref, audit }) => ({ id: ref.id, score: audit.score, title: audit.title }));
-          };
-          const pick = (lhr) => {
+          const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
+          const pick = lhr => {
             const a = lhr.audits;
-            const requests = a['network-requests']?.details?.items || [];
-            const googleRequests = requests
-              .filter((item) => /google(tagmanager|-analytics)|analytics\.google/i.test(String(item.url || '')))
-              .map((item) => ({ url: item.url, statusCode: item.statusCode, transferSize: item.transferSize, resourceType: item.resourceType }));
             return {
-              scores: {
-                performance: Math.round((lhr.categories.performance.score || 0) * 100),
-                accessibility: Math.round((lhr.categories.accessibility.score || 0) * 100),
-                bestPractices: Math.round((lhr.categories['best-practices'].score || 0) * 100),
-                seo: Math.round((lhr.categories.seo.score || 0) * 100),
-              },
+              scores: Object.fromEntries(['performance','accessibility','best-practices','seo'].map(k => [k, Math.round((lhr.categories[k].score || 0) * 100)])),
               metrics: {
                 fcpMs: Math.round(a['first-contentful-paint']?.numericValue || 0),
                 lcpMs: Math.round(a['largest-contentful-paint']?.numericValue || 0),
                 tbtMs: Math.round(a['total-blocking-time']?.numericValue || 0),
                 cls: a['cumulative-layout-shift']?.numericValue ?? null,
-                speedIndexMs: Math.round(a['speed-index']?.numericValue || 0),
-                totalBytes: Math.round(a['total-byte-weight']?.numericValue || 0),
                 mainThreadMs: Math.round(a['mainthread-work-breakdown']?.numericValue || 0),
                 jsExecutionMs: Math.round(a['bootup-time']?.numericValue || 0),
               },
-              googleRequests,
+              googleRequests: (a['network-requests']?.details?.items || [])
+                .filter(x => /google(tagmanager|-analytics)|analytics\.google/i.test(String(x.url || '')))
+                .map(x => ({ url: x.url, statusCode: x.statusCode, transferSize: x.transferSize, resourceType: x.resourceType })),
               consoleErrors: a['errors-in-console']?.details?.items || [],
-              accessibilityFailures: categoryFailures(lhr, 'accessibility'),
-              bestPracticeFailures: categoryFailures(lhr, 'best-practices'),
             };
           };
           console.log('[FOCUSED_DIAGNOSTICS]');
-          console.log(JSON.stringify({
-            baseline: pick(read('/tmp/lh-main.json')),
-            candidate: pick(read('/tmp/lh-candidate.json')),
-          }, null, 2));
+          console.log(JSON.stringify({ baseline: pick(read('/tmp/lh-main.json')), candidate: pick(read('/tmp/lh-candidate.json')) }, null, 2));
           NODE
 
       - name: Verify deferred GA4 delivery in Chromium
@@ -144,58 +96,51 @@ jobs:
           test -n "$CHROME_BIN"
           node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-ga4-browser.log 2>&1 &
           SERVER_PID=$!
-          READY=0
-          for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then cat /tmp/osairat-ga4-browser.log; exit 1; fi
+          for i in {1..60}; do curl -fsS http://127.0.0.1:3000/ >/dev/null && break; sleep 1; done
+
           CHROME_BIN="$CHROME_BIN" node <<'NODE'
           const puppeteer = require('puppeteer-core');
-          const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-          const isTag = (url) => url.includes('googletagmanager.com/gtag/js');
-          const isCollect = (url) => url.includes('google-analytics.com/g/collect') || url.includes('analytics.google.com/g/collect');
-          const eventName = (url) => {
-            try { return new URL(url).searchParams.get('en'); } catch { return null; }
+          const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+          const isTag = url => url.includes('googletagmanager.com/gtag/js');
+          const isCollect = url => url.includes('google-analytics.com/g/collect') || url.includes('analytics.google.com/g/collect');
+          const recordRequest = request => ({ url: request.url(), method: request.method(), postData: request.postData() || '' });
+          const hasEvent = (record, name) => {
+            if (!record) return false;
+            try {
+              if (new URL(record.url).searchParams.get('en') === name) return true;
+            } catch {}
+            const body = String(record.postData || '');
+            return body.includes(`en=${name}`) || body.includes(`en%3D${name}`) || decodeURIComponent(body).includes(`en=${name}`);
           };
 
           (async () => {
-            const browser = await puppeteer.launch({
-              executablePath: process.env.CHROME_BIN,
-              headless: true,
-              args: ['--no-sandbox', '--disable-dev-shm-usage'],
-            });
-
+            const browser = await puppeteer.launch({ executablePath: process.env.CHROME_BIN, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
             try {
               const delayedPage = await browser.newPage();
               const delayedRequests = [];
               const delayedResponses = [];
               const delayedErrors = [];
-
-              delayedPage.on('request', (request) => {
-                const url = request.url();
-                if (isTag(url) || isCollect(url)) delayedRequests.push(url);
+              delayedPage.on('request', request => {
+                const rec = recordRequest(request);
+                if (isTag(rec.url) || isCollect(rec.url)) delayedRequests.push(rec);
               });
-              delayedPage.on('response', (response) => {
-                const url = response.url();
-                if (isCollect(url)) delayedResponses.push({ url, status: response.status() });
+              delayedPage.on('response', response => {
+                const req = response.request();
+                const rec = recordRequest(req);
+                if (isCollect(rec.url)) delayedResponses.push({ request: rec, status: response.status() });
               });
-              delayedPage.on('console', (msg) => {
-                if (msg.type() === 'error') delayedErrors.push(msg.text());
-              });
+              delayedPage.on('console', msg => { if (msg.type() === 'error') delayedErrors.push(msg.text()); });
 
               await delayedPage.goto('http://127.0.0.1:3000/', { waitUntil: 'load' });
               await wait(1200);
-
-              const earlyTagCount = delayedRequests.filter(isTag).length;
-              if (earlyTagCount !== 0) throw new Error(`GA4 loaded too early: ${earlyTagCount} tag request(s)`);
-
+              const earlyTagCount = delayedRequests.filter(r => isTag(r.url)).length;
+              if (earlyTagCount !== 0) throw new Error(`GA4 loaded too early: ${earlyTagCount}`);
               await wait(7000);
 
-              const delayedTag = delayedRequests.some(isTag);
-              const delayedPageViewRequest = delayedRequests.some((url) => isCollect(url) && eventName(url) === 'page_view');
-              const delayedPageView204 = delayedResponses.some(({ url, status }) => eventName(url) === 'page_view' && status === 204);
-
+              const delayedTag = delayedRequests.some(r => isTag(r.url));
+              const delayedPageViewRequest = delayedRequests.some(r => isCollect(r.url) && hasEvent(r, 'page_view'));
+              const delayedPageView204 = delayedResponses.some(r => hasEvent(r.request, 'page_view') && r.status === 204);
+              console.log('[GA4_PASSIVE_DEBUG]', JSON.stringify({ delayedRequests, delayedResponses, delayedErrors }));
               if (!delayedTag) throw new Error('Deferred GA4 tag never loaded');
               if (!delayedPageViewRequest) throw new Error('Deferred GA4 page_view request was not emitted');
               if (!delayedPageView204) throw new Error('Deferred GA4 page_view did not receive HTTP 204');
@@ -204,36 +149,31 @@ jobs:
               const queuedRequests = [];
               const queuedResponses = [];
               const queuedErrors = [];
-
-              queuedPage.on('request', (request) => {
-                const url = request.url();
-                if (isTag(url) || isCollect(url)) queuedRequests.push(url);
+              queuedPage.on('request', request => {
+                const rec = recordRequest(request);
+                if (isTag(rec.url) || isCollect(rec.url)) queuedRequests.push(rec);
               });
-              queuedPage.on('response', (response) => {
-                const url = response.url();
-                if (isCollect(url)) queuedResponses.push({ url, status: response.status() });
+              queuedPage.on('response', response => {
+                const rec = recordRequest(response.request());
+                if (isCollect(rec.url)) queuedResponses.push({ request: rec, status: response.status() });
               });
-              queuedPage.on('console', (msg) => {
-                if (msg.type() === 'error') queuedErrors.push(msg.text());
-              });
+              queuedPage.on('console', msg => { if (msg.type() === 'error') queuedErrors.push(msg.text()); });
 
               await queuedPage.goto('http://127.0.0.1:3000/', { waitUntil: 'load' });
               await queuedPage.waitForFunction(() => typeof window.gtag === 'function');
               await wait(300);
-
-              if (queuedRequests.some(isTag)) throw new Error('GA4 loaded before the queued-event interaction test');
+              if (queuedRequests.some(r => isTag(r.url))) throw new Error('GA4 loaded before queued-event test');
 
               await queuedPage.evaluate(() => {
                 window.gtag?.('event', 'ci_queue_probe', { test_scope: 'deferred-ga4' });
                 window.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
               });
-
               await wait(5000);
 
-              const interactionTag = queuedRequests.some(isTag);
-              const queuedProbeRequest = queuedRequests.some((url) => isCollect(url) && eventName(url) === 'ci_queue_probe');
-              const queuedProbe204 = queuedResponses.some(({ url, status }) => eventName(url) === 'ci_queue_probe' && status === 204);
-
+              const interactionTag = queuedRequests.some(r => isTag(r.url));
+              const queuedProbeRequest = queuedRequests.some(r => isCollect(r.url) && hasEvent(r, 'ci_queue_probe'));
+              const queuedProbe204 = queuedResponses.some(r => hasEvent(r.request, 'ci_queue_probe') && r.status === 204);
+              console.log('[GA4_QUEUE_DEBUG]', JSON.stringify({ queuedRequests, queuedResponses, queuedErrors }));
               if (!interactionTag) throw new Error('First interaction did not trigger GA4 loading');
               if (!queuedProbeRequest) throw new Error('Pre-load queued event was not emitted after GA4 loaded');
               if (!queuedProbe204) throw new Error('Pre-load queued event did not receive HTTP 204');
@@ -243,19 +183,15 @@ jobs:
                 delayedTag,
                 delayedPageViewRequest,
                 delayedPageView204,
-                delayedConsoleErrors: delayedErrors,
                 interactionTag,
                 queuedProbeRequest,
                 queuedProbe204,
-                queuedConsoleErrors: queuedErrors,
               }));
             } finally {
               await browser.close();
             }
-          })().catch((error) => {
-            console.error(error);
-            process.exit(1);
-          });
+          })().catch(error => { console.error(error); process.exit(1); });
           NODE
+
           kill "$SERVER_PID"
           wait "$SERVER_PID" 2>/dev/null || true
