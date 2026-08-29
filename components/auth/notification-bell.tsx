@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { ensureClientSession, setClientSessionUser } from './client-session';
 
 function BellIcon() {
   return (
@@ -17,9 +18,12 @@ export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const load = useCallback(() => {
-    fetch('/api/notifications?limit=1', { cache: 'no-store', credentials: 'same-origin' })
+    return fetch('/api/notifications?limit=1', { cache: 'no-store', credentials: 'same-origin' })
       .then(async (response) => {
-        if (response.status === 401) return { authenticated: false, unreadCount: 0 };
+        if (response.status === 401) {
+          setClientSessionUser(null);
+          return { authenticated: false, unreadCount: 0 };
+        }
         if (!response.ok) throw new Error('LOAD_FAILED');
         return response.json();
       })
@@ -31,18 +35,42 @@ export function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    load();
-    const timer = window.setInterval(load, 60_000);
+    let active = true;
+    let timer: number | null = null;
+
+    const startForMember = async () => {
+      const user = await ensureClientSession();
+      if (!active || !user) {
+        if (active) {
+          setVisible(false);
+          setUnreadCount(0);
+        }
+        return;
+      }
+
+      setVisible(true);
+      await load();
+      if (!active) return;
+      timer = window.setInterval(load, 60_000);
+    };
+
+    void startForMember();
+
     const handleChanged = (event: Event) => {
       const detail = (event as CustomEvent<{ unreadCount?: number }>).detail;
       if (typeof detail?.unreadCount === 'number') setUnreadCount(detail.unreadCount);
-      else load();
+      else void ensureClientSession().then((user) => { if (user) void load(); });
     };
-    const handleVisibility = () => { if (document.visibilityState === 'visible') load(); };
+    const handleVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      void ensureClientSession().then((user) => { if (user) void load(); });
+    };
+
     window.addEventListener('notifications:changed', handleChanged);
     document.addEventListener('visibilitychange', handleVisibility);
     return () => {
-      window.clearInterval(timer);
+      active = false;
+      if (timer !== null) window.clearInterval(timer);
       window.removeEventListener('notifications:changed', handleChanged);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
