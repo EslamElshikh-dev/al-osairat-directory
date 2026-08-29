@@ -76,7 +76,9 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const maps = googleMapsHref(listing);
   const lastUpdated = formatListingDate(listing.lastUpdatedAt);
   const dataSourceLabel = sourceLabel(listing);
+  const fallbackScope = listing.village === 'مركز العسيرات';
   const villagePath = villagePathByName(listing.village);
+  const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
 
   const [publishedNearby, overriddenStatic] = await Promise.all([
     getPublishedListings({ category: listing.category, village: listing.village }),
@@ -96,16 +98,18 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
     address: {
       '@type': 'PostalAddress',
       streetAddress: listing.location,
-      addressLocality: listing.village,
+      addressLocality: fallbackScope ? 'العسيرات' : listing.village,
       addressRegion: 'سوهاج',
       addressCountry: 'EG',
     },
-    areaServed: {
-      '@type': 'Place',
-      name: listing.village,
-      ...(villagePath ? { url: `${siteConfig.url}${villagePath}` } : {}),
-      containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
-    },
+    areaServed: fallbackScope
+      ? { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' }
+      : {
+          '@type': 'Place',
+          name: listing.village,
+          ...(villagePath ? { url: `${siteConfig.url}${villagePath}` } : {}),
+          containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
+        },
     url: `${siteConfig.url}/listing/${listing.slug}`,
     ...(listing.lastUpdatedAt ? { dateModified: listing.lastUpdatedAt } : {}),
     ...((listing.googlePlaceId || listing.googleMapsUrl) ? { hasMap: maps } : {}),
@@ -150,7 +154,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
               <CategoryVisual category={listing.category} size="lg" />
               <div>
                 <span className="eyebrow">{listing.subCategory || category.shortLabel}</span>
-                <span className="detail-hero__scope">{listing.village} · مركز العسيرات</span>
+                <span className="detail-hero__scope">{scopeLabel}</span>
               </div>
             </div>
 
@@ -185,7 +189,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
 
           <div className="detail-grid">
             <div><span>القسم</span><strong>{category.label}</strong></div>
-            <div><span>القرية / النطاق</span><strong>{listing.village}</strong></div>
+            <div><span>{fallbackScope ? 'النطاق' : 'القرية / النطاق'}</span><strong>{listing.village}</strong></div>
             {listing.phone && listing.phone !== '0' && <div><span>الهاتف</span><strong dir="ltr">{listing.phone}</strong></div>}
             {listing.hours && <div><span>مواعيد العمل</span><strong>{listing.hours}</strong></div>}
             {listing.deliveryAvailable && <div><span>التوصيل</span><strong>متاح بحسب المصدر</strong></div>}
@@ -213,8 +217,8 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
         <aside className="detail-aside detail-aside--premium">
           <div className="detail-aside__heading">
             <span className="eyebrow eyebrow--dark">في نفس النطاق</span>
-            <h2>خدمات قريبة في {listing.village}</h2>
-            <p>نتائج من نفس القسم والقرية لمساعدتك على المقارنة والوصول بسرعة.</p>
+            <h2>{fallbackScope ? 'خدمات قريبة ضمن مركز العسيرات' : `خدمات قريبة في ${listing.village}`}</h2>
+            <p>{fallbackScope ? 'نتائج من نفس القسم ضمن النطاق العام لمركز العسيرات.' : 'نتائج من نفس القسم والقرية لمساعدتك على المقارنة والوصول بسرعة.'}</p>
           </div>
           <div className="detail-aside__list">
             {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
