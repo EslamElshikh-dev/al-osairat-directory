@@ -155,6 +155,9 @@ jobs:
           const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           const isTag = (url) => url.includes('googletagmanager.com/gtag/js');
           const isCollect = (url) => url.includes('google-analytics.com/g/collect') || url.includes('analytics.google.com/g/collect');
+          const eventName = (url) => {
+            try { return new URL(url).searchParams.get('en'); } catch { return null; }
+          };
 
           (async () => {
             const browser = await puppeteer.launch({
@@ -164,59 +167,87 @@ jobs:
             });
 
             try {
-              // Test 1: a passive visit must not load GA during the early window,
-              // then must deliver the queued initial page_view after the delay.
               const delayedPage = await browser.newPage();
               const delayedRequests = [];
+              const delayedResponses = [];
               const delayedErrors = [];
-              delayedPage.on('requestfinished', (request) => {
+
+              delayedPage.on('request', (request) => {
                 const url = request.url();
                 if (isTag(url) || isCollect(url)) delayedRequests.push(url);
+              });
+              delayedPage.on('response', (response) => {
+                const url = response.url();
+                if (isCollect(url)) delayedResponses.push({ url, status: response.status() });
               });
               delayedPage.on('console', (msg) => {
                 if (msg.type() === 'error') delayedErrors.push(msg.text());
               });
+
               await delayedPage.goto('http://127.0.0.1:3000/', { waitUntil: 'load' });
               await wait(1200);
+
               const earlyTagCount = delayedRequests.filter(isTag).length;
               if (earlyTagCount !== 0) throw new Error(`GA4 loaded too early: ${earlyTagCount} tag request(s)`);
-              await wait(4200);
-              const delayedTag = delayedRequests.some(isTag);
-              const delayedPageView = delayedRequests.some((url) => isCollect(url) && new URL(url).searchParams.get('en') === 'page_view');
-              if (!delayedTag) throw new Error('Deferred GA4 tag never loaded');
-              if (!delayedPageView) throw new Error('Deferred GA4 initial page_view was not delivered');
 
-              // Test 2: events queued before the external tag arrives must survive,
-              // and a first interaction must trigger loading immediately.
+              await wait(7000);
+
+              const delayedTag = delayedRequests.some(isTag);
+              const delayedPageViewRequest = delayedRequests.some((url) => isCollect(url) && eventName(url) === 'page_view');
+              const delayedPageView204 = delayedResponses.some(({ url, status }) => eventName(url) === 'page_view' && status === 204);
+
+              if (!delayedTag) throw new Error('Deferred GA4 tag never loaded');
+              if (!delayedPageViewRequest) throw new Error('Deferred GA4 page_view request was not emitted');
+              if (!delayedPageView204) throw new Error('Deferred GA4 page_view did not receive HTTP 204');
+
               const queuedPage = await browser.newPage();
-              await queuedPage.setRequestInterception(true);
               const queuedRequests = [];
+              const queuedResponses = [];
+              const queuedErrors = [];
+
               queuedPage.on('request', (request) => {
                 const url = request.url();
                 if (isTag(url) || isCollect(url)) queuedRequests.push(url);
-                if (isCollect(url)) request.abort();
-                else request.continue();
               });
+              queuedPage.on('response', (response) => {
+                const url = response.url();
+                if (isCollect(url)) queuedResponses.push({ url, status: response.status() });
+              });
+              queuedPage.on('console', (msg) => {
+                if (msg.type() === 'error') queuedErrors.push(msg.text());
+              });
+
               await queuedPage.goto('http://127.0.0.1:3000/', { waitUntil: 'load' });
               await queuedPage.waitForFunction(() => typeof window.gtag === 'function');
-              await wait(250);
+              await wait(300);
+
+              if (queuedRequests.some(isTag)) throw new Error('GA4 loaded before the queued-event interaction test');
+
               await queuedPage.evaluate(() => {
                 window.gtag?.('event', 'ci_queue_probe', { test_scope: 'deferred-ga4' });
                 window.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
               });
-              await wait(1800);
+
+              await wait(5000);
+
               const interactionTag = queuedRequests.some(isTag);
-              const queuedProbe = queuedRequests.some((url) => isCollect(url) && new URL(url).searchParams.get('en') === 'ci_queue_probe');
+              const queuedProbeRequest = queuedRequests.some((url) => isCollect(url) && eventName(url) === 'ci_queue_probe');
+              const queuedProbe204 = queuedResponses.some(({ url, status }) => eventName(url) === 'ci_queue_probe' && status === 204);
+
               if (!interactionTag) throw new Error('First interaction did not trigger GA4 loading');
-              if (!queuedProbe) throw new Error('Pre-load queued event was not flushed after GA4 loaded');
+              if (!queuedProbeRequest) throw new Error('Pre-load queued event was not emitted after GA4 loaded');
+              if (!queuedProbe204) throw new Error('Pre-load queued event did not receive HTTP 204');
 
               console.log('[GA4_BROWSER_VERIFICATION]', JSON.stringify({
                 earlyTagCount,
                 delayedTag,
-                delayedPageView,
+                delayedPageViewRequest,
+                delayedPageView204,
                 delayedConsoleErrors: delayedErrors,
                 interactionTag,
-                queuedProbe,
+                queuedProbeRequest,
+                queuedProbe204,
+                queuedConsoleErrors: queuedErrors,
               }));
             } finally {
               await browser.close();
