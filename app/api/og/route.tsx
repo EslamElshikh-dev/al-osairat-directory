@@ -15,7 +15,6 @@ export async function GET() {
           background: '#102a24',
           color: '#ffffff',
           padding: '72px 82px',
-          direction: 'rtl',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -30,15 +29,15 @@ export async function GET() {
                 borderRadius: 24,
                 border: '2px solid #d7a83c',
                 color: '#f2d27d',
-                fontSize: 34,
+                fontSize: 32,
                 fontWeight: 800,
               }}
             >
-              ع
+              U
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 30, fontWeight: 800 }}>دليل العسيرات</div>
-              <div style={{ fontSize: 19, color: '#c7d5d0' }}>الموسوعة المحلية لمركز العسيرات</div>
+              <div style={{ fontSize: 32, fontWeight: 800 }}>USAYRAT DIRECTORY</div>
+              <div style={{ fontSize: 19, color: '#c7d5d0' }}>Local guide for Markaz Al-Usayrat</div>
             </div>
           </div>
           <div
@@ -53,19 +52,19 @@ export async function GET() {
               fontWeight: 700,
             }}
           >
-            سوهاج · مصر
+            Sohag, Egypt
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 930 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 960 }}>
           <div style={{ display: 'flex', color: '#f2d27d', fontSize: 24, fontWeight: 700 }}>
-            دليل محلي منظم وقابل للتحديث
+            Organized, local, and continuously reviewed
           </div>
-          <div style={{ display: 'flex', fontSize: 62, lineHeight: 1.18, fontWeight: 900 }}>
-            الخدمات والأنشطة والقرى في مركز العسيرات
+          <div style={{ display: 'flex', fontSize: 60, lineHeight: 1.12, fontWeight: 900 }}>
+            Services, businesses, villages, and local information in one place.
           </div>
-          <div style={{ display: 'flex', fontSize: 25, lineHeight: 1.6, color: '#d7e2de' }}>
-            أطباء وصيدليات ومحلات وحرفيون ومطاعم ومواصلات وخدمات مهمة في مكان واحد.
+          <div style={{ display: 'flex', fontSize: 25, lineHeight: 1.5, color: '#d7e2de' }}>
+            Doctors, pharmacies, shops, craftsmen, restaurants, transport, and essential local services.
           </div>
         </div>
 
@@ -80,7 +79,7 @@ export async function GET() {
           }}
         >
           <div style={{ display: 'flex', color: '#ffffff', fontWeight: 700 }}>usayrat.online</div>
-          <div style={{ display: 'flex', color: '#aebfba' }}>مركز العسيرات وقراه · محافظة سوهاج</div>
+          <div style={{ display: 'flex', color: '#aebfba' }}>Markaz Al-Usayrat · Sohag Governorate</div>
         </div>
       </div>
     ),
