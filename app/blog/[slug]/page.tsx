@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BlogCard } from '@/components/blog-card';
+import { MemberReviews } from '@/components/member-reviews';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles, blogBySlug } from '@/lib/blog-published';
 import { siteConfig } from '@/lib/site';
@@ -210,6 +211,16 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
               ))}
             </ol>
           </section>
+
+          <MemberReviews
+            targetType="article"
+            targetKey={article.slug}
+            eyebrow="تقييم القراء"
+            title="هل كان هذا المقال مفيدًا؟"
+            description="شارك تقييمك وانطباعك عن المحتوى. تظهر الآراء من أعضاء مسجلين فقط للمساعدة في تطوير جودة الموسوعة المحلية."
+            prompt="قيّم المقال واكتب ملاحظتك"
+            className="member-reviews--article"
+          />
 
           <div className="article-cta">
             <div>

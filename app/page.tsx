@@ -5,6 +5,7 @@ import { BlogCard } from '@/components/blog-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
+import { MemberReviews } from '@/components/member-reviews';
 import { homeFaq } from '@/lib/faq';
 import { blogArticles } from '@/lib/blog';
 import { siteConfig } from '@/lib/site';
@@ -190,6 +191,16 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <MemberReviews
+        targetType="site"
+        targetKey="site"
+        eyebrow="تجربة أعضاء المجتمع"
+        title="كيف تقيّم دليل العسيرات؟"
+        description="تقييمات مكتوبة من أعضاء مسجلين تساعدنا على تطوير الدليل وتحسين دقة وسهولة الوصول للمعلومات المحلية."
+        prompt="شارك رأيك في تجربة استخدام الدليل"
+        className="shell member-reviews--home"
+      />
 
       <FaqSection />
 
