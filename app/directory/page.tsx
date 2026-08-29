@@ -6,6 +6,7 @@ import { categories, listings, villages } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
+import { getEligibleServiceIntents } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
 
 const directoryTitle = 'الدليل الشامل لخدمات وأنشطة العسيرات';
@@ -49,6 +50,7 @@ export default async function DirectoryPage({
     page: Number(params.page || 1),
   });
   const coreVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
+  const serviceIntents = getEligibleServiceIntents(allListings);
   const collectionSchema = buildCollectionStructuredData({
     title: directoryTitle,
     description: directoryDescription,
@@ -92,6 +94,24 @@ export default async function DirectoryPage({
           </aside>
         </div>
       </section>
+
+      {serviceIntents.length > 0 && (
+        <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="directory-service-intents-title">
+          <div className="seo-growth-hub__heading">
+            <span>بحث حسب الخدمة</span>
+            <h2 id="directory-service-intents-title">صفحات متخصصة ببيانات كافية</h2>
+            <p>بدل أرشفة كل عبارة بحث أو فلتر، نعرض فقط الصفحات المتخصصة التي تجاوزت حدًا أدنى من السجلات واكتمال البيانات.</p>
+          </div>
+          <nav className="seo-growth-hub__links" aria-label="خدمات متخصصة في دليل العسيرات">
+            {serviceIntents.map(({ intent, listings: matched }) => (
+              <Link key={intent.id} href={`/services/${intent.id}`}>
+                <span>{intent.label}</span><small>{matched.length.toLocaleString('ar-EG')} سجل</small>
+              </Link>
+            ))}
+            <Link href="/services"><span>كل الصفحات المتخصصة</span><small>استكشف حسب التخصص</small></Link>
+          </nav>
+        </section>
+      )}
 
       <section id="directory-results" className="shell page-section interior-results-section">
         <DirectoryExplorer
