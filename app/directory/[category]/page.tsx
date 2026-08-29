@@ -6,6 +6,7 @@ import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { categories, categoryById, listings, villages, type DirectoryCategory } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
+import { queryCanonicalDirectory } from '@/lib/directory-repository';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 import {
@@ -62,18 +63,21 @@ export default async function CategoryPage({
   const info = categoryById[category as DirectoryCategory];
   if (!info) notFound();
 
-  const [publishedListings, baseListings] = await Promise.all([
+  const queryOptions = {
+    category: info.id,
+    query: query.q,
+    village: query.village,
+    page: Number(query.page || 1),
+  };
+
+  const [canonicalResult, publishedListings, baseListings] = await Promise.all([
+    queryCanonicalDirectory(queryOptions),
     getPublishedListings({ category: info.id }),
     applyListingOverrides(listings),
   ]);
 
   const allListings = mergeDirectoryListings(baseListings, publishedListings);
-  const result = queryDirectoryListings(allListings, {
-    category: info.id,
-    query: query.q,
-    village: query.village,
-    page: Number(query.page || 1),
-  });
+  const result = canonicalResult || queryDirectoryListings(allListings, queryOptions);
   const pathname = `/directory/${info.id}`;
   const categoryListings = allListings.filter((item) => item.category === info.id);
   const profile = categorySearchProfiles[info.id];

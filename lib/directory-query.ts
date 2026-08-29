@@ -58,7 +58,7 @@ export function normalizeDirectoryText(value: string) {
     .trim();
 }
 
-function canonicalizeSearch(value: string) {
+export function canonicalizeDirectoryQuery(value: string) {
   return normalizeDirectoryText(value)
     .split(' ')
     .filter(Boolean)
@@ -98,7 +98,7 @@ function editDistanceAtMostOne(a: string, b: string) {
 }
 
 function listingSearchText(listing: DirectoryListing) {
-  return canonicalizeSearch(
+  return canonicalizeDirectoryQuery(
     [
       listing.title,
       listing.subCategory,
@@ -114,7 +114,7 @@ function listingSearchText(listing: DirectoryListing) {
 }
 
 function matchesSearch(listing: DirectoryListing, query: string) {
-  const normalizedQuery = canonicalizeSearch(query);
+  const normalizedQuery = canonicalizeDirectoryQuery(query);
   if (!normalizedQuery) return true;
 
   const haystack = listingSearchText(listing);

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AdminDataSync } from '@/components/admin/admin-data-sync';
 import { listings } from '@/lib/data';
 import { mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
@@ -47,6 +48,8 @@ export async function AdminDataQuality() {
           <b>{average}</b><span>/ 100</span><small>متوسط الجودة</small>
         </div>
       </div>
+
+      <AdminDataSync expectedCount={scored.length} />
 
       <div className="admin-data-quality__metrics">
         <article><span>سجلات قوية</span><b>{strong.toLocaleString('ar-EG')}</b><small>75+ نقطة</small></article>
