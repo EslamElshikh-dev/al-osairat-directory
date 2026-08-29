@@ -46,74 +46,75 @@ export const metadata: Metadata = {
   verification: {
     google: 'a5AfDDI67VsUYxqSvx00gPy5bqSb1V9YoZ1DX8-GkxY',
   },
-  keywords: siteConfig.keywords,
-  alternates: {
-    canonical: '/',
+  keywords: [
+    'العسيرات', 'مركز العسيرات', 'دليل العسيرات', 'قرى العسيرات', 'سوهاج',
+    'أطباء العسيرات', 'صيدليات العسيرات', 'محلات العسيرات', 'حرفيين العسيرات',
+    'تاريخ العسيرات', 'معالم العسيرات', 'مشاهير العسيرات', 'عائلات العسيرات',
+  ],
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    shortcut: '/icon.svg',
   },
   openGraph: {
     type: 'website',
-    locale: 'ar_EG',
+    locale: siteConfig.locale,
     url: siteConfig.url,
-    siteName: siteConfig.name,
     title: rootTitle,
     description: siteConfig.description,
+    siteName: siteConfig.name,
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: rootTitle,
     description: siteConfig.description,
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-      'max-video-preview': -1,
-    },
-  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
+  themeColor: '#102a24',
+  colorScheme: 'light',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#102a24',
-  colorScheme: 'light',
-};
-
-const websiteSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  '@id': `${siteConfig.url}/#website`,
-  url: siteConfig.url,
-  name: siteConfig.name,
-  alternateName: siteConfig.shortName,
-  inLanguage: 'ar-EG',
-  description: siteConfig.description,
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: `${siteConfig.url}/directory?q={search_term_string}`,
-    'query-input': 'required name=search_term_string',
-  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: siteConfig.name,
+    alternateName: siteConfig.shortName,
+    url: siteConfig.url,
+    inLanguage: 'ar-EG',
+    description: siteConfig.description,
+  };
+
   return (
     <html lang="ar" dir="rtl">
       <body>
-        <a className="skip-link" href="#main-content">تخطي إلى المحتوى</a>
+        <a className="skip-link" href="#main-content">تجاوز إلى المحتوى</a>
         <SiteHeader />
         {children}
         <Footer />
         <MobileNav />
         <AnalyticsTracker />
-        <Script id="website-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />
-        <Script id="ga4-init" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: true });`}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = window.gtag || gtag;
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
         </Script>
       </body>
     </html>
