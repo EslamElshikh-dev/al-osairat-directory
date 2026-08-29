@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ensureClientSession, setClientSessionUser } from './auth/client-session';
 
 type FavoriteButtonProps = {
   listingId: string;
@@ -13,7 +14,7 @@ type FavoritesPayload = { authenticated?: boolean; ids?: string[] };
 type FavoriteChangedDetail = { listingId: string; favorite: boolean };
 
 let favoriteIds: Set<string> | null = null;
-let authenticated: boolean | null = null;
+let memberFavoritesLoaded = false;
 let loadPromise: Promise<void> | null = null;
 let eventBridgeReady = false;
 const listeners = new Set<() => void>();
@@ -36,23 +37,40 @@ function ensureEventBridge() {
 }
 
 async function ensureFavoritesLoaded() {
-  if (favoriteIds && authenticated !== null) return;
-  if (loadPromise) return loadPromise;
+  const user = await ensureClientSession();
+  if (!user) {
+    favoriteIds = new Set();
+    memberFavoritesLoaded = false;
+    emit();
+    return false;
+  }
+
+  if (memberFavoritesLoaded && favoriteIds) return true;
+  if (loadPromise) {
+    await loadPromise;
+    return memberFavoritesLoaded;
+  }
 
   loadPromise = fetch('/api/favorites', { cache: 'no-store', credentials: 'same-origin' })
     .then(async (response) => {
       if (response.status === 401) {
-        authenticated = false;
+        setClientSessionUser(null);
         favoriteIds = new Set();
+        memberFavoritesLoaded = false;
         return;
       }
       if (!response.ok) throw new Error('FAVORITES_LOAD_FAILED');
       const data = await response.json() as FavoritesPayload;
-      authenticated = Boolean(data.authenticated);
+      if (!data.authenticated) {
+        setClientSessionUser(null);
+        favoriteIds = new Set();
+        memberFavoritesLoaded = false;
+        return;
+      }
       favoriteIds = new Set(data.ids || []);
+      memberFavoritesLoaded = true;
     })
     .catch(() => {
-      if (authenticated === null) authenticated = false;
       if (!favoriteIds) favoriteIds = new Set();
     })
     .finally(() => {
@@ -60,7 +78,8 @@ async function ensureFavoritesLoaded() {
       emit();
     });
 
-  return loadPromise;
+  await loadPromise;
+  return memberFavoritesLoaded;
 }
 
 function HeartIcon({ filled }: { filled: boolean }) {
@@ -81,18 +100,34 @@ export function FavoriteButton({ listingId, variant = 'card', showLabel = false 
     ensureEventBridge();
     const listener = () => rerender((value) => value + 1);
     listeners.add(listener);
-    void ensureFavoritesLoaded();
+
+    void ensureClientSession().then((user) => {
+      if (!user) {
+        favoriteIds = new Set();
+        memberFavoritesLoaded = false;
+        emit();
+        return;
+      }
+      void ensureFavoritesLoaded();
+    });
+
     return () => { listeners.delete(listener); };
   }, []);
 
-  const loaded = authenticated !== null && favoriteIds !== null;
+  const loaded = favoriteIds !== null;
   const isFavorite = Boolean(favoriteIds?.has(listingId));
 
   async function toggleFavorite() {
     if (busy) return;
-    await ensureFavoritesLoaded();
 
-    if (!authenticated) {
+    const user = await ensureClientSession();
+    if (!user) {
+      router.push('/account/login');
+      return;
+    }
+
+    await ensureFavoritesLoaded();
+    if (!memberFavoritesLoaded) {
       router.push('/account/login');
       return;
     }
@@ -115,8 +150,9 @@ export function FavoriteButton({ listingId, variant = 'card', showLabel = false 
       });
 
       if (response.status === 401) {
-        authenticated = false;
+        setClientSessionUser(null);
         favoriteIds.delete(listingId);
+        memberFavoritesLoaded = false;
         emit();
         router.push('/account/login');
         return;

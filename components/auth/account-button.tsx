@@ -1,9 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-type SessionUser = { displayName: string; email: string; avatarUrl: string } | null;
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import type { ClientSessionUser } from './client-session';
+import {
+  ensureClientSession,
+  refreshClientSession,
+  subscribeClientSession,
+  updateClientSessionUser,
+} from './client-session';
 
 type ProfileUpdatedDetail = { displayName?: string; avatarUrl?: string };
 
@@ -17,32 +23,52 @@ function AccountIcon() {
 }
 
 export function AccountButton() {
-  const [user, setUser] = useState<SessionUser>(null);
+  const pathname = usePathname();
+  const previousPath = useRef(pathname);
+  const [user, setUser] = useState<ClientSessionUser | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let active = true;
-    fetch('/api/auth/session', { cache: 'no-store', credentials: 'same-origin' })
-      .then((response) => response.ok ? response.json() : { user: null })
-      .then((data) => { if (active) setUser(data.user || null); })
-      .catch(() => null)
-      .finally(() => { if (active) setReady(true); });
+    const unsubscribe = subscribeClientSession((nextUser) => {
+      if (!active || nextUser === undefined) return;
+      setUser(nextUser);
+      setReady(true);
+    });
+
+    void ensureClientSession().finally(() => {
+      if (active) setReady(true);
+    });
 
     const handleProfileUpdated = (event: Event) => {
       const detail = (event as CustomEvent<ProfileUpdatedDetail>).detail || {};
-      setUser((current) => current ? {
-        ...current,
-        displayName: detail.displayName || current.displayName,
-        avatarUrl: detail.avatarUrl ?? current.avatarUrl,
-      } : current);
+      updateClientSessionUser({
+        ...(detail.displayName ? { displayName: detail.displayName } : {}),
+        ...(detail.avatarUrl !== undefined ? { avatarUrl: detail.avatarUrl } : {}),
+      });
     };
     window.addEventListener('member:profile-updated', handleProfileUpdated);
 
     return () => {
       active = false;
+      unsubscribe();
       window.removeEventListener('member:profile-updated', handleProfileUpdated);
     };
   }, []);
+
+  useEffect(() => {
+    const previous = previousPath.current;
+    previousPath.current = pathname;
+
+    const completedLogin =
+      (previous === '/account/login' || previous === '/account/register') && pathname === '/account';
+    const possiblyLoggedOut = previous === '/account' && pathname === '/';
+
+    if (completedLogin || possiblyLoggedOut) {
+      setReady(false);
+      void refreshClientSession().finally(() => setReady(true));
+    }
+  }, [pathname]);
 
   const label = user ? (user.displayName?.split(' ')[0] || 'حسابي') : 'دخول';
   const initial = user?.displayName?.trim()?.charAt(0);
