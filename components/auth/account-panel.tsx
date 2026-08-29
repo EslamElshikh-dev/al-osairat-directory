@@ -16,6 +16,10 @@ type User = {
   displayName: string;
   emailVerified: boolean;
   avatarUrl: string;
+  createdAt: string;
+  authProviders: string[];
+  passwordPolicyVersion: number;
+  passwordSecurityUpgradeRecommended: boolean;
 };
 
 type FavoriteItem = {
@@ -31,6 +35,10 @@ type FavoriteItem = {
 
 function HeartIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.2 5.8c-2.3-2.3-6-2.2-8.2.3-2.2-2.5-5.9-2.6-8.2-.3-2.4 2.4-2.2 6.3.3 8.7L12 21l7.9-6.5c2.5-2.4 2.7-6.3.3-8.7Z" /></svg>;
+}
+
+function SecurityUpgradeIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.8v5.3c0 4.2 2.6 7.7 6.5 9.9 3.9-2.2 6.5-5.7 6.5-9.9V5.8L12 3Z" /><path d="M9 12.2 11 14l4-4.4" /></svg>;
 }
 
 export function AccountPanel() {
@@ -122,6 +130,26 @@ export function AccountPanel() {
       </section>
 
       <AdminAccessCard />
+
+      {user.passwordSecurityUpgradeRecommended && (
+        <section className="account-security-upgrade" aria-labelledby="account-security-upgrade-title">
+          <div className="account-security-upgrade__icon"><SecurityUpgradeIcon /></div>
+          <div className="account-security-upgrade__content">
+            <span className="account-security-upgrade__eyebrow">مراجعة أمان موصى بها</span>
+            <h2 id="account-security-upgrade-title">سياسة كلمات المرور في الدليل أصبحت أقوى</h2>
+            <p>حسابك أُنشئ قبل تطبيق سياسة الحماية الجديدة. لا يمكن للدليل قراءة كلمة مرورك الحالية أو معرفة قوتها، لذلك ننصح فقط بتحديثها إلى السياسة الجديدة عند أول فرصة.</p>
+            <div className="account-security-upgrade__rules" aria-label="متطلبات السياسة الجديدة">
+              <span><i>✓</i> 10 أحرف أو أكثر</span>
+              <span><i>✓</i> حرف + رقم</span>
+              <span><i>✦</i> 12 حرفًا ورمز لأقصى قوة</span>
+            </div>
+          </div>
+          <Link className="account-security-upgrade__action" href={`/account/forgot-password?email=${encodeURIComponent(user.email)}`}>
+            تحديث كلمة المرور
+            <b aria-hidden="true">←</b>
+          </Link>
+        </section>
+      )}
 
       {!user.emailVerified && (
         <div className="account-notice">

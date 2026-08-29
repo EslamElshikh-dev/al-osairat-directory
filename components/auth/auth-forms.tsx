@@ -1,11 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { evaluatePassword, PASSWORD_MIN_LENGTH, passwordPolicyError } from '@/lib/auth/password-policy';
 
 type ApiResult = { error?: string; verificationSent?: boolean };
+
+type PasswordInputProps = {
+  id: string;
+  name: string;
+  autoComplete: string;
+  minLength: number;
+  placeholder: string;
+  value?: string;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  describedBy?: string;
+};
 
 async function submitAuth(path: string, payload: Record<string, string>) {
   const response = await fetch(path, {
@@ -27,6 +38,65 @@ function GoogleIcon() {
       <path fill="#FBBC05" d="M6.39 13.9A6.01 6.01 0 0 1 6.08 12c0-.66.11-1.3.31-1.9V7.5H3.04A10 10 0 0 0 2 12c0 1.61.38 3.14 1.04 4.5l3.35-2.6Z" />
       <path fill="#EA4335" d="M12 5.97c1.47 0 2.79.51 3.83 1.5l2.87-2.88C16.96 2.97 14.7 2 12 2a10 10 0 0 0-8.96 5.5l3.35 2.6C7.18 7.73 9.39 5.97 12 5.97Z" />
     </svg>
+  );
+}
+
+function EyeIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3l18 18" /><path d="M10.6 10.7a2 2 0 0 0 2.7 2.7" /><path d="M9.9 4.2A10.7 10.7 0 0 1 12 4c5.2 0 9 4.2 10 8-0.4 1.5-1.2 3-2.4 4.3" /><path d="M6.6 6.6C4.3 8 2.8 10.2 2 12c1 3.8 4.8 8 10 8 1.4 0 2.8-.3 4-.8" /></svg>
+  ) : (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
+  );
+}
+
+function ShieldSparkIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 5.5 5.8v5.3c0 4.2 2.6 7.7 6.5 9.9 3.9-2.2 6.5-5.7 6.5-9.9V5.8L12 3Z" /><path d="m9.2 12 1.8 1.8 3.8-4" /></svg>;
+}
+
+function PasswordInput({ id, name, autoComplete, minLength, placeholder, value, onChange, describedBy }: PasswordInputProps) {
+  const [visible, setVisible] = useState(false);
+  const [capsLock, setCapsLock] = useState(false);
+
+  function syncCapsLock(event: KeyboardEvent<HTMLInputElement>) {
+    setCapsLock(event.getModifierState('CapsLock'));
+  }
+
+  return (
+    <>
+      <div className={`auth-password-control${capsLock ? ' has-caps-lock' : ''}`}>
+        <input
+          id={id}
+          name={name}
+          type={visible ? 'text' : 'password'}
+          autoComplete={autoComplete}
+          required
+          minLength={minLength}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onKeyDown={syncCapsLock}
+          onKeyUp={syncCapsLock}
+          onBlur={() => setCapsLock(false)}
+          aria-describedby={describedBy}
+        />
+        <button
+          className="auth-password-toggle"
+          type="button"
+          onClick={() => setVisible((current) => !current)}
+          aria-label={visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+          aria-pressed={visible}
+        >
+          <EyeIcon open={visible} />
+          <span>{visible ? 'إخفاء' : 'إظهار'}</span>
+        </button>
+      </div>
+      {capsLock && (
+        <div className="auth-caps-lock" role="status">
+          <span aria-hidden="true">⇧</span>
+          Caps Lock مفعّل — راجع حالة الأحرف قبل المتابعة.
+        </div>
+      )}
+    </>
   );
 }
 
@@ -52,11 +122,11 @@ function PasswordStrength({ password, id }: { password: string; id: string }) {
   ];
 
   return (
-    <div className="password-strength" id={id} aria-live="polite">
+    <div className={`password-strength password-strength--score-${result.score}`} id={id} aria-live="polite">
       <div className="password-strength__head">
-        <span>قوة كلمة المرور</span>
+        <div className="password-strength__title"><span className="password-strength__shield"><ShieldSparkIcon /></span><span>حماية كلمة المرور</span></div>
         <b className={`password-strength__label password-strength__label--${result.score}`}>
-          {password ? result.label : 'ابدأ بالكتابة'}
+          {password ? result.label : 'جاهز للتحقق'}
         </b>
       </div>
       <div className="password-strength__meter" aria-hidden="true">
@@ -69,7 +139,10 @@ function PasswordStrength({ password, id }: { password: string; id: string }) {
           </span>
         ))}
       </div>
-      <p className="password-strength__tip">لأقصى قوة: استخدم 12 حرفًا أو أكثر وأضف رمزًا خاصًا، ولا تعِد استخدام نفس كلمة المرور في مواقع أخرى.</p>
+      <div className={`password-strength__smart-tip${password && result.valid ? ' is-valid' : ''}`}>
+        <span className="password-strength__smart-icon" aria-hidden="true">✦</span>
+        <p><b>{password && result.valid ? 'اقتراح لزيادة القوة' : 'الخطوة التالية'}</b>{result.suggestion}</p>
+      </div>
     </div>
   );
 }
@@ -101,7 +174,10 @@ export function LoginForm() {
       <SocialAuth />
       <form className="auth-form" onSubmit={onSubmit}>
         <div className="auth-field"><label htmlFor="login-email">البريد الإلكتروني</label><input id="login-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
-        <div className="auth-field"><div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div><input id="login-password" name="password" type="password" autoComplete="current-password" required minLength={8} placeholder="••••••••" /></div>
+        <div className="auth-field">
+          <div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div>
+          <PasswordInput id="login-password" name="password" autoComplete="current-password" minLength={8} placeholder="••••••••" />
+        </div>
         {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
         <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الدخول…' : 'تسجيل الدخول'}</button>
         <p className="auth-switch">ليس لديك حساب؟ <Link href="/account/register">أنشئ حسابًا جديدًا</Link></p>
@@ -153,14 +229,14 @@ export function RegisterForm() {
       <form className="auth-form" onSubmit={onSubmit}>
         <div className="auth-field"><label htmlFor="register-name">الاسم</label><input id="register-name" name="name" type="text" autoComplete="name" required minLength={2} maxLength={80} placeholder="اسمك كما تحب أن يظهر" /></div>
         <div className="auth-field"><label htmlFor="register-email">البريد الإلكتروني</label><input id="register-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
-        <div className="auth-field">
+        <div className="auth-field auth-field--password">
           <label htmlFor="register-password">كلمة المرور</label>
-          <input id="register-password" name="password" type="password" autoComplete="new-password" required minLength={PASSWORD_MIN_LENGTH} value={password} onChange={(event) => setPassword(event.target.value)} aria-describedby="register-password-strength" placeholder={`${PASSWORD_MIN_LENGTH} أحرف + حرف ورقم`} />
+          <PasswordInput id="register-password" name="password" autoComplete="new-password" minLength={PASSWORD_MIN_LENGTH} value={password} onChange={(event) => setPassword(event.target.value)} describedBy="register-password-strength" placeholder={`${PASSWORD_MIN_LENGTH} أحرف + حرف ورقم`} />
           <PasswordStrength password={password} id="register-password-strength" />
         </div>
-        <div className="auth-field">
+        <div className="auth-field auth-field--password">
           <label htmlFor="register-confirm">تأكيد كلمة المرور</label>
-          <input id="register-confirm" name="confirmPassword" type="password" autoComplete="new-password" required minLength={PASSWORD_MIN_LENGTH} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="أعد كتابة كلمة المرور" />
+          <PasswordInput id="register-confirm" name="confirmPassword" autoComplete="new-password" minLength={PASSWORD_MIN_LENGTH} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="أعد كتابة كلمة المرور" />
           {confirmPassword && <small className={`password-match ${password === confirmPassword ? 'is-match' : 'is-mismatch'}`}>{password === confirmPassword ? '✓ كلمتا المرور متطابقتان' : 'كلمتا المرور غير متطابقتين بعد'}</small>}
         </div>
         <label className="auth-consent"><input name="consent" type="checkbox" value="yes" required /><span>أوافق على استخدام الاسم والبريد وبيانات الجلسة اللازمة لتشغيل عضويتي في دليل العسيرات.</span></label>
@@ -176,21 +252,28 @@ export function ForgotPasswordForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const requestedEmail = new URLSearchParams(window.location.search).get('email');
+    if (requestedEmail) setEmail(requestedEmail);
+  }, []);
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
     setBusy(true); setError('');
     try {
-      await submitAuth('/api/auth/forgot-password', { email: String(form.get('email') || '') });
+      await submitAuth('/api/auth/forgot-password', { email });
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذر إرسال الطلب.');
     } finally { setBusy(false); }
   }
+
   if (sent) return <div className="auth-success"><strong>راجع بريدك الإلكتروني</strong><p>إذا كان البريد مرتبطًا بحساب، ستصلك رسالة لإعادة تعيين كلمة المرور.</p><Link href="/account/login">العودة لتسجيل الدخول</Link></div>;
   return (
     <form className="auth-form" onSubmit={onSubmit}>
-      <div className="auth-field"><label htmlFor="forgot-email">البريد الإلكتروني</label><input id="forgot-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
+      <div className="auth-field"><label htmlFor="forgot-email">البريد الإلكتروني</label><input id="forgot-email" name="email" type="email" autoComplete="email" inputMode="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@example.com" /></div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
       <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الإرسال…' : 'إرسال رابط الاستعادة'}</button>
       <p className="auth-switch"><Link href="/account/login">العودة لتسجيل الدخول</Link></p>
@@ -229,14 +312,14 @@ export function ResetPasswordForm() {
 
   return (
     <form className="auth-form" onSubmit={onSubmit}>
-      <div className="auth-field">
+      <div className="auth-field auth-field--password">
         <label htmlFor="reset-password">كلمة المرور الجديدة</label>
-        <input id="reset-password" name="password" type="password" autoComplete="new-password" required minLength={PASSWORD_MIN_LENGTH} value={password} onChange={(event) => setPassword(event.target.value)} aria-describedby="reset-password-strength" placeholder={`${PASSWORD_MIN_LENGTH} أحرف + حرف ورقم`} />
+        <PasswordInput id="reset-password" name="password" autoComplete="new-password" minLength={PASSWORD_MIN_LENGTH} value={password} onChange={(event) => setPassword(event.target.value)} describedBy="reset-password-strength" placeholder={`${PASSWORD_MIN_LENGTH} أحرف + حرف ورقم`} />
         <PasswordStrength password={password} id="reset-password-strength" />
       </div>
-      <div className="auth-field">
+      <div className="auth-field auth-field--password">
         <label htmlFor="reset-confirm">تأكيد كلمة المرور</label>
-        <input id="reset-confirm" name="confirmPassword" type="password" autoComplete="new-password" required minLength={PASSWORD_MIN_LENGTH} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="أعد كتابة كلمة المرور" />
+        <PasswordInput id="reset-confirm" name="confirmPassword" autoComplete="new-password" minLength={PASSWORD_MIN_LENGTH} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="أعد كتابة كلمة المرور" />
         {confirmPassword && <small className={`password-match ${password === confirmPassword ? 'is-match' : 'is-mismatch'}`}>{password === confirmPassword ? '✓ كلمتا المرور متطابقتان' : 'كلمتا المرور غير متطابقتين بعد'}</small>}
       </div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
