@@ -1,0 +1,116 @@
+name: Temporary GA4 Lighthouse comparison
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout candidate with history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Remember refs
+        run: |
+          echo "CANDIDATE_SHA=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
+          git fetch origin main
+
+      - name: Install Lighthouse
+        run: npm install --global lighthouse@12.8.2
+
+      - name: Measure baseline main
+        run: |
+          git checkout --force origin/main
+          git clean -fdx
+          npm ci
+          npm run build
+          npm start > /tmp/osairat-main.log 2>&1 &
+          echo $! > /tmp/osairat-main.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 1
+          done
+          lighthouse http://127.0.0.1:3000/ \
+            --output=json \
+            --output-path=/tmp/lh-main.json \
+            --quiet \
+            --chrome-flags="--headless --no-sandbox" \
+            --only-categories=performance,accessibility,best-practices,seo
+          kill "$(cat /tmp/osairat-main.pid)" || true
+          sleep 2
+
+      - name: Measure GA4 candidate
+        run: |
+          git checkout --force "$CANDIDATE_SHA"
+          git clean -fdx
+          npm ci
+          npm run build
+          npm start > /tmp/osairat-candidate.log 2>&1 &
+          echo $! > /tmp/osairat-candidate.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 1
+          done
+          lighthouse http://127.0.0.1:3000/ \
+            --output=json \
+            --output-path=/tmp/lh-candidate.json \
+            --quiet \
+            --chrome-flags="--headless --no-sandbox" \
+            --only-categories=performance,accessibility,best-practices,seo
+          kill "$(cat /tmp/osairat-candidate.pid)" || true
+
+      - name: Print comparison
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
+          const summarize = (lhr) => {
+            const a = lhr.audits;
+            const requests = a['network-requests']?.details?.items || [];
+            const ga = requests.filter((item) => String(item.url || '').includes('googletagmanager.com/gtag/js'));
+            return {
+              performance: Math.round((lhr.categories.performance.score || 0) * 100),
+              accessibility: Math.round((lhr.categories.accessibility.score || 0) * 100),
+              bestPractices: Math.round((lhr.categories['best-practices'].score || 0) * 100),
+              seo: Math.round((lhr.categories.seo.score || 0) * 100),
+              fcpMs: Math.round(a['first-contentful-paint']?.numericValue || 0),
+              lcpMs: Math.round(a['largest-contentful-paint']?.numericValue || 0),
+              tbtMs: Math.round(a['total-blocking-time']?.numericValue || 0),
+              cls: a['cumulative-layout-shift']?.numericValue ?? null,
+              speedIndexMs: Math.round(a['speed-index']?.numericValue || 0),
+              totalBytes: Math.round(a['total-byte-weight']?.numericValue || 0),
+              mainThreadMs: Math.round(a['mainthread-work-breakdown']?.numericValue || 0),
+              jsExecutionMs: Math.round(a['bootup-time']?.numericValue || 0),
+              gaRequests: ga.map((item) => ({
+                transferSize: item.transferSize,
+                startTime: item.networkRequestTime,
+                endTime: item.networkEndTime,
+              })),
+            };
+          };
+          const baseline = summarize(read('/tmp/lh-main.json'));
+          const candidate = summarize(read('/tmp/lh-candidate.json'));
+          const delta = {
+            performance: candidate.performance - baseline.performance,
+            fcpMs: candidate.fcpMs - baseline.fcpMs,
+            lcpMs: candidate.lcpMs - baseline.lcpMs,
+            tbtMs: candidate.tbtMs - baseline.tbtMs,
+            mainThreadMs: candidate.mainThreadMs - baseline.mainThreadMs,
+            jsExecutionMs: candidate.jsExecutionMs - baseline.jsExecutionMs,
+          };
+          console.log('[LIGHTHOUSE_COMPARISON]');
+          console.log(JSON.stringify({ baseline, candidate, delta }, null, 2));
+          NODE
