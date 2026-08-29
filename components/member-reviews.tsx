@@ -163,8 +163,8 @@ export function MemberReviews({
   }, [activated]);
 
   useEffect(() => {
-    if (activated && !payload && !loading) void loadInitial();
-  }, [activated, payload, loading, loadInitial]);
+    if (activated) void loadInitial();
+  }, [activated, loadInitial]);
 
   async function loadMore() {
     if (!payload?.nextOffset || loadingMore) return;
