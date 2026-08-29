@@ -1,6 +1,12 @@
 import Link from 'next/link';
 import { categories, villages, type DirectoryCategory } from '@/lib/data';
 import { createDirectoryHref, type DirectoryQueryResult } from '@/lib/directory-query';
+import {
+  getTransportDestinationLabel,
+  getTransportVehicleLabel,
+  transportDestinationFilters,
+  transportVehicleFilters,
+} from '@/lib/transport-filters';
 import { ListingCard } from './listing-card';
 import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
@@ -19,17 +25,70 @@ export function DirectoryExplorer({
   village = 'all',
   result,
   pathname,
+  transportFilters,
 }: {
   category?: DirectoryCategory;
   query?: string;
   village?: string;
   result: DirectoryQueryResult;
   pathname: string;
+  transportFilters?: { vehicle?: string; destination?: string };
 }) {
   const pages = pageNumbers(result.page, result.totalPages);
+  const vehicle = transportFilters?.vehicle || 'all';
+  const destination = transportFilters?.destination || 'all';
+  const hasTransportFilter = category === 'transport' && (vehicle !== 'all' || destination !== 'all');
 
   return (
     <div className="explorer explorer--premium">
+      {category === 'transport' && (
+        <div className="explorer__toolbar-shell">
+          <div className="explorer__toolbar-heading">
+            <div>
+              <span className="explorer__toolbar-kicker">دليل سواقين العسيرات</span>
+              <strong>فلتر سريع حسب نوع المركبة والوجهة</strong>
+            </div>
+            <span className="explorer__toolbar-mark" aria-hidden="true"><BrandMark compact /></span>
+          </div>
+
+          <div className="detail-actions" aria-label="تصفية حسب نوع المركبة">
+            {transportVehicleFilters.map((item) => (
+              <Link
+                key={item.value}
+                className={`button ${vehicle === item.value ? 'button--primary' : 'button--ghost'}`}
+                href={createDirectoryHref(pathname, {
+                  query,
+                  village,
+                  vehicle: item.value,
+                  destination,
+                })}
+                aria-current={vehicle === item.value ? 'true' : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="detail-actions" aria-label="تصفية حسب الوجهة">
+            {transportDestinationFilters.map((item) => (
+              <Link
+                key={item.value}
+                className={`button ${destination === item.value ? 'button--primary' : 'button--soft'}`}
+                href={createDirectoryHref(pathname, {
+                  query,
+                  village,
+                  vehicle,
+                  destination: item.value,
+                })}
+                aria-current={destination === item.value ? 'true' : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="explorer__toolbar-shell">
         <div className="explorer__toolbar-heading">
           <div>
@@ -53,7 +112,7 @@ export function DirectoryExplorer({
             />
             <span className="search-field__hint">بحث ذكي</span>
             <button type="submit" className="button button--primary">بحث</button>
-            {(query || village !== 'all') && <Link href={pathname} className="button button--ghost">مسح</Link>}
+            {(query || village !== 'all' || hasTransportFilter) && <Link href={pathname} className="button button--ghost">مسح</Link>}
           </div>
 
           <label className="select-field">
@@ -64,6 +123,9 @@ export function DirectoryExplorer({
               {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
             </select>
           </label>
+
+          {category === 'transport' && vehicle !== 'all' && <input type="hidden" name="vehicle" value={vehicle} />}
+          {category === 'transport' && destination !== 'all' && <input type="hidden" name="destination" value={destination} />}
         </form>
       </div>
 
@@ -91,6 +153,8 @@ export function DirectoryExplorer({
         <div className="results-bar__context">
           {query && <span>بحث: <b>«{query}»</b></span>}
           {village !== 'all' && <span>النطاق: <b>{village}</b></span>}
+          {category === 'transport' && vehicle !== 'all' && <span>المركبة: <b>{getTransportVehicleLabel(vehicle)}</b></span>}
+          {category === 'transport' && destination !== 'all' && <span>الوجهة: <b>{getTransportDestinationLabel(destination)}</b></span>}
           {result.total > result.pageSize && <span>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')}</span>}
         </div>
       </div>
@@ -106,7 +170,13 @@ export function DirectoryExplorer({
               {result.page > 1 && (
                 <Link
                   className="button button--ghost"
-                  href={createDirectoryHref(pathname, { query, village, page: result.page - 1 })}
+                  href={createDirectoryHref(pathname, {
+                    query,
+                    village,
+                    vehicle,
+                    destination,
+                    page: result.page - 1,
+                  })}
                   rel="prev"
                 >
                   السابق
@@ -121,7 +191,7 @@ export function DirectoryExplorer({
                     {showGap && <span className="pagination-gap" aria-hidden="true">…</span>}
                     <Link
                       className={`button ${page === result.page ? 'button--primary' : 'button--soft'}`}
-                      href={createDirectoryHref(pathname, { query, village, page })}
+                      href={createDirectoryHref(pathname, { query, village, vehicle, destination, page })}
                       aria-current={page === result.page ? 'page' : undefined}
                     >
                       {page.toLocaleString('ar-EG')}
@@ -133,7 +203,13 @@ export function DirectoryExplorer({
               {result.page < result.totalPages && (
                 <Link
                   className="button button--ghost"
-                  href={createDirectoryHref(pathname, { query, village, page: result.page + 1 })}
+                  href={createDirectoryHref(pathname, {
+                    query,
+                    village,
+                    vehicle,
+                    destination,
+                    page: result.page + 1,
+                  })}
                   rel="next"
                 >
                   التالي
@@ -146,7 +222,7 @@ export function DirectoryExplorer({
         <div className="empty-state empty-state--premium">
           <span className="empty-state__mark" aria-hidden="true"><BrandMark /></span>
           <strong>لا توجد نتائج مطابقة</strong>
-          <p>جرّب كلمة أقصر، مرادفًا آخر، أو اختر قرية أخرى.</p>
+          <p>جرّب نوع مركبة أو وجهة أخرى، كلمة أقصر، أو اختر قرية مختلفة.</p>
           <Link href={pathname} className="button button--soft">عرض كل النتائج</Link>
         </div>
       )}
