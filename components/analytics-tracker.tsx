@@ -1,8 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { trackEvent } from '@/lib/analytics';
+import {
+  initializeAnalyticsQueue,
+  isGoogleAnalyticsLoaded,
+  trackEvent,
+  trackPageViewBeforeGoogleLoads,
+} from '@/lib/analytics';
 
 type OperationalEvent = {
   eventType: string;
@@ -82,46 +87,46 @@ function parseArabicNumber(value: string) {
 
 function trackMutation(path: string, body: Record<string, unknown>) {
   if (path === '/api/auth/register') {
-    trackEvent('sign_up', { method: 'password' });
+    trackEvent('sign_up', { method: 'password' }, { immediate: true });
     return;
   }
   if (path === '/api/auth/login') {
-    trackEvent('login', { method: 'password' });
+    trackEvent('login', { method: 'password' }, { immediate: true });
     return;
   }
   if (path === '/api/auth/oauth-complete') {
-    trackEvent('login', { method: 'google' });
+    trackEvent('login', { method: 'google' }, { immediate: true });
     return;
   }
   if (path === '/api/business-submissions') {
     trackEvent('business_submission', {
       category: stringParam(body.category),
       village: stringParam(body.village),
-    });
+    }, { immediate: true });
     return;
   }
   if (path === '/api/ownership-claims') {
     trackEvent('ownership_claim', {
       relationship: stringParam(body.relationship),
       proof_method: stringParam(body.proofMethod),
-    });
+    }, { immediate: true });
     return;
   }
   if (path === '/api/listing-reports') {
     trackEvent('listing_report', {
       report_type: stringParam(body.reportType),
-    });
+    }, { immediate: true });
     return;
   }
   if (path === '/api/favorites') {
     const action = stringParam(body.action);
     const listingId = stringParam(body.listingId);
     if (action === 'add') {
-      trackEvent('favorite_add', { content_type: 'directory_listing' });
+      trackEvent('favorite_add', { content_type: 'directory_listing' }, { immediate: true });
       if (listingId) sendOperationalEvent({ eventType: 'favorite_add', listingId });
     }
     if (action === 'remove') {
-      trackEvent('favorite_remove', { content_type: 'directory_listing' });
+      trackEvent('favorite_remove', { content_type: 'directory_listing' }, { immediate: true });
       if (listingId) sendOperationalEvent({ eventType: 'favorite_remove', listingId });
     }
   }
@@ -129,8 +134,22 @@ function trackMutation(path: string, body: Record<string, unknown>) {
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
+  const previousPageUrl = useRef<string | null>(null);
 
   useEffect(() => {
+    initializeAnalyticsQueue();
+    previousPageUrl.current = window.location.href;
+  }, []);
+
+  useEffect(() => {
+    const currentUrl = window.location.href;
+    const previousUrl = previousPageUrl.current;
+
+    if (previousUrl && previousUrl !== currentUrl && !isGoogleAnalyticsLoaded()) {
+      trackPageViewBeforeGoogleLoads(previousUrl);
+    }
+    previousPageUrl.current = currentUrl;
+
     if (pathname.startsWith('/listing/')) {
       const listingSlug = listingSlugFromPath(pathname);
       trackEvent('view_listing', { content_type: 'directory_listing' });
@@ -191,7 +210,7 @@ export function AnalyticsTracker() {
       trackEvent(eventName, {
         content_type: listingSlug ? 'directory_listing' : 'site',
         transport_type: 'beacon',
-      });
+      }, { immediate: true });
       if (listingSlug) sendOperationalEvent({ eventType: eventName, listingSlug });
     }
 
@@ -209,7 +228,7 @@ export function AnalyticsTracker() {
         village_filter: village === 'all' ? 'all' : village.slice(0, 80),
         category_scope: pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all',
         transport_type: 'beacon',
-      });
+      }, { immediate: true });
     }
 
     document.addEventListener('click', handleClick, true);
