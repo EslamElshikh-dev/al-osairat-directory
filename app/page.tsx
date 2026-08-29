@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { categories, directoryStats, listings, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
@@ -9,6 +10,12 @@ import { MemberReviews } from '@/components/member-reviews';
 import { homeFaq } from '@/lib/faq';
 import { blogArticles } from '@/lib/blog';
 import { siteConfig } from '@/lib/site';
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: '/',
+  },
+};
 
 export default function HomePage() {
   const featured = listings
