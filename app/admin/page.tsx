@@ -28,12 +28,12 @@ export default async function AdminPage() {
             </span>
             <h1>لوحة إدارة <em>دليل العسيرات</em></h1>
             <p>مركز واحد لمتابعة النمو، قراءة سلوك البحث، مراجعة طلبات الأعضاء وبلاغات البيانات واتخاذ القرار بسرعة.</p>
-            <div className="workspace-hero__links">
+            <nav className="workspace-hero__links" aria-label="اختصارات لوحة الإدارة">
               <a href="#analytics-overview">الإحصاءات</a>
               <a href="#directory-intelligence">ذكاء البحث</a>
               <a href="#admin-requests">المراجعات</a>
               <a href="#listing-reports">البلاغات</a>
-            </div>
+            </nav>
           </div>
           <aside className="workspace-hero__panel" aria-label="أقسام لوحة الإدارة">
             <span className="workspace-hero__panel-label">لوحة خاصة · غير مفهرسة</span>
