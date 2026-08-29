@@ -35,6 +35,7 @@ export function isFilteredDirectoryState(state: SearchState) {
 }
 
 export function villagePathByName(name: string) {
+  if (name === 'مركز العسيرات') return '';
   const village = villages.find((item) => item.name === name);
   return village ? `/villages/${encodeURIComponent(village.slug)}` : '';
 }
