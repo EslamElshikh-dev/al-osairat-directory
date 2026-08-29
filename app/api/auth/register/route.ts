@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AUTH_ACCESS_COOKIE, AUTH_REFRESH_COOKIE, authCookieBase, authErrorMessage, mapMember, sameOrigin, signUp } from '@/lib/auth/supabase-rest';
+import { passwordPolicyError } from '@/lib/auth/password-policy';
 import { siteConfig } from '@/lib/site';
 
 export const runtime = 'nodejs';
@@ -13,7 +14,8 @@ export async function POST(request: Request) {
     const password = String(body?.password || '');
     if (name.length < 2 || name.length > 80) return NextResponse.json({ error: 'اكتب اسمًا صحيحًا من حرفين على الأقل.' }, { status: 400 });
     if (!/^\S+@\S+\.\S+$/.test(email)) return NextResponse.json({ error: 'اكتب بريدًا إلكترونيًا صحيحًا.' }, { status: 400 });
-    if (password.length < 8) return NextResponse.json({ error: 'كلمة المرور يجب ألا تقل عن 8 أحرف.' }, { status: 400 });
+    const passwordError = passwordPolicyError(password);
+    if (passwordError) return NextResponse.json({ error: passwordError }, { status: 400 });
 
     const created = await signUp(email, password, name, `${siteConfig.url}/account/login?confirmed=1`);
     const response = NextResponse.json({
