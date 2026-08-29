@@ -107,7 +107,7 @@ export function AccountPanel() {
 
   return (
     <div className="account-dashboard account-dashboard--upgraded">
-      <section className="account-profile-card account-profile-card--upgraded">
+      <section className="account-profile-card account-profile-card--upgraded" id="account-overview">
         <div className={`account-avatar${user.avatarUrl ? ' has-photo' : ''}`}>
           {user.avatarUrl ? (
             <img src={user.avatarUrl} alt={`صورة ${user.displayName}`} referrerPolicy="no-referrer" />
@@ -130,6 +130,16 @@ export function AccountPanel() {
       </section>
 
       <AdminAccessCard />
+
+      <nav className="account-section-nav" aria-label="أقسام حساب العضو">
+        <a href="#account-profile">بياناتي</a>
+        <a href="#account-notifications">الإشعارات</a>
+        <a href="#business-submissions">إضافة نشاط</a>
+        <a href="#ownership-claims">الملكية</a>
+        <a href="#my-businesses">أنشطتي</a>
+        <a href="#account-favorites">المفضلة</a>
+        <a href="#owned-performance">الأداء</a>
+      </nav>
 
       {user.passwordSecurityUpgradeRecommended && (
         <section className="account-security-upgrade" aria-labelledby="account-security-upgrade-title">
@@ -158,21 +168,23 @@ export function AccountPanel() {
         </div>
       )}
 
-      <NotificationCenter />
+      <div id="account-notifications" className="account-anchor-section"><NotificationCenter /></div>
 
-      <MemberProfileForm
-        onSaved={(profile) => {
-          setUser((current) => current ? { ...current, displayName: profile.fullName, avatarUrl: profile.avatarUrl || current.avatarUrl } : current);
-        }}
-      />
+      <div id="account-profile" className="account-anchor-section">
+        <MemberProfileForm
+          onSaved={(profile) => {
+            setUser((current) => current ? { ...current, displayName: profile.fullName, avatarUrl: profile.avatarUrl || current.avatarUrl } : current);
+          }}
+        />
+      </div>
 
-      <div id="business-submissions"><BusinessSubmissionPanel /></div>
+      <div id="business-submissions" className="account-anchor-section"><BusinessSubmissionPanel /></div>
 
-      <div id="ownership-claims"><OwnershipClaimPanel /></div>
+      <div id="ownership-claims" className="account-anchor-section"><OwnershipClaimPanel /></div>
 
-      <div id="my-businesses"><MyBusinessesPanel /></div>
+      <div id="my-businesses" className="account-anchor-section"><MyBusinessesPanel /></div>
 
-      <section className="account-favorites-card" aria-labelledby="favorites-title">
+      <section className="account-favorites-card account-anchor-section" id="account-favorites" aria-labelledby="favorites-title">
         <div className="account-favorites-heading">
           <div>
             <span>ميزة العضو</span>
