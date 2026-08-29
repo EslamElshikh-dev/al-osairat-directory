@@ -1,4 +1,4 @@
-export type DirectoryCategory='doctors'|'pharmacies'|'shops'|'education'|'crafts'|'restaurants'|'lawyers'|'clerics'|'government'|'community'|'emergency';
+export type DirectoryCategory='doctors'|'pharmacies'|'shops'|'education'|'crafts'|'restaurants'|'lawyers'|'clerics'|'government'|'community'|'transport'|'emergency';
 export type DataSource='legacy_directory'|'user_collected'|'google_maps';
 export type SourceStatus='source_only'|'cross_checked'|'google_verified'|'needs_review';
 export interface DirectoryListing{id:string;slug:string;title:string;category:DirectoryCategory;subCategory?:string;location:string;village:string;locality?:string;phone?:string;whatsapp?:string;hours?:string;description?:string;rating?:number;reviewCount:number;ratingSource?:'legacy'|'google';source:DataSource;sourceStatus:SourceStatus;deliveryAvailable?:boolean;emergency?:boolean;googlePlaceId?:string;googleMapsPlusCode?:string;googleMapsUrl?:string;lastUpdatedAt?:string;}
