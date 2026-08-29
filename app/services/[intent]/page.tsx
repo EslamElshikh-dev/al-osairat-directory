@@ -119,7 +119,7 @@ export default async function ServiceIntentPage({
             <p>{intent.description}</p>
             <div className="catalog-hero__actions">
               <Link href="#service-results" className="button button--light">عرض النتائج</Link>
-              <Link href="/directory/crafts" className="button button--outline-light">كل الخدمات الفنية</Link>
+              <Link href={`/directory/${intent.category}`} className="button button--outline-light">كل نتائج القسم</Link>
             </div>
           </div>
           <aside className="catalog-hero__summary" aria-label={`ملخص ${intent.label}`}>
@@ -127,7 +127,7 @@ export default async function ServiceIntentPage({
             <div className="catalog-hero__metrics">
               <span><b>{stats.total.toLocaleString('ar-EG')}</b><small>سجل مطابق</small></span>
               <span><b>{stats.villages.toLocaleString('ar-EG')}</b><small>نطاق محلي</small></span>
-              <span><b>{stats.contactable.toLocaleString('ar-EG')}</b><small>بسيلة تواصل</small></span>
+              <span><b>{stats.contactable.toLocaleString('ar-EG')}</b><small>وسيلة تواصل</small></span>
             </div>
           </aside>
         </div>
@@ -141,11 +141,11 @@ export default async function ServiceIntentPage({
           <p>{intent.guidance}</p>
         </div>
         {topSpecialties.length > 0 && (
-          <nav className="seo-growth-hub__links" aria-label={`التخصصات المرتبطة بـ ${intent.singularLabel}`}>
+          <div className="seo-growth-hub__links" aria-label={`التخصصات المرتبطة بـ ${intent.singularLabel}`}>
             {topSpecialties.map((item) => (
               <span key={item.label} className="button button--ghost">{item.label} · {item.count.toLocaleString('ar-EG')}</span>
             ))}
-          </nav>
+          </div>
         )}
       </section>
 
