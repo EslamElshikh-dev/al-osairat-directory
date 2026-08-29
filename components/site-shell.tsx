@@ -31,6 +31,7 @@ export function SiteHeader() {
 
         <nav className="desktop-nav" aria-label="التنقل الرئيسي">
           <Link href="/">الرئيسية</Link>
+          <Link href="/directory">الدليل</Link>
           <Link href="/villages">القرى</Link>
           <Link href="/directory/doctors">الأطباء</Link>
           <Link href="/blog" className="nav-optional">المدونة</Link>
