@@ -46,49 +46,84 @@ export default function HomePage() {
   };
 
   return (
-    <main id="main-content">
-      <section className="hero">
+    <main id="main-content" className="home-redesign">
+      <section className="hero hero--editorial">
+        <div className="hero__mesh" aria-hidden="true" />
         <div className="shell hero__grid">
           <div className="hero__content">
-            <span className="eyebrow">الموسوعة المحلية لمركز العسيرات وقراه</span>
-            <h1>كل ما تحتاجه في <em>العسيرات</em>… في مكان واحد.</h1>
+            <div className="hero__meta-line">
+              <span className="hero__live-badge"><i aria-hidden="true" /> دليل محلي محدث باستمرار</span>
+              <span className="hero__location">مركز العسيرات · سوهاج</span>
+            </div>
+
+            <span className="eyebrow hero__eyebrow">الموسوعة المحلية لمركز العسيرات وقراه</span>
+            <h1>دليل العسيرات المحلي… <em>خدمتك ومكانك</em> في بحث واحد.</h1>
             <p>
-              دليل منظم للأطباء والصيدليات والمحلات والحرفيين والمطاعم والخدمات،
-              مبني على بيانات محلية ونتائج خرائط Google مع فصل السجلات غير المؤكدة عن المحتوى المنشور.
+              ابحث عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والخدمات داخل مركز العسيرات،
+              ببيانات منظمة وروابط خرائط مباشرة تساعدك توصل للمكان الصحيح أسرع.
             </p>
-            <form action="/directory" className="hero-search">
+
+            <form action="/directory" className="hero-search hero-search--premium">
               <span className="hero-search__brand" aria-hidden="true"><BrandMark compact /></span>
               <label className="sr-only" htmlFor="home-search">ابحث في دليل العسيرات</label>
-              <input id="home-search" name="q" placeholder="مثال: دكتور أطفال، سباك، صيدلية، أولاد حمزة..." />
-              <button type="submit">ابحث الآن</button>
+              <input id="home-search" name="q" placeholder="ابحث باسم خدمة، نشاط أو قرية…" />
+              <button type="submit"><span>ابحث في الدليل</span><b aria-hidden="true">←</b></button>
             </form>
+
+            <div className="hero__quick-links" aria-label="روابط بحث سريعة">
+              <span>وصول سريع</span>
+              <Link href="/directory/doctors">الأطباء</Link>
+              <Link href="/directory/pharmacies">الصيدليات</Link>
+              <Link href="/directory/shops">المحلات</Link>
+              <Link href="/villages">القرى</Link>
+            </div>
+
             <div className="hero__trust">
-              <span><b>{directoryStats.total}</b> سجل منظم</span>
-              <span><b>{directoryStats.villages}</b> قرى أساسية</span>
-              <span><b>{directoryStats.googleVerified}</b> نتيجة مرتبطة بخرائط Google</span>
+              <span><b>{directoryStats.total}</b><small>سجل منظم</small></span>
+              <span><b>{directoryStats.villages}</b><small>قرى أساسية</small></span>
+              <span><b>{directoryStats.googleVerified}</b><small>مرجع خرائط مباشر</small></span>
             </div>
           </div>
-          <aside className="hero__panel" aria-label="أبرز إحصاءات الدليل">
-            <div className="hero__panel-head">
-              <span>نطاق التغطية</span>
-              <strong>مركز العسيرات فقط</strong>
+
+          <aside className="hero__panel hero__panel--spotlight" aria-label="نطاق تغطية دليل العسيرات">
+            <div className="hero__panel-brand" aria-hidden="true">
+              <span><BrandMark /></span>
+              <i />
             </div>
+            <div className="hero__panel-head">
+              <div>
+                <span>نطاق التغطية</span>
+                <strong>من قلب مركز العسيرات</strong>
+              </div>
+              <span className="hero__panel-status"><i aria-hidden="true" /> محلي</span>
+            </div>
+
+            <div className="hero__panel-stat">
+              <strong>{directoryStats.total}</strong>
+              <div><b>مكان وخدمة</b><span>منظمين داخل دليل واحد</span></div>
+            </div>
+
+            <div className="hero__panel-label">استكشف حسب القرية</div>
             <div className="village-cloud">
               {villages.filter((v) => v.name !== 'مركز العسيرات').map((village) => (
                 <Link key={village.slug} href={`/villages/${village.slug}`}>{village.name}</Link>
               ))}
             </div>
-            <Link href="/villages" className="text-link">استكشف القرى والتوابع ←</Link>
+            <Link href="/villages" className="text-link hero__panel-link">كل القرى والتوابع <b aria-hidden="true">←</b></Link>
           </aside>
         </div>
       </section>
 
-      <section className="section shell">
-        <div className="section-heading">
-          <div><span className="eyebrow eyebrow--dark">أقسام الموسوعة</span><h2>دليل مرتب حسب احتياجك</h2></div>
-          <Link href="/directory" className="text-link">عرض الدليل بالكامل</Link>
+      <section className="section shell home-category-section">
+        <div className="section-heading section-heading--editorial">
+          <div>
+            <span className="eyebrow eyebrow--dark">أقسام الموسوعة</span>
+            <h2>ابدأ من نوع الخدمة التي تحتاجها</h2>
+            <p>الأقسام مرتبة لتصل للمعلومة أو المكان بأقل عدد من الخطوات.</p>
+          </div>
+          <Link href="/directory" className="text-link text-link--arrow">عرض الدليل بالكامل <b aria-hidden="true">←</b></Link>
         </div>
-        <div className="category-grid">
+        <div className="category-grid category-grid--editorial">
           {categories.map((category) => {
             const count = listings.filter((item) => item.category === category.id).length;
             return (
@@ -100,18 +135,22 @@ export default function HomePage() {
                 <span className="category-card__number">{String(count).padStart(2, '0')}</span>
                 <h3>{category.shortLabel}</h3>
                 <p>{category.description}</p>
-                <span className="category-card__arrow">استكشف القسم ←</span>
+                <span className="category-card__arrow">استكشف القسم <b aria-hidden="true">←</b></span>
               </Link>
             );
           })}
         </div>
       </section>
 
-      <section className="section section--muted">
+      <section className="section section--muted section--maps-featured">
         <div className="shell">
-          <div className="section-heading">
-            <div><span className="eyebrow eyebrow--dark">بيانات مرتبطة بخرائط Google</span><h2>أماكن ذات مرجع خرائط مباشر</h2></div>
-            <Link href="/directory" className="text-link">كل النتائج</Link>
+          <div className="section-heading section-heading--editorial">
+            <div>
+              <span className="eyebrow eyebrow--dark">بيانات مرتبطة بخرائط Google</span>
+              <h2>أماكن لها مرجع مباشر وواضح</h2>
+              <p>مجموعة مختارة من السجلات المرتبطة بصفحات خرائط Google لتسهيل الوصول والتحقق.</p>
+            </div>
+            <Link href="/directory" className="text-link text-link--arrow">كل النتائج <b aria-hidden="true">←</b></Link>
           </div>
           <div className="listing-grid listing-grid--featured">
             {featured.map((listing) => <ListingCard key={listing.id} listing={listing} compact />)}
@@ -119,8 +158,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section shell">
-        <div className="emergency-strip">
+      <section className="section shell home-emergency-section">
+        <div className="emergency-strip emergency-strip--editorial">
           <CategoryVisual category="emergency" size="lg" className="emergency-strip__visual" />
           <div>
             <span className="eyebrow eyebrow--light">اتصال سريع</span>
@@ -136,14 +175,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section section--muted home-blog-section">
+      <section className="section section--muted home-blog-section home-blog-section--editorial">
         <div className="shell">
-          <div className="section-heading">
+          <div className="section-heading section-heading--editorial">
             <div>
               <span className="eyebrow eyebrow--dark">من مدونة العسيرات</span>
-              <h2>اقرأ المكان قبل أن تبحث فيه</h2>
+              <h2>اعرف المكان قبل أن تبحث فيه</h2>
+              <p>محتوى محلي يضيف سياقًا للقرى والمعالم والشخصيات والمعلومات المرتبطة بالعسيرات.</p>
             </div>
-            <Link href="/blog" className="text-link">كل المقالات</Link>
+            <Link href="/blog" className="text-link text-link--arrow">كل المقالات <b aria-hidden="true">←</b></Link>
           </div>
           <div className="blog-grid blog-grid--home">
             {blogArticles.slice(0, 3).map((article) => <BlogCard key={article.slug} article={article} />)}
@@ -153,12 +193,12 @@ export default function HomePage() {
 
       <FaqSection />
 
-      <section className="section shell data-note">
-        <div><span className="eyebrow eyebrow--dark">منهجية البيانات</span><h2>الدقة قبل العدد</h2></div>
+      <section className="section shell data-note data-note--editorial">
+        <div><span className="eyebrow eyebrow--dark">منهجية البيانات</span><h2>الدقة قبل العدد</h2><p className="data-note__intro">كل سجل يمر بمنهج واضح قبل أن يصبح جزءًا من تجربة البحث العامة.</p></div>
         <div className="data-note__grid">
-          <p>الموقع لا يعرض السجلات غير المؤكدة جغرافيًا ضمن النتائج العامة. البيانات القديمة تُراجع وتُنظف قبل النشر.</p>
-          <p>أماكن خرائط Google تُحفظ مع معرف المكان عند توفره، لتسهيل المطابقة ومنع إنشاء سجلات مكررة.</p>
-          <p>التقييمات المحفوظة من المصدر القديم أو Google موسومة داخليًا بمصدرها، ولا تُستخدم كسكيما تقييمات غنية بشكل مضلل.</p>
+          <p><b>01</b> الموقع لا يعرض السجلات غير المؤكدة جغرافيًا ضمن النتائج العامة. البيانات القديمة تُراجع وتُنظف قبل النشر.</p>
+          <p><b>02</b> أماكن خرائط Google تُحفظ مع معرف المكان عند توفره، لتسهيل المطابقة ومنع إنشاء سجلات مكررة.</p>
+          <p><b>03</b> التقييمات المحفوظة من المصدر القديم أو Google موسومة داخليًا بمصدرها، ولا تُستخدم كسكيما تقييمات غنية بشكل مضلل.</p>
         </div>
       </section>
 
