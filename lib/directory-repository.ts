@@ -46,6 +46,52 @@ type CanonicalSearchResponse = {
   to?: number;
 };
 
+export type DirectoryAuthoritySummary = {
+  total: number;
+  averageQuality: number;
+  strong: number;
+  needsAttention: number;
+  needsReview: number;
+  missingPhone: number;
+  missingDescription: number;
+  missingMapsUrl: number;
+  missingPlaceId: number;
+  googleVerified: number;
+  crossChecked: number;
+  sourceOnly: number;
+  trusted: number;
+};
+
+export type DirectoryAuthorityCoverage = {
+  trustedPct: number;
+  phonePct: number;
+  descriptionPct: number;
+  mapsUrlPct: number;
+  placeIdPct: number;
+};
+
+export type DirectoryAuthorityQueueItem = {
+  id: string;
+  slug: string;
+  title: string;
+  category: DirectoryCategory;
+  village: string;
+  qualityScore: number;
+  sourceStatus: SourceStatus;
+  missingMapsUrl: boolean;
+  missingPlaceId: boolean;
+  missingPhone: boolean;
+  missingDescription: boolean;
+  authorityPriority: number;
+};
+
+export type DirectoryAuthorityReport = {
+  canonicalReady: true;
+  summary: DirectoryAuthoritySummary;
+  coverage: DirectoryAuthorityCoverage;
+  queue: DirectoryAuthorityQueueItem[];
+};
+
 function publicRpcHeaders() {
   return {
     apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -124,6 +170,32 @@ export async function queryCanonicalDirectory(
       pageSize: Math.max(1, Number(payload.pageSize || pageSize)),
       from: Number(payload.from || 0),
       to: Number(payload.to || 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function getDirectoryAuthorityReport(limit = 12): Promise<DirectoryAuthorityReport | null> {
+  const safeLimit = Math.max(1, Math.min(Math.trunc(limit || 12), 50));
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_directory_authority_report`, {
+      method: 'POST',
+      headers: publicRpcHeaders(),
+      body: JSON.stringify({ p_limit: safeLimit }),
+      cache: 'no-store',
+    });
+
+    if (!response.ok) return null;
+    const payload = await response.json() as Partial<DirectoryAuthorityReport>;
+    if (!payload.canonicalReady || !payload.summary || !payload.coverage) return null;
+
+    return {
+      canonicalReady: true,
+      summary: payload.summary,
+      coverage: payload.coverage,
+      queue: Array.isArray(payload.queue) ? payload.queue : [],
     };
   } catch {
     return null;
