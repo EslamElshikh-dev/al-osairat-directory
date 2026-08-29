@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import type { ClientSessionUser } from './client-session';
 import {
-  ClientSessionUser,
   ensureClientSession,
+  refreshClientSession,
   subscribeClientSession,
   updateClientSessionUser,
 } from './client-session';
@@ -21,6 +23,8 @@ function AccountIcon() {
 }
 
 export function AccountButton() {
+  const pathname = usePathname();
+  const previousPath = useRef(pathname);
   const [user, setUser] = useState<ClientSessionUser | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -51,6 +55,20 @@ export function AccountButton() {
       window.removeEventListener('member:profile-updated', handleProfileUpdated);
     };
   }, []);
+
+  useEffect(() => {
+    const previous = previousPath.current;
+    previousPath.current = pathname;
+
+    const completedLogin =
+      (previous === '/account/login' || previous === '/account/register') && pathname === '/account';
+    const possiblyLoggedOut = previous === '/account' && pathname === '/';
+
+    if (completedLogin || possiblyLoggedOut) {
+      setReady(false);
+      void refreshClientSession().finally(() => setReady(true));
+    }
+  }, [pathname]);
 
   const label = user ? (user.displayName?.split(' ')[0] || 'حسابي') : 'دخول';
   const initial = user?.displayName?.trim()?.charAt(0);
