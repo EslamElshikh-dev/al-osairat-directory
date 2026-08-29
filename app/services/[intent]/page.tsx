@@ -14,15 +14,16 @@ import {
   getServiceIntentListings,
   getTopSubCategories,
   isProgrammaticCollectionEligible,
-  serviceIntents,
 } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
 
 type ServiceSearchParams = { page?: string };
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return serviceIntents.map((intent) => ({ intent: intent.id }));
+  return getEligibleServiceIntents(listings).map(({ intent }) => ({ intent: intent.id }));
 }
 
 async function loadAllListings() {
