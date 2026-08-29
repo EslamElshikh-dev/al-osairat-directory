@@ -254,11 +254,19 @@ export function queryDirectoryListings(
 
 export function createDirectoryHref(
   pathname: string,
-  params: { query?: string; village?: string; page?: number },
+  params: {
+    query?: string;
+    village?: string;
+    page?: number;
+    vehicle?: string;
+    destination?: string;
+  },
 ) {
   const search = new URLSearchParams();
   if (params.query?.trim()) search.set('q', params.query.trim());
   if (params.village && params.village !== 'all') search.set('village', params.village);
+  if (params.vehicle && params.vehicle !== 'all') search.set('vehicle', params.vehicle);
+  if (params.destination && params.destination !== 'all') search.set('destination', params.destination);
   if (params.page && params.page > 1) search.set('page', String(params.page));
   const suffix = search.toString();
   return suffix ? `${pathname}?${suffix}` : pathname;
