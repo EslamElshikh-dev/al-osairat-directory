@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { DirectoryExplorer } from '@/components/directory-explorer';
-import { listings } from '@/lib/data';
+import { BrandMark } from '@/components/site-shell';
+import { categories, listings, villages } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
@@ -30,15 +32,39 @@ export default async function DirectoryPage({
     village: params.village,
     page: Number(params.page || 1),
   });
+  const coreVillages = villages.filter((item) => item.name !== 'مركز العسيرات').length;
 
   return (
-    <main id="main-content" className="page-main">
-      <section className="page-hero shell">
-        <span className="eyebrow eyebrow--dark">البحث المركزي</span>
-        <h1>الدليل الشامل لمركز العسيرات</h1>
-        <p>ابحث بالاسم أو التخصص أو الخدمة أو القرية، ثم صفِّ النتائج حسب نطاقك.</p>
+    <main id="main-content" className="page-main interior-redesign">
+      <section className="catalog-hero catalog-hero--directory">
+        <div className="shell catalog-hero__grid">
+          <div className="catalog-hero__copy">
+            <span className="catalog-hero__kicker"><BrandMark compact /> البحث المركزي</span>
+            <h1>الدليل الشامل <em>لمركز العسيرات</em></h1>
+            <p>ابحث بالاسم أو التخصص أو الخدمة أو القرية، ثم صفِّ النتائج للوصول إلى الأنسب داخل نطاق العسيرات.</p>
+            <div className="catalog-hero__actions">
+              <Link href="#directory-results" className="button button--light">ابدأ البحث</Link>
+              <Link href="/villages" className="button button--outline-light">استكشف القرى</Link>
+            </div>
+          </div>
+
+          <aside className="catalog-hero__summary" aria-label="ملخص الدليل">
+            <span className="catalog-hero__summary-label">نظرة سريعة</span>
+            <div className="catalog-hero__metrics">
+              <span><b>{result.total.toLocaleString('ar-EG')}</b><small>نتيجة حالية</small></span>
+              <span><b>{categories.length.toLocaleString('ar-EG')}</b><small>قسمًا</small></span>
+              <span><b>{coreVillages.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
+            </div>
+            <div className="catalog-hero__quick-links">
+              {categories.slice(0, 4).map((category) => (
+                <Link key={category.id} href={`/directory/${category.id}`}>{category.shortLabel}</Link>
+              ))}
+            </div>
+          </aside>
+        </div>
       </section>
-      <section className="shell page-section">
+
+      <section id="directory-results" className="shell page-section interior-results-section">
         <DirectoryExplorer
           query={params.q || ''}
           village={params.village || 'all'}
