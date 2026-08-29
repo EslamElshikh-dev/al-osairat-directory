@@ -279,11 +279,12 @@ export async function POST(request: Request) {
 
   try {
     const ownReview = await readOwnReview(session, target.targetType, target.targetKey);
+    const safeAvatarUrl = /^https:\/\//i.test(session.avatarUrl) ? session.avatarUrl.slice(0, 500) : null;
     const payload = {
       rating,
       body: reviewText,
       author_name: session.displayName.slice(0, 100),
-      avatar_url: session.avatarUrl ? session.avatarUrl.slice(0, 500) : null,
+      avatar_url: safeAvatarUrl,
     };
 
     let response: Response;
