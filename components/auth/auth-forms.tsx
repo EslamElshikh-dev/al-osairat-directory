@@ -76,7 +76,6 @@ function PasswordInput({ id, name, autoComplete, minLength, placeholder, value, 
           onChange={onChange}
           onKeyDown={syncCapsLock}
           onKeyUp={syncCapsLock}
-          onFocus={(event) => setCapsLock(event.getModifierState('CapsLock'))}
           onBlur={() => setCapsLock(false)}
           aria-describedby={describedBy}
         />
