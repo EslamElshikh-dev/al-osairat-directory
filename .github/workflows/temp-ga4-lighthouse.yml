@@ -33,50 +33,75 @@ jobs:
 
       - name: Measure baseline main
         run: |
+          set -euo pipefail
           git checkout --force origin/main
           git clean -fdx
+          echo "Measuring main: $(git rev-parse HEAD)"
           npm ci
           npm run build
-          npm start > /tmp/osairat-main.log 2>&1 &
-          echo $! > /tmp/osairat-main.pid
+          node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-main.log 2>&1 &
+          SERVER_PID=$!
+          echo "$SERVER_PID" > /tmp/osairat-main.pid
+          READY=0
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then break; fi
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
             sleep 1
           done
+          if [ "$READY" -ne 1 ]; then cat /tmp/osairat-main.log; exit 1; fi
           lighthouse http://127.0.0.1:3000/ \
             --output=json \
             --output-path=/tmp/lh-main.json \
             --quiet \
             --chrome-flags="--headless --no-sandbox" \
             --only-categories=performance,accessibility,best-practices,seo
-          kill "$(cat /tmp/osairat-main.pid)" || true
-          sleep 2
+          kill "$SERVER_PID"
+          wait "$SERVER_PID" 2>/dev/null || true
+          for i in {1..20}; do
+            if ! curl -fsS http://127.0.0.1:3000/ > /dev/null 2>&1; then break; fi
+            sleep 0.25
+          done
+          if curl -fsS http://127.0.0.1:3000/ > /dev/null 2>&1; then echo 'Baseline server still alive'; exit 1; fi
 
       - name: Measure GA4 candidate
         run: |
+          set -euo pipefail
           git checkout --force "$CANDIDATE_SHA"
           git clean -fdx
+          echo "Measuring candidate: $(git rev-parse HEAD)"
           npm ci
           npm run build
-          npm start > /tmp/osairat-candidate.log 2>&1 &
-          echo $! > /tmp/osairat-candidate.pid
+          node ./node_modules/next/dist/bin/next start -p 3000 > /tmp/osairat-candidate.log 2>&1 &
+          SERVER_PID=$!
+          echo "$SERVER_PID" > /tmp/osairat-candidate.pid
+          READY=0
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then break; fi
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then READY=1; break; fi
             sleep 1
           done
+          if [ "$READY" -ne 1 ]; then cat /tmp/osairat-candidate.log; exit 1; fi
           lighthouse http://127.0.0.1:3000/ \
             --output=json \
             --output-path=/tmp/lh-candidate.json \
             --quiet \
             --chrome-flags="--headless --no-sandbox" \
             --only-categories=performance,accessibility,best-practices,seo
-          kill "$(cat /tmp/osairat-candidate.pid)" || true
+          kill "$SERVER_PID"
+          wait "$SERVER_PID" 2>/dev/null || true
 
       - name: Print focused diagnostics
         run: |
           node <<'NODE'
           const fs = require('fs');
           const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
+          const categoryFailures = (lhr, categoryId) => {
+            const category = lhr.categories[categoryId];
+            if (!category) return [];
+            return category.auditRefs
+              .filter((ref) => ref.weight > 0)
+              .map((ref) => ({ ref, audit: lhr.audits[ref.id] }))
+              .filter(({ audit }) => audit && audit.score !== null && audit.score < 1)
+              .map(({ ref, audit }) => ({ id: ref.id, score: audit.score, title: audit.title }));
+          };
           const pick = (lhr) => {
             const a = lhr.audits;
             const requests = a['network-requests']?.details?.items || [];
@@ -102,17 +127,19 @@ jobs:
                 lcpMs: Math.round(a['largest-contentful-paint']?.numericValue || 0),
                 tbtMs: Math.round(a['total-blocking-time']?.numericValue || 0),
                 cls: a['cumulative-layout-shift']?.numericValue ?? null,
+                speedIndexMs: Math.round(a['speed-index']?.numericValue || 0),
+                totalBytes: Math.round(a['total-byte-weight']?.numericValue || 0),
                 mainThreadMs: Math.round(a['mainthread-work-breakdown']?.numericValue || 0),
                 jsExecutionMs: Math.round(a['bootup-time']?.numericValue || 0),
               },
               googleRequests,
               consoleErrors: a['errors-in-console']?.details?.items || [],
-              contrastItems: a['color-contrast']?.details?.items || [],
+              accessibilityFailures: categoryFailures(lhr, 'accessibility'),
+              bestPracticeFailures: categoryFailures(lhr, 'best-practices'),
             };
           };
+          const baseline = pick(read('/tmp/lh-main.json'));
+          const candidate = pick(read('/tmp/lh-candidate.json'));
           console.log('[FOCUSED_DIAGNOSTICS]');
-          console.log(JSON.stringify({
-            baseline: pick(read('/tmp/lh-main.json')),
-            candidate: pick(read('/tmp/lh-candidate.json')),
-          }, null, 2));
+          console.log(JSON.stringify({ baseline, candidate }, null, 2));
           NODE
