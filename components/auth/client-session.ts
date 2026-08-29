@@ -16,6 +16,7 @@ type SessionListener = (user: ClientSessionUser | null | undefined) => void;
 
 let cachedUser: ClientSessionUser | null | undefined;
 let sessionPromise: Promise<ClientSessionUser | null> | null = null;
+let requestGeneration = 0;
 const listeners = new Set<SessionListener>();
 
 function emit() {
@@ -26,7 +27,8 @@ async function loadSession(force = false): Promise<ClientSessionUser | null> {
   if (!force && cachedUser !== undefined) return cachedUser;
   if (!force && sessionPromise) return sessionPromise;
 
-  sessionPromise = fetch('/api/auth/session', {
+  const generation = ++requestGeneration;
+  const request = fetch('/api/auth/session', {
     cache: 'no-store',
     credentials: 'same-origin',
   })
@@ -37,15 +39,18 @@ async function loadSession(force = false): Promise<ClientSessionUser | null> {
     })
     .catch(() => null)
     .then((user) => {
-      cachedUser = user;
-      emit();
+      if (generation === requestGeneration) {
+        cachedUser = user;
+        emit();
+      }
       return user;
     })
     .finally(() => {
-      sessionPromise = null;
+      if (sessionPromise === request) sessionPromise = null;
     });
 
-  return sessionPromise;
+  sessionPromise = request;
+  return request;
 }
 
 export function ensureClientSession() {
@@ -59,6 +64,7 @@ export function refreshClientSession() {
 }
 
 export function setClientSessionUser(user: ClientSessionUser | null) {
+  requestGeneration += 1;
   cachedUser = user;
   emit();
 }
