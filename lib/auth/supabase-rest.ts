@@ -1,3 +1,5 @@
+import { PASSWORD_POLICY_LAUNCHED_AT, PASSWORD_POLICY_VERSION } from '@/lib/auth/password-policy';
+
 export const SUPABASE_URL = 'https://vddoeiggfcwllfxpirep.supabase.co';
 export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ZpjxAzWkEPl2jfJg17iRVg_XYdIs2pO';
 
@@ -10,13 +12,28 @@ export type MemberUser = {
   displayName: string;
   emailVerified: boolean;
   avatarUrl: string;
+  createdAt: string;
+  authProviders: string[];
+  passwordPolicyVersion: number;
+  passwordSecurityUpgradeRecommended: boolean;
 };
 
 type SupabaseUser = {
   id: string;
   email?: string;
   email_confirmed_at?: string | null;
-  user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string };
+  created_at?: string;
+  app_metadata?: { provider?: string; providers?: string[] };
+  identities?: Array<{ provider?: string }>;
+  user_metadata?: {
+    full_name?: string;
+    name?: string;
+    avatar_url?: string;
+    picture?: string;
+    password_policy_version?: number | string;
+    password_policy_updated_at?: string;
+    [key: string]: unknown;
+  };
 };
 
 type TokenResponse = {
@@ -60,15 +77,34 @@ async function authRequest<T>(path: string, init: RequestInit = {}, accessToken?
   return data as T;
 }
 
+function getAuthProviders(user: SupabaseUser) {
+  const providers = new Set<string>();
+  for (const provider of user.app_metadata?.providers || []) if (provider) providers.add(provider);
+  if (user.app_metadata?.provider) providers.add(user.app_metadata.provider);
+  for (const identity of user.identities || []) if (identity.provider) providers.add(identity.provider);
+  return Array.from(providers);
+}
+
 export function mapMember(user: SupabaseUser): MemberUser {
   const displayName = user.user_metadata?.full_name?.trim() || user.user_metadata?.name?.trim() || 'عضو دليل العسيرات';
   const avatarUrl = user.user_metadata?.avatar_url?.trim() || user.user_metadata?.picture?.trim() || '';
+  const createdAt = user.created_at || '';
+  const authProviders = getAuthProviders(user);
+  const passwordPolicyVersion = Number(user.user_metadata?.password_policy_version || 0) || 0;
+  const hasPasswordProvider = authProviders.includes('email');
+  const createdBeforePolicy = Boolean(createdAt) && Date.parse(createdAt) < Date.parse(PASSWORD_POLICY_LAUNCHED_AT);
+  const passwordSecurityUpgradeRecommended = hasPasswordProvider && createdBeforePolicy && passwordPolicyVersion < PASSWORD_POLICY_VERSION;
+
   return {
     localId: user.id,
     email: user.email || '',
     displayName,
     emailVerified: Boolean(user.email_confirmed_at),
     avatarUrl,
+    createdAt,
+    authProviders,
+    passwordPolicyVersion,
+    passwordSecurityUpgradeRecommended,
   };
 }
 
@@ -76,7 +112,15 @@ export async function signUp(email: string, password: string, name: string, redi
   const query = `signup?redirect_to=${encodeURIComponent(redirectTo)}`;
   return authRequest<{ user: SupabaseUser; access_token?: string; refresh_token?: string; expires_in?: number }>(query, {
     method: 'POST',
-    body: JSON.stringify({ email, password, data: { full_name: name } }),
+    body: JSON.stringify({
+      email,
+      password,
+      data: {
+        full_name: name,
+        password_policy_version: PASSWORD_POLICY_VERSION,
+        password_policy_updated_at: new Date().toISOString(),
+      },
+    }),
   });
 }
 
@@ -108,7 +152,13 @@ export async function recoverPassword(email: string, redirectTo: string) {
 export async function updatePassword(accessToken: string, password: string) {
   return authRequest<SupabaseUser>('user', {
     method: 'PUT',
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({
+      password,
+      data: {
+        password_policy_version: PASSWORD_POLICY_VERSION,
+        password_policy_updated_at: new Date().toISOString(),
+      },
+    }),
   }, accessToken);
 }
 
