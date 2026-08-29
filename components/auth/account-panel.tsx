@@ -100,7 +100,7 @@ export function AccountPanel() {
     router.refresh();
   }
 
-  if (loading) return <div className="account-loading" aria-live="polite"><span /><p>جاري تحميل حسابك…</p></div>;
+  if (loading) return <div className="account-loading" role="status" aria-live="polite" aria-busy="true"><span aria-hidden="true" /><p>جاري تحميل حسابك…</p></div>;
   if (!user) return null;
 
   const initial = user.displayName.trim().charAt(0) || 'ع';
@@ -117,7 +117,7 @@ export function AccountPanel() {
         </div>
         <div className="account-profile-copy">
           <span className="account-kicker">عضو دليل العسيرات</span>
-          <h1>{user.displayName}</h1>
+          <h2>{user.displayName}</h2>
           <p>{user.email}</p>
           <div className="account-profile-badges">
             <span className={`account-status${user.emailVerified ? ' is-verified' : ''}`}>
@@ -190,11 +190,11 @@ export function AccountPanel() {
             <span>ميزة العضو</span>
             <h2 id="favorites-title">مفضلتي</h2>
           </div>
-          <span className="account-favorites-count">{favoritesLoading ? 'جاري التحميل' : `${favorites.length} محفوظ`}</span>
+          <span className="account-favorites-count" aria-live="polite">{favoritesLoading ? 'جاري التحميل' : `${favorites.length} محفوظ`}</span>
         </div>
 
         {favoritesLoading ? (
-          <div className="account-favorites-loading">جاري تحميل العناصر المحفوظة…</div>
+          <div className="account-favorites-loading" role="status" aria-live="polite">جاري تحميل العناصر المحفوظة…</div>
         ) : favorites.length ? (
           <div className="account-favorites-list">
             {favorites.map((item) => (
