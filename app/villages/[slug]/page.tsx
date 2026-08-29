@@ -48,6 +48,7 @@ export default async function VillagePage({
 }) {
   const { slug } = await params;
   const query = await searchParams;
+  const paginated = isFilteredDirectoryState(query);
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
 
@@ -204,7 +205,7 @@ export default async function VillagePage({
           <div className="empty-state"><strong>لم تُنشر بيانات مؤكدة لهذه القرية بعد</strong><p>القرية موجودة في هيكل الموسوعة وسيتم ربط الأنشطة بها عند اكتمال المراجعة.</p></div>
         )}
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      {!paginated && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />}
     </main>
   );
 }
