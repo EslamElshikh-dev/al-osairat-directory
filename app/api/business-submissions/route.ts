@@ -190,6 +190,7 @@ export async function POST(request: Request) {
   const description = cleanMultiline(body?.description, 800);
   const rawMapsUrl = cleanText(body?.googleMapsUrl, 500);
   const googleMapsUrl = normalizeGoogleMapsUrl(rawMapsUrl);
+  const contactPublishConsent = body?.contactPublishConsent === true;
 
   const validationError = validateBusinessSubmissionInput({
     businessName,
@@ -203,6 +204,9 @@ export async function POST(request: Request) {
   if (validationError) return respond({ error: validationError }, session, 400);
   if (!categoryIds.has(category)) return respond({ error: 'اختر قسمًا صحيحًا للنشاط.' }, session, 400);
   if (!villageNames.has(village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
+  if (category === 'transport' && (phone || whatsapp) && !contactPublishConsent) {
+    return respond({ error: 'يلزم الموافقة صراحةً على نشر رقم الاتصال أو واتساب كوسيلة تواصل عامة للخدمة.' }, session, 400);
+  }
 
   try {
     const pendingResponse = await fetch(
@@ -234,6 +238,7 @@ export async function POST(request: Request) {
         hours: hours || null,
         description: description || null,
         google_maps_url: googleMapsUrl || null,
+        contact_publish_consent: category === 'transport' ? contactPublishConsent : false,
         status: 'pending',
       }),
       cache: 'no-store',
