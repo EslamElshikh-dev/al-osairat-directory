@@ -33,6 +33,7 @@ import './blog-mobile-fix.css';
 import './visual-redesign-phase1.css';
 import './visual-redesign-phase2.css';
 import './visual-redesign-phase3.css';
+import './visual-redesign-phase4.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const GA_MEASUREMENT_ID = 'G-3768S94PP1';
