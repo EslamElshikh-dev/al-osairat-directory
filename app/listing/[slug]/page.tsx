@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
+import { villagePathByName } from '@/lib/seo-growth';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
@@ -74,6 +75,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const maps = googleMapsHref(listing);
   const lastUpdated = formatListingDate(listing.lastUpdatedAt);
   const dataSourceLabel = sourceLabel(listing);
+  const villagePath = villagePathByName(listing.village);
 
   const [publishedNearby, overriddenStatic] = await Promise.all([
     getPublishedListings({ category: listing.category, village: listing.village }),
@@ -88,6 +90,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
     '@id': `${siteConfig.url}/listing/${listing.slug}#entity`,
     name: listing.title,
     description: listing.description || listing.subCategory || category.description,
+    mainEntityOfPage: `${siteConfig.url}/listing/${listing.slug}`,
     ...(listing.phone && listing.phone !== '0' ? { telephone: listing.phone } : {}),
     address: {
       '@type': 'PostalAddress',
@@ -96,9 +99,23 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
       addressRegion: 'سوهاج',
       addressCountry: 'EG',
     },
+    areaServed: {
+      '@type': 'Place',
+      name: listing.village,
+      ...(villagePath ? { url: `${siteConfig.url}${villagePath}` } : {}),
+      containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
+    },
     url: `${siteConfig.url}/listing/${listing.slug}`,
+    ...(listing.lastUpdatedAt ? { dateModified: listing.lastUpdatedAt } : {}),
     ...((listing.googlePlaceId || listing.googleMapsUrl) ? { hasMap: maps } : {}),
   };
+
+  const breadcrumbTrail = [
+    { name: 'الرئيسية', url: siteConfig.url },
+    { name: category.shortLabel, url: `${siteConfig.url}/directory/${listing.category}` },
+    ...(villagePath ? [{ name: listing.village, url: `${siteConfig.url}${villagePath}` }] : []),
+    { name: listing.title, url: `${siteConfig.url}/listing/${listing.slug}` },
+  ];
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -106,11 +123,12 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
       entity,
       {
         '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: siteConfig.url },
-          { '@type': 'ListItem', position: 2, name: category.shortLabel, item: `${siteConfig.url}/directory/${listing.category}` },
-          { '@type': 'ListItem', position: 3, name: listing.title, item: `${siteConfig.url}/listing/${listing.slug}` },
-        ],
+        itemListElement: breadcrumbTrail.map((item, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.name,
+          item: item.url,
+        })),
       },
     ],
   };
@@ -123,6 +141,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <nav className="breadcrumbs" aria-label="مسار التنقل">
               <Link href="/">الرئيسية</Link><span>/</span>
               <Link href={`/directory/${listing.category}`}>{category.shortLabel}</Link><span>/</span>
+              {villagePath && <><Link href={villagePath}>{listing.village}</Link><span>/</span></>}
               <span>{listing.title}</span>
             </nav>
 
@@ -199,6 +218,11 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           <div className="detail-aside__list">
             {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
           </div>
+          <nav className="seo-context-links" aria-label="روابط مرتبطة بالنشاط">
+            {villagePath && <Link href={villagePath}>دليل {listing.village}</Link>}
+            <Link href={`/directory/${listing.category}`}>كل {category.shortLabel} في العسيرات</Link>
+            <Link href="/directory">استكشف الدليل الكامل</Link>
+          </nav>
         </aside>
       </section>
 

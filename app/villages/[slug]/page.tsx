@@ -8,21 +8,32 @@ import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
+import { isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
+
+type VillageSearchParams = { page?: string };
 
 export function generateStaticParams() {
   return villages.map((village) => ({ slug: village.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<VillageSearchParams>;
+}): Promise<Metadata> {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) return {};
+  const paginated = isFilteredDirectoryState(query);
   return {
     title: `دليل ${village.name} - مركز العسيرات`,
     description: `الخدمات والأنشطة والبيانات المحلية المنشورة في ${village.name} ضمن مركز العسيرات بمحافظة سوهاج.`,
     alternates: { canonical: `/villages/${village.slug}` },
     openGraph: { title: `دليل ${village.name} - مركز العسيرات`, description: village.description, url: `${siteConfig.url}/villages/${village.slug}` },
+    ...(paginated ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -33,10 +44,11 @@ export default async function VillagePage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<VillageSearchParams>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
+  const paginated = isFilteredDirectoryState(query);
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
 
@@ -61,24 +73,37 @@ export default async function VillagePage({
     excludeEmergency: true,
   });
   const pathname = `/villages/${village.slug}`;
+  const canonicalUrl = `${siteConfig.url}${pathname}`;
+  const listId = `${canonicalUrl}#item-list`;
 
   const structuredData = {
     '@context': 'https://schema.org',
     '@graph': [
       {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl}#collection`,
+        name: `دليل ${village.name}`,
+        description: village.description,
+        url: canonicalUrl,
+        inLanguage: 'ar-EG',
+        mainEntity: { '@id': listId },
+      },
+      {
         '@type': 'Place',
+        '@id': `${canonicalUrl}#place`,
         name: village.name,
         containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
-        url: `${siteConfig.url}/villages/${village.slug}`,
+        url: canonicalUrl,
       },
       {
         '@type': 'ItemList',
+        '@id': listId,
         name: `دليل ${village.name}`,
         numberOfItems: result.total,
         itemListElement: result.items.map((item, index) => ({
           '@type': 'ListItem',
           position: (result.page - 1) * result.pageSize + index + 1,
-          url: `${siteConfig.url}/listing/${item.slug}`,
+          url: `${siteConfig.url}/listing/${encodeURIComponent(item.slug)}`,
           name: item.title,
         })),
       },
@@ -87,7 +112,7 @@ export default async function VillagePage({
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: siteConfig.url },
           { '@type': 'ListItem', position: 2, name: 'قرى العسيرات', item: `${siteConfig.url}/villages` },
-          { '@type': 'ListItem', position: 3, name: village.name, item: `${siteConfig.url}/villages/${village.slug}` },
+          { '@type': 'ListItem', position: 3, name: village.name, item: canonicalUrl },
         ],
       },
     ],
@@ -180,7 +205,7 @@ export default async function VillagePage({
           <div className="empty-state"><strong>لم تُنشر بيانات مؤكدة لهذه القرية بعد</strong><p>القرية موجودة في هيكل الموسوعة وسيتم ربط الأنشطة بها عند اكتمال المراجعة.</p></div>
         )}
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      {!paginated && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />}
     </main>
   );
 }

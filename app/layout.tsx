@@ -34,6 +34,7 @@ import './visual-redesign-phase1.css';
 import './visual-redesign-phase2.css';
 import './visual-redesign-phase3.css';
 import './visual-redesign-phase4.css';
+import './seo-growth.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const GA_MEASUREMENT_ID = 'G-3768S94PP1';
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${siteConfig.url}#website`,
     name: siteConfig.name,
     alternateName: siteConfig.shortName,
     url: siteConfig.url,

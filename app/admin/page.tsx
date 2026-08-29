@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AdminAnalyticsDashboard } from '@/components/admin/admin-analytics-dashboard';
+import { AdminDataQuality } from '@/components/admin/admin-data-quality';
 import { AdminDirectoryIntelligence } from '@/components/admin/admin-directory-intelligence';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
 import { AdminListingReports } from '@/components/admin/admin-listing-reports';
@@ -27,10 +28,11 @@ export default async function AdminPage() {
               مركز تشغيل الدليل
             </span>
             <h1>لوحة إدارة <em>دليل العسيرات</em></h1>
-            <p>مركز واحد لمتابعة النمو، قراءة سلوك البحث، مراجعة طلبات الأعضاء وبلاغات البيانات واتخاذ القرار بسرعة.</p>
+            <p>مركز واحد لمتابعة النمو، قراءة سلوك البحث، مراجعة جودة البيانات وطلبات الأعضاء واتخاذ القرار بسرعة.</p>
             <nav className="workspace-hero__links" aria-label="اختصارات لوحة الإدارة">
               <a href="#analytics-overview">الإحصاءات</a>
               <a href="#directory-intelligence">ذكاء البحث</a>
+              <a href="#data-quality">جودة البيانات</a>
               <a href="#admin-requests">المراجعات</a>
               <a href="#listing-reports">البلاغات</a>
             </nav>
@@ -54,11 +56,13 @@ export default async function AdminPage() {
         <nav className="admin-section-nav admin-section-nav--premium" aria-label="أقسام لوحة الإدارة">
           <a href="#analytics-overview"><span>01</span>الإحصاءات</a>
           <a href="#directory-intelligence"><span>02</span>ذكاء البحث والأداء</a>
-          <a href="#admin-requests"><span>03</span>طلبات ومراجعات الأعضاء</a>
-          <a href="#listing-reports"><span>04</span>بلاغات بيانات الأنشطة</a>
+          <a href="#data-quality"><span>03</span>جودة البيانات</a>
+          <a href="#admin-requests"><span>04</span>طلبات ومراجعات الأعضاء</a>
+          <a href="#listing-reports"><span>05</span>بلاغات بيانات الأنشطة</a>
         </nav>
         <AdminAnalyticsDashboard />
         <AdminDirectoryIntelligence />
+        <AdminDataQuality />
         <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
         <AdminListingReports />
       </div>

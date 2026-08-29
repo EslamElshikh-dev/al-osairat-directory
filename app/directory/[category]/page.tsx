@@ -8,21 +8,32 @@ import { categories, categoryById, listings, villages, type DirectoryCategory } 
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
+import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
+
+type CategorySearchParams = { q?: string; village?: string; page?: string };
 
 export function generateStaticParams() {
   return categories.map((category) => ({ category: category.id }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ category: string }> }): Promise<Metadata> {
-  const { category } = await params;
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ category: string }>;
+  searchParams: Promise<CategorySearchParams>;
+}): Promise<Metadata> {
+  const [{ category }, query] = await Promise.all([params, searchParams]);
   const info = categoryById[category as DirectoryCategory];
   if (!info) return {};
+  const filtered = isFilteredDirectoryState(query);
   return {
     title: `${info.label} في العسيرات`,
     description: info.description,
     alternates: { canonical: `/directory/${info.id}` },
     openGraph: { title: `${info.label} في العسيرات`, description: info.description, url: `${siteConfig.url}/directory/${info.id}` },
+    ...(filtered ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -33,10 +44,11 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ q?: string; village?: string; page?: string }>;
+  searchParams: Promise<CategorySearchParams>;
 }) {
   const { category } = await params;
   const query = await searchParams;
+  const filtered = isFilteredDirectoryState(query);
   const info = categoryById[category as DirectoryCategory];
   if (!info) notFound();
 
@@ -54,7 +66,25 @@ export default async function CategoryPage({
   });
   const pathname = `/directory/${info.id}`;
   const categoryListings = allListings.filter((item) => item.category === info.id);
-  const villageCount = new Set(categoryListings.map((item) => item.village).filter(Boolean)).size;
+  const villageLinks = villages
+    .map((village) => ({ village, count: categoryListings.filter((item) => item.village === village.name).length }))
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count);
+  const villageCount = villageLinks.length;
+  const collectionSchema = buildCollectionStructuredData({
+    title: `${info.label} في العسيرات`,
+    description: info.description,
+    path: pathname,
+    items: result.items,
+    totalItems: result.total,
+    page: result.page,
+    pageSize: result.pageSize,
+    breadcrumbs: [
+      { name: 'الرئيسية', path: '' },
+      { name: 'الدليل', path: '/directory' },
+      { name: info.shortLabel, path: pathname },
+    ],
+  });
 
   return (
     <main id="main-content" className="page-main interior-redesign">
@@ -99,6 +129,25 @@ export default async function CategoryPage({
           pathname={pathname}
         />
       </section>
+
+      {villageLinks.length > 0 && (
+        <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="category-villages-title">
+          <div className="seo-growth-hub__heading">
+            <span>تغطية محلية</span>
+            <h2 id="category-villages-title">{info.shortLabel} حسب قرى العسيرات</h2>
+            <p>انتقل إلى صفحات القرى الثابتة لاستكشاف الأنشطة والخدمات المحلية المرتبطة بكل نطاق.</p>
+          </div>
+          <nav className="seo-growth-hub__links" aria-label={`${info.shortLabel} حسب القرية`}>
+            {villageLinks.map(({ village, count }) => (
+              <Link key={village.slug} href={`/villages/${encodeURIComponent(village.slug)}`}>
+                <span>{village.name}</span><small>{count.toLocaleString('ar-EG')} سجل</small>
+              </Link>
+            ))}
+          </nav>
+        </section>
+      )}
+
+      {!filtered && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />}
     </main>
   );
 }
