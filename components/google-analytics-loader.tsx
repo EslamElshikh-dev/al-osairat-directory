@@ -3,18 +3,15 @@
 import { useEffect } from 'react';
 import { initializeAnalyticsQueue, loadGoogleAnalytics } from '@/lib/analytics';
 
-type IdleCapableWindow = Window & {
-  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
-  cancelIdleCallback?: (handle: number) => void;
-};
+const POST_LOAD_DELAY_MS = 3500;
+const HARD_FALLBACK_MS = 7000;
 
 export function GoogleAnalyticsLoader() {
   useEffect(() => {
+    // Queue config/events immediately, but keep the 175 KiB Google tag off the first-paint path.
     initializeAnalyticsQueue();
 
-    const idleWindow = window as IdleCapableWindow;
-    let idleHandle: number | null = null;
-    let idleFallbackTimer: number | null = null;
+    let postLoadTimer: number | null = null;
     let hardFallbackTimer: number | null = null;
     let started = false;
 
@@ -32,13 +29,9 @@ export function GoogleAnalyticsLoader() {
     };
 
     const clearScheduledWork = () => {
-      if (idleHandle !== null && idleWindow.cancelIdleCallback) {
-        idleWindow.cancelIdleCallback(idleHandle);
-        idleHandle = null;
-      }
-      if (idleFallbackTimer !== null) {
-        window.clearTimeout(idleFallbackTimer);
-        idleFallbackTimer = null;
+      if (postLoadTimer !== null) {
+        window.clearTimeout(postLoadTimer);
+        postLoadTimer = null;
       }
       if (hardFallbackTimer !== null) {
         window.clearTimeout(hardFallbackTimer);
@@ -52,19 +45,21 @@ export function GoogleAnalyticsLoader() {
       clearScheduledWork();
       removeInteractionListeners();
       window.removeEventListener('load', scheduleAfterLoad);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', startNow);
       void loadGoogleAnalytics();
     }
 
     function scheduleAfterLoad() {
-      if (started) return;
-
-      if (idleWindow.requestIdleCallback) {
-        idleHandle = idleWindow.requestIdleCallback(startNow, { timeout: 1200 });
-      } else {
-        idleFallbackTimer = window.setTimeout(startNow, 650);
-      }
+      if (started || postLoadTimer !== null) return;
+      postLoadTimer = window.setTimeout(startNow, POST_LOAD_DELAY_MS);
     }
 
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') startNow();
+    }
+
+    // A real user action wins over the delay so clicks/conversions do not wait for GA4.
     interactionEvents.forEach((eventName) => {
       window.addEventListener(eventName, startNow, {
         once: true,
@@ -72,19 +67,25 @@ export function GoogleAnalyticsLoader() {
       });
     });
 
+    // Best effort for short visits: begin loading before the document is backgrounded/left.
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', startNow, { once: true });
+
     if (document.readyState === 'complete') {
       scheduleAfterLoad();
     } else {
       window.addEventListener('load', scheduleAfterLoad, { once: true });
     }
 
-    // Hard cap for very slow pages so measurement is deferred, not abandoned.
-    hardFallbackTimer = window.setTimeout(startNow, 5000);
+    // Safety cap: measurement is deferred, never silently abandoned on unusual load lifecycles.
+    hardFallbackTimer = window.setTimeout(startNow, HARD_FALLBACK_MS);
 
     return () => {
       clearScheduledWork();
       removeInteractionListeners();
       window.removeEventListener('load', scheduleAfterLoad);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', startNow);
     };
   }, []);
 
