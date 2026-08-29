@@ -8,6 +8,7 @@ import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
+import { isVillageCategoryLandingEligible, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
@@ -63,9 +64,10 @@ export default async function VillagePage({
     .map((category) => ({
       category,
       count: villageListings.filter((item) => item.category === category.id).length,
+      qualified: isVillageCategoryLandingEligible(allListings, village.name, category.id),
     }))
     .filter((item) => item.count > 0)
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => Number(b.qualified) - Number(a.qualified) || b.count - a.count);
 
   const result = queryDirectoryListings(allListings, {
     village: village.name,
@@ -171,14 +173,19 @@ export default async function VillagePage({
               <span>{categorySummary.length.toLocaleString('ar-EG')} أقسام متاحة</span>
             </div>
             <div className="village-category-grid">
-              {categorySummary.map(({ category, count }) => (
+              {categorySummary.map(({ category, count, qualified }) => (
                 <Link
                   key={category.id}
                   className="village-category-link"
-                  href={`/directory/${category.id}?village=${encodeURIComponent(village.name)}`}
+                  href={qualified
+                    ? villageCategoryLandingPath(village, category)
+                    : `/directory/${category.id}?village=${encodeURIComponent(village.name)}`}
                 >
                   <CategoryVisual category={category.id} size="sm" />
-                  <span className="village-category-link__copy"><span>{category.shortLabel}</span><small>عرض النتائج ←</small></span>
+                  <span className="village-category-link__copy">
+                    <span>{qualified ? `${category.shortLabel} في ${village.name}` : category.shortLabel}</span>
+                    <small>{qualified ? 'صفحة محلية متخصصة ←' : 'عرض النتائج ←'}</small>
+                  </span>
                   <strong>{count.toLocaleString('ar-EG')}</strong>
                 </Link>
               ))}
