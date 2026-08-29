@@ -46,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticListingPages: SitemapEntry[] = staticDetailListings.map((listing) => ({
     url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
     ...(listing.lastUpdatedAt ? { lastModified: listing.lastUpdatedAt } : {}),
-    changeFrequency: listing.sourceStatus === 'needs_review' ? 'yearly' : 'monthly',
+    changeFrequency: 'monthly',
     priority: listingSitemapPriority(listing),
   }));
 
