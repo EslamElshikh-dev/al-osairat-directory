@@ -2,7 +2,11 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { ensureClientSession, setClientSessionUser } from './client-session';
+import {
+  ensureClientSession,
+  setClientSessionUser,
+  subscribeClientSession,
+} from './client-session';
 
 function BellIcon() {
   return (
@@ -38,23 +42,29 @@ export function NotificationBell() {
     let active = true;
     let timer: number | null = null;
 
-    const startForMember = async () => {
-      const user = await ensureClientSession();
-      if (!active || !user) {
-        if (active) {
-          setVisible(false);
-          setUnreadCount(0);
-        }
+    const stopPolling = () => {
+      if (timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    };
+
+    const syncForSession = (user: Parameters<Parameters<typeof subscribeClientSession>[0]>[0]) => {
+      if (!active || user === undefined) return;
+      if (!user) {
+        stopPolling();
+        setVisible(false);
+        setUnreadCount(0);
         return;
       }
 
       setVisible(true);
-      await load();
-      if (!active) return;
-      timer = window.setInterval(load, 60_000);
+      void load();
+      if (timer === null) timer = window.setInterval(load, 60_000);
     };
 
-    void startForMember();
+    const unsubscribe = subscribeClientSession(syncForSession);
+    void ensureClientSession();
 
     const handleChanged = (event: Event) => {
       const detail = (event as CustomEvent<{ unreadCount?: number }>).detail;
@@ -70,7 +80,8 @@ export function NotificationBell() {
     document.addEventListener('visibilitychange', handleVisibility);
     return () => {
       active = false;
-      if (timer !== null) window.clearInterval(timer);
+      stopPolling();
+      unsubscribe();
       window.removeEventListener('notifications:changed', handleChanged);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
