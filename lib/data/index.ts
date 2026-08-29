@@ -12,6 +12,7 @@ import { clerics } from './clerics';
 import { government } from './government';
 import { community } from './community';
 import { emergency } from './emergency';
+import { googleMapsIntake20260829 } from './google-maps-intake-2026-08-29';
 
 export * from '../types';
 export { categories, villages };
@@ -28,6 +29,7 @@ const rawListings: DirectoryListing[] = [
   ...government,
   ...community,
   ...emergency,
+  ...googleMapsIntake20260829,
 ];
 
 // Keep immutable IDs/slugs untouched while standardizing user-facing legacy data
