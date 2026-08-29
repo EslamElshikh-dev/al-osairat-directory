@@ -48,6 +48,7 @@ export default async function CategoryPage({
 }) {
   const { category } = await params;
   const query = await searchParams;
+  const filtered = isFilteredDirectoryState(query);
   const info = categoryById[category as DirectoryCategory];
   if (!info) notFound();
 
@@ -146,7 +147,7 @@ export default async function CategoryPage({
         </section>
       )}
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+      {!filtered && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />}
     </main>
   );
 }
