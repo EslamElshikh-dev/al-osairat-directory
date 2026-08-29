@@ -18,8 +18,19 @@ import {
 } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
+import {
+  filterTransportListings,
+  normalizeTransportDestinationFilter,
+  normalizeTransportVehicleFilter,
+} from '@/lib/transport-filters';
 
-type CategorySearchParams = { q?: string; village?: string; page?: string };
+type CategorySearchParams = {
+  q?: string;
+  village?: string;
+  page?: string;
+  vehicle?: string;
+  destination?: string;
+};
 
 export function generateStaticParams() {
   return categories.map((category) => ({ category: category.id }));
@@ -35,7 +46,11 @@ export async function generateMetadata({
   const [{ category }, query] = await Promise.all([params, searchParams]);
   const info = categoryById[category as DirectoryCategory];
   if (!info) return {};
-  const filtered = isFilteredDirectoryState(query);
+
+  const vehicleFilter = normalizeTransportVehicleFilter(query.vehicle);
+  const destinationFilter = normalizeTransportDestinationFilter(query.destination);
+  const transportFilterActive = info.id === 'transport' && (vehicleFilter !== 'all' || destinationFilter !== 'all');
+  const filtered = isFilteredDirectoryState(query) || transportFilterActive;
   const profile = categorySearchProfiles[info.id];
   const title = profile?.title || `${info.label} في العسيرات`;
   const description = profile?.description || info.description;
@@ -59,9 +74,13 @@ export default async function CategoryPage({
 }) {
   const { category } = await params;
   const query = await searchParams;
-  const filtered = isFilteredDirectoryState(query);
   const info = categoryById[category as DirectoryCategory];
   if (!info) notFound();
+
+  const vehicleFilter = normalizeTransportVehicleFilter(query.vehicle);
+  const destinationFilter = normalizeTransportDestinationFilter(query.destination);
+  const transportFilterActive = info.id === 'transport' && (vehicleFilter !== 'all' || destinationFilter !== 'all');
+  const filtered = isFilteredDirectoryState(query) || transportFilterActive;
 
   const queryOptions = {
     category: info.id,
@@ -71,13 +90,16 @@ export default async function CategoryPage({
   };
 
   const [canonicalResult, publishedListings, baseListings] = await Promise.all([
-    queryCanonicalDirectory(queryOptions),
+    transportFilterActive ? Promise.resolve(null) : queryCanonicalDirectory(queryOptions),
     getPublishedListings({ category: info.id }),
     applyListingOverrides(listings),
   ]);
 
   const allListings = mergeDirectoryListings(baseListings, publishedListings);
-  const result = canonicalResult || queryDirectoryListings(allListings, queryOptions);
+  const searchableListings = transportFilterActive
+    ? filterTransportListings(allListings, { vehicle: vehicleFilter, destination: destinationFilter })
+    : allListings;
+  const result = canonicalResult || queryDirectoryListings(searchableListings, queryOptions);
   const pathname = `/directory/${info.id}`;
   const categoryListings = allListings.filter((item) => item.category === info.id);
   const profile = categorySearchProfiles[info.id];
@@ -169,6 +191,7 @@ export default async function CategoryPage({
           village={query.village || 'all'}
           result={result}
           pathname={pathname}
+          transportFilters={info.id === 'transport' ? { vehicle: vehicleFilter, destination: destinationFilter } : undefined}
         />
       </section>
 
