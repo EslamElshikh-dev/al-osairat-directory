@@ -38,6 +38,7 @@ import './seo-growth.css';
 import './member-reviews.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
+const socialImage = `${siteConfig.url}/api/og`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -66,13 +67,21 @@ export const metadata: Metadata = {
     title: rootTitle,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: socialImage,
+        width: 1200,
+        height: 630,
+        alt: 'دليل وموسوعة العسيرات - الدليل المحلي لمركز العسيرات وقراه',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: rootTitle,
     description: siteConfig.description,
+    images: [socialImage],
   },
-  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

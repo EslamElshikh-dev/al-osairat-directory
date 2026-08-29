@@ -48,6 +48,7 @@ const emptyForm: FormState = {
 export function TransportSubmissionForm() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [serviceAreas, setServiceAreas] = useState('');
+  const [contactPublishConsent, setContactPublishConsent] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -75,6 +76,7 @@ export function TransportSubmissionForm() {
     () => allowedVillages.find((village) => village.name === form.village),
     [form.village],
   );
+  const contactProvided = Boolean(form.phone.trim() || form.whatsapp.trim());
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -94,9 +96,14 @@ export function TransportSubmissionForm() {
       setError('اكتب خط السير أو المناطق التي تخدمها بشكل واضح.');
       return;
     }
+    if (contactProvided && !contactPublishConsent) {
+      setError('وافق على نشر رقم الاتصال أو واتساب قبل إرسال وسيلة تواصل عامة للخدمة.');
+      return;
+    }
 
     const payload = {
       ...form,
+      contactPublishConsent,
       description: [
         `خط السير / مناطق الخدمة: ${serviceAreas.trim()}`,
         form.description.trim() ? `تفاصيل إضافية: ${form.description.trim()}` : '',
@@ -129,6 +136,7 @@ export function TransportSubmissionForm() {
         locality: current.locality,
       }));
       setServiceAreas('');
+      setContactPublishConsent(false);
       setMessage('تم إرسال بيانات السائق أو وسيلة النقل للمراجعة. لن تظهر في الدليل قبل التحقق منها واعتمادها.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر إرسال الطلب الآن.');
@@ -225,6 +233,23 @@ export function TransportSubmissionForm() {
             <small>{form.description.length}/430</small>
           </label>
         </div>
+
+        <label className="business-submission-consent">
+          <input
+            type="checkbox"
+            checked={contactPublishConsent}
+            onChange={(event) => {
+              setContactPublishConsent(event.target.checked);
+              setError('');
+              setMessage('');
+            }}
+            required={contactProvided}
+          />
+          <span>
+            <strong>موافقة نشر وسيلة التواصل</strong>
+            <small>أوافق على نشر رقم الاتصال أو واتساب الذي أدخلته كوسيلة تواصل عامة لخدمة المواصلات. هذه الموافقة مطلوبة عند إضافة أي رقم.</small>
+          </span>
+        </label>
 
         <div className="business-submission-form__note">
           <strong>شروط النشر</strong>

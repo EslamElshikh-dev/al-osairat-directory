@@ -28,13 +28,22 @@ export async function generateMetadata({
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) return {};
+
   const paginated = isFilteredDirectoryState(query);
+  const fallbackScope = village.name === 'مركز العسيرات';
+  const title = fallbackScope
+    ? 'سجلات غير محددة القرية داخل مركز العسيرات'
+    : `دليل ${village.name} - مركز العسيرات`;
+  const description = fallbackScope
+    ? village.description
+    : `الخدمات والأنشطة والبيانات المحلية المنشورة في ${village.name} ضمن مركز العسيرات بمحافظة سوهاج.`;
+
   return {
-    title: `دليل ${village.name} - مركز العسيرات`,
-    description: `الخدمات والأنشطة والبيانات المحلية المنشورة في ${village.name} ضمن مركز العسيرات بمحافظة سوهاج.`,
+    title,
+    description,
     alternates: { canonical: `/villages/${village.slug}` },
-    openGraph: { title: `دليل ${village.name} - مركز العسيرات`, description: village.description, url: `${siteConfig.url}/villages/${village.slug}` },
-    ...(paginated ? { robots: { index: false, follow: true } } : {}),
+    openGraph: { title, description, url: `${siteConfig.url}/villages/${village.slug}` },
+    ...(paginated || fallbackScope ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -53,6 +62,8 @@ export default async function VillagePage({
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
 
+  const fallbackScope = village.name === 'مركز العسيرات';
+
   const [publishedListings, overriddenListings] = await Promise.all([
     getPublishedListings({ village: village.name }),
     applyListingOverrides(listings),
@@ -64,7 +75,7 @@ export default async function VillagePage({
     .map((category) => ({
       category,
       count: villageListings.filter((item) => item.category === category.id).length,
-      qualified: isVillageCategoryLandingEligible(allListings, village.name, category.id),
+      qualified: !fallbackScope && isVillageCategoryLandingEligible(allListings, village.name, category.id),
     }))
     .filter((item) => item.count > 0)
     .sort((a, b) => Number(b.qualified) - Number(a.qualified) || b.count - a.count);
@@ -129,11 +140,11 @@ export default async function VillagePage({
             <div className="village-hero__identity">
               <span className="village-hero__brand" aria-hidden="true"><BrandMark /></span>
               <div>
-                <span className="eyebrow">قرية ضمن نطاق العسيرات</span>
+                <span className="eyebrow">{fallbackScope ? 'نطاق تجميعي داخلي' : 'قرية ضمن نطاق العسيرات'}</span>
                 <span className="village-hero__scope">مركز العسيرات · سوهاج</span>
               </div>
             </div>
-            <h1>{village.name}</h1>
+            <h1>{fallbackScope ? 'سجلات غير محددة القرية' : village.name}</h1>
             <p>{village.description}</p>
             <div className="catalog-hero__actions">
               <Link href="#village-listings" className="button button--light">عرض الأنشطة</Link>
@@ -141,11 +152,11 @@ export default async function VillagePage({
             </div>
           </div>
 
-          <aside className="village-hero__summary" aria-label={`ملخص ${village.name}`}>
-            <span className="catalog-hero__summary-label">ملخص القرية</span>
+          <aside className="village-hero__summary" aria-label={fallbackScope ? 'ملخص النطاق التجميعي' : `ملخص ${village.name}`}>
+            <span className="catalog-hero__summary-label">{fallbackScope ? 'ملخص النطاق' : 'ملخص القرية'}</span>
             <div className="catalog-hero__metrics">
               <span><b>{result.total.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
-              <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابع/نجع</small></span>
+              {!fallbackScope && <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابع/نجع</small></span>}
               <span><b>{categorySummary.length.toLocaleString('ar-EG')}</b><small>أقسام متاحة</small></span>
             </div>
           </aside>
@@ -167,8 +178,8 @@ export default async function VillagePage({
           <section className="village-category-section village-category-section--premium" aria-labelledby="village-services-title">
             <div className="village-category-heading">
               <div>
-                <span className="eyebrow eyebrow--dark">الخدمات داخل القرية</span>
-                <h2 id="village-services-title">استكشف {village.name} حسب القسم</h2>
+                <span className="eyebrow eyebrow--dark">{fallbackScope ? 'السجلات حسب القسم' : 'الخدمات داخل القرية'}</span>
+                <h2 id="village-services-title">{fallbackScope ? 'استكشف السجلات غير محددة القرية' : `استكشف ${village.name} حسب القسم`}</h2>
               </div>
               <span>{categorySummary.length.toLocaleString('ar-EG')} أقسام متاحة</span>
             </div>
@@ -194,14 +205,17 @@ export default async function VillagePage({
         )}
 
         <div id="village-listings" className="section-heading section-heading--compact interior-section-heading">
-          <div><span className="eyebrow eyebrow--dark">كل الأنشطة</span><h2>البيانات المنشورة في {village.name}</h2></div>
+          <div>
+            <span className="eyebrow eyebrow--dark">كل الأنشطة</span>
+            <h2>{fallbackScope ? 'بيانات تحتاج إلى تحديد القرية بدقة' : `البيانات المنشورة في ${village.name}`}</h2>
+          </div>
           {result.total > result.pageSize ? <p>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')} من {result.total.toLocaleString('ar-EG')}</p> : <span className="interior-section-heading__count">{result.total.toLocaleString('ar-EG')} نتيجة</span>}
         </div>
         {result.items.length ? (
           <>
             <div className="listing-grid">{result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
             {result.totalPages > 1 && (
-              <nav className="detail-actions detail-actions--pagination" aria-label={`صفحات دليل ${village.name}`}>
+              <nav className="detail-actions detail-actions--pagination" aria-label={fallbackScope ? 'صفحات السجلات غير محددة القرية' : `صفحات دليل ${village.name}`}>
                 {result.page > 1 && <Link className="button button--ghost" rel="prev" href={createDirectoryHref(pathname, { page: result.page - 1 })}>السابق</Link>}
                 <span>صفحة {result.page.toLocaleString('ar-EG')} من {result.totalPages.toLocaleString('ar-EG')}</span>
                 {result.page < result.totalPages && <Link className="button button--primary" rel="next" href={createDirectoryHref(pathname, { page: result.page + 1 })}>التالي</Link>}
@@ -209,10 +223,13 @@ export default async function VillagePage({
             )}
           </>
         ) : (
-          <div className="empty-state"><strong>لم تُنشر بيانات مؤكدة لهذه القرية بعد</strong><p>القرية موجودة في هيكل الموسوعة وسيتم ربط الأنشطة بها عند اكتمال المراجعة.</p></div>
+          <div className="empty-state">
+            <strong>{fallbackScope ? 'لا توجد سجلات غير محددة القرية حاليًا' : 'لم تُنشر بيانات مؤكدة لهذه القرية بعد'}</strong>
+            <p>{fallbackScope ? 'كلما تم تحديد القرية الفعلية لسجل، يُنقل إلى نطاقه الصحيح داخل الدليل.' : 'القرية موجودة في هيكل الموسوعة وسيتم ربط الأنشطة بها عند اكتمال المراجعة.'}</p>
+          </div>
         )}
       </section>
-      {!paginated && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />}
+      {!paginated && !fallbackScope && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />}
     </main>
   );
 }

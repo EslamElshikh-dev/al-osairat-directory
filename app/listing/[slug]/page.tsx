@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
-import { villagePathByName } from '@/lib/seo-growth';
+import { isListingIndexable, villagePathByName } from '@/lib/seo-growth';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description,
     alternates: { canonical: `/listing/${listing.slug}` },
     openGraph: { title, description, url: `${siteConfig.url}/listing/${listing.slug}` },
+    ...(!isListingIndexable(listing) ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

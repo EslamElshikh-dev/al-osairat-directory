@@ -7,11 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/*?q=*',
-          '/*?village=*',
-          '/*?category=*',
-        ],
       },
     ],
     sitemap: `${siteConfig.url}/sitemap.xml`,
