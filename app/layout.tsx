@@ -13,6 +13,7 @@ import './blog-home.css';
 import './mobile-polish.css';
 import './auth.css';
 import './password-strength.css';
+import './auth-security-ux.css';
 import './auth-google.css';
 import './account-upgrade.css';
 import './favorites.css';
