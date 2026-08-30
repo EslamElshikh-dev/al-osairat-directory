@@ -1,0 +1,4 @@
+project_id = "vddoeiggfcwllfxpirep"
+
+[functions.news-ingestion]
+verify_jwt = false
