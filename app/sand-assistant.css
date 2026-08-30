@@ -1,0 +1,171 @@
+.sand-assistant {
+  --sand-green: #102a24;
+  --sand-green-soft: #1d473c;
+  --sand-gold: #d8b15d;
+  position: fixed;
+  z-index: 130;
+  left: 22px;
+  bottom: 22px;
+  direction: rtl;
+  font-family: inherit;
+}
+
+.sand-trigger {
+  min-width: 166px;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px 7px 15px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 19px;
+  color: #fff;
+  background: linear-gradient(140deg, var(--sand-green) 0%, var(--sand-green-soft) 100%);
+  box-shadow: 0 16px 42px rgba(10,35,29,.28);
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.sand-trigger:hover { transform: translateY(-2px); box-shadow: 0 20px 50px rgba(10,35,29,.34); }
+.sand-trigger__icon, .sand-panel__avatar { display: grid; place-items: center; flex: 0 0 auto; color: var(--sand-gold); background: rgba(255,255,255,.09); }
+.sand-trigger__icon { width: 43px; height: 43px; border-radius: 14px; }
+.sand-trigger__icon svg { width: 27px; height: 27px; }
+.sand-trigger__copy { display: grid; text-align: right; gap: 1px; }
+.sand-trigger__copy strong { font-size: 13px; line-height: 1.25; }
+.sand-trigger__copy small { color: #c8d7d2; font-size: 9px; }
+
+.sand-panel {
+  position: absolute;
+  left: 0;
+  bottom: 72px;
+  width: min(394px, calc(100vw - 24px));
+  height: min(680px, calc(100dvh - 120px));
+  min-height: 470px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+  overflow: hidden;
+  border: 1px solid rgba(16,42,36,.14);
+  border-radius: 26px;
+  background: #f7f8f5;
+  box-shadow: 0 30px 85px rgba(8,30,24,.3);
+  transform-origin: bottom left;
+  animation: sand-panel-in .22s ease-out;
+}
+
+@keyframes sand-panel-in {
+  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.sand-panel__header {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  color: #fff;
+  background: linear-gradient(125deg, #0d241e, #1d4a3e);
+}
+
+.sand-panel__avatar { width: 44px; height: 44px; border-radius: 15px; }
+.sand-panel__avatar svg { width: 28px; height: 28px; }
+.sand-panel__header > div { display: grid; gap: 2px; flex: 1; }
+.sand-panel__header strong { font-size: 16px; }
+.sand-panel__header small { color: #c8d8d2; font-size: 10px; }
+.sand-panel__header > button { width: 34px; height: 34px; border: 0; border-radius: 11px; color: #d9e4e0; background: rgba(255,255,255,.08); font-size: 21px; cursor: pointer; }
+
+.sand-emergency-bar {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 10px;
+  color: #6d2828;
+  background: #fff1ef;
+  border-bottom: 1px solid #efd7d3;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.sand-emergency-bar span { color: #9d5e58; }
+.sand-emergency-bar a { padding-inline: 4px; color: #772323; text-decoration: underline; text-underline-offset: 2px; }
+
+.sand-feed {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 13px 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #bdc9c4 transparent;
+}
+
+.sand-message { display: grid; gap: 8px; margin-bottom: 13px; }
+.sand-message--user { justify-items: start; }
+.sand-message--assistant { justify-items: end; }
+.sand-message__bubble { max-width: 88%; padding: 11px 13px; border-radius: 17px; font-size: 12px; line-height: 1.8; white-space: pre-wrap; }
+.sand-message--assistant .sand-message__bubble { color: #263c35; background: #fff; border: 1px solid #dfe6e2; border-top-right-radius: 6px; }
+.sand-message--user .sand-message__bubble { color: #fff; background: var(--sand-green-soft); border-top-left-radius: 6px; }
+
+.sand-results { width: 100%; display: grid; gap: 7px; }
+.sand-result { padding: 11px; border: 1px solid #dce4df; border-radius: 15px; background: #fff; }
+.sand-result__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+.sand-result__head span { padding: 3px 7px; border-radius: 999px; color: #225744; background: #eaf3ee; font-size: 8px; font-weight: 900; }
+.sand-result__head small { overflow: hidden; color: #7b8984; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.sand-result > strong { display: block; color: #142f27; font-size: 12px; line-height: 1.5; }
+.sand-result > p { margin: 4px 0 0; color: #64736d; font-size: 9px; line-height: 1.6; }
+.sand-result__hours { display: block; margin-top: 5px; color: #7b7160; font-size: 8px; }
+.sand-result__actions { display: flex; gap: 6px; margin-top: 9px; }
+.sand-result__actions a { min-height: 29px; display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; border-radius: 9px; color: #fff; background: var(--sand-green); font-size: 9px; font-weight: 800; }
+.sand-result__actions a + a { color: var(--sand-green); background: #eaf1ed; }
+
+.sand-message__meta { width: 100%; display: grid; gap: 2px; padding-inline: 3px; color: #71817b; }
+.sand-message__meta span { font-size: 8px; font-weight: 800; }
+.sand-message__meta small { font-size: 7px; line-height: 1.5; }
+
+.sand-typing { min-width: 58px; display: flex; justify-content: center; gap: 4px; padding: 13px; border: 1px solid #dfe6e2; border-radius: 15px; background: #fff; }
+.sand-typing span { width: 5px; height: 5px; border-radius: 50%; background: #6b8b80; animation: sand-dot 1s infinite ease-in-out; }
+.sand-typing span:nth-child(2) { animation-delay: .14s; }
+.sand-typing span:nth-child(3) { animation-delay: .28s; }
+@keyframes sand-dot { 0%, 60%, 100% { opacity: .35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+.sand-error { padding: 9px 11px; border: 1px solid #ecd0cc; border-radius: 12px; color: #843a33; background: #fff0ee; font-size: 10px; line-height: 1.6; }
+
+.sand-suggestions { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; border-top: 1px solid #e1e7e3; background: #f2f5f2; scrollbar-width: none; }
+.sand-suggestions::-webkit-scrollbar { display: none; }
+.sand-suggestions button { flex: 0 0 auto; min-height: 29px; padding: 5px 9px; border: 1px solid #ccd9d3; border-radius: 999px; color: #355e50; background: #fff; font: inherit; font-size: 8px; font-weight: 800; cursor: pointer; }
+.sand-suggestions button:disabled { opacity: .55; cursor: wait; }
+
+.sand-composer { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: 7px; padding: 10px 11px 7px; background: #fff; border-top: 1px solid #e1e7e3; }
+.sand-composer textarea { width: 100%; min-height: 42px; max-height: 96px; resize: none; padding: 11px 12px; border: 1px solid #d7e0dc; border-radius: 13px; outline: 0; color: #183229; background: #f7f9f7; font: inherit; font-size: 11px; line-height: 1.6; }
+.sand-composer textarea:focus { border-color: #7fa797; box-shadow: 0 0 0 3px rgba(58,118,95,.1); }
+.sand-composer button { width: 42px; height: 42px; display: grid; place-items: center; border: 0; border-radius: 13px; color: #fff; background: var(--sand-green); cursor: pointer; }
+.sand-composer button:disabled { opacity: .45; cursor: not-allowed; }
+.sand-composer button svg { width: 18px; height: 18px; transform: scaleX(-1); }
+.sand-privacy { margin: 0; padding: 0 12px 9px; color: #8a9691; background: #fff; text-align: center; font-size: 7px; line-height: 1.5; }
+
+@media (max-width: 760px) {
+  .sand-assistant { left: 10px; bottom: calc(78px + env(safe-area-inset-bottom)); }
+  .sand-trigger { min-width: 58px; width: 58px; height: 58px; padding: 7px; border-radius: 18px; }
+  .sand-trigger__icon { width: 42px; height: 42px; }
+  .sand-trigger__copy { display: none; }
+  .sand-panel {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    width: auto;
+    height: min(70dvh, 650px);
+    min-height: 430px;
+    border-radius: 23px;
+    transform-origin: bottom left;
+  }
+}
+
+@media (max-height: 650px) and (min-width: 761px) {
+  .sand-panel { height: calc(100dvh - 100px); min-height: 420px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sand-panel, .sand-typing span { animation: none !important; }
+  .sand-trigger { transition: none; }
+}

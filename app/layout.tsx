@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { AnalyticsTracker } from '@/components/analytics-tracker';
 import { GoogleAnalyticsLoader } from '@/components/google-analytics-loader';
 import { NavigationScrollManager } from '@/components/navigation-scroll-manager';
+import { SandAssistant } from '@/components/sand-assistant';
 import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
@@ -32,6 +33,7 @@ import './member-review-polish.css';
 import './directory-scroll-fix.css';
 import './directory-ticker.css';
 import './navigation-scroll.css';
+import './sand-assistant.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/api/og`;
@@ -128,6 +130,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         {children}
         <Footer />
+        <SandAssistant />
         <MobileNav />
         <GoogleAnalyticsLoader />
         <AnalyticsTracker />
