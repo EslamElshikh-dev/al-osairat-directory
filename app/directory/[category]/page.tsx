@@ -6,6 +6,7 @@ import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { categories, categoryById, listings, villages, type DirectoryCategory } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
+import { queryCanonicalDirectory } from '@/lib/directory-repository';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
