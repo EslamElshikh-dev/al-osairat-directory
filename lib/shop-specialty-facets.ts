@@ -56,6 +56,13 @@ function canonicalizeShopFacet(value: string) {
     .trim();
 }
 
+function queryForShopFacet(label: string) {
+  // This broader phrase matches both the clean canonical value and the legacy
+  // multi-specialty value that contains "اجهزه كهربائيه".
+  if (label === 'أجهزة كهربائية وإلكترونيات') return 'أجهزة كهربائية';
+  return label;
+}
+
 export function getShopSpecialtyFacets(listings: DirectoryListing[], limit = 12): ShopSpecialtyFacet[] {
   const counts = new Map<string, FacetCounter>();
 
@@ -99,7 +106,7 @@ export function getShopSpecialtyFacets(listings: DirectoryListing[], limit = 12)
     .slice(0, limit)
     .map(([label, data]) => ({
       label,
-      query: label,
+      query: queryForShopFacet(label),
       count: data.count,
     }));
 }
