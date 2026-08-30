@@ -102,16 +102,16 @@ for select
 to anon, authenticated
 using (singleton);
 
-revoke all on table public.news_items from anon, authenticated;
+revoke all on table public.news_items from public, anon, authenticated, service_role;
 grant select (
   id, title, summary, url, source, source_url, published_at, village, topic,
   origin, status, editorial_status, source_excerpt, generated_editorial,
   first_seen_at, last_seen_at, updated_at
 ) on table public.news_items to anon, authenticated;
 
-revoke all on table public.news_ingestion_runs from anon, authenticated;
+revoke all on table public.news_ingestion_runs from public, anon, authenticated, service_role;
 
-revoke all on table public.news_ingestion_state from anon, authenticated;
+revoke all on table public.news_ingestion_state from public, anon, authenticated, service_role;
 grant select (
   singleton, last_completed_at, last_status, last_item_count, last_live_item_count,
   last_connected_source_count, total_source_count, last_generated_count,
@@ -216,8 +216,8 @@ begin
 end;
 $function$;
 
-revoke execute on function public.claim_news_ingestion(text, integer) from public, anon, authenticated;
-revoke execute on function public.complete_news_ingestion(uuid, text, integer, integer, integer, integer, integer, integer, jsonb) from public, anon, authenticated;
+revoke execute on function public.claim_news_ingestion(text, integer) from public, anon, authenticated, service_role;
+revoke execute on function public.complete_news_ingestion(uuid, text, integer, integer, integer, integer, integer, integer, jsonb) from public, anon, authenticated, service_role;
 grant execute on function public.claim_news_ingestion(text, integer) to service_role;
 grant execute on function public.complete_news_ingestion(uuid, text, integer, integer, integer, integer, integer, integer, jsonb) to service_role;
 
