@@ -34,7 +34,7 @@ const MIN_EDITORIAL_LENGTH = 650;
 const MAX_EDITORIAL_LENGTH = 5_500;
 
 export function isNewsEditorialEnabled() {
-  return process.env.NEWS_EDITORIAL_ENABLED?.trim().toLowerCase() === 'true';
+  return process.env.NEWS_EDITORIAL_MODE?.trim().toLowerCase() === 'enabled-with-budget';
 }
 
 const editorialSchema = jsonSchema<ModelEditorial>({
