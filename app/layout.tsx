@@ -36,6 +36,7 @@ import './visual-redesign-phase3.css';
 import './visual-redesign-phase4.css';
 import './seo-growth.css';
 import './member-reviews.css';
+import './directory-scroll-fix.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/api/og`;
