@@ -55,17 +55,25 @@
   left: calc(100% + 8px);
   top: 50%;
   width: max-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
-  border: 1px solid rgba(16, 45, 37, .14);
+  border: 1px solid rgba(199, 157, 67, .32);
   border-radius: 13px 13px 13px 4px;
   color: #173a30;
-  background: rgba(255, 255, 255, .97);
-  box-shadow: 0 9px 28px rgba(7, 29, 23, .18);
+  background: linear-gradient(110deg, #fff 0%, #fffaf0 32%, #f1dfae 50%, #fffaf0 68%, #fff 100%);
+  background-position: 100% 50%;
+  background-size: 260% 100%;
+  box-shadow: 0 9px 28px rgba(7, 29, 23, .18), 0 0 0 rgba(213, 174, 88, 0);
   font-size: 11px;
   font-weight: 800;
   line-height: 1.25;
   pointer-events: none;
-  animation: sand-invite-pop .55s cubic-bezier(.2, .85, .3, 1.18) .7s both;
+  will-change: transform, background-position, box-shadow;
+  animation:
+    sand-invite-pop .55s cubic-bezier(.2, .85, .3, 1.18) .7s both,
+    sand-invite-glow 4s ease-in-out 1.4s infinite;
 }
 
 .sand-invite::before {
@@ -76,7 +84,7 @@
   height: 11px;
   border-bottom: 1px solid rgba(16, 45, 37, .14);
   border-left: 1px solid rgba(16, 45, 37, .14);
-  background: #fff;
+  background: #fffaf0;
   content: '';
   transform: rotate(45deg);
 }
@@ -94,6 +102,43 @@
 @keyframes sand-invite-pop {
   from { opacity: 0; transform: translate(-10px, -50%) scale(.8); }
   to { opacity: 1; transform: translate(0, -50%) scale(1); }
+}
+
+@keyframes sand-invite-glow {
+  0%, 18%, 100% {
+    background-position: 100% 50%;
+    box-shadow: 0 9px 28px rgba(7, 29, 23, .18), 0 0 0 rgba(213, 174, 88, 0);
+  }
+  42%, 62% {
+    background-position: 0 50%;
+    box-shadow: 0 11px 32px rgba(7, 29, 23, .2), 0 0 18px rgba(213, 174, 88, .28);
+  }
+}
+
+.sand-invite__text {
+  display: inline-block;
+  animation: sand-invite-text 4s ease-in-out 1.4s infinite;
+}
+
+.sand-invite__spark {
+  display: inline-block;
+  color: #b8872d;
+  font-size: 12px;
+  line-height: 1;
+  transform-origin: center;
+  animation: sand-invite-spark 2s ease-in-out 1.2s infinite;
+}
+
+@keyframes sand-invite-text {
+  0%, 68%, 100% { color: #173a30; transform: translateY(0) scale(1); }
+  76% { color: #8e6624; transform: translateY(-1px) scale(1.035); }
+  84% { color: #173a30; transform: translateY(0) scale(1); }
+}
+
+@keyframes sand-invite-spark {
+  0%, 55%, 100% { opacity: .72; transform: rotate(0) scale(.86); }
+  70% { opacity: 1; transform: rotate(90deg) scale(1.22); }
+  84% { opacity: .82; transform: rotate(180deg) scale(.92); }
 }
 
 .sand-trigger:focus-visible,
@@ -441,27 +486,27 @@
 
 .sand-suggestions__list {
   min-width: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 1px;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: none;
+  overflow: visible;
 }
 
-.sand-suggestions__list::-webkit-scrollbar { display: none; }
-
 .sand-suggestions button {
-  min-height: 32px;
-  flex: 0 0 auto;
-  padding: 6px 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
   border: 1px solid #cbd9d3;
-  border-radius: 999px;
+  border-radius: 11px;
   color: #315a4c;
   background: #fff;
   font: inherit;
   font-size: 10px;
   font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
   cursor: pointer;
 }
 
@@ -560,6 +605,7 @@
   .sand-message__bubble { max-width: 92%; padding: 10px 12px; font-size: 12.5px; }
   .sand-emergency-bar { min-height: 36px; gap: 6px; padding: 6px 8px; font-size: 9px; }
   .sand-suggestions { padding: 7px 10px 8px; }
+  .sand-suggestions button { min-height: 36px; font-size: 9.5px; }
   .sand-composer { padding: 9px 10px 7px; }
   .sand-composer textarea { min-height: 44px; padding: 10px 12px; }
   .sand-composer button { width: 44px; height: 44px; }
@@ -593,6 +639,8 @@
   .sand-typing span,
   .sand-trigger,
   .sand-trigger::before,
-  .sand-invite { animation: none !important; }
+  .sand-invite,
+  .sand-invite__text,
+  .sand-invite__spark { animation: none !important; }
   .sand-trigger { transition: none; }
 }
