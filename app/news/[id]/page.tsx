@@ -192,8 +192,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
               <div>
-                <strong>المادة المصدرية غير كافية لتغطية كاملة</strong>
-                <p>يعرض الدليل الوقائع المتاحة فقط دون اختلاق تفاصيل. حقوق النص والصور والتحديثات محفوظة للناشر الأصلي.</p>
+                <strong>تعذر تجهيز التغطية الكاملة الآن</strong>
+                <p>يعرض الدليل الوقائع المتاحة فقط دون اختلاق تفاصيل، ويعيد المحاولة عند تحديث الصفحة أو المصدر.</p>
               </div>
             </div>
           ) : null}

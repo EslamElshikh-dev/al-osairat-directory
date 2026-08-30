@@ -36,11 +36,11 @@ type EditorialInput = {
   sourceText: string;
 };
 
-const EDITORIAL_PROMPT_VERSION = 'v1';
+const EDITORIAL_PROMPT_VERSION = 'v2';
 const DEFAULT_EDITORIAL_MODEL = 'openai/gpt-5-mini';
 const MIN_SOURCE_LENGTH = 500;
 const MAX_SOURCE_LENGTH = 22_000;
-const MIN_EDITORIAL_LENGTH = 850;
+const MIN_EDITORIAL_LENGTH = 650;
 const MAX_EDITORIAL_LENGTH = 5_500;
 
 const editorialSchema = jsonSchema<ModelEditorial>({
@@ -118,7 +118,12 @@ function hasLongCopiedSequence(output: string, source: string) {
 }
 
 function extractNumbers(value: string) {
-  return value.match(/[\d٠-٩۰-۹]+(?:[.,٫٬][\d٠-٩۰-۹]+)*/g) || [];
+  const canonical = value
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 1632))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 1776))
+    .replace(/[٫.]/g, '.')
+    .replace(/٬/g, ',');
+  return canonical.match(/\d+(?:[.,]\d+)*/g) || [];
 }
 
 function hasUnsupportedNumbers(output: string, source: string) {
@@ -126,7 +131,7 @@ function hasUnsupportedNumbers(output: string, source: string) {
   return extractNumbers(output).some((number) => !sourceNumbers.has(number));
 }
 
-function validateEditorial(output: ModelEditorial, input: EditorialInput): GeneratedNewsEditorial | undefined {
+function validateEditorial(output: ModelEditorial, input: EditorialInput) {
   const lead = cleanGeneratedText(output.lead);
   const body = output.paragraphs.map(cleanGeneratedText).filter(Boolean);
   const verifiedFacts = output.verifiedFacts.map(cleanGeneratedText).filter(Boolean);
@@ -142,21 +147,32 @@ function validateEditorial(output: ModelEditorial, input: EditorialInput): Gener
     input.sourceText,
   ].join(' ');
 
-  if (body.length < 4 || verifiedFacts.length < 3) return undefined;
-  if (combined.length < MIN_EDITORIAL_LENGTH || combined.length > MAX_EDITORIAL_LENGTH) return undefined;
-  if (hasUnsupportedNumbers(combined, factualReference)) return undefined;
-  if ([lead, ...body].some((paragraph) => hasLongCopiedSequence(paragraph, input.sourceText))) return undefined;
+  if (body.length < 4 || verifiedFacts.length < 3) {
+    return { reason: 'insufficient-structure', outputLength: combined.length } as const;
+  }
+  if (combined.length < MIN_EDITORIAL_LENGTH || combined.length > MAX_EDITORIAL_LENGTH) {
+    return { reason: 'invalid-length', outputLength: combined.length } as const;
+  }
+  if (hasUnsupportedNumbers(combined, factualReference)) {
+    return { reason: 'unsupported-number', outputLength: combined.length } as const;
+  }
+  if ([lead, ...body].some((paragraph) => hasLongCopiedSequence(paragraph, input.sourceText))) {
+    return { reason: 'source-overlap', outputLength: combined.length } as const;
+  }
 
   return {
-    kind: 'generated-coverage',
-    lead,
-    body,
-    verifiedFacts,
-    ...(localContext ? { localContext } : {}),
-    ...(limitations ? { limitations } : {}),
-    coverageLevel: output.coverageLevel,
-    generatedAt: new Date().toISOString(),
-  };
+    editorial: {
+      kind: 'generated-coverage',
+      lead,
+      body,
+      verifiedFacts,
+      ...(localContext ? { localContext } : {}),
+      ...(limitations ? { limitations } : {}),
+      coverageLevel: output.coverageLevel,
+      generatedAt: new Date().toISOString(),
+    } satisfies GeneratedNewsEditorial,
+    outputLength: combined.length,
+  } as const;
 }
 
 const generateCachedEditorial = unstable_cache(
@@ -203,11 +219,27 @@ const generateCachedEditorial = unstable_cache(
         input.sourceText,
         '</SOURCE>',
         '',
-        'أنتج مقدمة ثم 4 إلى 7 فقرات مترابطة، بإجمالي تقريبي 300 إلى 500 كلمة عند كفاية المادة، ثم أبرز الوقائع والسياق المحلي وحدود المعلومات.',
+        'أنتج مقدمة ثم 4 إلى 7 فقرات مترابطة، بإجمالي تقريبي 220 إلى 450 كلمة وفق كمية الوقائع المتاحة، ثم أبرز الوقائع والسياق المحلي وحدود المعلومات. لا تطل النص بتكرار المعلومة نفسها.',
       ].join('\n'),
     });
 
-    return validateEditorial(output, input);
+    const validation = validateEditorial(output, input);
+    if (!('editorial' in validation)) {
+      console.warn('[news-editorial] Generated coverage rejected', {
+        newsId: input.id,
+        reason: validation.reason,
+        sourceLength: input.sourceText.length,
+        outputLength: validation.outputLength,
+      });
+      return undefined;
+    }
+
+    console.info('[news-editorial] Generated coverage accepted', {
+      newsId: input.id,
+      sourceLength: input.sourceText.length,
+      outputLength: validation.outputLength,
+    });
+    return validation.editorial;
   },
   [`news-editorial-${EDITORIAL_PROMPT_VERSION}`],
   { revalidate: 604_800, tags: ['news-editorial'] },
