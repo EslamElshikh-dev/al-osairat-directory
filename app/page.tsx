@@ -3,13 +3,16 @@ import Link from 'next/link';
 import { categories, directoryStats, listings, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
 import { BlogCard } from '@/components/blog-card';
+import { NewsCard } from '@/components/news-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
 import { MemberReviews } from '@/components/member-reviews';
 import { homeFaq } from '@/lib/faq';
 import { blogArticles } from '@/lib/blog';
+import { getLocalNews, selectHomepageNews } from '@/lib/news';
 import { siteConfig } from '@/lib/site';
+import newsStyles from './home-news.module.css';
 
 export const metadata: Metadata = {
   alternates: {
@@ -17,7 +20,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const newsFeed = await getLocalNews();
+  const latestNews = selectHomepageNews(newsFeed.items, 4);
   const featured = listings
     .filter((item) => item.sourceStatus === 'google_verified')
     .slice(0, 6);
@@ -147,6 +152,30 @@ export default function HomePage() {
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      <section className={`section ${newsStyles.section}`}>
+        <div className="shell">
+          <div className="section-heading section-heading--editorial">
+            <div>
+              <span className="eyebrow eyebrow--dark">مرصد الأخبار المحلي</span>
+              <h2>أحدث ما نُشر عن العسيرات وقراها</h2>
+              <p>موجزات موثقة داخل الدليل، مع رابط واضح للنص الكامل لدى الناشر الأصلي.</p>
+            </div>
+            <Link href="/news" className="text-link text-link--arrow">كل أخبار العسيرات <b aria-hidden="true">←</b></Link>
+          </div>
+
+          <div className={newsStyles.statusLine}>
+            <span><i aria-hidden="true" /> تحديث تلقائي كل 30 دقيقة</span>
+            <span>{newsFeed.connectedSourceCount} قنوات متصلة</span>
+          </div>
+
+          <div className={newsStyles.grid}>
+            {latestNews.map((item) => <NewsCard key={item.id} item={item} compact />)}
+          </div>
+
+          <Link href="/news" className={newsStyles.mobileLink}>عرض كل الأخبار <b aria-hidden="true">←</b></Link>
         </div>
       </section>
 

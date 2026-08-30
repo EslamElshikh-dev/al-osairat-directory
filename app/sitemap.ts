@@ -32,6 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: SitemapEntry[] = [
     { url: absoluteUrl(), ...(directoryLastModified ? { lastModified: directoryLastModified } : {}), changeFrequency: 'weekly', priority: 1 },
     { url: absoluteUrl('/directory'), ...(directoryLastModified ? { lastModified: directoryLastModified } : {}), changeFrequency: 'weekly', priority: 0.95 },
+    { url: absoluteUrl('/news'), changeFrequency: 'hourly', priority: 0.92 },
     { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/villages'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/services'), changeFrequency: 'weekly', priority: 0.84 },

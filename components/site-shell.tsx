@@ -35,6 +35,7 @@ export function SiteHeader() {
           <Link href="/directory">الدليل</Link>
           <Link href="/villages">القرى</Link>
           <Link href="/directory/doctors">الأطباء</Link>
+          <Link href="/news">الأخبار</Link>
           <Link href="/blog" className="nav-optional">المدونة</Link>
         </nav>
 
@@ -111,6 +112,7 @@ export function Footer() {
         <nav className="footer__column" aria-label="استكشف المزيد">
           <h2>استكشف</h2>
           <div className="footer__links">
+            <Link href="/news">أخبار العسيرات</Link>
             <Link href="/blog">مدونة العسيرات</Link>
             <Link href="/villages">قرى العسيرات</Link>
             {categories.slice(5, 8).map((category) => (

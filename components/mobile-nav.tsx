@@ -62,13 +62,13 @@ const items: NavItem[] = [
     ),
   },
   {
-    href: '/blog',
-    label: 'المدونة',
-    match: (pathname) => pathname.startsWith('/blog'),
+    href: '/news',
+    label: 'الأخبار',
+    match: (pathname) => pathname.startsWith('/news'),
     icon: (
       <svg {...iconProps}>
-        <path d="M4.1 5.2c2.7-.9 5.2-.3 7.9 1.4v12.2c-2.7-1.7-5.2-2.3-7.9-1.4Z" />
-        <path d="M19.9 5.2c-2.7-.9-5.2-.3-7.9 1.4v12.2c2.7-1.7 5.2-2.3 7.9-1.4Z" />
+        <path d="M4.2 5.2h15.6v13.6H4.2z" />
+        <path d="M7.2 8.2h4.1v3.4H7.2zM13.4 8.2h3.4M13.4 10.8h3.4M7.2 14.3h9.6M7.2 16.6h6.7" />
       </svg>
     ),
   },
