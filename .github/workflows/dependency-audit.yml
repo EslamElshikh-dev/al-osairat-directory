@@ -1,0 +1,27 @@
+name: Dependency audit
+
+on:
+  push:
+    branches:
+      - fix/security-seo-search-hardening-2026-08-30
+    paths:
+      - .github/workflows/dependency-audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=low || true
+      - name: Full dependency audit
+        run: npm audit --audit-level=low || true
