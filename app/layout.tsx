@@ -23,6 +23,7 @@ import './ownership-claims.css';
 import './my-businesses.css';
 import './notifications.css';
 import './notification-popover.css';
+import './global-search.css';
 import './admin.css';
 import './admin-changes.css';
 import './admin-reports.css';
@@ -39,6 +40,7 @@ import './seo-growth.css';
 import './member-reviews.css';
 import './member-review-polish.css';
 import './directory-scroll-fix.css';
+import './directory-ticker.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/api/og`;

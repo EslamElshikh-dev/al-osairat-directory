@@ -129,27 +129,52 @@ export function DirectoryExplorer({
         </form>
       </div>
 
-      {!category && (
-        <div className="category-pills category-pills--premium" aria-label="فئات الدليل">
-          {categories.map((item) => (
-            <Link
-              key={item.id}
-              href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
-              className={`category-pill category-pill--${item.id}`}
-            >
-              <CategoryVisual category={item.id} size="sm" />
-              <span>{item.shortLabel}</span>
-              <span className="category-pill__brand" aria-hidden="true"><BrandMark compact /></span>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      <div className="results-bar results-bar--premium">
+      <div className="results-bar results-bar--premium results-bar--ticker">
         <div className="results-bar__identity">
           <span className="results-bar__mark" aria-hidden="true"><BrandMark compact /></span>
           <div><strong>{result.total.toLocaleString('ar-EG')}</strong><span>نتيجة مطابقة</span></div>
         </div>
+
+        <nav className="category-ticker" aria-label="التنقل بين تصنيفات الأنشطة">
+          <div className="category-ticker__track">
+            <div className="category-ticker__group">
+              <Link
+                href={createDirectoryHref('/directory', { query, village })}
+                className={`category-ticker__item is-all${!category ? ' is-active' : ''}`}
+                aria-current={!category ? 'page' : undefined}
+              >
+                كل الأقسام
+              </Link>
+              {categories.map((item) => (
+                <Link
+                  key={`ticker-primary-${item.id}`}
+                  href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
+                  className={`category-ticker__item category-ticker__item--${item.id}${category === item.id ? ' is-active' : ''}`}
+                  aria-current={category === item.id ? 'page' : undefined}
+                >
+                  <CategoryVisual category={item.id} size="sm" />
+                  <span>{item.shortLabel}</span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="category-ticker__group" aria-hidden="true">
+              <Link href={createDirectoryHref('/directory', { query, village })} className="category-ticker__item is-all" tabIndex={-1}>كل الأقسام</Link>
+              {categories.map((item) => (
+                <Link
+                  key={`ticker-copy-${item.id}`}
+                  href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
+                  className={`category-ticker__item category-ticker__item--${item.id}`}
+                  tabIndex={-1}
+                >
+                  <CategoryVisual category={item.id} size="sm" />
+                  <span>{item.shortLabel}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </nav>
+
         <div className="results-bar__context">
           {query && <span>بحث: <b>«{query}»</b></span>}
           {village !== 'all' && <span>النطاق: <b>{village}</b></span>}
