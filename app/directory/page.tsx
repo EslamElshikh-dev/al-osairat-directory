@@ -22,12 +22,23 @@ export async function generateMetadata({
   searchParams: Promise<DirectorySearchParams>;
 }): Promise<Metadata> {
   const query = await searchParams;
-  const filtered = isFilteredDirectoryState(query);
+  const page = Math.max(1, Number(query.page || 1) || 1);
+  const searchQuery = String(query.q || '').trim();
+  const village = String(query.village || '').trim();
+  const hasFilters = Boolean(searchQuery || (village && village !== 'all'));
+  const purePagination = !hasFilters && page > 1;
+  const title = purePagination
+    ? `${directoryTitle} - الصفحة ${page.toLocaleString('ar-EG')}`
+    : directoryTitle;
+  const description = purePagination
+    ? `${directoryDescription} الصفحة ${page.toLocaleString('ar-EG')} من نتائج الدليل.`
+    : directoryDescription;
+
   return buildPageMetadata({
-    title: directoryTitle,
-    description: directoryDescription,
-    path: '/directory',
-    noIndex: filtered,
+    title,
+    description,
+    path: purePagination ? `/directory?page=${page}` : '/directory',
+    noIndex: hasFilters,
     imageAlt: 'الدليل الشامل لخدمات وأنشطة العسيرات',
   });
 }
