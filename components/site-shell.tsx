@@ -3,6 +3,7 @@ import { categories, directoryStats } from '@/lib/data';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
 import { NotificationBell } from './auth/notification-bell';
+import { GlobalSearch } from './global-search';
 
 export { MobileNav };
 
@@ -38,13 +39,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="header-actions">
-          <Link href="/directory" className="header-mobile-action" aria-label="البحث في دليل العسيرات">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="10.5" cy="10.5" r="5.7" />
-              <path d="m14.8 14.8 4.2 4.2" />
-            </svg>
-            <span>بحث</span>
-          </Link>
+          <GlobalSearch />
           <NotificationBell />
           <AccountButton />
           <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
