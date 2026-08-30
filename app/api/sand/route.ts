@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sameOrigin } from '@/lib/auth/supabase-rest';
+import { villages } from '@/lib/data';
 import { generateSandAiReply, hasConfiguredSandProvider } from '@/lib/sand/agent';
 import { getSandDirectoryGrounding, getSandEmergencyGrounding } from '@/lib/sand/grounding';
+import { planSandRequest } from '@/lib/sand/intent';
 import { directSandReply, sandSuggestions, SAND_DISCLOSURE } from '@/lib/sand/persona';
 import {
   SAND_DAILY_AI_LIMIT,
@@ -58,6 +60,8 @@ export async function POST(request: NextRequest) {
   }
 
   const classification = classifySandMessage(message);
+  const plan = planSandRequest(message, history, villages);
+  const greetingOnly = classification.greeting && plan.intent !== 'directory';
   let grounding: SandGrounding | undefined;
 
   if (classification.emergency) {
@@ -65,16 +69,18 @@ export async function POST(request: NextRequest) {
   } else if (
     !classification.promptInjection
     && !classification.political
-    && !classification.greeting
+    && !greetingOnly
     && !classification.developer
+    && plan.intent === 'directory'
+    && !plan.clarification
   ) {
-    grounding = await getSandDirectoryGrounding(message);
+    grounding = await getSandDirectoryGrounding(plan);
   }
 
   const secret = process.env.SAND_RATE_LIMIT_SECRET?.trim();
   let usage = readSandUsage(request.cookies.get(SAND_USAGE_COOKIE)?.value, secret);
   let mode: SandApiResponse['mode'] = classification.emergency ? 'emergency' : 'direct';
-  let reply = directSandReply(classification, grounding, 'provider_unavailable');
+  let reply = directSandReply(classification, grounding, 'provider_unavailable', plan);
   let directReason: 'daily_limit' | 'burst_limit' | 'provider_unavailable' = 'provider_unavailable';
 
   const canConsiderAi = Boolean(
@@ -82,7 +88,7 @@ export async function POST(request: NextRequest) {
     && !classification.emergency
     && !classification.promptInjection
     && !classification.political
-    && !classification.greeting
+    && !greetingOnly
     && !classification.developer
     && !classification.medicalAdvice
     && usage.configured
@@ -100,7 +106,7 @@ export async function POST(request: NextRequest) {
   )) {
     directReason = 'burst_limit';
   } else if (canConsiderAi) {
-    const aiReply = await generateSandAiReply(message, history, grounding!);
+    const aiReply = await generateSandAiReply(message, history, grounding!, plan);
     if (aiReply) {
       reply = aiReply.text;
       mode = aiReply.mode;
@@ -108,14 +114,14 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  if (mode === 'direct') reply = directSandReply(classification, grounding, directReason);
+  if (mode === 'direct') reply = directSandReply(classification, grounding, directReason, plan);
 
   const response = jsonResponse({
     message: reply,
     mode,
     disclosure: SAND_DISCLOSURE,
     results: grounding?.results || [],
-    suggestions: sandSuggestions(classification, grounding),
+    suggestions: sandSuggestions(classification, grounding, plan),
     remainingAiMessages: remainingSandAiTurns(usage),
     dataSource: grounding?.source || 'none',
   });
