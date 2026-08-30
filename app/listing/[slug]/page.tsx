@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
-import { isListingIndexable, villagePathByName } from '@/lib/seo-growth';
+import { isFallbackScope, isListingIndexable, villagePathByName } from '@/lib/seo-growth';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
@@ -35,13 +36,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const category = categoryById[listing.category];
   const title = `${listing.title} - ${listing.village}`;
   const description = `${listing.subCategory || category.shortLabel} في ${listing.location}. بيانات التواصل والموقع ضمن دليل العسيرات.`;
-  return {
+
+  return buildPageMetadata({
     title,
     description,
-    alternates: { canonical: `/listing/${listing.slug}` },
-    openGraph: { title, description, url: `${siteConfig.url}/listing/${listing.slug}` },
-    ...(!isListingIndexable(listing) ? { robots: { index: false, follow: true } } : {}),
-  };
+    path: `/listing/${listing.slug}`,
+    noIndex: !isListingIndexable(listing),
+    imageAlt: `${listing.title} في دليل العسيرات`,
+  });
 }
 
 function schemaTypeFor(listing: DirectoryListing) {
@@ -76,7 +78,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const maps = googleMapsHref(listing);
   const lastUpdated = formatListingDate(listing.lastUpdatedAt);
   const dataSourceLabel = sourceLabel(listing);
-  const fallbackScope = listing.village === 'مركز العسيرات';
+  const fallbackScope = isFallbackScope(listing.village);
   const villagePath = villagePathByName(listing.village);
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
 

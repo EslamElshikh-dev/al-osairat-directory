@@ -283,19 +283,15 @@ export function ForgotPasswordForm() {
 
 export function ResetPasswordForm() {
   const router = useRouter();
-  const [accessToken, setAccessToken] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  useEffect(() => {
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    setAccessToken(hash.get('access_token') || '');
-  }, []);
-
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const accessToken = hash.get('access_token') || '';
     if (!accessToken) { setError('رابط الاستعادة غير صالح أو انتهت صلاحيته.'); return; }
     const policyError = passwordPolicyError(password);
     if (policyError) { setError(policyError); return; }

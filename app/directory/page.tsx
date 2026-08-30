@@ -6,9 +6,10 @@ import { categories, listings, villages } from '@/lib/data';
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { queryCanonicalDirectory } from '@/lib/directory-repository';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
 import { getEligibleServiceIntents } from '@/lib/programmatic-seo';
-import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
+import { buildCollectionStructuredData, isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 
 const directoryTitle = 'الدليل الشامل لخدمات وأنشطة العسيرات';
 const directoryDescription = 'ابحث في دليل مركز العسيرات عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والمحامين والخدمات.';
@@ -22,12 +23,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const query = await searchParams;
   const filtered = isFilteredDirectoryState(query);
-  return {
+  return buildPageMetadata({
     title: directoryTitle,
     description: directoryDescription,
-    alternates: { canonical: '/directory' },
-    ...(filtered ? { robots: { index: false, follow: true } } : {}),
-  };
+    path: '/directory',
+    noIndex: filtered,
+    imageAlt: 'الدليل الشامل لخدمات وأنشطة العسيرات',
+  });
 }
 
 export const dynamic = 'force-dynamic';
@@ -53,7 +55,7 @@ export default async function DirectoryPage({
 
   const allListings = mergeDirectoryListings(baseListings, publishedListings);
   const result = canonicalResult || queryDirectoryListings(allListings, queryOptions);
-  const coreVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
+  const coreVillages = villages.filter((item) => !isFallbackScope(item.name));
   const serviceIntents = getEligibleServiceIntents(allListings);
   const collectionSchema = buildCollectionStructuredData({
     title: directoryTitle,

@@ -65,7 +65,6 @@ export function AccountButton() {
     const possiblyLoggedOut = previous === '/account' && pathname === '/';
 
     if (completedLogin || possiblyLoggedOut) {
-      setReady(false);
       void refreshClientSession().finally(() => setReady(true));
     }
   }, [pathname]);

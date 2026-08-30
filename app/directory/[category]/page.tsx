@@ -8,6 +8,7 @@ import { categories, categoryById, listings, villages, type DirectoryCategory } 
 import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { queryCanonicalDirectory } from '@/lib/directory-repository';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
 import {
   categorySearchProfiles,
@@ -16,8 +17,7 @@ import {
   isVillageCategoryLandingEligible,
   villageCategoryLandingPath,
 } from '@/lib/programmatic-seo';
-import { buildCollectionStructuredData, isFilteredDirectoryState } from '@/lib/seo-growth';
-import { siteConfig } from '@/lib/site';
+import { buildCollectionStructuredData, isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 import {
   filterTransportListings,
   normalizeTransportDestinationFilter,
@@ -54,13 +54,14 @@ export async function generateMetadata({
   const profile = categorySearchProfiles[info.id];
   const title = profile?.title || `${info.label} في العسيرات`;
   const description = profile?.description || info.description;
-  return {
+
+  return buildPageMetadata({
     title,
     description,
-    alternates: { canonical: `/directory/${info.id}` },
-    openGraph: { title, description, url: `${siteConfig.url}/directory/${info.id}` },
-    ...(filtered ? { robots: { index: false, follow: true } } : {}),
-  };
+    path: `/directory/${info.id}`,
+    noIndex: filtered,
+    imageAlt: `${info.shortLabel} في دليل العسيرات`,
+  });
 }
 
 export const dynamic = 'force-dynamic';
@@ -109,6 +110,7 @@ export default async function CategoryPage({
   const topSpecialties = getTopSubCategories(categoryListings, 8);
   const specialistIntents = getEligibleServiceIntents(allListings).filter(({ intent }) => intent.category === info.id);
   const villageLinks = villages
+    .filter((village) => !isFallbackScope(village.name))
     .map((village) => ({
       village,
       count: categoryListings.filter((item) => item.village === village.name).length,

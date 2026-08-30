@@ -97,45 +97,72 @@ function editDistanceAtMostOne(a: string, b: string) {
   return edits <= 1;
 }
 
-function listingSearchText(listing: DirectoryListing) {
-  return canonicalizeDirectoryQuery(
-    [
-      listing.title,
-      listing.subCategory,
-      listing.location,
-      listing.village,
-      listing.locality,
-      listing.description,
-      listing.phone,
-    ]
-      .filter(Boolean)
-      .join(' '),
+function normalizedField(value?: string) {
+  return value ? canonicalizeDirectoryQuery(value) : '';
+}
+
+function tokenMatchRatio(value: string, queryTokens: string[]) {
+  if (!value || !queryTokens.length) return 0;
+  const fieldTokens = value.split(' ').filter(Boolean);
+  const matched = queryTokens.filter((queryToken) =>
+    fieldTokens.some(
+      (candidate) =>
+        candidate === queryToken
+        || candidate.includes(queryToken)
+        || queryToken.includes(candidate)
+        || editDistanceAtMostOne(candidate, queryToken),
+    ),
+  ).length;
+  return matched / queryTokens.length;
+}
+
+function fieldRelevance(value: string, normalizedQuery: string, queryTokens: string[], weight: number) {
+  if (!value) return 0;
+  if (value === normalizedQuery) return weight * 1.45;
+  if (value.startsWith(`${normalizedQuery} `) || value.startsWith(normalizedQuery)) return weight * 1.25;
+  if (value.includes(normalizedQuery)) return weight * 1.1;
+
+  const ratio = tokenMatchRatio(value, queryTokens);
+  if (ratio === 1) return weight * 0.9;
+  if (ratio >= 0.5) return weight * 0.45 * ratio;
+  return 0;
+}
+
+export function directorySearchRelevance(listing: DirectoryListing, query: string) {
+  const normalizedQuery = canonicalizeDirectoryQuery(query);
+  if (!normalizedQuery) return 0;
+  const queryTokens = normalizedQuery.split(' ').filter(Boolean);
+
+  const title = normalizedField(listing.title);
+  const subCategory = normalizedField(listing.subCategory);
+  const description = normalizedField(listing.description);
+  const village = normalizedField(listing.village);
+  const locality = normalizedField(listing.locality);
+  const location = normalizedField(listing.location);
+  const phone = normalizedField(listing.phone);
+
+  return (
+    fieldRelevance(title, normalizedQuery, queryTokens, 120)
+    + fieldRelevance(subCategory, normalizedQuery, queryTokens, 80)
+    + fieldRelevance(description, normalizedQuery, queryTokens, 30)
+    + fieldRelevance(village, normalizedQuery, queryTokens, 22)
+    + fieldRelevance(locality, normalizedQuery, queryTokens, 18)
+    + fieldRelevance(location, normalizedQuery, queryTokens, 8)
+    + fieldRelevance(phone, normalizedQuery, queryTokens, 3)
   );
 }
 
 function matchesSearch(listing: DirectoryListing, query: string) {
-  const normalizedQuery = canonicalizeDirectoryQuery(query);
-  if (!normalizedQuery) return true;
-
-  const haystack = listingSearchText(listing);
-  if (haystack.includes(normalizedQuery)) return true;
-
-  const queryTokens = normalizedQuery.split(' ').filter(Boolean);
-  const haystackTokens = haystack.split(' ').filter(Boolean);
-
-  return queryTokens.every((queryToken) =>
-    haystackTokens.some(
-      (candidate) =>
-        candidate.includes(queryToken) ||
-        queryToken.includes(candidate) ||
-        editDistanceAtMostOne(candidate, queryToken),
-    ),
-  );
+  return directorySearchRelevance(listing, query) > 0;
 }
 
 function cleanDisplayText(value?: string) {
   if (!value) return undefined;
-  let cleaned = toAsciiDigits(value).replace(/\s+/g, ' ').trim();
+  let cleaned = toAsciiDigits(value)
+    .replace(/\\\*\\\*/g, '')
+    .replace(/\*\*/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   for (const [pattern, replacement] of displayReplacements) cleaned = cleaned.replace(pattern, replacement);
   cleaned = cleaned
     .replace(/(^|\s)د\s*\/\s*/g, '$1د/ ')
@@ -234,6 +261,15 @@ export function queryDirectoryListings(
     if (options.query && !matchesSearch(listing, options.query)) return false;
     return true;
   });
+
+  if (options.query?.trim()) {
+    const query = options.query;
+    filtered.sort((a, b) => {
+      const relevance = directorySearchRelevance(b, query) - directorySearchRelevance(a, query);
+      if (relevance !== 0) return relevance;
+      return a.title.localeCompare(b.title, 'ar');
+    });
+  }
 
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));

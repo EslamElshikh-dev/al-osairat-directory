@@ -4,12 +4,13 @@ import { notFound } from 'next/navigation';
 import { categories, listings, villageBySlug, villages } from '@/lib/data';
 import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { isVillageCategoryLandingEligible, villageCategoryLandingPath } from '@/lib/programmatic-seo';
-import { isFilteredDirectoryState } from '@/lib/seo-growth';
+import { isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
 type VillageSearchParams = { page?: string };
@@ -30,7 +31,7 @@ export async function generateMetadata({
   if (!village) return {};
 
   const paginated = isFilteredDirectoryState(query);
-  const fallbackScope = village.name === 'مركز العسيرات';
+  const fallbackScope = isFallbackScope(village.name);
   const title = fallbackScope
     ? 'سجلات غير محددة القرية داخل مركز العسيرات'
     : `دليل ${village.name} - مركز العسيرات`;
@@ -38,13 +39,13 @@ export async function generateMetadata({
     ? village.description
     : `الخدمات والأنشطة والبيانات المحلية المنشورة في ${village.name} ضمن مركز العسيرات بمحافظة سوهاج.`;
 
-  return {
+  return buildPageMetadata({
     title,
     description,
-    alternates: { canonical: `/villages/${village.slug}` },
-    openGraph: { title, description, url: `${siteConfig.url}/villages/${village.slug}` },
-    ...(paginated || fallbackScope ? { robots: { index: false, follow: true } } : {}),
-  };
+    path: `/villages/${village.slug}`,
+    noIndex: paginated || fallbackScope,
+    imageAlt: fallbackScope ? 'سجلات النطاق العام في مركز العسيرات' : `دليل ${village.name} في العسيرات`,
+  });
 }
 
 export const dynamic = 'force-dynamic';
@@ -62,7 +63,7 @@ export default async function VillagePage({
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) notFound();
 
-  const fallbackScope = village.name === 'مركز العسيرات';
+  const fallbackScope = isFallbackScope(village.name);
 
   const [publishedListings, overriddenListings] = await Promise.all([
     getPublishedListings({ village: village.name }),
