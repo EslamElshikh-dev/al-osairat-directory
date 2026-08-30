@@ -161,7 +161,7 @@ export default async function HomePage() {
             <div>
               <span className="eyebrow eyebrow--dark">مرصد الأخبار المحلي</span>
               <h2>أحدث ما نُشر عن العسيرات وقراها</h2>
-              <p>تجميع آلي من مصادر موثوقة، مع إبقاء الخبر الكامل وحقوقه لدى الناشر الأصلي.</p>
+              <p>موجزات موثقة داخل الدليل، مع رابط واضح للنص الكامل لدى الناشر الأصلي.</p>
             </div>
             <Link href="/news" className="text-link text-link--arrow">كل أخبار العسيرات <b aria-hidden="true">←</b></Link>
           </div>

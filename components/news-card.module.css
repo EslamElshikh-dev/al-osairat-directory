@@ -144,6 +144,7 @@
 }
 
 .location,
+.details,
 .read {
   display: inline-flex;
   align-items: center;
@@ -153,6 +154,18 @@
 }
 
 .location { color: #71807a; }
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.details {
+  padding-inline-end: 9px;
+  border-inline-end: 1px solid rgba(16, 42, 36, .1);
+  color: #2d6652;
+}
 
 .location svg {
   width: 15px;
@@ -204,6 +217,8 @@
   .body h3,
   .compact .body h3 { font-size: 16px; line-height: 1.65; }
   .footer { align-items: flex-end; }
+  .actions { gap: 7px; }
+  .details { padding-inline-end: 7px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

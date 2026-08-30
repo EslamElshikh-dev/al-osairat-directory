@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { villages } from './data/base';
 import { normalizeArabic } from './site';
 
@@ -14,6 +15,16 @@ export type LocalNewsItem = {
   village: string;
   topic: NewsTopic;
   origin: 'live' | 'archive';
+  editorial?: {
+    rights: 'owned' | 'licensed';
+    author: string;
+    updatedAt: string;
+    body: string[];
+  };
+};
+
+export type LocalNewsDetail = LocalNewsItem & {
+  sourceExcerpt?: string;
 };
 
 export type LocalNewsFeed = {
@@ -272,6 +283,27 @@ function parseYoum7TagPage(html: string, source: FeedSource): RawNewsItem[] {
   }
 }
 
+function readHtmlAttribute(tag: string, attribute: string) {
+  const match = tag.match(new RegExp(`\\s${attribute}\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s>]+))`, 'i'));
+  return decodeEntities(match?.[1] || match?.[2] || match?.[3] || '');
+}
+
+function parsePageDescription(html: string) {
+  const metaTags = html.slice(0, 1_500_000).match(/<meta\b[^>]*>/gi) || [];
+  const preferredKeys = ['og:description', 'twitter:description', 'description'];
+
+  for (const key of preferredKeys) {
+    const tag = metaTags.find((candidate) => {
+      const label = readHtmlAttribute(candidate, 'property') || readHtmlAttribute(candidate, 'name');
+      return label.toLowerCase() === key;
+    });
+    const value = cleanText(tag ? readHtmlAttribute(tag, 'content') : '');
+    if (value.length >= 40) return truncate(value, 900);
+  }
+
+  return '';
+}
+
 function isRelevant(raw: RawNewsItem, source: FeedSource) {
   if (source.format === 'youm7-tag') return true;
   const normalized = normalizeArabic(`${raw.title} ${raw.summary || ''}`);
@@ -321,7 +353,7 @@ function toLocalNewsItem(raw: RawNewsItem, source: FeedSource): LocalNewsItem {
   };
 }
 
-async function fetchSource(source: FeedSource) {
+const fetchSource = cache(async function fetchSource(source: FeedSource) {
   const response = await fetch(source.url, {
     headers: {
       accept: source.format === 'rss'
@@ -342,7 +374,7 @@ async function fetchSource(source: FeedSource) {
     .filter((item) => new Date(item.publishedAt).getTime() >= cutoff)
     .filter((item) => isRelevant(item, source))
     .map((item) => toLocalNewsItem(item, source));
-}
+});
 
 function normalizedHeadline(item: LocalNewsItem) {
   return normalizeArabic(item.title)
@@ -381,6 +413,72 @@ export async function getLocalNews(limit = 36): Promise<LocalNewsFeed> {
     totalSourceCount: newsSources.length,
     checkedAt: new Date().toISOString(),
   };
+}
+
+export function newsItemPath(item: Pick<LocalNewsItem, 'id'> | string) {
+  const id = typeof item === 'string' ? item : item.id;
+  return `/news/${encodeURIComponent(id)}`;
+}
+
+function sourceForItem(item: LocalNewsItem) {
+  try {
+    const hostname = new URL(item.url).hostname.toLowerCase();
+    return newsSources.find((source) => source.allowedHosts.includes(hostname));
+  } catch {
+    return undefined;
+  }
+}
+
+async function fetchSourceExcerpt(item: LocalNewsItem) {
+  if (item.editorial?.body.length) return '';
+  const source = sourceForItem(item);
+  if (!source || !safeExternalUrl(item.url, source.allowedHosts)) return item.summary || '';
+
+  try {
+    const response = await fetch(item.url, {
+      headers: {
+        accept: 'text/html, application/xhtml+xml;q=0.9, */*;q=0.5',
+        'user-agent': 'UsayratDirectoryNewsMonitor/1.0 (+https://usayrat.online/news)',
+      },
+      next: { revalidate: NEWS_REVALIDATE_SECONDS, tags: ['local-news'] },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+
+    if (!response.ok) return item.summary || '';
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.toLowerCase().includes('text/html')) return item.summary || '';
+    const description = parsePageDescription(await response.text());
+    return description || item.summary || '';
+  } catch {
+    return item.summary || '';
+  }
+}
+
+const loadLocalNewsItem = async (id: string): Promise<LocalNewsDetail | undefined> => {
+  if (!/^[a-z0-9-]{1,120}$/i.test(id)) return undefined;
+
+  let item = archivedNews.find((candidate) => candidate.id === id);
+
+  if (!item) {
+    const source = newsSources.find((candidate) => id.startsWith(`${candidate.id}-`));
+    if (!source) return undefined;
+
+    try {
+      item = (await fetchSource(source)).find((candidate) => candidate.id === id);
+    } catch {
+      return undefined;
+    }
+  }
+
+  if (!item) return undefined;
+  const sourceExcerpt = await fetchSourceExcerpt(item);
+  return { ...item, ...(sourceExcerpt ? { sourceExcerpt } : {}) };
+};
+
+export const getLocalNewsItem = cache(loadLocalNewsItem);
+
+export function isFullNewsArticle(item: LocalNewsItem) {
+  return Boolean(item.editorial?.body.length && item.editorial.body.join(' ').trim().length >= 400);
 }
 
 export function selectHomepageNews(items: LocalNewsItem[], limit = 4) {

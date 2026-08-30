@@ -1,0 +1,163 @@
+.main { min-height: 70vh; background: #f7f4ec; }
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(135deg, #102e26 0%, #1d4b3d 62%, #2c6654 100%);
+}
+
+.hero[data-topic="الصحة"] { background: linear-gradient(135deg, #11372e, #24634f 62%, #318168); }
+.hero[data-topic="التعليم"] { background: linear-gradient(135deg, #192b45, #314f73 62%, #4c7297); }
+.hero[data-topic="خدمات وتنمية"] { background: linear-gradient(135deg, #493817, #80601f 62%, #ab8435); }
+.hero[data-topic="المجتمع"] { background: linear-gradient(135deg, #362441, #5d3d6c 62%, #79558a); }
+.hero[data-topic="أخبار وحوادث"] { background: linear-gradient(135deg, #3b2525, #663a39 62%, #86504c); }
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(circle at 16% 0%, rgba(248, 210, 113, .17), transparent 31%);
+}
+
+.heroPattern {
+  position: absolute;
+  z-index: -1;
+  width: 440px;
+  height: 440px;
+  inset-inline-end: -195px;
+  top: -230px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 58px rgba(255, 255, 255, .025), 0 0 0 116px rgba(255, 255, 255, .016);
+}
+
+.heroShell { max-width: 1030px; padding-block: 62px 68px; }
+
+.kicker {
+  margin: 22px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f2d98f;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.hero h1 {
+  max-width: 950px;
+  margin: 0;
+  font-size: clamp(35px, 5.2vw, 62px);
+  line-height: 1.3;
+  letter-spacing: -1.25px;
+  text-wrap: balance;
+}
+
+.heroShell > p {
+  max-width: 850px;
+  margin: 21px 0 28px;
+  color: rgba(255, 255, 255, .78);
+  font-size: 15px;
+  line-height: 1.95;
+}
+
+.heroMeta { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.brand { width: 43px; height: 43px; display: grid; place-items: center; border-radius: 13px; background: #f8f5ec; }
+.brand :global(.brand-mark) { transform: scale(.7); }
+.heroMeta div { padding-inline-end: 14px; border-inline-end: 1px solid rgba(255, 255, 255, .15); }
+.heroMeta small { display: block; color: rgba(255, 255, 255, .58); font-size: 8px; }
+.heroMeta strong { display: block; margin-top: 2px; font-size: 11px; }
+.heroMeta time { color: rgba(255, 255, 255, .68); font-size: 10px; font-weight: 800; }
+
+.layout {
+  padding-block: 55px 72px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  align-items: start;
+  gap: 28px;
+}
+
+.article { min-width: 0; display: grid; gap: 17px; }
+.article > section,
+.disclosure { border: 1px solid rgba(16, 42, 36, .085); border-radius: 23px; background: #fff; box-shadow: 0 12px 38px rgba(16, 42, 36, .045); }
+
+.disclosure { padding: 18px 20px; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 13px; align-items: start; background: #fff9e9; border-color: rgba(160, 120, 26, .14); }
+.disclosure > span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; color: #35684d; background: #eaf5ed; font-size: 13px; font-weight: 900; }
+.disclosure strong { display: block; color: #614f22; font-size: 12px; }
+.disclosure p { margin: 4px 0 0; color: #7c6c43; font-size: 10.5px; line-height: 1.8; }
+
+.story { padding: 31px 32px 34px; }
+.story h2,
+.sectionHeading h2,
+.method h2 { margin: 4px 0 0; color: #173a31; font-size: clamp(25px, 3.5vw, 35px); line-height: 1.4; }
+.story p { margin: 19px 0 0; color: #475b54; font-size: 15px; line-height: 2.25; }
+
+.facts { padding: 27px 28px; }
+.facts dl { margin: 20px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.facts dl > div { min-width: 0; padding: 15px 16px; border: 1px solid rgba(16, 42, 36, .07); border-radius: 15px; background: #f7f8f4; }
+.facts dt { color: #8a762f; font-size: 8px; font-weight: 900; }
+.facts dd { margin: 5px 0 0; color: #294a40; font-size: 11px; font-weight: 850; line-height: 1.7; }
+
+.method { padding: 28px 30px; }
+.method p { margin: 14px 0 0; color: #62716b; font-size: 12px; line-height: 2; }
+
+.sourcePanel {
+  position: sticky;
+  top: 92px;
+  overflow: hidden;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 25px;
+  color: #fff;
+  background: #163a30;
+  box-shadow: 0 18px 48px rgba(16, 42, 36, .13);
+}
+
+.sourcePanel::after {
+  content: "";
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  inset-inline-end: -95px;
+  top: -95px;
+  border: 1px solid rgba(242, 205, 111, .12);
+  border-radius: 50%;
+  box-shadow: 0 0 0 28px rgba(242, 205, 111, .025);
+}
+
+.sourceBrand { width: 58px; height: 58px; margin-bottom: 21px; display: grid; place-items: center; border-radius: 17px; background: #f8f5ec; }
+.sourceBrand :global(.brand-mark) { transform: scale(.88); }
+.sourceLabel { color: #e6c66e; font-size: 8px; font-weight: 900; }
+.sourcePanel h2 { margin: 5px 0 0; font-size: 22px; }
+.sourcePanel > p { margin: 12px 0 20px; color: #b7cbc3; font-size: 10.5px; line-height: 1.85; }
+.sourcePanel :global(.button) { width: 100%; justify-content: center; text-align: center; font-size: 10px; }
+.sourceHome { margin-top: 13px; display: flex; justify-content: center; gap: 5px; color: #c8d9d2; font-size: 9px; font-weight: 800; }
+
+.updateNote { margin-top: 21px; padding-top: 17px; display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 9px; border-top: 1px solid rgba(255, 255, 255, .1); color: #9eb5ac; font-size: 8.5px; line-height: 1.7; }
+.updateNote i { width: 8px; height: 8px; margin-top: 4px; border-radius: 50%; background: #70d098; box-shadow: 0 0 0 5px rgba(112, 208, 152, .08); }
+.updateNote strong { display: block; color: #d9e7e1; font-size: 9px; }
+
+.related { padding-block: 67px 72px; border-top: 1px solid rgba(16, 42, 36, .06); background: #ecefe9; }
+.relatedGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .sourcePanel { position: static; }
+  .relatedGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .heroShell { padding-block: 42px 50px; }
+  .hero h1 { letter-spacing: -.7px; }
+  .heroShell > p { font-size: 13px; }
+  .layout { padding-block: 38px 52px; gap: 18px; }
+  .story,
+  .facts,
+  .method { padding: 23px 19px; border-radius: 20px !important; }
+  .story p { font-size: 13.5px; line-height: 2.15; }
+  .facts dl { grid-template-columns: 1fr; }
+  .sourcePanel { padding: 22px 20px; border-radius: 21px; }
+  .related { padding-block: 52px; }
+}

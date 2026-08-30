@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import type { LocalNewsItem, NewsTopic } from '@/lib/news';
+import { newsItemPath } from '@/lib/news';
 import styles from './news-card.module.css';
 
 const topicIcons: Record<NewsTopic, React.ReactNode> = {
@@ -44,17 +46,15 @@ export function NewsCard({ item, compact = false }: { item: LocalNewsItem; compa
         </div>
 
         <h3>
-          <a
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-news-source={item.source}
+          <Link
+            href={newsItemPath(item)}
+            data-news-detail={item.id}
             data-news-topic={item.topic}
             data-news-village={item.village}
-            aria-label={`${item.title} — يفتح الخبر في موقع ${item.source}`}
+            aria-label={`${item.title} — تفاصيل الخبر داخل دليل العسيرات`}
           >
             {item.title}
-          </a>
+          </Link>
         </h3>
 
         {item.summary ? <p>{item.summary}</p> : null}
@@ -64,17 +64,28 @@ export function NewsCard({ item, compact = false }: { item: LocalNewsItem; compa
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z" /><circle cx="12" cy="10" r="2" /></svg>
             {item.village}
           </span>
-          <a
-            className={styles.read}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-news-source={item.source}
-            data-news-topic={item.topic}
-            data-news-village={item.village}
-          >
-            اقرأ من المصدر <b aria-hidden="true">↗</b>
-          </a>
+          <span className={styles.actions}>
+            <Link
+              className={styles.details}
+              href={newsItemPath(item)}
+              data-news-detail={item.id}
+              data-news-topic={item.topic}
+              data-news-village={item.village}
+            >
+              التفاصيل
+            </Link>
+            <a
+              className={styles.read}
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-news-source={item.source}
+              data-news-topic={item.topic}
+              data-news-village={item.village}
+            >
+              المصدر <b aria-hidden="true">↗</b>
+            </a>
+          </span>
         </div>
       </div>
     </article>
