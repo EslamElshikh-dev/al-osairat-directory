@@ -36,7 +36,7 @@ import './navigation-scroll.css';
 import './sand-assistant.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
-const socialImage = `${siteConfig.url}/api/og`;
+const socialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -66,8 +66,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: siteConfig.locale,
     url: siteConfig.url,
-    title: rootTitle,
-    description: siteConfig.description,
+    title: siteConfig.socialTitle,
+    description: siteConfig.socialDescription,
     siteName: siteConfig.shortName,
     images: [
       {
@@ -80,8 +80,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: rootTitle,
-    description: siteConfig.description,
+    title: siteConfig.socialTitle,
+    description: siteConfig.socialDescription,
     images: [socialImage],
   },
 };

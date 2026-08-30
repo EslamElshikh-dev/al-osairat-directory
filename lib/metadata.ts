@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/site';
 
-const defaultSocialImage = `${siteConfig.url}/api/og`;
+const defaultSocialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar`;
 const defaultSocialImageAlt = 'دليل وموسوعة العسيرات - الدليل المحلي لمركز العسيرات وقراه';
 
 type BaseMetadataInput = {
