@@ -7,6 +7,7 @@ import type {
   LocalNewsFeed,
   LocalNewsItem,
   NewsTopic,
+  SourceNewsDigest,
 } from '@/lib/news';
 
 export const NEWS_DATABASE_CACHE_TAG = 'local-news-db';
@@ -47,6 +48,7 @@ export type StoredNewsProcessingState = {
   editorialStatus: PublicNewsRow['editorial_status'];
   sourceHash?: string;
   sourceFetchedAt?: string;
+  hasSourceDigest?: boolean;
 };
 
 export type NewsIngestionCompletion = {
@@ -82,7 +84,9 @@ function newsDatabaseEnabled() {
 }
 
 export function canWriteNewsDatabase() {
-  return newsDatabaseEnabled() && Boolean(serviceRoleKey());
+  return process.env.VERCEL_ENV !== 'preview'
+    && newsDatabaseEnabled()
+    && Boolean(serviceRoleKey());
 }
 
 function headers(key: string, prefer?: string) {
@@ -107,7 +111,20 @@ function isGeneratedEditorial(value: unknown): value is GeneratedNewsEditorial {
     && typeof candidate.generatedAt === 'string';
 }
 
+function isSourceNewsDigest(value: unknown): value is SourceNewsDigest {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Record<string, unknown>;
+  return candidate.kind === 'source-digest'
+    && typeof candidate.lead === 'string'
+    && Array.isArray(candidate.excerpts)
+    && candidate.excerpts.every((entry) => typeof entry === 'string')
+    && typeof candidate.preparedAt === 'string';
+}
+
 function mapPublicNewsRow(row: PublicNewsRow): LocalNewsDetail {
+  const sourceDigest = isSourceNewsDigest(row.generated_editorial)
+    ? row.generated_editorial
+    : undefined;
   const generatedEditorial = isGeneratedEditorial(row.generated_editorial)
     ? row.generated_editorial
     : undefined;
@@ -124,6 +141,7 @@ function mapPublicNewsRow(row: PublicNewsRow): LocalNewsDetail {
     topic: row.topic as NewsTopic,
     origin: row.origin,
     ...(row.source_excerpt ? { sourceExcerpt: row.source_excerpt } : {}),
+    ...(sourceDigest ? { sourceDigest } : {}),
     ...(generatedEditorial ? { generatedEditorial } : {}),
     editorialStatus: row.editorial_status,
     persisted: true,
@@ -250,8 +268,9 @@ export async function getStoredNewsProcessingState(ids: string[]) {
     editorial_status: PublicNewsRow['editorial_status'];
     source_hash: string | null;
     source_fetched_at: string | null;
+    generated_editorial: unknown;
   }>>(
-    `news_items?select=id,editorial_status,source_hash,source_fetched_at&id=in.(${safeIds.join(',')})`,
+    `news_items?select=id,editorial_status,source_hash,source_fetched_at,generated_editorial&id=in.(${safeIds.join(',')})`,
   );
 
   return new Map(rows.map((row) => [row.id, {
@@ -259,6 +278,7 @@ export async function getStoredNewsProcessingState(ids: string[]) {
     editorialStatus: row.editorial_status,
     ...(row.source_hash ? { sourceHash: row.source_hash } : {}),
     ...(row.source_fetched_at ? { sourceFetchedAt: row.source_fetched_at } : {}),
+    hasSourceDigest: isSourceNewsDigest(row.generated_editorial),
   }]));
 }
 
@@ -291,6 +311,7 @@ export async function saveNewsProcessingResult(input: {
   sourceExcerpt?: string;
   sourceText?: string;
   sourceHash?: string;
+  sourceDigest?: SourceNewsDigest;
   editorialStatus: PublicNewsRow['editorial_status'];
   generatedEditorial?: GeneratedNewsEditorial;
   error?: string;
@@ -298,15 +319,15 @@ export async function saveNewsProcessingResult(input: {
 }) {
   const now = new Date().toISOString();
   const payload = {
-    source_excerpt: input.sourceExcerpt || null,
-    source_text: input.sourceText || null,
-    source_hash: input.sourceHash || null,
+    ...(input.sourceExcerpt !== undefined ? { source_excerpt: input.sourceExcerpt || null } : {}),
+    ...(input.sourceText !== undefined ? { source_text: input.sourceText || null } : {}),
+    ...(input.sourceHash !== undefined ? { source_hash: input.sourceHash || null } : {}),
     source_fetched_at: now,
     updated_at: now,
     last_error: input.error?.slice(0, 500) || null,
     ...(!input.preserveExistingEditorial ? {
       editorial_status: input.editorialStatus,
-      generated_editorial: input.generatedEditorial || null,
+      generated_editorial: input.generatedEditorial || input.sourceDigest || null,
     } : {}),
   };
 

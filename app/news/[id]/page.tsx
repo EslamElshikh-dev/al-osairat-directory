@@ -82,7 +82,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   const generatedEditorial = fullArticle
     ? undefined
     : item.generatedEditorial || (!item.persisted ? await getGeneratedNewsEditorial(item) : undefined);
-  const heroSummary = generatedEditorial?.lead || excerpt;
+  const sourceDigest = fullArticle || generatedEditorial ? undefined : item.sourceDigest;
+  const heroSummary = generatedEditorial?.lead || sourceDigest?.lead || excerpt;
   const pageUrl = `${siteConfig.url}${newsItemPath(item)}`;
   const related = feed.items
     .filter((candidate) => candidate.id !== item.id)
@@ -120,13 +121,18 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     description: detailDescription(item.title, heroSummary),
     url: pageUrl,
     datePublished: item.publishedAt,
-    ...(generatedEditorial ? { dateModified: generatedEditorial.generatedAt } : {}),
+    ...(generatedEditorial || sourceDigest ? {
+      dateModified: generatedEditorial?.generatedAt || sourceDigest?.preparedAt,
+    } : {}),
     inLanguage: 'ar-EG',
     isPartOf: { '@id': `${siteConfig.url}#website` },
     citation: item.url,
     ...(generatedEditorial ? {
       abstract: generatedEditorial.lead,
       text: generatedEditorial.body.join(' '),
+    } : sourceDigest ? {
+      abstract: sourceDigest.lead,
+      text: [sourceDigest.lead, ...sourceDigest.excerpts].join(' '),
     } : {}),
     isBasedOn: {
       '@type': 'CreativeWork',
@@ -190,6 +196,17 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
                 </p>
               </div>
             </div>
+          ) : sourceDigest ? (
+            <div className={styles.disclosure} role="note">
+              <span aria-hidden="true">✓</span>
+              <div>
+                <strong>موجز موسّع موثّق — بدون ذكاء اصطناعي</strong>
+                <p>
+                  جُلبت هذه التفاصيل مباشرة من صفحة {item.source}، ثم قُسمت إلى مقتطفات قصيرة
+                  مع بقاء المقال الكامل وحقوقه لدى الناشر الأصلي.
+                </p>
+              </div>
+            </div>
           ) : item.persisted && item.editorialStatus === 'source-only' ? (
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
@@ -220,13 +237,20 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <span className="eyebrow eyebrow--dark">
               {fullArticle ? 'تغطية دليل العسيرات' : generatedEditorial ? `تغطية أصلية استنادًا إلى ${item.source}` : `بحسب ${item.source}`}
             </span>
-            <h2 id="news-story-title">{fullArticle || generatedEditorial ? 'التغطية الكاملة' : 'تفاصيل الخبر المتاحة'}</h2>
+            <h2 id="news-story-title">
+              {fullArticle || generatedEditorial ? 'التغطية الكاملة' : sourceDigest ? 'الموجز الموسّع من المصدر' : 'تفاصيل الخبر المتاحة'}
+            </h2>
             {fullArticle && item.editorial ? (
               item.editorial.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)
             ) : generatedEditorial ? (
               <>
                 <p className={styles.storyLead}>{generatedEditorial.lead}</p>
                 {generatedEditorial.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+              </>
+            ) : sourceDigest ? (
+              <>
+                <p className={styles.storyLead}>{sourceDigest.lead}</p>
+                {sourceDigest.excerpts.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
               </>
             ) : excerpt ? (
               <p>{excerpt}</p>
@@ -277,6 +301,11 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
                 استخلص النظام الوقائع المتاحة من صفحة الناشر، ثم أنشأ صياغة تحريرية أصلية لا تنقل عباراته.
                 تُرفض التغطية آليًا إذا أضافت أرقامًا غير موجودة في المصدر أو احتوت مقاطع مطابقة طويلة، وتظل صفحة الناشر المرجع النهائي.
               </p>
+            ) : sourceDigest ? (
+              <p>
+                يجلب النظام وصف الخبر ونصه المتاحين لدى {item.source}، ويعرض مقتطفات محدودة منسوبة إليه دون تشغيل أي نموذج ذكاء اصطناعي.
+                لا يضيف الدليل وقائع جديدة، وتظل صفحة الناشر المرجع النهائي والنص الكامل.
+              </p>
             ) : (
               <p>
                 التقط نظام الرصد هذا الخبر لأن عنوانه أو وصفه يتضمن مركز العسيرات أو إحدى قراه في سياق سوهاج.
@@ -291,7 +320,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           <span className={styles.sourceLabel}>المصدر الأصلي والمرجع النهائي</span>
           <h2>{item.source}</h2>
           <p>
-            النص داخل الدليل صياغة تحريرية مستقلة عند توافر مادة كافية. قد يحدّث الناشر الوقائع أو يصححها لاحقًا؛ لذلك تبقى صفحته المرجع النهائي.
+            يعرض الدليل موجزًا ومقتطفات محدودة منسوبة بوضوح إلى المصدر. قد يحدّث الناشر الوقائع أو يصححها لاحقًا؛ لذلك تبقى صفحته المرجع النهائي.
           </p>
           <a
             href={item.url}

@@ -3,6 +3,7 @@ import 'server-only';
 import { createHash } from 'node:crypto';
 import { getGeneratedNewsEditorial, isNewsEditorialEnabled } from '@/lib/news-editorial';
 import {
+  buildSourceNewsDigest,
   collectLocalNewsFromSources,
   fetchSourceDetail,
   type LocalNewsItem,
@@ -24,15 +25,21 @@ export type NewsIngestionResult = NewsIngestionCompletion & {
   skippedUnchangedCount: number;
 };
 
-const DEFAULT_BATCH_SIZE = 3;
+const DEFAULT_EDITORIAL_BATCH_SIZE = 3;
+const DEFAULT_SOURCE_BATCH_SIZE = 12;
 const READY_REFRESH_AFTER_MS = 1000 * 60 * 60 * 24;
 const FAILED_RETRY_AFTER_MS = 1000 * 60 * 60 * 6;
 
-function batchSize() {
-  const configured = Number.parseInt(process.env.NEWS_INGESTION_BATCH_SIZE || '', 10);
+function batchSize(editorialEnabled: boolean) {
+  const configured = Number.parseInt(
+    editorialEnabled
+      ? process.env.NEWS_INGESTION_BATCH_SIZE || ''
+      : process.env.NEWS_SOURCE_BATCH_SIZE || process.env.NEWS_INGESTION_BATCH_SIZE || '',
+    10,
+  );
   return Number.isFinite(configured)
-    ? Math.max(1, Math.min(configured, 5))
-    : DEFAULT_BATCH_SIZE;
+    ? Math.max(1, Math.min(configured, editorialEnabled ? 5 : 16))
+    : editorialEnabled ? DEFAULT_EDITORIAL_BATCH_SIZE : DEFAULT_SOURCE_BATCH_SIZE;
 }
 
 function sourceHash(value: string) {
@@ -59,6 +66,7 @@ function prioritizeItems(
   items: LocalNewsItem[],
   states: Map<string, StoredNewsProcessingState>,
   now: number,
+  limit: number,
 ) {
   return items
     .filter((item) => shouldProcess(states.get(item.id), now))
@@ -68,7 +76,7 @@ function prioritizeItems(
       if (aReady !== bReady) return Number(aReady) - Number(bReady);
       return Date.parse(b.publishedAt) - Date.parse(a.publishedAt);
     })
-    .slice(0, batchSize());
+    .slice(0, limit);
 }
 
 export async function runClaimedNewsIngestion(input: {
@@ -88,12 +96,8 @@ export async function runClaimedNewsIngestion(input: {
     await upsertDiscoveredNews(feed.items, seenAt);
 
     const editorialEnabled = isNewsEditorialEnabled();
-    const states = editorialEnabled
-      ? await getStoredNewsProcessingState(feed.items.map((item) => item.id))
-      : new Map<string, StoredNewsProcessingState>();
-    const candidates = editorialEnabled
-      ? prioritizeItems(feed.items, states, Date.now())
-      : [];
+    const states = await getStoredNewsProcessingState(feed.items.map((item) => item.id));
+    const candidates = prioritizeItems(feed.items, states, Date.now(), batchSize(editorialEnabled));
 
     for (const item of candidates) {
       const previous = states.get(item.id);
@@ -104,19 +108,38 @@ export async function runClaimedNewsIngestion(input: {
         const detail = await fetchSourceDetail(item);
         const sourceText = detail.sourceText?.trim() || '';
         const currentHash = sourceText ? sourceHash(sourceText) : '';
+        const sourceExcerpt = detail.sourceExcerpt || item.summary || '';
+        const sourceDigest = buildSourceNewsDigest({ ...item, ...detail, sourceText });
 
-        if (preserveExistingEditorial && currentHash && currentHash === previous?.sourceHash) {
+        const alreadyHasRequestedCoverage = editorialEnabled
+          ? previous?.editorialStatus === 'ready'
+          : previous?.hasSourceDigest;
+        if (alreadyHasRequestedCoverage && currentHash && currentHash === previous?.sourceHash) {
           await touchNewsSource(item.id);
           skippedUnchangedCount += 1;
+          continue;
+        }
+
+        if (!editorialEnabled) {
+          await saveNewsProcessingResult({
+            id: item.id,
+            sourceExcerpt,
+            sourceText,
+            sourceHash: currentHash,
+            sourceDigest,
+            editorialStatus: 'source-only',
+            preserveExistingEditorial,
+          });
           continue;
         }
 
         if (sourceText.length < 500) {
           await saveNewsProcessingResult({
             id: item.id,
-            sourceExcerpt: detail.sourceExcerpt || item.summary,
+            sourceExcerpt,
             sourceText,
             sourceHash: currentHash,
+            sourceDigest,
             editorialStatus: 'insufficient',
             error: 'Source did not expose enough article text for verified full coverage',
             preserveExistingEditorial,
@@ -134,9 +157,10 @@ export async function runClaimedNewsIngestion(input: {
         if (!generatedEditorial) {
           await saveNewsProcessingResult({
             id: item.id,
-            sourceExcerpt: detail.sourceExcerpt || item.summary,
+            sourceExcerpt,
             sourceText,
             sourceHash: currentHash,
+            sourceDigest,
             editorialStatus: 'failed',
             error: 'Editorial generation or verification was rejected',
             preserveExistingEditorial,
@@ -148,9 +172,10 @@ export async function runClaimedNewsIngestion(input: {
 
         await saveNewsProcessingResult({
           id: item.id,
-          sourceExcerpt: detail.sourceExcerpt || item.summary,
+          sourceExcerpt,
           sourceText,
           sourceHash: currentHash,
+          sourceDigest,
           editorialStatus: 'ready',
           generatedEditorial,
         });
