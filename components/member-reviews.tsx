@@ -288,6 +288,11 @@ export function MemberReviews({
   const hasReviews = summary.count > 0;
   const cleanLength = reviewText.trim().length;
   const canSubmit = rating > 0 && cleanLength >= REVIEW_MIN_LENGTH && cleanLength <= REVIEW_MAX_LENGTH && !submitting;
+  const visibleReviews = payload
+    ? payload.myReview && !payload.reviews.some((review) => review.id === payload.myReview?.id)
+      ? [{ ...payload.myReview, own: true }, ...payload.reviews]
+      : payload.reviews
+    : [];
 
   return (
     <section ref={sectionRef} className={`member-reviews ${className}`.trim()} aria-labelledby={`member-reviews-${targetType}-${targetKey}`}>
@@ -430,9 +435,9 @@ export function MemberReviews({
               {hasReviews ? <span>{summary.count} مشاركة</span> : null}
             </div>
 
-            {payload.reviews.length ? (
+            {visibleReviews.length ? (
               <div className="member-review-list">
-                {payload.reviews.map((review) => (
+                {visibleReviews.map((review) => (
                   <article key={review.id} className={`member-review-card${review.own ? ' is-own' : ''}`}>
                     <header>
                       <Avatar review={review} />
