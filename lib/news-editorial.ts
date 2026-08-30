@@ -2,18 +2,7 @@ import 'server-only';
 
 import { generateText, jsonSchema, Output } from 'ai';
 import { unstable_cache } from 'next/cache';
-import type { LocalNewsDetail } from './news';
-
-export type GeneratedNewsEditorial = {
-  kind: 'generated-coverage';
-  lead: string;
-  body: string[];
-  verifiedFacts: string[];
-  localContext?: string;
-  limitations?: string;
-  coverageLevel: 'comprehensive' | 'limited';
-  generatedAt: string;
-};
+import type { GeneratedNewsEditorial, LocalNewsDetail } from './news';
 
 type ModelEditorial = {
   lead: string;

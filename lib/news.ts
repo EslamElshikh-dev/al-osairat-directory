@@ -4,6 +4,17 @@ import { normalizeArabic } from './site';
 
 export type NewsTopic = 'خدمات وتنمية' | 'الصحة' | 'التعليم' | 'المجتمع' | 'أخبار وحوادث';
 
+export type GeneratedNewsEditorial = {
+  kind: 'generated-coverage';
+  lead: string;
+  body: string[];
+  verifiedFacts: string[];
+  localContext?: string;
+  limitations?: string;
+  coverageLevel: 'comprehensive' | 'limited';
+  generatedAt: string;
+};
+
 export type LocalNewsItem = {
   id: string;
   title: string;
@@ -26,6 +37,9 @@ export type LocalNewsItem = {
 export type LocalNewsDetail = LocalNewsItem & {
   sourceExcerpt?: string;
   sourceText?: string;
+  generatedEditorial?: GeneratedNewsEditorial;
+  editorialStatus?: 'pending' | 'ready' | 'insufficient' | 'failed';
+  persisted?: boolean;
 };
 
 export type LocalNewsFeed = {
@@ -34,6 +48,8 @@ export type LocalNewsFeed = {
   connectedSourceCount: number;
   totalSourceCount: number;
   checkedAt: string;
+  editorialReadyCount?: number;
+  storage?: 'database' | 'sources';
 };
 
 type FeedSource = {
@@ -484,7 +500,7 @@ function deduplicate(items: LocalNewsItem[]) {
   return unique;
 }
 
-export async function getLocalNews(limit = 36): Promise<LocalNewsFeed> {
+export async function collectLocalNewsFromSources(limit = 36): Promise<LocalNewsFeed> {
   const settled = await Promise.allSettled(newsSources.map((source) => fetchSource(source)));
   const liveItems = settled.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
   const merged = deduplicate([...liveItems, ...archivedNews])
@@ -497,7 +513,22 @@ export async function getLocalNews(limit = 36): Promise<LocalNewsFeed> {
     connectedSourceCount: settled.filter((result) => result.status === 'fulfilled').length,
     totalSourceCount: newsSources.length,
     checkedAt: new Date().toISOString(),
+    storage: 'sources',
   };
+}
+
+export async function getLocalNews(limit = 36): Promise<LocalNewsFeed> {
+  if (process.env.NEWS_DATABASE_ENABLED !== 'false') {
+    try {
+      const { getStoredLocalNews } = await import('./news-persistence');
+      const stored = await getStoredLocalNews(limit);
+      if (stored?.items.length) return stored;
+    } catch {
+      // The source collector remains the safe fallback before or during database setup.
+    }
+  }
+
+  return collectLocalNewsFromSources(limit);
 }
 
 export function newsItemPath(item: Pick<LocalNewsItem, 'id'> | string) {
@@ -514,7 +545,7 @@ function sourceForItem(item: LocalNewsItem) {
   }
 }
 
-async function fetchSourceDetail(item: LocalNewsItem) {
+export async function fetchSourceDetail(item: LocalNewsItem) {
   if (item.editorial?.body.length) return {};
   const source = sourceForItem(item);
   if (!source || !safeExternalUrl(item.url, source.allowedHosts)) {
@@ -548,6 +579,16 @@ async function fetchSourceDetail(item: LocalNewsItem) {
 
 const loadLocalNewsItem = async (id: string): Promise<LocalNewsDetail | undefined> => {
   if (!/^[a-z0-9-]{1,120}$/i.test(id)) return undefined;
+
+  if (process.env.NEWS_DATABASE_ENABLED !== 'false') {
+    try {
+      const { getStoredLocalNewsItem } = await import('./news-persistence');
+      const stored = await getStoredLocalNewsItem(id);
+      if (stored) return stored;
+    } catch {
+      // Fall through to the live/archive lookup while persistence is unavailable.
+    }
+  }
 
   let item = archivedNews.find((candidate) => candidate.id === id);
 

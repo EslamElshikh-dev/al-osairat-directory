@@ -79,7 +79,9 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
   const fullArticle = isFullNewsArticle(item);
   const excerpt = item.sourceExcerpt || item.summary;
-  const generatedEditorial = fullArticle ? undefined : await getGeneratedNewsEditorial(item);
+  const generatedEditorial = fullArticle
+    ? undefined
+    : item.generatedEditorial || (!item.persisted ? await getGeneratedNewsEditorial(item) : undefined);
   const heroSummary = generatedEditorial?.lead || excerpt;
   const pageUrl = `${siteConfig.url}${newsItemPath(item)}`;
   const related = feed.items
@@ -188,6 +190,14 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
                 </p>
               </div>
             </div>
+          ) : item.persisted && item.editorialStatus === 'pending' ? (
+            <div className={styles.disclosure} role="status">
+              <span aria-hidden="true">↻</span>
+              <div>
+                <strong>التغطية الكاملة قيد التجهيز في الخلفية</strong>
+                <p>حُفظ الخبر ومصدره، وسيظهر النص الكامل تلقائيًا بعد انتهاء التوليد والتدقيق دون إبطاء هذه الصفحة.</p>
+              </div>
+            </div>
           ) : !fullArticle ? (
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
@@ -293,7 +303,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <i aria-hidden="true" />
             <span>
               <strong>تحديث تلقائي</strong>
-              يعاد فحص القنوات كل 30 دقيقة، وتُنشأ التغطية مرة واحدة ثم تتجدد إذا تغيرت المادة المصدرية.
+              تفحص المهمة الخلفية القنوات كل 30 دقيقة، وتحفظ التغطية مسبقًا في قاعدة البيانات ثم تجددها إذا تغيرت المادة المصدرية.
             </span>
           </div>
         </aside>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '@/components/site-shell';
 import { NewsCard } from '@/components/news-card';
+import { NewsRefreshPulse } from '@/components/news-refresh-pulse';
 import { buildPageMetadata } from '@/lib/metadata';
 import { getLocalNews, newsSourceCatalog, type NewsTopic } from '@/lib/news';
 import { siteConfig } from '@/lib/site';
@@ -83,6 +84,7 @@ export default async function NewsPage() {
 
   return (
     <main id="main-content" className={styles.main}>
+      <NewsRefreshPulse />
       <section className={styles.hero}>
         <div className={styles.heroGlow} aria-hidden="true" />
         <div className={`shell ${styles.heroGrid}`}>
@@ -111,7 +113,7 @@ export default async function NewsPage() {
             <div className={styles.monitorMetrics}>
               <div><strong>{feed.items.length}</strong><span>تغطية متاحة</span></div>
               <div><strong>{feed.connectedSourceCount}/{feed.totalSourceCount}</strong><span>قنوات متصلة</span></div>
-              <div><strong>30</strong><span>دقيقة للتحديث</span></div>
+              <div><strong>30</strong><span>دقيقة للتحديث الخلفي</span></div>
             </div>
             <p>آخر فحص: <time dateTime={feed.checkedAt}>{dateTimeFormatter.format(new Date(feed.checkedAt))}</time></p>
           </aside>
