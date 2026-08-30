@@ -119,6 +119,19 @@ function CommunityIcon() {
   );
 }
 
+function WorshipIcon() {
+  return (
+    <>
+      <path d="M17 51V31h30v20" />
+      <path d="M22 31c1-8 5-13 10-13s9 5 10 13" />
+      <path d="M27 51V40c0-3 2-6 5-6s5 3 5 6v11" />
+      <path d="M14 51h36" className="category-visual__accent category-visual__bold" />
+      <path d="M32 18v-5" />
+      <circle cx="32" cy="11" r="2" className="category-visual__accent-fill" />
+    </>
+  );
+}
+
 function TransportIcon() {
   return (
     <>
@@ -155,6 +168,7 @@ function IconForCategory({ category }: { category: DirectoryCategory }) {
     case 'clerics': return <ClericsIcon />;
     case 'government': return <GovernmentIcon />;
     case 'community': return <CommunityIcon />;
+    case 'worship': return <WorshipIcon />;
     case 'transport': return <TransportIcon />;
     case 'emergency': return <EmergencyIcon />;
   }
