@@ -2,15 +2,18 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getListingsByVillage, villages } from '@/lib/data';
 import { BrandMark } from '@/components/site-shell';
+import { buildPageMetadata } from '@/lib/metadata';
+import { isFallbackScope } from '@/lib/seo-growth';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'قرى مركز العسيرات وتوابعها',
   description: 'استكشف القرى الأساسية والتوابع والخدمات المسجلة في نطاق مركز العسيرات بمحافظة سوهاج.',
-  alternates: { canonical: '/villages' },
-};
+  path: '/villages',
+  imageAlt: 'قرى مركز العسيرات وتوابعها',
+});
 
 export default function VillagesPage() {
-  const mainVillages = villages.filter((village) => village.name !== 'مركز العسيرات');
+  const mainVillages = villages.filter((village) => !isFallbackScope(village.name));
   const totalListings = mainVillages.reduce((sum, village) => sum + getListingsByVillage(village.name).length, 0);
   const totalLocalities = mainVillages.reduce((sum, village) => sum + village.localities.length, 0);
 
