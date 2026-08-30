@@ -5,7 +5,7 @@ import { DirectoryExplorer } from '@/components/directory-explorer';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { categories, categoryById, listings, villages, type DirectoryCategory } from '@/lib/data';
-import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
+import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
 import { queryCanonicalDirectory } from '@/lib/directory-repository';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { buildPageMetadata } from '@/lib/metadata';
@@ -18,6 +18,7 @@ import {
   villageCategoryLandingPath,
 } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
+import { getShopSpecialtyFacets } from '@/lib/shop-specialty-facets';
 import {
   filterTransportListings,
   normalizeTransportDestinationFilter,
@@ -119,7 +120,9 @@ export default async function CategoryPage({
   const title = profile?.title || `${info.label} في العسيرات`;
   const description = profile?.description || info.description;
   const headingBase = profile?.heading.replace(/\s+في العسيرات$/, '') || info.label;
-  const topSpecialties = getTopSubCategories(categoryListings, 8);
+  const topSpecialties = info.id === 'shops'
+    ? getShopSpecialtyFacets(categoryListings, 12)
+    : getTopSubCategories(categoryListings, 8).map((item) => ({ ...item, query: item.label }));
   const specialistIntents = getEligibleServiceIntents(allListings).filter(({ intent }) => intent.category === info.id);
   const villageLinks = villages
     .filter((village) => !isFallbackScope(village.name))
@@ -191,9 +194,18 @@ export default async function CategoryPage({
             <p>{profile.editorial}</p>
           </div>
           {topSpecialties.length > 0 && (
-            <div className="seo-growth-hub__links" aria-label={`أبرز تخصصات ${info.shortLabel}`}>
-              {topSpecialties.map((item) => <span key={item.label} className="button button--ghost">{item.label} · {item.count.toLocaleString('ar-EG')}</span>)}
-            </div>
+            <nav className="seo-growth-hub__links" aria-label={`أبرز تخصصات ${info.shortLabel}`}>
+              {topSpecialties.map((item) => (
+                <Link
+                  key={item.label}
+                  href={`${createDirectoryHref(pathname, { query: item.query, village: query.village })}#directory-results`}
+                  className="button button--ghost"
+                  aria-label={`عرض ${item.label} في ${info.shortLabel}`}
+                >
+                  {item.label} · {item.count.toLocaleString('ar-EG')}
+                </Link>
+              ))}
+            </nav>
           )}
         </section>
       )}
