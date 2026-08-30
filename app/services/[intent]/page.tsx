@@ -20,7 +20,9 @@ import { buildCollectionStructuredData, isFallbackScope } from '@/lib/seo-growth
 
 type ServiceSearchParams = { page?: string };
 
-export const dynamicParams = false;
+// A service intent may become eligible from newly published database records.
+// Runtime eligibility prevents stale static params from turning a valid URL into 404.
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return getEligibleServiceIntents(listings).map(({ intent }) => ({ intent: intent.id }));
@@ -49,6 +51,8 @@ export async function generateMetadata({
   const matched = getServiceIntentListings(allListings, intent);
   const eligible = isProgrammaticCollectionEligible(matched);
   const page = Math.max(1, Number(query.page || 1) || 1);
+  const totalPages = Math.max(1, Math.ceil(matched.length / DIRECTORY_PAGE_SIZE));
+  if (page > totalPages) notFound();
   const pathname = `/services/${intent.id}`;
 
   return buildPageMetadata({
@@ -80,6 +84,7 @@ export default async function ServiceIntentPage({
   const stats = getProgrammaticCollectionStats(matched);
   const requestedPage = Math.max(1, Number(query.page || 1) || 1);
   const totalPages = Math.max(1, Math.ceil(matched.length / DIRECTORY_PAGE_SIZE));
+  if (requestedPage > totalPages) notFound();
   const page = Math.min(requestedPage, totalPages);
   const start = (page - 1) * DIRECTORY_PAGE_SIZE;
   const pageItems = matched.slice(start, start + DIRECTORY_PAGE_SIZE);

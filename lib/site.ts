@@ -75,6 +75,13 @@ export function sourceLabel(listing: DirectoryListing) {
   return 'بيانات الدليل المحلي';
 }
 
+export function verificationStatusLabel(listing: DirectoryListing) {
+  if (listing.sourceStatus === 'google_verified') return 'مرجع خارجي مباشر';
+  if (listing.sourceStatus === 'cross_checked') return 'مراجعة داخلية متعددة';
+  if (listing.sourceStatus === 'needs_review') return 'يحتاج إلى تحديث';
+  return 'مصدر واحد';
+}
+
 export function sourceDescription(listing: DirectoryListing) {
   if (listing.sourceStatus === 'google_verified') return 'السجل مرتبط بمرجع منشور على خرائط Google. يُفضّل التأكد من المواعيد ووسائل التواصل قبل الزيارة.';
   if (listing.sourceStatus === 'cross_checked') return 'تمت مراجعة هذا السجل ضمن مسار النشر الداخلي للدليل، ولا يعني ذلك توثيقًا أو اعتمادًا من Google.';

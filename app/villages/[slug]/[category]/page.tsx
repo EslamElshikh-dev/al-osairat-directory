@@ -25,7 +25,10 @@ import type { DirectoryCategory } from '@/lib/types';
 
 type LocalSearchParams = { page?: string };
 
-export const dynamicParams = false;
+// Published database records can make a new local landing eligible after build.
+// Keep runtime validation as the source of truth instead of freezing eligibility
+// to the static dataset used by generateStaticParams.
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return getEligibleVillageCategoryLandings(listings).map(({ village, category }) => ({
@@ -62,6 +65,8 @@ export async function generateMetadata({
   const eligible = isVillageCategoryLandingEligible(allListings, resolved.village.name, resolved.category.id);
   const localListings = getVillageCategoryListings(allListings, resolved.village.name, resolved.category.id);
   const page = Math.max(1, Number(query.page || 1) || 1);
+  const totalPages = Math.max(1, Math.ceil(localListings.length / DIRECTORY_PAGE_SIZE));
+  if (page > totalPages) notFound();
   const label = localQueryLabel(resolved.category.id, resolved.village.name, resolved.category.shortLabel);
   const pathname = villageCategoryLandingPath(resolved.village, resolved.category);
   const purePagination = eligible && page > 1;
@@ -77,8 +82,8 @@ export async function generateMetadata({
   return buildPageMetadata({
     title,
     description,
-    path: purePagination ? `${pathname}?page=${page}` : pathname,
-    noIndex: !eligible,
+    path: pathname,
+    noIndex: !eligible || page > 1,
     imageAlt: `${label} في دليل العسيرات`,
   });
 }
@@ -105,6 +110,7 @@ export default async function VillageCategoryPage({
   const topSpecialties = getTopSubCategories(localListings, 8);
   const requestedPage = Math.max(1, Number(query.page || 1) || 1);
   const totalPages = Math.max(1, Math.ceil(localListings.length / DIRECTORY_PAGE_SIZE));
+  if (requestedPage > totalPages) notFound();
   const page = Math.min(requestedPage, totalPages);
   const start = (page - 1) * DIRECTORY_PAGE_SIZE;
   const pageItems = localListings.slice(start, start + DIRECTORY_PAGE_SIZE);

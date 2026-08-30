@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
+import { mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
+import { isVillageCategoryLandingEligible, villageCategoryLandingPath, villageForListing } from '@/lib/programmatic-seo';
 import { isFallbackScope, isListingIndexable, villagePathByName } from '@/lib/seo-growth';
-import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, whatsappHref } from '@/lib/site';
+import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, verificationStatusLabel, whatsappHref } from '@/lib/site';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
 import { ListingReport } from '@/components/listing-report';
@@ -85,6 +87,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const maps = googleMapsHref(listing);
   const lastUpdated = formatListingDate(listing.lastUpdatedAt);
   const dataSourceLabel = sourceLabel(listing);
+  const verificationLabel = verificationStatusLabel(listing);
   const fallbackScope = isFallbackScope(listing.village);
   const villagePath = villagePathByName(listing.village);
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
@@ -93,9 +96,15 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
     getPublishedListings({ category: listing.category, village: listing.village }),
     applyListingOverrides(listings),
   ]);
-  const nearby = [...overriddenStatic, ...publishedNearby]
+  const comparableListings = mergeDirectoryListings(overriddenStatic, publishedNearby);
+  const nearby = comparableListings
     .filter((item) => item.id !== listing.id && item.category === listing.category && item.village === listing.village)
     .slice(0, 3);
+  const listingVillage = villageForListing(listing);
+  const localLandingPath = listingVillage
+    && isVillageCategoryLandingEligible(comparableListings, listing.village, listing.category)
+    ? villageCategoryLandingPath(listingVillage, listing.category)
+    : '';
 
   const entity = {
     '@type': schemaTypeFor(listing),
@@ -183,6 +192,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <div className="detail-hero__summary-list">
               <span><small>القسم</small><b>{category.shortLabel}</b></span>
               <span><small>النطاق</small><b>{listing.village}</b></span>
+              <span><small>حالة التحقق</small><b>{verificationLabel}</b></span>
               {lastUpdated && <span><small>آخر تحديث</small><b>{lastUpdated}</b></span>}
             </div>
           </aside>
@@ -212,6 +222,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
               <span className="source-panel__icon" aria-hidden="true">✓</span>
               <div><span>حالة ومصدر البيانات</span><strong>{dataSourceLabel}</strong></div>
             </div>
+            <p><b>حالة التحقق:</b> {verificationLabel}</p>
             {lastUpdated && <p><b>آخر تحديث موثق داخل الدليل:</b> {lastUpdated}</p>}
             <p>{sourceDescription(listing)}</p>
             <div className="detail-actions detail-actions--management">
@@ -233,6 +244,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
           </div>
           <nav className="seo-context-links" aria-label="روابط مرتبطة بالنشاط">
+            {localLandingPath && <Link href={localLandingPath}>{category.shortLabel} في {listing.village}</Link>}
             {villagePath && <Link href={villagePath}>دليل {listing.village}</Link>}
             <Link href={`/directory/${listing.category}`}>كل {category.shortLabel} في العسيرات</Link>
             <Link href="/directory">استكشف الدليل الكامل</Link>

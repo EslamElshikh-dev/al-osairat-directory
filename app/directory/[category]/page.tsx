@@ -57,6 +57,23 @@ export async function generateMetadata({
   const transportFilterActive = info.id === 'transport' && (vehicleFilter !== 'all' || destinationFilter !== 'all');
   const hasFilters = hasDirectoryFilters || transportFilterActive;
   const purePagination = !hasFilters && page > 1;
+  if (page > 1) {
+    const [publishedListings, baseListings] = await Promise.all([
+      getPublishedListings({ category: info.id }),
+      applyListingOverrides(listings),
+    ]);
+    const allListings = mergeDirectoryListings(baseListings, publishedListings);
+    const searchableListings = transportFilterActive
+      ? filterTransportListings(allListings, { vehicle: vehicleFilter, destination: destinationFilter })
+      : allListings;
+    const paginationResult = queryDirectoryListings(searchableListings, {
+      category: info.id,
+      query: query.q,
+      village: query.village,
+      page,
+    });
+    if (page > paginationResult.totalPages) notFound();
+  }
   const profile = categorySearchProfiles[info.id];
   const baseTitle = profile?.title || `${info.label} في العسيرات`;
   const baseDescription = profile?.description || info.description;
@@ -71,8 +88,8 @@ export async function generateMetadata({
   return buildPageMetadata({
     title,
     description,
-    path: purePagination ? `${pathname}?page=${page}` : pathname,
-    noIndex: hasFilters,
+    path: pathname,
+    noIndex: hasFilters || page > 1,
     imageAlt: `${info.shortLabel} في دليل العسيرات`,
   });
 }
@@ -114,6 +131,8 @@ export default async function CategoryPage({
     ? filterTransportListings(allListings, { vehicle: vehicleFilter, destination: destinationFilter })
     : allListings;
   const result = canonicalResult || queryDirectoryListings(searchableListings, queryOptions);
+  const requestedPage = Math.max(1, Number(query.page || 1) || 1);
+  if (requestedPage > result.totalPages) notFound();
   const pathname = `/directory/${info.id}`;
   const categoryListings = allListings.filter((item) => item.category === info.id);
   const profile = categorySearchProfiles[info.id];

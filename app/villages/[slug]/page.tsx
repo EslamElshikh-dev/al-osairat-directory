@@ -9,11 +9,19 @@ import { getPublishedListings } from '@/lib/published-listings';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
-import { isVillageCategoryLandingEligible, villageCategoryLandingPath } from '@/lib/programmatic-seo';
+import { isVillageCategoryLandingEligible, isVillageHubIndexable, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
 type VillageSearchParams = { page?: string };
+
+async function loadVillageCatalog(villageName: string) {
+  const [publishedListings, overriddenListings] = await Promise.all([
+    getPublishedListings({ village: villageName }),
+    applyListingOverrides(listings),
+  ]);
+  return mergeDirectoryListings(overriddenListings, publishedListings);
+}
 
 export function generateStaticParams() {
   return villages.map((village) => ({ slug: village.slug }));
@@ -30,8 +38,18 @@ export async function generateMetadata({
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) return {};
 
+  const allListings = await loadVillageCatalog(village.name);
   const page = Math.max(1, Number(query.page || 1) || 1);
   const fallbackScope = isFallbackScope(village.name);
+  const hubIndexable = isVillageHubIndexable(allListings, village.name);
+  if (page > 1) {
+    const paginationResult = queryDirectoryListings(allListings, {
+      village: village.name,
+      page,
+      excludeEmergency: true,
+    });
+    if (page > paginationResult.totalPages) notFound();
+  }
   const purePagination = !fallbackScope && page > 1;
   const baseTitle = fallbackScope
     ? 'سجلات غير محددة القرية داخل مركز العسيرات'
@@ -50,8 +68,8 @@ export async function generateMetadata({
   return buildPageMetadata({
     title,
     description,
-    path: purePagination ? `${pathname}?page=${page}` : pathname,
-    noIndex: fallbackScope,
+    path: pathname,
+    noIndex: fallbackScope || !hubIndexable || page > 1,
     imageAlt: fallbackScope ? 'سجلات النطاق العام في مركز العسيرات' : `دليل ${village.name} في العسيرات`,
   });
 }
@@ -73,12 +91,7 @@ export default async function VillagePage({
 
   const fallbackScope = isFallbackScope(village.name);
 
-  const [publishedListings, overriddenListings] = await Promise.all([
-    getPublishedListings({ village: village.name }),
-    applyListingOverrides(listings),
-  ]);
-
-  const allListings = mergeDirectoryListings(overriddenListings, publishedListings);
+  const allListings = await loadVillageCatalog(village.name);
   const villageListings = allListings.filter((item) => item.village === village.name && item.category !== 'emergency');
   const categorySummary = categories
     .map((category) => ({
@@ -94,6 +107,8 @@ export default async function VillagePage({
     page: Number(query.page || 1),
     excludeEmergency: true,
   });
+  const requestedPage = Math.max(1, Number(query.page || 1) || 1);
+  if (requestedPage > result.totalPages) notFound();
   const pathname = `/villages/${village.slug}`;
   const canonicalUrl = `${siteConfig.url}${pathname}`;
   const listId = `${canonicalUrl}#item-list`;

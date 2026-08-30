@@ -4,7 +4,7 @@ import { blogArticles } from '@/lib/blog';
 import { mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
-import { getEligibleServiceIntents, getEligibleVillageCategoryLandings, villageCategoryLandingPath } from '@/lib/programmatic-seo';
+import { getEligibleServiceIntents, getEligibleVillageCategoryLandings, isVillageHubIndexable, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isListingIndexable, listingSitemapPriority } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
 
@@ -27,10 +27,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticDetailListings = baseListings.filter((listing) => listing.category !== 'emergency' && isListingIndexable(listing));
   const eligibleServiceIntents = getEligibleServiceIntents(allListings);
   const eligibleLocalLandings = getEligibleVillageCategoryLandings(allListings);
+  const directoryLastModified = latestListingUpdate(allListings);
 
   const staticPages: SitemapEntry[] = [
-    { url: absoluteUrl(), changeFrequency: 'weekly', priority: 1 },
-    { url: absoluteUrl('/directory'), changeFrequency: 'weekly', priority: 0.95 },
+    { url: absoluteUrl(), ...(directoryLastModified ? { lastModified: directoryLastModified } : {}), changeFrequency: 'weekly', priority: 1 },
+    { url: absoluteUrl('/directory'), ...(directoryLastModified ? { lastModified: directoryLastModified } : {}), changeFrequency: 'weekly', priority: 0.95 },
     { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/villages'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/services'), changeFrequency: 'weekly', priority: 0.84 },
@@ -39,19 +40,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categoryPages: SitemapEntry[] = categories
     .filter((category) => category.id !== 'emergency')
-    .map((category) => ({
-      url: absoluteUrl(`/directory/${category.id}`),
-      changeFrequency: 'weekly',
-      priority: category.id === 'doctors' || category.id === 'pharmacies' ? 0.9 : 0.85,
-    }));
+    .flatMap((category) => {
+      const matched = allListings.filter((listing) => listing.category === category.id && listing.sourceStatus !== 'needs_review');
+      if (!matched.length) return [];
+      const lastModified = latestListingUpdate(matched);
+      return [{
+        url: absoluteUrl(`/directory/${category.id}`),
+        ...(lastModified ? { lastModified } : {}),
+        changeFrequency: 'weekly' as const,
+        priority: category.id === 'doctors' || category.id === 'pharmacies' ? 0.9 : 0.85,
+      }];
+    });
 
   const villagePages: SitemapEntry[] = villages
-    .filter((village) => village.name !== 'مركز العسيرات')
-    .map((village) => ({
-      url: absoluteUrl(`/villages/${encodedSegment(village.slug)}`),
-      changeFrequency: 'weekly',
-      priority: 0.85,
-    }));
+    .filter((village) => isVillageHubIndexable(allListings, village.name))
+    .map((village) => {
+      const matched = allListings.filter((listing) => listing.village === village.name && listing.category !== 'emergency');
+      const lastModified = latestListingUpdate(matched);
+      return {
+        url: absoluteUrl(`/villages/${encodedSegment(village.slug)}`),
+        ...(lastModified ? { lastModified } : {}),
+        changeFrequency: 'weekly',
+        priority: 0.85,
+      };
+    });
 
   const servicePages: SitemapEntry[] = eligibleServiceIntents.map(({ intent, listings: matched }) => ({
     url: absoluteUrl(`/services/${intent.id}`),

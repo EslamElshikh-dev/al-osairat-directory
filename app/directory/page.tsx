@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { BrandMark } from '@/components/site-shell';
 import { categories, listings, villages } from '@/lib/data';
@@ -27,6 +28,17 @@ export async function generateMetadata({
   const village = String(query.village || '').trim();
   const hasFilters = Boolean(searchQuery || (village && village !== 'all'));
   const purePagination = !hasFilters && page > 1;
+  if (page > 1) {
+    const [publishedListings, baseListings] = await Promise.all([
+      getPublishedListings(),
+      applyListingOverrides(listings),
+    ]);
+    const paginationResult = queryDirectoryListings(
+      mergeDirectoryListings(baseListings, publishedListings),
+      { query: query.q, village: query.village, page },
+    );
+    if (page > paginationResult.totalPages) notFound();
+  }
   const title = purePagination
     ? `${directoryTitle} - الصفحة ${page.toLocaleString('ar-EG')}`
     : directoryTitle;
@@ -37,8 +49,8 @@ export async function generateMetadata({
   return buildPageMetadata({
     title,
     description,
-    path: purePagination ? `/directory?page=${page}` : '/directory',
-    noIndex: hasFilters,
+    path: '/directory',
+    noIndex: hasFilters || page > 1,
     imageAlt: 'الدليل الشامل لخدمات وأنشطة العسيرات',
   });
 }
@@ -66,6 +78,8 @@ export default async function DirectoryPage({
 
   const allListings = mergeDirectoryListings(baseListings, publishedListings);
   const result = canonicalResult || queryDirectoryListings(allListings, queryOptions);
+  const requestedPage = Math.max(1, Number(params.page || 1) || 1);
+  if (requestedPage > result.totalPages) notFound();
   const coreVillages = villages.filter((item) => !isFallbackScope(item.name));
   const serviceIntents = getEligibleServiceIntents(allListings);
   const collectionSchema = buildCollectionStructuredData({

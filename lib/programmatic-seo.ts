@@ -1,7 +1,7 @@
 import type { CategoryInfo, DirectoryCategory, DirectoryListing, VillageInfo } from '@/lib/types';
 import { categories, villages } from '@/lib/data/base';
 import { normalizeDirectoryText } from '@/lib/directory-query';
-import { listingDataQualityScore } from '@/lib/seo-growth';
+import { isListingIndexable, listingDataQualityScore } from '@/lib/seo-growth';
 
 export type ServiceIntentId = 'electrician' | 'plumber' | 'libraries';
 
@@ -162,11 +162,24 @@ function contactableCount(listings: DirectoryListing[]) {
   return listings.filter((listing) => Boolean(listing.phone || listing.whatsapp || listing.googleMapsUrl || listing.googlePlaceId)).length;
 }
 
+function indexableCount(listings: DirectoryListing[]) {
+  return listings.filter(isListingIndexable).length;
+}
+
 export function isProgrammaticCollectionEligible(listings: DirectoryListing[], minListings = PROGRAMMATIC_MIN_LISTINGS) {
   const stable = stableListings(listings);
   if (stable.length < minListings) return false;
   if (averageQuality(stable) < PROGRAMMATIC_MIN_AVERAGE_QUALITY) return false;
-  return contactableCount(stable) >= Math.min(2, stable.length);
+  const minimumUsefulRecords = Math.min(2, stable.length);
+  return contactableCount(stable) >= minimumUsefulRecords
+    && indexableCount(stable) >= minimumUsefulRecords;
+}
+
+export function isVillageHubIndexable(allListings: DirectoryListing[], villageName: string) {
+  if (villageName === 'مركز العسيرات') return false;
+  return stableListings(
+    allListings.filter((listing) => listing.village === villageName && listing.category !== 'emergency'),
+  ).some(isListingIndexable);
 }
 
 export function getServiceIntentById(id: string) {
@@ -251,6 +264,7 @@ export function getProgrammaticCollectionStats(listings: DirectoryListing[]) {
     total: stable.length,
     averageQuality: averageQuality(stable),
     contactable: contactableCount(stable),
+    indexable: indexableCount(stable),
     withMaps: stable.filter((listing) => Boolean(listing.googleMapsUrl || listing.googlePlaceId)).length,
     villages: new Set(stable.map((listing) => listing.village)).size,
   };
