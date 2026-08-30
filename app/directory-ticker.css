@@ -43,6 +43,9 @@
   min-width: 0;
   overflow: hidden;
   padding: 4px 0;
+  direction: ltr;
+  isolation: isolate;
+  contain: paint;
   mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
 }
@@ -69,25 +72,32 @@
 }
 
 .category-ticker__track {
-  width: max-content;
+  position: relative;
+  left: 0;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  width: max-content;
+  min-width: max-content;
+  max-width: none;
   gap: 0;
   direction: ltr;
-  transform: translateX(-50%);
-  animation: category-ticker-flow 24s linear infinite;
-  animation-delay: -3s;
+  transform: translate3d(-50%, 0, 0);
+  animation: category-ticker-flow 32s linear -6s infinite both;
+  backface-visibility: hidden;
   will-change: transform;
 }
 
-.category-ticker:hover .category-ticker__track,
-.category-ticker:focus-within .category-ticker__track {
+.category-ticker:focus-within .category-ticker__track,
+.category-ticker:has(.category-ticker__item:hover) .category-ticker__track {
   animation-play-state: paused;
 }
 
 .category-ticker__group {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
+  min-width: max-content;
   gap: 8px;
   padding-inline: 4px;
 }
@@ -95,6 +105,7 @@
 .category-ticker__item {
   direction: rtl;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 7px;
   min-height: 38px;
@@ -151,8 +162,8 @@
 }
 
 @keyframes category-ticker-flow {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @media (max-width: 900px) {
@@ -187,7 +198,7 @@
   }
 
   .category-ticker__track {
-    animation-duration: 22s;
+    animation-duration: 28s;
   }
 
   .results-bar--ticker .results-bar__context {
@@ -205,6 +216,7 @@
 @media (prefers-reduced-motion: reduce) {
   .category-ticker {
     overflow-x: auto;
+    direction: rtl;
     mask-image: none;
     -webkit-mask-image: none;
   }
