@@ -94,10 +94,8 @@ export const categories: CategoryInfo[] = [
   },
 ] as CategoryInfo[];
 
-// Administrative locality names are based on Sohag Governorate's published
-// administrative-division tables. Display spelling is normalized for Arabic
-// readability. The newer National Election Authority spelling "القلاعية" is
-// used for جزيرة أولاد حمزة instead of the older governorate spelling.
+// Locality lists are based on the reviewed administrative data, with display
+// spellings corrected where locally confirmed for the directory.
 export const villages: VillageInfo[] = [
   {
     name: 'أولاد حمزة',
@@ -131,12 +129,12 @@ export const villages: VillageInfo[] = [
     description: 'قرية أساسية في نطاق العسيرات وتضم تجمعات ونجوعًا متعددة.',
     localities: [
       'محمدين',
-      'صيرة',
+      'صبرة',
       'موسى حمد',
-      'الجنينة',
+      'الجواليس',
       'الطوط',
-      'القلاعية',
-      'العصمية',
+      'القلعاية',
+      'العضمية',
       'الباقور',
     ],
   },
