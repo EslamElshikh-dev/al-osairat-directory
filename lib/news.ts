@@ -359,7 +359,7 @@ function isUsefulArticleParagraph(value: string) {
 
 function parseArticleParagraphFallback(html: string) {
   const markers = [
-    /<(?:article|div|section)\b[^>]*(?:class|id)=["'][^"']*(?:article[-_ ]?(?:body|content|text)|story[-_ ]?content|entry[-_ ]?content|news[-_ ]?(?:body|content|details)|articlecont|bodycontent)[^"']*["'][^>]*>/i,
+    /<(?:article|div|section)\b[^>]*(?:class|id)=["'][^"']*(?:article[-_ ]?(?:body|content|text|details)|story[-_ ]?content|entry[-_ ]?content|news[-_ ]?(?:body|content|details)|articlecont|bodycontent)[^"']*["'][^>]*>/i,
     /<article\b[^>]*>/i,
   ];
   const marker = markers.map((pattern) => pattern.exec(html)).find(Boolean);

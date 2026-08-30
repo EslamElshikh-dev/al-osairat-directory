@@ -226,13 +226,13 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               <ul>
                 {generatedEditorial.verifiedFacts.map((fact, index) => <li key={index}>{fact}</li>)}
               </ul>
-              {generatedEditorial.localContext ? (
+              {generatedEditorial.localContext && generatedEditorial.localContext.length >= 60 ? (
                 <div className={styles.localContext}>
                   <strong>ماذا يعني الخبر للعسيرات؟</strong>
                   <p>{generatedEditorial.localContext}</p>
                 </div>
               ) : null}
-              {generatedEditorial.limitations ? (
+              {generatedEditorial.coverageLevel === 'limited' && generatedEditorial.limitations ? (
                 <p className={styles.limitations}><strong>حدود المعلومات:</strong> {generatedEditorial.limitations}</p>
               ) : null}
             </section>
