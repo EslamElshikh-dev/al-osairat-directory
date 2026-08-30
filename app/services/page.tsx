@@ -4,6 +4,7 @@ import { BrandMark } from '@/components/site-shell';
 import { listings } from '@/lib/data';
 import { mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
 import { getEligibleServiceIntents, getProgrammaticCollectionStats } from '@/lib/programmatic-seo';
 import { siteConfig } from '@/lib/site';
@@ -11,16 +12,12 @@ import { siteConfig } from '@/lib/site';
 const pageTitle = 'خدمات العسيرات حسب التخصص';
 const pageDescription = 'صفحات متخصصة للخدمات التي لديها بيانات كافية وطلب بحث واضح داخل دليل العسيرات، بدون إنشاء صفحات ضعيفة أو مكررة.';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: pageTitle,
   description: pageDescription,
-  alternates: { canonical: '/services' },
-  openGraph: {
-    title: pageTitle,
-    description: pageDescription,
-    url: `${siteConfig.url}/services`,
-  },
-};
+  path: '/services',
+  imageAlt: 'خدمات العسيرات حسب التخصص',
+});
 
 export const dynamic = 'force-dynamic';
 
