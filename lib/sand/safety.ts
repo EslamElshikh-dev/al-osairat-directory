@@ -55,6 +55,29 @@ const greetingSignals = [
   'مين انت',
 ];
 
+const developerSignals = [
+  'مين صمم الموقع',
+  'من صمم الموقع',
+  'مين طور الموقع',
+  'من طور الموقع',
+  'مين عمل الموقع',
+  'من عمل الموقع',
+  'مين صمم الدليل',
+  'من صمم الدليل',
+  'مين صمم دليل العسيرات',
+  'من صمم دليل العسيرات',
+  'مين طور الدليل',
+  'من طور الدليل',
+  'مين طور دليل العسيرات',
+  'من طور دليل العسيرات',
+  'مطور الموقع',
+  'مصمم الموقع',
+  'مطور الدليل',
+  'مصمم الدليل',
+  'المهندس اسلام الشيخ',
+  'من هو اسلام الشيخ',
+];
+
 const politicalSignals = [
   'سياسه',
   'سياسي',
@@ -137,6 +160,7 @@ export type SandMessageClassification = {
   promptInjection: boolean;
   emergency: boolean;
   greeting: boolean;
+  developer: boolean;
   political: boolean;
   medicalAdvice: boolean;
 };
@@ -148,6 +172,7 @@ export function classifySandMessage(value: string): SandMessageClassification {
     promptInjection: includesSignal(normalized, injectionSignals),
     emergency: includesSignal(normalized, emergencySignals),
     greeting: normalized.length <= 40 && includesSignal(normalized, greetingSignals),
+    developer: includesSignal(normalized, developerSignals),
     political: includesSignal(normalized, politicalSignals),
     medicalAdvice: includesSignal(normalized, medicalAdviceSignals),
   };

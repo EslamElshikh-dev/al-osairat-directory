@@ -22,10 +22,17 @@ type ChatEntry = {
 const welcome: ChatEntry = {
   id: 'sand-welcome',
   role: 'assistant',
-  text: 'أهلًا يا طيب، أنا سَند؛ مساعد آلي لدليل العسيرات. قولّي بتدور على خدمة إيه وفي أي قرية؟',
+  text: 'أهلًا يا طيب، أنا سَند؛ مساعدك الآلي في دليل العسيرات. أقدر أدلّك على طبيب، صيدلية، محل، حِرفي، مواصلات أو رقم طوارئ. قولّي الخدمة واسم القرية وأنا حاضر.',
 };
 
-const starterSuggestions = ['دكتور في أولاد حمزة', 'صيدلية قريبة', 'مواصلات العسيرات'];
+const starterSuggestions = [
+  'دكتور في أولاد حمزة',
+  'صيدلية قريبة',
+  'محامي في العسيرات',
+  'مواصلات العسيرات',
+  'أرقام الطوارئ',
+  'مين صمم الموقع؟',
+];
 
 function SandAvatar({ variant }: { variant: 'header' | 'trigger' }) {
   return (
@@ -91,7 +98,10 @@ export function SandAssistant() {
     () => [...messages].reverse().find((message) => message.payload)?.payload,
     [messages],
   );
-  const suggestions = latestPayload?.suggestions?.length ? latestPayload.suggestions : starterSuggestions;
+  const suggestions = useMemo(
+    () => [...new Set([...(latestPayload?.suggestions || []), ...starterSuggestions])].slice(0, 6),
+    [latestPayload],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -161,12 +171,12 @@ export function SandAssistant() {
   return (
     <div className={`sand-assistant${open ? ' is-open' : ''}`}>
       {open ? (
-        <section className="sand-panel" role="dialog" aria-modal="false" aria-labelledby="sand-title">
+        <section id="sand-panel" className="sand-panel" role="dialog" aria-modal="false" aria-labelledby="sand-title">
           <header className="sand-panel__header">
             <SandAvatar variant="header" />
             <div className="sand-panel__identity">
               <strong id="sand-title">سَند</strong>
-              <small><i /> مساعد دليل العسيرات الآلي</small>
+              <small><i /> مساعدك المحلي من بيانات الدليل</small>
             </div>
             <button type="button" onClick={() => setOpen(false)} aria-label="تصغير سَند">×</button>
           </header>
@@ -205,11 +215,14 @@ export function SandAssistant() {
           </div>
 
           <div className="sand-suggestions" aria-label="اقتراحات سريعة">
-            {suggestions.slice(0, 3).map((suggestion) => (
-              <button key={suggestion} type="button" disabled={loading} onClick={() => void send(suggestion)}>
-                {suggestion}
-              </button>
-            ))}
+            <span className="sand-suggestions__label">جرّب تسأل عن</span>
+            <div className="sand-suggestions__list">
+              {suggestions.map((suggestion) => (
+                <button key={suggestion} type="button" disabled={loading} onClick={() => void send(suggestion)}>
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
 
           <form className="sand-composer" onSubmit={submit}>
@@ -235,16 +248,20 @@ export function SandAssistant() {
         </section>
       ) : null}
 
-      <button
-        type="button"
-        className="sand-trigger"
-        aria-label={open ? 'إغلاق مساعد سَند' : 'افتح مساعد سَند'}
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <SandAvatar variant="trigger" />
-        <span className="sand-trigger__copy"><strong>اسأل سَند</strong><small>دليلك الودود في العسيرات</small></span>
-      </button>
+      {!open ? (
+        <button
+          type="button"
+          className="sand-trigger"
+          aria-label="افتح مساعد سَند"
+          aria-controls="sand-panel"
+          aria-haspopup="dialog"
+          aria-expanded={false}
+          onClick={() => setOpen(true)}
+        >
+          <span className="sand-invite" aria-hidden="true">هلا أباشا أومرني</span>
+          <SandAvatar variant="trigger" />
+        </button>
+      ) : null}
     </div>
   );
 }

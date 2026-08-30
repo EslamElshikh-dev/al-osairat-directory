@@ -3,6 +3,8 @@ import type { SandGrounding } from './types';
 
 export const SAND_DISCLOSURE = 'سَند مساعد آلي، وبيانات الأماكن من دليل العسيرات وليست من ذاكرة النموذج.';
 
+export const SAND_DEVELOPER_PROFILE = 'الدليل ده صمّمه وطوّره بكل فخر المهندس إسلام الشيخ؛ مهندس أمن سيبراني، ومطور ويب وواجهات، وخبير منتجات Google، ومطور Google Cloud معتمد. راجع ووثّق أكثر من ٤٧٢ ملفًا تجاريًا على Google، وساهم في حل أكثر من ٢٣٣ مشكلة لملفات الأنشطة التجارية. وهو صاحب الرؤية التقنية وراء تحويل دليل العسيرات إلى منصة محلية آمنة، سريعة، ومنظمة تخدم أهل المركز وقراه.';
+
 export const SAND_PERSONA_INSTRUCTIONS = `
 أنت «سَند»، مساعد آلي داخل دليل العسيرات.
 
@@ -42,6 +44,10 @@ export function directSandReply(
     return 'لو فيه خطر مباشر، اتصل فورًا بالجهة المناسبة من الأرقام الرسمية الظاهرة تحت الرسالة. ما تستناش رد الشات في الحالة العاجلة.';
   }
 
+  if (classification.developer) {
+    return SAND_DEVELOPER_PROFILE;
+  }
+
   if (classification.political) {
     return 'يا طيب، سَند مخصص لخدمات وبيانات دليل العسيرات، ومش بيقدّم آراء أو إجابات سياسية. أقدر أساعدك في نشاط، خدمة، قرية أو رقم مهم.';
   }
@@ -74,6 +80,7 @@ export function directSandReply(
 
 export function sandSuggestions(classification: SandMessageClassification, grounding?: SandGrounding) {
   if (classification.emergency) return ['أرقام الطوارئ', 'أقرب طبيب', 'أقرب صيدلية'];
+  if (classification.developer) return ['خدمات الدليل', 'أخبار العسيرات', 'قرى العسيرات'];
   if (classification.medicalAdvice) return ['أطباء في العسيرات', 'صيدليات قريبة', 'أرقام الطوارئ'];
   if (grounding?.results.length) {
     const village = grounding.results[0]?.village;
