@@ -43,7 +43,7 @@ function canonicalizeShopFacet(value: string) {
     return 'غرف نوم أطفال';
   }
 
-  if (normalized === 'ركنيات') return 'ركنيات';
+  if (normalized === 'ركنيات' || normalized === 'وركنيات') return 'ركنيات';
   if (normalized === 'مراتب') return 'مراتب';
   if (normalized === 'مطابخ') return 'مطابخ';
   if (normalized === 'ادوات صحيه') return 'أدوات صحية';
