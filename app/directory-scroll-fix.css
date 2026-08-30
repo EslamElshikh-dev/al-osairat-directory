@@ -1,0 +1,7 @@
+/* Keep directory search/filter panels in normal document flow.
+   The site header remains sticky; search controls should not cover result cards while scrolling. */
+.explorer__toolbar-shell {
+  position: relative;
+  top: auto;
+  z-index: 2;
+}
