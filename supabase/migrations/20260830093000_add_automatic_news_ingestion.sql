@@ -118,9 +118,9 @@ grant select (
   last_failed_count
 ) on table public.news_ingestion_state to anon, authenticated;
 
-grant all on table public.news_items to service_role;
-grant all on table public.news_ingestion_runs to service_role;
-grant all on table public.news_ingestion_state to service_role;
+grant select, insert, update on table public.news_items to service_role;
+grant select, insert, update on table public.news_ingestion_runs to service_role;
+grant select, insert, update on table public.news_ingestion_state to service_role;
 
 create or replace function public.claim_news_ingestion(
   p_trigger text,
@@ -128,7 +128,7 @@ create or replace function public.claim_news_ingestion(
 )
 returns uuid
 language plpgsql
-security definer
+security invoker
 set search_path = ''
 as $function$
 declare
@@ -179,7 +179,7 @@ create or replace function public.complete_news_ingestion(
 )
 returns void
 language plpgsql
-security definer
+security invoker
 set search_path = ''
 as $function$
 begin
