@@ -5,6 +5,7 @@ import { BlogCard } from '@/components/blog-card';
 import { MemberReviews } from '@/components/member-reviews';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles, blogBySlug } from '@/lib/blog-published';
+import { buildArticleMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
 const authorName = 'المهندس إسلام الشيخ';
@@ -20,28 +21,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!article) return {};
 
   return {
-    title: article.seoTitle,
-    description: article.description,
-    authors: [{ name: authorName, url: authorUrl }],
-    alternates: { canonical: `/blog/${article.slug}` },
-    keywords: [article.category, 'العسيرات', 'مركز العسيرات', 'سوهاج', article.eyebrow],
-    openGraph: {
-      type: 'article',
+    ...buildArticleMetadata({
       title: article.seoTitle,
       description: article.description,
-      url: `${siteConfig.url}/blog/${article.slug}`,
-      siteName: siteConfig.name,
-      locale: siteConfig.locale,
+      path: `/blog/${article.slug}`,
+      imageAlt: `${article.title} - مدونة دليل العسيرات`,
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
       authors: [authorName],
       section: article.category,
-    },
-    twitter: {
-      card: 'summary',
-      title: article.seoTitle,
-      description: article.description,
-    },
+    }),
+    authors: [{ name: authorName, url: authorUrl }],
+    keywords: [article.category, 'العسيرات', 'مركز العسيرات', 'سوهاج', article.eyebrow],
   };
 }
 
