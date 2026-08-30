@@ -6,6 +6,7 @@ import { BrandMark } from '@/components/site-shell';
 import { listings, villages } from '@/lib/data';
 import { createDirectoryHref, DIRECTORY_PAGE_SIZE, mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
 import {
   getEligibleServiceIntents,
@@ -15,8 +16,7 @@ import {
   getTopSubCategories,
   isProgrammaticCollectionEligible,
 } from '@/lib/programmatic-seo';
-import { buildCollectionStructuredData } from '@/lib/seo-growth';
-import { siteConfig } from '@/lib/site';
+import { buildCollectionStructuredData, isFallbackScope } from '@/lib/seo-growth';
 
 type ServiceSearchParams = { page?: string };
 
@@ -51,17 +51,13 @@ export async function generateMetadata({
   const page = Math.max(1, Number(query.page || 1) || 1);
   const pathname = `/services/${intent.id}`;
 
-  return {
+  return buildPageMetadata({
     title: intent.title,
     description: intent.description,
-    alternates: { canonical: pathname },
-    openGraph: {
-      title: intent.title,
-      description: intent.description,
-      url: `${siteConfig.url}${pathname}`,
-    },
-    ...(!eligible || page > 1 ? { robots: { index: false, follow: true } } : {}),
-  };
+    path: pathname,
+    noIndex: !eligible || page > 1,
+    imageAlt: `${intent.label} في دليل العسيرات`,
+  });
 }
 
 export const dynamic = 'force-dynamic';
@@ -90,6 +86,7 @@ export default async function ServiceIntentPage({
   const pathname = `/services/${intent.id}`;
   const topSpecialties = getTopSubCategories(matched, 8);
   const villageSummary = villages
+    .filter((village) => !isFallbackScope(village.name))
     .map((village) => ({ village, count: matched.filter((listing) => listing.village === village.name).length }))
     .filter((item) => item.count > 0)
     .sort((a, b) => b.count - a.count || a.village.name.localeCompare(b.village.name, 'ar'));
@@ -165,20 +162,22 @@ export default async function ServiceIntentPage({
         )}
       </section>
 
-      <section className="shell seo-growth-hub" aria-labelledby="service-villages-title">
-        <div className="seo-growth-hub__heading">
-          <span>تغطية السجلات</span>
-          <h2 id="service-villages-title">أماكن ظهور {intent.singularLabel} داخل الدليل</h2>
-          <p>الروابط التالية تنقلك إلى صفحات القرى نفسها؛ وهي لا تعني أن مقدم الخدمة يغطي كل تابع داخل القرية ما لم يذكر سجله ذلك صراحة.</p>
-        </div>
-        <nav className="seo-growth-hub__links" aria-label={`قرى تحتوي على سجلات ${intent.singularLabel}`}>
-          {villageSummary.map(({ village, count }) => (
-            <Link key={village.slug} href={`/villages/${encodeURIComponent(village.slug)}`}>
-              <span>{village.name}</span><small>{count.toLocaleString('ar-EG')} سجل</small>
-            </Link>
-          ))}
-        </nav>
-      </section>
+      {villageSummary.length > 0 && (
+        <section className="shell seo-growth-hub" aria-labelledby="service-villages-title">
+          <div className="seo-growth-hub__heading">
+            <span>تغطية السجلات</span>
+            <h2 id="service-villages-title">أماكن ظهور {intent.singularLabel} داخل الدليل</h2>
+            <p>الروابط التالية تنقلك إلى صفحات القرى نفسها؛ وهي لا تعني أن مقدم الخدمة يغطي كل تابع داخل القرية ما لم يذكر سجله ذلك صراحة.</p>
+          </div>
+          <nav className="seo-growth-hub__links" aria-label={`قرى تحتوي على سجلات ${intent.singularLabel}`}>
+            {villageSummary.map(({ village, count }) => (
+              <Link key={village.slug} href={`/villages/${encodeURIComponent(village.slug)}`}>
+                <span>{village.name}</span><small>{count.toLocaleString('ar-EG')} سجل</small>
+              </Link>
+            ))}
+          </nav>
+        </section>
+      )}
 
       {relatedIntents.length > 0 && (
         <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="related-services-title">
