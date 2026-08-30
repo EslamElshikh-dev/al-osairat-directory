@@ -190,6 +190,14 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
                 </p>
               </div>
             </div>
+          ) : item.persisted && item.editorialStatus === 'source-only' ? (
+            <div className={styles.disclosure} role="note">
+              <span aria-hidden="true">✓</span>
+              <div>
+                <strong>خبر موثق دون تكلفة ذكاء اصطناعي</strong>
+                <p>يعرض الدليل البيانات والموجز المتاحين من المصدر، مع رابط الناشر الأصلي، دون تشغيل نموذج مدفوع أو اختلاق صياغة.</p>
+              </div>
+            </div>
           ) : item.persisted && item.editorialStatus === 'pending' ? (
             <div className={styles.disclosure} role="status">
               <span aria-hidden="true">↻</span>

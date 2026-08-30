@@ -38,7 +38,7 @@ export type LocalNewsDetail = LocalNewsItem & {
   sourceExcerpt?: string;
   sourceText?: string;
   generatedEditorial?: GeneratedNewsEditorial;
-  editorialStatus?: 'pending' | 'ready' | 'insufficient' | 'failed';
+  editorialStatus?: 'source-only' | 'pending' | 'ready' | 'insufficient' | 'failed';
   persisted?: boolean;
 };
 

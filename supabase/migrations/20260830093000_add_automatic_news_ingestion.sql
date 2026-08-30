@@ -14,7 +14,7 @@ create table if not exists public.news_items (
   topic text not null,
   origin text not null default 'live',
   status text not null default 'published',
-  editorial_status text not null default 'pending',
+  editorial_status text not null default 'source-only',
   source_excerpt text,
   source_text text,
   source_hash text,
@@ -27,7 +27,7 @@ create table if not exists public.news_items (
   constraint news_items_origin_check check (origin in ('live', 'archive')),
   constraint news_items_status_check check (status in ('published', 'hidden')),
   constraint news_items_editorial_status_check
-    check (editorial_status in ('pending', 'ready', 'insufficient', 'failed')),
+    check (editorial_status in ('source-only', 'pending', 'ready', 'insufficient', 'failed')),
   constraint news_items_generated_editorial_check
     check (generated_editorial is null or jsonb_typeof(generated_editorial) = 'object')
 );

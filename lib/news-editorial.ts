@@ -33,6 +33,10 @@ const MAX_SOURCE_LENGTH = 22_000;
 const MIN_EDITORIAL_LENGTH = 650;
 const MAX_EDITORIAL_LENGTH = 5_500;
 
+export function isNewsEditorialEnabled() {
+  return process.env.NEWS_EDITORIAL_ENABLED?.trim().toLowerCase() === 'true';
+}
+
 const editorialSchema = jsonSchema<ModelEditorial>({
   type: 'object',
   additionalProperties: false,
@@ -353,7 +357,7 @@ const generateCachedEditorial = unstable_cache(
 export async function getGeneratedNewsEditorial(
   item: LocalNewsDetail,
 ): Promise<GeneratedNewsEditorial | undefined> {
-  if (process.env.NEWS_EDITORIAL_ENABLED === 'false' || item.editorial?.body.length) return undefined;
+  if (!isNewsEditorialEnabled() || item.editorial?.body.length) return undefined;
   const sourceText = item.sourceText?.trim();
   if (!sourceText || sourceText.length < MIN_SOURCE_LENGTH) return undefined;
 

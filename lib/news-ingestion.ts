@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { createHash } from 'node:crypto';
-import { getGeneratedNewsEditorial } from '@/lib/news-editorial';
+import { getGeneratedNewsEditorial, isNewsEditorialEnabled } from '@/lib/news-editorial';
 import {
   collectLocalNewsFromSources,
   fetchSourceDetail,
@@ -87,8 +87,13 @@ export async function runClaimedNewsIngestion(input: {
     const seenAt = new Date().toISOString();
     await upsertDiscoveredNews(feed.items, seenAt);
 
-    const states = await getStoredNewsProcessingState(feed.items.map((item) => item.id));
-    const candidates = prioritizeItems(feed.items, states, Date.now());
+    const editorialEnabled = isNewsEditorialEnabled();
+    const states = editorialEnabled
+      ? await getStoredNewsProcessingState(feed.items.map((item) => item.id))
+      : new Map<string, StoredNewsProcessingState>();
+    const candidates = editorialEnabled
+      ? prioritizeItems(feed.items, states, Date.now())
+      : [];
 
     for (const item of candidates) {
       const previous = states.get(item.id);

@@ -23,7 +23,7 @@ type PublicNewsRow = {
   topic: string;
   origin: 'live' | 'archive';
   status: 'published' | 'hidden';
-  editorial_status: 'pending' | 'ready' | 'insufficient' | 'failed';
+  editorial_status: 'source-only' | 'pending' | 'ready' | 'insufficient' | 'failed';
   source_excerpt: string | null;
   generated_editorial: unknown;
   first_seen_at: string;
