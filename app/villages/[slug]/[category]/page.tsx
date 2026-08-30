@@ -7,6 +7,7 @@ import { BrandMark } from '@/components/site-shell';
 import { categories, listings } from '@/lib/data';
 import { createDirectoryHref, DIRECTORY_PAGE_SIZE, mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildPageMetadata } from '@/lib/metadata';
 import { getPublishedListings } from '@/lib/published-listings';
 import {
   categorySearchProfiles,
@@ -19,7 +20,7 @@ import {
   villageCategoryLandingPath,
 } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData } from '@/lib/seo-growth';
-import { normalizeRouteSlug, siteConfig } from '@/lib/site';
+import { normalizeRouteSlug } from '@/lib/site';
 import type { DirectoryCategory } from '@/lib/types';
 
 type LocalSearchParams = { page?: string };
@@ -63,19 +64,16 @@ export async function generateMetadata({
   const page = Math.max(1, Number(query.page || 1) || 1);
   const label = localQueryLabel(resolved.category.id, resolved.village.name, resolved.category.shortLabel);
   const pathname = villageCategoryLandingPath(resolved.village, resolved.category);
+  const title = `${label} - دليل العسيرات`;
   const description = `${label}: ${localListings.length.toLocaleString('ar-EG')} سجلًا محليًا منشورًا مع بيانات التواصل والموقع المتاحة داخل دليل العسيرات.`;
 
-  return {
-    title: `${label} - دليل العسيرات`,
+  return buildPageMetadata({
+    title,
     description,
-    alternates: { canonical: pathname },
-    openGraph: {
-      title: `${label} - دليل العسيرات`,
-      description,
-      url: `${siteConfig.url}${pathname}`,
-    },
-    ...(!eligible || page > 1 ? { robots: { index: false, follow: true } } : {}),
-  };
+    path: pathname,
+    noIndex: !eligible || page > 1,
+    imageAlt: `${label} في دليل العسيرات`,
+  });
 }
 
 export const dynamic = 'force-dynamic';
