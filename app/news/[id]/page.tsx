@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { NewsCard } from '@/components/news-card';
 import { BrandMark } from '@/components/site-shell';
 import { buildArticleMetadata, buildPageMetadata } from '@/lib/metadata';
+import { getGeneratedNewsEditorial } from '@/lib/news-editorial';
 import {
   getLocalNews,
   getLocalNewsItem,
@@ -78,6 +79,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
   const fullArticle = isFullNewsArticle(item);
   const excerpt = item.sourceExcerpt || item.summary;
+  const generatedEditorial = fullArticle ? undefined : await getGeneratedNewsEditorial(item);
+  const heroSummary = generatedEditorial?.lead || excerpt;
   const pageUrl = `${siteConfig.url}${newsItemPath(item)}`;
   const related = feed.items
     .filter((candidate) => candidate.id !== item.id)
@@ -112,12 +115,17 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     '@type': 'WebPage',
     '@id': `${pageUrl}#page`,
     name: item.title,
-    description: detailDescription(item.title, excerpt),
+    description: detailDescription(item.title, heroSummary),
     url: pageUrl,
     datePublished: item.publishedAt,
+    ...(generatedEditorial ? { dateModified: generatedEditorial.generatedAt } : {}),
     inLanguage: 'ar-EG',
     isPartOf: { '@id': `${siteConfig.url}#website` },
     citation: item.url,
+    ...(generatedEditorial ? {
+      abstract: generatedEditorial.lead,
+      text: generatedEditorial.body.join(' '),
+    } : {}),
     isBasedOn: {
       '@type': 'CreativeWork',
       name: item.title,
@@ -158,7 +166,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <span>{item.village}</span>
           </div>
           <h1>{item.title}</h1>
-          <p>{excerpt || 'تفاصيل هذه التغطية متاحة لدى المصدر الأصلي، وتعرض هذه الصفحة بيانات الخبر ومصدره الموثق.'}</p>
+          <p>{heroSummary || 'تفاصيل هذه التغطية متاحة لدى المصدر الأصلي، وتعرض هذه الصفحة بيانات الخبر ومصدره الموثق.'}</p>
           <div className={styles.heroMeta}>
             <span className={styles.brand}><BrandMark compact /></span>
             <div><small>الناشر الأصلي</small><strong>{item.source}</strong></div>
@@ -169,27 +177,66 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       <div className={`shell ${styles.layout}`}>
         <article className={styles.article}>
-          {!fullArticle ? (
+          {generatedEditorial ? (
+            <div className={`${styles.disclosure} ${styles.editorialDisclosure}`} role="note">
+              <span aria-hidden="true">✓</span>
+              <div>
+                <strong>تغطية تحريرية كاملة داخل دليل العسيرات</strong>
+                <p>
+                  صياغة أصلية مبنية على الوقائع المنشورة لدى {item.source}، مع ذكر المرجع بوضوح.
+                  ليست نسخة من نص الناشر ولا تتضمن معلومات من خارج المادة المصدرية.
+                </p>
+              </div>
+            </div>
+          ) : !fullArticle ? (
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
               <div>
-                <strong>موجز موثّق داخل الدليل</strong>
-                <p>هذه صفحة تعريفية بالخبر وليست إعادة نشر لنص المقال. حقوق النص والصور والتحديثات محفوظة للناشر الأصلي.</p>
+                <strong>المادة المصدرية غير كافية لتغطية كاملة</strong>
+                <p>يعرض الدليل الوقائع المتاحة فقط دون اختلاق تفاصيل. حقوق النص والصور والتحديثات محفوظة للناشر الأصلي.</p>
               </div>
             </div>
           ) : null}
 
           <section className={styles.story} aria-labelledby="news-story-title">
-            <span className="eyebrow eyebrow--dark">{fullArticle ? 'تغطية دليل العسيرات' : `بحسب ${item.source}`}</span>
-            <h2 id="news-story-title">{fullArticle ? 'نص الخبر' : 'تفاصيل الخبر المتاحة'}</h2>
+            <span className="eyebrow eyebrow--dark">
+              {fullArticle ? 'تغطية دليل العسيرات' : generatedEditorial ? `تغطية أصلية استنادًا إلى ${item.source}` : `بحسب ${item.source}`}
+            </span>
+            <h2 id="news-story-title">{fullArticle || generatedEditorial ? 'التغطية الكاملة' : 'تفاصيل الخبر المتاحة'}</h2>
             {fullArticle && item.editorial ? (
               item.editorial.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)
+            ) : generatedEditorial ? (
+              <>
+                <p className={styles.storyLead}>{generatedEditorial.lead}</p>
+                {generatedEditorial.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+              </>
             ) : excerpt ? (
               <p>{excerpt}</p>
             ) : (
               <p>لم يرسل المصدر وصفًا كافيًا عبر قناة الربط. نعرض العنوان والبيانات المؤكدة فقط، ويمكن قراءة التفاصيل الكاملة من صفحة الناشر.</p>
             )}
           </section>
+
+          {generatedEditorial ? (
+            <section className={styles.highlights} aria-labelledby="news-highlights-title">
+              <div className={styles.sectionHeading}>
+                <span className="eyebrow eyebrow--dark">مختصر قابل للمراجعة</span>
+                <h2 id="news-highlights-title">أبرز الوقائع المثبتة</h2>
+              </div>
+              <ul>
+                {generatedEditorial.verifiedFacts.map((fact, index) => <li key={index}>{fact}</li>)}
+              </ul>
+              {generatedEditorial.localContext ? (
+                <div className={styles.localContext}>
+                  <strong>ماذا يعني الخبر للعسيرات؟</strong>
+                  <p>{generatedEditorial.localContext}</p>
+                </div>
+              ) : null}
+              {generatedEditorial.limitations ? (
+                <p className={styles.limitations}><strong>حدود المعلومات:</strong> {generatedEditorial.limitations}</p>
+              ) : null}
+            </section>
+          ) : null}
 
           <section className={styles.facts} aria-labelledby="news-facts-title">
             <div className={styles.sectionHeading}>
@@ -205,12 +252,19 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           </section>
 
           <section className={styles.method} aria-labelledby="news-method-title">
-            <span className="eyebrow eyebrow--dark">لماذا ظهر هذا الخبر؟</span>
-            <h2 id="news-method-title">صلة مباشرة بالعسيرات</h2>
-            <p>
-              التقط نظام الرصد هذا الخبر لأن عنوانه أو وصفه يتضمن مركز العسيرات أو إحدى قراه في سياق سوهاج.
-              ثم راجع الرابط، وحدد القرية والتصنيف، واستبعد النتائج المكررة قبل عرضها.
-            </p>
+            <span className="eyebrow eyebrow--dark">منهجية النشر</span>
+            <h2 id="news-method-title">صلة مباشرة ومصدر ظاهر</h2>
+            {generatedEditorial ? (
+              <p>
+                استخلص النظام الوقائع المتاحة من صفحة الناشر، ثم أنشأ صياغة تحريرية أصلية لا تنقل عباراته.
+                تُرفض التغطية آليًا إذا أضافت أرقامًا غير موجودة في المصدر أو احتوت مقاطع مطابقة طويلة، وتظل صفحة الناشر المرجع النهائي.
+              </p>
+            ) : (
+              <p>
+                التقط نظام الرصد هذا الخبر لأن عنوانه أو وصفه يتضمن مركز العسيرات أو إحدى قراه في سياق سوهاج.
+                ثم راجع الرابط، وحدد القرية والتصنيف، واستبعد النتائج المكررة قبل عرضها.
+              </p>
+            )}
           </section>
         </article>
 
@@ -218,7 +272,9 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
           <div className={styles.sourceBrand}><BrandMark /></div>
           <span className={styles.sourceLabel}>المصدر الأصلي والمرجع النهائي</span>
           <h2>{item.source}</h2>
-          <p>قد يحدّث الناشر الخبر أو يصححه بعد ظهوره هنا؛ لذلك تبقى صفحته هي المرجع النهائي للنص الكامل.</p>
+          <p>
+            النص داخل الدليل صياغة تحريرية مستقلة عند توافر مادة كافية. قد يحدّث الناشر الوقائع أو يصححها لاحقًا؛ لذلك تبقى صفحته المرجع النهائي.
+          </p>
           <a
             href={item.url}
             target="_blank"
@@ -228,14 +284,17 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             data-news-topic={item.topic}
             data-news-village={item.village}
           >
-            اقرأ الخبر الكامل من المصدر <span aria-hidden="true">↗</span>
+            فتح الخبر لدى المصدر <span aria-hidden="true">↗</span>
           </a>
           <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.sourceHome}>
             الموقع الرسمي لـ {item.source} <span aria-hidden="true">↗</span>
           </a>
           <div className={styles.updateNote}>
             <i aria-hidden="true" />
-            <span><strong>تحديث تلقائي</strong> يعاد فحص القنوات كل 30 دقيقة عند طلب الصفحة.</span>
+            <span>
+              <strong>تحديث تلقائي</strong>
+              يعاد فحص القنوات كل 30 دقيقة، وتُنشأ التغطية مرة واحدة ثم تتجدد إذا تغيرت المادة المصدرية.
+            </span>
           </div>
         </aside>
       </div>

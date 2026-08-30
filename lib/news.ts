@@ -25,6 +25,7 @@ export type LocalNewsItem = {
 
 export type LocalNewsDetail = LocalNewsItem & {
   sourceExcerpt?: string;
+  sourceText?: string;
 };
 
 export type LocalNewsFeed = {
@@ -54,6 +55,7 @@ type RawNewsItem = {
 const NEWS_REVALIDATE_SECONDS = 1800;
 const REQUEST_TIMEOUT_MS = 12_000;
 const MAX_ITEM_AGE_MS = 1000 * 60 * 60 * 24 * 730;
+const MAX_SOURCE_TEXT_LENGTH = 24_000;
 
 const newsSources: FeedSource[] = [
   {
@@ -304,6 +306,89 @@ function parsePageDescription(html: string) {
   return '';
 }
 
+function parseJsonLdPayloads(html: string) {
+  const scripts = html
+    .slice(0, 4_000_000)
+    .match(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi) || [];
+
+  return scripts.flatMap((script): unknown[] => {
+    const payload = script
+      .replace(/^<script\b[^>]*>/i, '')
+      .replace(/<\/script>$/i, '')
+      .trim();
+
+    if (!payload) return [];
+
+    try {
+      return [JSON.parse(payload) as unknown];
+    } catch {
+      return [];
+    }
+  });
+}
+
+function collectArticleBodies(value: unknown, results: string[]) {
+  if (Array.isArray(value)) {
+    value.forEach((entry) => collectArticleBodies(entry, results));
+    return;
+  }
+
+  if (!value || typeof value !== 'object') return;
+  const record = value as Record<string, unknown>;
+  if (typeof record.articleBody === 'string') {
+    const body = cleanText(record.articleBody);
+    if (body.length >= 300) results.push(body);
+  }
+
+  Object.values(record).forEach((entry) => collectArticleBodies(entry, results));
+}
+
+function isUsefulArticleParagraph(value: string) {
+  if (value.length < 55) return false;
+  const arabicCharacters = value.match(/[\u0600-\u06ff]/g)?.length || 0;
+  if (arabicCharacters < 25) return false;
+
+  const normalized = normalizeArabic(value);
+  const boilerplate = [
+    'اقرا ايضا', 'اقرا المزيد', 'تابعونا', 'اشترك', 'اضغط هنا', 'سياسه الخصوصيه',
+    'جميع الحقوق محفوظه', 'شارك الخبر', 'التعليقات', 'اخبار متعلقه',
+  ];
+
+  return !boilerplate.some((term) => normalized.includes(term));
+}
+
+function parseArticleParagraphFallback(html: string) {
+  const markers = [
+    /<(?:article|div|section)\b[^>]*(?:class|id)=["'][^"']*(?:article[-_ ]?(?:body|content|text)|story[-_ ]?content|entry[-_ ]?content|news[-_ ]?(?:body|content|details)|articlecont|bodycontent)[^"']*["'][^>]*>/i,
+    /<article\b[^>]*>/i,
+  ];
+  const marker = markers.map((pattern) => pattern.exec(html)).find(Boolean);
+  if (!marker || marker.index < 0) return '';
+
+  const region = html.slice(marker.index, marker.index + 350_000);
+  const paragraphs = region.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) || [];
+  const unique = new Set<string>();
+  let totalLength = 0;
+
+  for (const paragraph of paragraphs) {
+    const text = cleanText(paragraph);
+    if (!isUsefulArticleParagraph(text)) continue;
+    unique.add(text);
+    totalLength += text.length;
+    if (totalLength >= MAX_SOURCE_TEXT_LENGTH) break;
+  }
+
+  return [...unique].join('\n\n');
+}
+
+function parseArticleText(html: string) {
+  const articleBodies: string[] = [];
+  parseJsonLdPayloads(html).forEach((payload) => collectArticleBodies(payload, articleBodies));
+  const jsonLdBody = articleBodies.toSorted((a, b) => b.length - a.length)[0] || '';
+  const body = jsonLdBody || parseArticleParagraphFallback(html);
+  return body ? truncate(body, MAX_SOURCE_TEXT_LENGTH) : '';
+}
+
 function isRelevant(raw: RawNewsItem, source: FeedSource) {
   if (source.format === 'youm7-tag') return true;
   const normalized = normalizeArabic(`${raw.title} ${raw.summary || ''}`);
@@ -429,10 +514,12 @@ function sourceForItem(item: LocalNewsItem) {
   }
 }
 
-async function fetchSourceExcerpt(item: LocalNewsItem) {
-  if (item.editorial?.body.length) return '';
+async function fetchSourceDetail(item: LocalNewsItem) {
+  if (item.editorial?.body.length) return {};
   const source = sourceForItem(item);
-  if (!source || !safeExternalUrl(item.url, source.allowedHosts)) return item.summary || '';
+  if (!source || !safeExternalUrl(item.url, source.allowedHosts)) {
+    return { sourceExcerpt: item.summary || '' };
+  }
 
   try {
     const response = await fetch(item.url, {
@@ -444,13 +531,18 @@ async function fetchSourceExcerpt(item: LocalNewsItem) {
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
-    if (!response.ok) return item.summary || '';
+    if (!response.ok) return { sourceExcerpt: item.summary || '' };
     const contentType = response.headers.get('content-type') || '';
-    if (!contentType.toLowerCase().includes('text/html')) return item.summary || '';
-    const description = parsePageDescription(await response.text());
-    return description || item.summary || '';
+    if (!contentType.toLowerCase().includes('text/html')) return { sourceExcerpt: item.summary || '' };
+    const html = await response.text();
+    const sourceExcerpt = parsePageDescription(html) || item.summary || '';
+    const sourceText = parseArticleText(html);
+    return {
+      ...(sourceExcerpt ? { sourceExcerpt } : {}),
+      ...(sourceText ? { sourceText } : {}),
+    };
   } catch {
-    return item.summary || '';
+    return { sourceExcerpt: item.summary || '' };
   }
 }
 
@@ -471,8 +563,8 @@ const loadLocalNewsItem = async (id: string): Promise<LocalNewsDetail | undefine
   }
 
   if (!item) return undefined;
-  const sourceExcerpt = await fetchSourceExcerpt(item);
-  return { ...item, ...(sourceExcerpt ? { sourceExcerpt } : {}) };
+  const sourceDetail = await fetchSourceDetail(item);
+  return { ...item, ...sourceDetail };
 };
 
 export const getLocalNewsItem = cache(loadLocalNewsItem);

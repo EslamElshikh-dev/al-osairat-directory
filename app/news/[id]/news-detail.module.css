@@ -87,12 +87,25 @@
 .disclosure > span { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; color: #35684d; background: #eaf5ed; font-size: 13px; font-weight: 900; }
 .disclosure strong { display: block; color: #614f22; font-size: 12px; }
 .disclosure p { margin: 4px 0 0; color: #7c6c43; font-size: 10.5px; line-height: 1.8; }
+.editorialDisclosure { background: #edf7f1; border-color: rgba(36, 105, 77, .15); }
+.editorialDisclosure strong { color: #245c48; }
+.editorialDisclosure p { color: #537165; }
 
 .story { padding: 31px 32px 34px; }
 .story h2,
 .sectionHeading h2,
 .method h2 { margin: 4px 0 0; color: #173a31; font-size: clamp(25px, 3.5vw, 35px); line-height: 1.4; }
 .story p { margin: 19px 0 0; color: #475b54; font-size: 15px; line-height: 2.25; }
+.story .storyLead { margin-top: 24px; padding: 17px 19px; border-inline-start: 4px solid #c7a443; border-radius: 4px 15px 15px 4px; color: #294b40; background: #f7f7f1; font-size: 16px; font-weight: 750; line-height: 2.15; }
+
+.highlights { padding: 29px 30px 31px; }
+.highlights ul { margin: 21px 0 0; padding: 0; display: grid; gap: 10px; list-style: none; }
+.highlights li { position: relative; padding: 14px 43px 14px 16px; border: 1px solid rgba(16, 42, 36, .075); border-radius: 15px; color: #3e574f; background: #f7f8f4; font-size: 12px; font-weight: 700; line-height: 1.85; }
+.highlights li::before { content: "✓"; position: absolute; inset-inline-start: 15px; top: 15px; width: 19px; height: 19px; display: grid; place-items: center; border-radius: 7px; color: #fff; background: #3e765d; font-size: 9px; }
+.localContext { margin-top: 18px; padding: 19px 20px; border-radius: 17px; background: #173d32; color: #fff; }
+.localContext strong { display: block; color: #e8cd78; font-size: 11px; }
+.localContext p { margin: 8px 0 0; color: #cfddd7; font-size: 12px; line-height: 1.95; }
+.limitations { margin: 16px 0 0; padding: 14px 16px; border-radius: 14px; color: #725f2b; background: #fff8e7; font-size: 10.5px; line-height: 1.85; }
 
 .facts { padding: 27px 28px; }
 .facts dl { margin: 20px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
@@ -154,6 +167,7 @@
   .heroShell > p { font-size: 13px; }
   .layout { padding-block: 38px 52px; gap: 18px; }
   .story,
+  .highlights,
   .facts,
   .method { padding: 23px 19px; border-radius: 20px !important; }
   .story p { font-size: 13.5px; line-height: 2.15; }
