@@ -36,7 +36,7 @@ import './navigation-scroll.css';
 import './sand-assistant.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
-const socialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar`;
+const socialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
         url: socialImage,
         width: 1200,
         height: 630,
-        alt: 'دليل وموسوعة العسيرات - الدليل المحلي لمركز العسيرات وقراه',
+        alt: 'دليل العسيرات - بتدور علي ايه وإحنا ندلّك عليه من قلب العسيرات',
       },
     ],
   },
