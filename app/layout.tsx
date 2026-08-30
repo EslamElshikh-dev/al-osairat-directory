@@ -65,8 +65,12 @@ export const metadata: Metadata = {
     'تاريخ العسيرات', 'معالم العسيرات', 'مشاهير العسيرات', 'عائلات العسيرات',
   ],
   icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    shortcut: '/icon.svg',
+    icon: [
+      { url: '/favicon.png', type: 'image/png', sizes: '96x96' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.png',
+    apple: [{ url: '/favicon.png', type: 'image/png', sizes: '96x96' }],
   },
   openGraph: {
     type: 'website',
@@ -74,7 +78,7 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     title: rootTitle,
     description: siteConfig.description,
-    siteName: siteConfig.name,
+    siteName: siteConfig.shortName,
     images: [
       {
         url: socialImage,
@@ -116,8 +120,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${siteConfig.url}#website`,
-    name: siteConfig.name,
-    alternateName: siteConfig.shortName,
+    name: siteConfig.shortName,
+    alternateName: siteConfig.name,
     url: siteConfig.url,
     inLanguage: 'ar-EG',
     description: siteConfig.description,
