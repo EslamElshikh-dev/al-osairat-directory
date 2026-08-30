@@ -62,7 +62,12 @@ export async function POST(request: NextRequest) {
 
   if (classification.emergency) {
     grounding = getSandEmergencyGrounding();
-  } else if (!classification.promptInjection && !classification.political && !classification.greeting) {
+  } else if (
+    !classification.promptInjection
+    && !classification.political
+    && !classification.greeting
+    && !classification.developer
+  ) {
     grounding = await getSandDirectoryGrounding(message);
   }
 
@@ -78,6 +83,7 @@ export async function POST(request: NextRequest) {
     && !classification.promptInjection
     && !classification.political
     && !classification.greeting
+    && !classification.developer
     && !classification.medicalAdvice
     && usage.configured
     && secret
