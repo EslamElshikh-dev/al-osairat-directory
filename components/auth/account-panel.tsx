@@ -71,7 +71,7 @@ export function AccountPanel() {
       .catch(() => { if (active) setFavorites([]); })
       .finally(() => { if (active) setFavoritesLoading(false); });
     return () => { active = false; };
-  }, [user?.localId]);
+  }, [user]);
 
   async function removeFavorite(listingId: string) {
     if (removingFavorite) return;
