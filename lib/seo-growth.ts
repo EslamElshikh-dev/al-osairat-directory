@@ -34,8 +34,12 @@ export function isFilteredDirectoryState(state: SearchState) {
   return Boolean(query || (village && village !== 'all') || page > 1);
 }
 
+export function isFallbackScope(name?: string) {
+  return name === 'مركز العسيرات';
+}
+
 export function villagePathByName(name: string) {
-  if (name === 'مركز العسيرات') return '';
+  if (isFallbackScope(name)) return '';
   const village = villages.find((item) => item.name === name);
   return village ? `/villages/${encodeURIComponent(village.slug)}` : '';
 }
