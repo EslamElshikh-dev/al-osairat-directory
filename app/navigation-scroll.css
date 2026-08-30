@@ -1,0 +1,11 @@
+/* Route changes and browser reloads must start from the top immediately.
+   Smooth scrolling at the html level can animate Next.js route resets from an old
+   scroll position, making the next page appear to start near the bottom. */
+html {
+  scroll-behavior: auto;
+}
+
+/* Keep purposeful in-page anchors predictable without affecting route navigation. */
+:target {
+  scroll-margin-top: 94px;
+}

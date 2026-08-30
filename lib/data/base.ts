@@ -66,8 +66,8 @@ export const categories: CategoryInfo[] = [
   },
   {
     id: 'community',
-    label: 'المعالم المجتمعية',
-    shortLabel: 'المعالم المجتمعية',
+    label: 'دوواين ومنادر العسيرات',
+    shortLabel: 'دوواين ومنادر العسيرات',
     description: 'دواوين ومجالس ومنادر العائلات والمعالم المجتمعية المحلية داخل نطاق العسيرات.',
     icon: 'community',
   },

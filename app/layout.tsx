@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import { AnalyticsTracker } from '@/components/analytics-tracker';
 import { GoogleAnalyticsLoader } from '@/components/google-analytics-loader';
+import { NavigationScrollManager } from '@/components/navigation-scroll-manager';
 import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
@@ -41,6 +43,7 @@ import './member-reviews.css';
 import './member-review-polish.css';
 import './directory-scroll-fix.css';
 import './directory-ticker.css';
+import './navigation-scroll.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/api/og`;
@@ -97,6 +100,17 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+const scrollRestorationScript = `
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
+  window.addEventListener('pageshow', function () {
+    if (!window.location.hash) {
+      window.scrollTo(0, 0);
+    }
+  });
+`;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const websiteSchema = {
     '@context': 'https://schema.org',
@@ -111,7 +125,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="ar" dir="rtl">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: scrollRestorationScript }} />
+      </head>
       <body>
+        <Suspense fallback={null}>
+          <NavigationScrollManager />
+        </Suspense>
         <a className="skip-link" href="#main-content">تجاوز إلى المحتوى</a>
         <SiteHeader />
         {children}
