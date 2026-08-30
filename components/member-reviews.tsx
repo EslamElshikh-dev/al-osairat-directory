@@ -103,6 +103,16 @@ function Avatar({ review }: { review: ReviewItem }) {
   );
 }
 
+function PencilIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m14.5 5.5 4 4" />
+      <path d="M4.5 19.5 7 13 15.8 4.2a1.8 1.8 0 0 1 2.5 0l1.5 1.5a1.8 1.8 0 0 1 0 2.5L11 17Z" />
+      <path d="m7 13 4 4" />
+    </svg>
+  );
+}
+
 export function MemberReviews({
   targetType,
   targetKey,
@@ -113,11 +123,13 @@ export function MemberReviews({
   className = '',
 }: MemberReviewsProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const formCardRef = useRef<HTMLDivElement | null>(null);
   const [activated, setActivated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editingOwnReview, setEditingOwnReview] = useState(false);
   const [payload, setPayload] = useState<ReviewsPayload | null>(null);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
@@ -137,6 +149,10 @@ export function MemberReviews({
       if (data.myReview) {
         setRating(data.myReview.rating);
         setReviewText(data.myReview.body);
+      } else {
+        setRating(0);
+        setReviewText('');
+        setEditingOwnReview(false);
       }
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'تعذر تحميل التقييمات.');
@@ -216,6 +232,7 @@ export function MemberReviews({
       const data = await response.json() as { error?: string; updated?: boolean };
       if (!response.ok) throw new Error(data.error || 'تعذر حفظ تقييمك.');
       setFeedback(data.updated ? 'تم تحديث تقييمك بنجاح.' : 'تم نشر تقييمك بنجاح.');
+      setEditingOwnReview(false);
       await loadInitial();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'تعذر حفظ تقييمك.');
@@ -236,6 +253,7 @@ export function MemberReviews({
       if (!response.ok) throw new Error(data.error || 'تعذر حذف تقييمك.');
       setRating(0);
       setReviewText('');
+      setEditingOwnReview(false);
       setFeedback('تم حذف تقييمك.');
       await loadInitial();
     } catch (deleteError) {
@@ -243,6 +261,27 @@ export function MemberReviews({
     } finally {
       setDeleting(false);
     }
+  }
+
+  function beginEditReview(review: ReviewItem) {
+    setRating(review.rating);
+    setReviewText(review.body);
+    setFeedback('');
+    setError('');
+    setEditingOwnReview(true);
+    window.requestAnimationFrame(() => {
+      formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  function cancelEditReview() {
+    if (payload?.myReview) {
+      setRating(payload.myReview.rating);
+      setReviewText(payload.myReview.body);
+    }
+    setFeedback('');
+    setError('');
+    setEditingOwnReview(false);
   }
 
   const summary = payload?.summary || { count: 0, average: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } };
@@ -313,69 +352,76 @@ export function MemberReviews({
               )}
             </div>
 
-            <div className="member-review-form-card">
-              {payload.authenticated ? (
-                payload.emailVerified ? (
-                  <form onSubmit={submitReview}>
-                    <div className="member-review-form-card__head">
-                      <div>
-                        <span>{payload.myReview ? 'تقييمك الحالي' : 'شارك تجربتك'}</span>
-                        <h3>{payload.myReview ? 'عدّل تقييمك في أي وقت' : prompt}</h3>
+            {!payload.myReview || editingOwnReview ? (
+              <div ref={formCardRef} className={`member-review-form-card${editingOwnReview ? ' is-editing' : ''}`}>
+                {payload.authenticated ? (
+                  payload.emailVerified ? (
+                    <form onSubmit={submitReview}>
+                      <div className="member-review-form-card__head">
+                        <div>
+                          <span>{payload.myReview ? 'تعديل تقييمك' : 'شارك تجربتك'}</span>
+                          <h3>{payload.myReview ? 'حدّث رأيك ثم احفظ التغييرات' : prompt}</h3>
+                        </div>
+                        {payload.myReview ? <span className="member-review-form-card__saved">وضع التعديل</span> : null}
                       </div>
-                      {payload.myReview ? <span className="member-review-form-card__saved">منشور</span> : null}
-                    </div>
 
-                    <label className="member-review-form-card__label">عدد النجوم</label>
-                    <StarPicker value={rating} onChange={setRating} disabled={submitting || deleting} />
+                      <label className="member-review-form-card__label member-review-form-card__label--center">عدد النجوم</label>
+                      <StarPicker value={rating} onChange={setRating} disabled={submitting || deleting} />
 
-                    <label className="member-review-form-card__label" htmlFor={`review-text-${targetType}-${targetKey}`}>اكتب رأيك</label>
-                    <textarea
-                      id={`review-text-${targetType}-${targetKey}`}
-                      value={reviewText}
-                      onChange={(event) => setReviewText(event.target.value.slice(0, REVIEW_MAX_LENGTH))}
-                      minLength={REVIEW_MIN_LENGTH}
-                      maxLength={REVIEW_MAX_LENGTH}
-                      placeholder="اكتب تجربة واضحة ومفيدة باختصار…"
-                      disabled={submitting || deleting}
-                      required
-                    />
-                    <div className="member-review-form-card__meta">
-                      <span>رأي حقيقي من حساب عضو مسجل</span>
-                      <span className={cleanLength > 0 && cleanLength < REVIEW_MIN_LENGTH ? 'is-warning' : ''}>{cleanLength}/{REVIEW_MAX_LENGTH}</span>
-                    </div>
+                      <label className="member-review-form-card__label" htmlFor={`review-text-${targetType}-${targetKey}`}>اكتب رأيك</label>
+                      <textarea
+                        id={`review-text-${targetType}-${targetKey}`}
+                        value={reviewText}
+                        onChange={(event) => setReviewText(event.target.value.slice(0, REVIEW_MAX_LENGTH))}
+                        minLength={REVIEW_MIN_LENGTH}
+                        maxLength={REVIEW_MAX_LENGTH}
+                        placeholder="اكتب تجربة واضحة ومفيدة باختصار…"
+                        disabled={submitting || deleting}
+                        required
+                      />
+                      <div className="member-review-form-card__meta">
+                        <span>رأي حقيقي من حساب عضو مسجل</span>
+                        <span className={cleanLength > 0 && cleanLength < REVIEW_MIN_LENGTH ? 'is-warning' : ''}>{cleanLength}/{REVIEW_MAX_LENGTH}</span>
+                      </div>
 
-                    <div className="member-review-form-card__actions">
-                      <button type="submit" className="member-review-submit" disabled={!canSubmit || deleting}>
-                        {submitting ? 'جارٍ الحفظ…' : payload.myReview ? 'تحديث تقييمي' : 'نشر التقييم'}
-                      </button>
-                      {payload.myReview ? (
-                        <button type="button" className="member-review-delete" onClick={deleteReview} disabled={submitting || deleting}>
-                          {deleting ? 'جارٍ الحذف…' : 'حذف تقييمي'}
+                      <div className="member-review-form-card__actions">
+                        <button type="submit" className="member-review-submit" disabled={!canSubmit || deleting}>
+                          {submitting ? 'جارٍ الحفظ…' : payload.myReview ? 'حفظ التعديلات' : 'نشر التقييم'}
                         </button>
-                      ) : null}
+                        {payload.myReview ? (
+                          <button type="button" className="member-review-cancel" onClick={cancelEditReview} disabled={submitting || deleting}>
+                            إلغاء
+                          </button>
+                        ) : null}
+                        {payload.myReview ? (
+                          <button type="button" className="member-review-delete" onClick={deleteReview} disabled={submitting || deleting}>
+                            {deleting ? 'جارٍ الحذف…' : 'حذف تقييمي'}
+                          </button>
+                        ) : null}
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="member-review-auth-note">
+                      <span aria-hidden="true">✓</span>
+                      <div><strong>أكد بريدك قبل التقييم</strong><p>نطلب بريدًا مؤكدًا للحفاظ على جودة تقييمات الأعضاء وتقليل الإساءة.</p></div>
                     </div>
-                  </form>
+                  )
                 ) : (
-                  <div className="member-review-auth-note">
-                    <span aria-hidden="true">✓</span>
-                    <div><strong>أكد بريدك قبل التقييم</strong><p>نطلب بريدًا مؤكدًا للحفاظ على جودة تقييمات الأعضاء وتقليل الإساءة.</p></div>
+                  <div className="member-review-auth-note member-review-auth-note--guest">
+                    <span aria-hidden="true">★</span>
+                    <div>
+                      <strong>سجّل الدخول لتشارك تقييمك</strong>
+                      <p>القراءة متاحة للجميع، والكتابة مخصصة للأعضاء المسجلين فقط.</p>
+                      <div><Link href="/account/login">تسجيل الدخول</Link><Link href="/account/register">إنشاء حساب</Link></div>
+                    </div>
                   </div>
-                )
-              ) : (
-                <div className="member-review-auth-note member-review-auth-note--guest">
-                  <span aria-hidden="true">★</span>
-                  <div>
-                    <strong>سجّل الدخول لتشارك تقييمك</strong>
-                    <p>القراءة متاحة للجميع، والكتابة مخصصة للأعضاء المسجلين فقط.</p>
-                    <div><Link href="/account/login">تسجيل الدخول</Link><Link href="/account/register">إنشاء حساب</Link></div>
-                  </div>
+                )}
+                <div className="member-review-feedback" aria-live="polite">
+                  {feedback ? <p className="is-success">{feedback}</p> : null}
+                  {error ? <p className="is-error">{error}</p> : null}
                 </div>
-              )}
-              <div className="member-review-feedback" aria-live="polite">
-                {feedback ? <p className="is-success">{feedback}</p> : null}
-                {error ? <p className="is-error">{error}</p> : null}
               </div>
-            </div>
+            ) : null}
           </div>
 
           <div className="member-reviews__list-column">
@@ -394,8 +440,15 @@ export function MemberReviews({
                         <div><strong>{review.authorName}</strong>{review.own ? <span>تقييمك</span> : <span>عضو مسجل</span>}</div>
                         <time dateTime={review.createdAt}>{formatDate(review.createdAt)}</time>
                       </div>
-                      <RatingStars value={review.rating} label={`${review.rating} من 5 نجوم`} />
+                      {review.own ? (
+                        <button type="button" className="member-review-card__edit" onClick={() => beginEditReview(review)} aria-label="تعديل تقييمك" title="تعديل التقييم">
+                          <PencilIcon />
+                        </button>
+                      ) : null}
                     </header>
+                    <div className="member-review-card__rating-row">
+                      <RatingStars value={review.rating} label={`${review.rating} من 5 نجوم`} />
+                    </div>
                     <p>{review.body}</p>
                     {review.updatedAt !== review.createdAt ? <small>تم تعديل التقييم</small> : null}
                   </article>
