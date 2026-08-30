@@ -30,20 +30,28 @@ export async function generateMetadata({
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) return {};
 
-  const paginated = isFilteredDirectoryState(query);
+  const page = Math.max(1, Number(query.page || 1) || 1);
   const fallbackScope = isFallbackScope(village.name);
-  const title = fallbackScope
+  const purePagination = !fallbackScope && page > 1;
+  const baseTitle = fallbackScope
     ? 'سجلات غير محددة القرية داخل مركز العسيرات'
     : `دليل ${village.name} - مركز العسيرات`;
-  const description = fallbackScope
+  const baseDescription = fallbackScope
     ? village.description
     : `الخدمات والأنشطة والبيانات المحلية المنشورة في ${village.name} ضمن مركز العسيرات بمحافظة سوهاج.`;
+  const title = purePagination
+    ? `${baseTitle} - الصفحة ${page.toLocaleString('ar-EG')}`
+    : baseTitle;
+  const description = purePagination
+    ? `${baseDescription} الصفحة ${page.toLocaleString('ar-EG')} من النتائج المحلية.`
+    : baseDescription;
+  const pathname = `/villages/${village.slug}`;
 
   return buildPageMetadata({
     title,
     description,
-    path: `/villages/${village.slug}`,
-    noIndex: paginated || fallbackScope,
+    path: purePagination ? `${pathname}?page=${page}` : pathname,
+    noIndex: fallbackScope,
     imageAlt: fallbackScope ? 'سجلات النطاق العام في مركز العسيرات' : `دليل ${village.name} في العسيرات`,
   });
 }

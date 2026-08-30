@@ -47,19 +47,31 @@ export async function generateMetadata({
   const info = categoryById[category as DirectoryCategory];
   if (!info) return {};
 
+  const page = Math.max(1, Number(query.page || 1) || 1);
+  const searchQuery = String(query.q || '').trim();
+  const village = String(query.village || '').trim();
+  const hasDirectoryFilters = Boolean(searchQuery || (village && village !== 'all'));
   const vehicleFilter = normalizeTransportVehicleFilter(query.vehicle);
   const destinationFilter = normalizeTransportDestinationFilter(query.destination);
   const transportFilterActive = info.id === 'transport' && (vehicleFilter !== 'all' || destinationFilter !== 'all');
-  const filtered = isFilteredDirectoryState(query) || transportFilterActive;
+  const hasFilters = hasDirectoryFilters || transportFilterActive;
+  const purePagination = !hasFilters && page > 1;
   const profile = categorySearchProfiles[info.id];
-  const title = profile?.title || `${info.label} في العسيرات`;
-  const description = profile?.description || info.description;
+  const baseTitle = profile?.title || `${info.label} في العسيرات`;
+  const baseDescription = profile?.description || info.description;
+  const title = purePagination
+    ? `${baseTitle} - الصفحة ${page.toLocaleString('ar-EG')}`
+    : baseTitle;
+  const description = purePagination
+    ? `${baseDescription} الصفحة ${page.toLocaleString('ar-EG')} من النتائج.`
+    : baseDescription;
+  const pathname = `/directory/${info.id}`;
 
   return buildPageMetadata({
     title,
     description,
-    path: `/directory/${info.id}`,
-    noIndex: filtered,
+    path: purePagination ? `${pathname}?page=${page}` : pathname,
+    noIndex: hasFilters,
     imageAlt: `${info.shortLabel} في دليل العسيرات`,
   });
 }

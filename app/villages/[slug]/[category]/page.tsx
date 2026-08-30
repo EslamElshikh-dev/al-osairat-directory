@@ -64,14 +64,21 @@ export async function generateMetadata({
   const page = Math.max(1, Number(query.page || 1) || 1);
   const label = localQueryLabel(resolved.category.id, resolved.village.name, resolved.category.shortLabel);
   const pathname = villageCategoryLandingPath(resolved.village, resolved.category);
-  const title = `${label} - دليل العسيرات`;
-  const description = `${label}: ${localListings.length.toLocaleString('ar-EG')} سجلًا محليًا منشورًا مع بيانات التواصل والموقع المتاحة داخل دليل العسيرات.`;
+  const purePagination = eligible && page > 1;
+  const baseTitle = `${label} - دليل العسيرات`;
+  const baseDescription = `${label}: ${localListings.length.toLocaleString('ar-EG')} سجلًا محليًا منشورًا مع بيانات التواصل والموقع المتاحة داخل دليل العسيرات.`;
+  const title = purePagination
+    ? `${baseTitle} - الصفحة ${page.toLocaleString('ar-EG')}`
+    : baseTitle;
+  const description = purePagination
+    ? `${baseDescription} الصفحة ${page.toLocaleString('ar-EG')} من النتائج المحلية.`
+    : baseDescription;
 
   return buildPageMetadata({
     title,
     description,
-    path: pathname,
-    noIndex: !eligible || page > 1,
+    path: purePagination ? `${pathname}?page=${page}` : pathname,
+    noIndex: !eligible,
     imageAlt: `${label} في دليل العسيرات`,
   });
 }
