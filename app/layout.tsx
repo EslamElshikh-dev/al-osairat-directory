@@ -22,6 +22,7 @@ import './business-submissions.css';
 import './ownership-claims.css';
 import './my-businesses.css';
 import './notifications.css';
+import './notification-popover.css';
 import './admin.css';
 import './admin-changes.css';
 import './admin-reports.css';
@@ -36,6 +37,7 @@ import './visual-redesign-phase3.css';
 import './visual-redesign-phase4.css';
 import './seo-growth.css';
 import './member-reviews.css';
+import './member-review-polish.css';
 import './directory-scroll-fix.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
