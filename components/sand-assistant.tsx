@@ -258,7 +258,10 @@ export function SandAssistant() {
           aria-expanded={false}
           onClick={() => setOpen(true)}
         >
-          <span className="sand-invite" aria-hidden="true">هلا أباشا أومرني</span>
+          <span className="sand-invite" aria-hidden="true">
+            <span className="sand-invite__spark">✦</span>
+            <span className="sand-invite__text">هلا أباشا أومرني</span>
+          </span>
           <SandAvatar variant="trigger" />
         </button>
       ) : null}
