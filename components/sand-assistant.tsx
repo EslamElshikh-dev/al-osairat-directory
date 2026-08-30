@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   FormEvent,
@@ -26,13 +27,19 @@ const welcome: ChatEntry = {
 
 const starterSuggestions = ['دكتور في أولاد حمزة', 'صيدلية قريبة', 'مواصلات العسيرات'];
 
-function SandIcon() {
+function SandAvatar({ variant }: { variant: 'header' | 'trigger' }) {
   return (
-    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path d="M8.2 19.6c2.1 4.2 6.4 6.4 10.8 5.3 4.8-1.2 7.8-6 6.6-10.8C24.4 9.3 19.7 6.3 15 7.4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M6.2 14.2 15 7.4l-.5 11.1-8.3-4.3Z" fill="currentColor" opacity=".94" />
-      <circle cx="19.8" cy="15.7" r="1.5" fill="currentColor" />
-    </svg>
+    <span className={`sand-avatar sand-avatar--${variant}`} aria-hidden="true">
+      <Image
+        src="/images/sand-avatar-v3.webp"
+        alt=""
+        fill
+        sizes={variant === 'trigger' ? '68px' : '58px'}
+        className="sand-avatar__image"
+        priority
+      />
+      <span className="sand-avatar__status" />
+    </span>
   );
 }
 
@@ -156,12 +163,12 @@ export function SandAssistant() {
       {open ? (
         <section className="sand-panel" role="dialog" aria-modal="false" aria-labelledby="sand-title">
           <header className="sand-panel__header">
-            <span className="sand-panel__avatar"><SandIcon /></span>
-            <div>
+            <SandAvatar variant="header" />
+            <div className="sand-panel__identity">
               <strong id="sand-title">سَند</strong>
-              <small>مساعد دليل العسيرات الآلي</small>
+              <small><i /> مساعد دليل العسيرات الآلي</small>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="تصغير سَند">−</button>
+            <button type="button" onClick={() => setOpen(false)} aria-label="تصغير سَند">×</button>
           </header>
 
           <div className="sand-emergency-bar" aria-label="أرقام الطوارئ الأساسية">
@@ -235,8 +242,8 @@ export function SandAssistant() {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <span className="sand-trigger__icon"><SandIcon /></span>
-        <span className="sand-trigger__copy"><strong>اسأل سَند</strong><small>يدلّك من الدليل</small></span>
+        <SandAvatar variant="trigger" />
+        <span className="sand-trigger__copy"><strong>اسأل سَند</strong><small>دليلك الودود في العسيرات</small></span>
       </button>
     </div>
   );
