@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import { initializeAnalyticsQueue, loadGoogleAnalytics } from '@/lib/analytics';
 
-const POST_LOAD_DELAY_MS = 3500;
-const HARD_FALLBACK_MS = 7000;
+const POST_LOAD_DELAY_MS = 8000;
+const HARD_FALLBACK_MS = 15000;
 
 export function GoogleAnalyticsLoader() {
   useEffect(() => {

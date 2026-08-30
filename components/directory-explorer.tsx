@@ -115,10 +115,10 @@ export function DirectoryExplorer({
             {(query || village !== 'all' || hasTransportFilter) && <Link href={pathname} className="button button--ghost">مسح</Link>}
           </div>
 
-          <label className="select-field">
+          <label className="select-field" htmlFor="directory-village">
             <span className="select-field__brand" aria-hidden="true"><BrandMark compact /></span>
             <span>القرية</span>
-            <select name="village" defaultValue={village}>
+            <select id="directory-village" name="village" defaultValue={village}>
               <option value="all">كل نطاق العسيرات</option>
               {villages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}
             </select>

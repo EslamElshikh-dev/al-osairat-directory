@@ -4,6 +4,7 @@ import { getListingsByVillage, villages } from '@/lib/data';
 import { BrandMark } from '@/components/site-shell';
 import { buildPageMetadata } from '@/lib/metadata';
 import { isFallbackScope } from '@/lib/seo-growth';
+import { siteConfig } from '@/lib/site';
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'قرى مركز العسيرات وتوابعها',
@@ -16,6 +17,45 @@ export default function VillagesPage() {
   const mainVillages = villages.filter((village) => !isFallbackScope(village.name));
   const totalListings = mainVillages.reduce((sum, village) => sum + getListingsByVillage(village.name).length, 0);
   const totalLocalities = mainVillages.reduce((sum, village) => sum + village.localities.length, 0);
+  const pageUrl = `${siteConfig.url}/villages`;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${pageUrl}#page`,
+        url: pageUrl,
+        name: 'قرى مركز العسيرات وتوابعها',
+        description: 'دليل القرى الأساسية والتوابع والخدمات المسجلة في نطاق مركز العسيرات بمحافظة سوهاج.',
+        isPartOf: { '@id': `${siteConfig.url}#website` },
+        mainEntity: { '@id': `${pageUrl}#villages` },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${pageUrl}#villages`,
+        name: 'قرى مركز العسيرات',
+        numberOfItems: mainVillages.length,
+        itemListElement: mainVillages.map((village, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          item: {
+            '@type': 'Place',
+            name: village.name,
+            description: village.description,
+            url: `${siteConfig.url}/villages/${village.slug}`,
+            containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
+          },
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: siteConfig.url },
+          { '@type': 'ListItem', position: 2, name: 'قرى العسيرات', item: pageUrl },
+        ],
+      },
+    ],
+  };
 
   return (
     <main id="main-content" className="page-main interior-redesign">
@@ -75,6 +115,7 @@ export default function VillagesPage() {
           })}
         </div>
       </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     </main>
   );
 }

@@ -22,7 +22,7 @@ export function BlogCard({ article, featured = false }: { article: BlogArticle; 
         </div>
         <h3><Link href={`/blog/${publishedArticle.slug}`}>{publishedArticle.title}</Link></h3>
         <p>{publishedArticle.description}</p>
-        <Link href={`/blog/${publishedArticle.slug}`} className="blog-card__link">اقرأ المقال كاملًا <span aria-hidden="true">←</span></Link>
+        <Link href={`/blog/${publishedArticle.slug}`} className="blog-card__link" aria-label={`اقرأ مقال: ${publishedArticle.title}`}>اقرأ المقال كاملًا <span aria-hidden="true">←</span></Link>
       </div>
     </article>
   );

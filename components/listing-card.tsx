@@ -46,15 +46,16 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
 
       <div className="listing-card__actions">
         <Link href={`/listing/${listing.slug}`} className="button button--primary">
+          <span className="sr-only">{listing.title}: </span>
           عرض التفاصيل
         </Link>
         {phone && (
-          <a href={phone} className="button button--soft">
+          <a href={phone} className="button button--soft" aria-label={`اتصال بـ ${listing.title}`}>
             اتصال
           </a>
         )}
         {(listing.googlePlaceId || listing.googleMapsUrl) && (
-          <a href={googleMapsHref(listing)} target="_blank" rel="noreferrer" className="button button--ghost">
+          <a href={googleMapsHref(listing)} target="_blank" rel="noreferrer" className="button button--ghost" aria-label={`فتح موقع ${listing.title} على الخريطة`}>
             الخريطة
           </a>
         )}

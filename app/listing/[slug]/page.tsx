@@ -34,8 +34,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const listing = await resolveListing(slug);
   if (!listing) return {};
   const category = categoryById[listing.category];
-  const title = `${listing.title} - ${listing.village}`;
-  const description = `${listing.subCategory || category.shortLabel} في ${listing.location}. بيانات التواصل والموقع ضمن دليل العسيرات.`;
+  const title = listing.title.includes(listing.village)
+    ? listing.title
+    : `${listing.title} - ${listing.village}`;
+  const service = (listing.subCategory || category.shortLabel).length <= 52
+    ? (listing.subCategory || category.shortLabel)
+    : category.shortLabel;
+  const location = listing.location.length <= 48 ? listing.location : listing.village;
+  const description = `${listing.title}، ${service} في ${location}. بيانات التواصل والموقع ضمن دليل العسيرات.`;
 
   return buildPageMetadata({
     title,
@@ -47,6 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 function schemaTypeFor(listing: DirectoryListing) {
+  if (/بنزين|وقود/.test(`${listing.title} ${listing.subCategory}`)) return 'GasStation';
   if (listing.category === 'doctors') {
     if (/معمل|مركز|مستشف|خدمات تمريض/.test(listing.title)) return 'MedicalBusiness';
     return 'Physician';

@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TransportSubmissionForm } from '@/components/transport-submission-form';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'أضف سائقًا أو وسيلة مواصلات',
   description: 'إرسال بيانات سائق أو سيارة أو ميكروباص أو توك توك أو وسيلة مواصلات تعمل داخل مركز العسيرات وقراه للمراجعة قبل النشر.',
-  robots: { index: false, follow: true },
-};
+  path: '/transport/add',
+  noIndex: true,
+  imageAlt: 'إضافة سائق أو وسيلة مواصلات إلى دليل العسيرات',
+});
 
 export default function AddTransportPage() {
   return (

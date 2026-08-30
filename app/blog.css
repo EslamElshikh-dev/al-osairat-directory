@@ -188,7 +188,7 @@
 }
 .blog-card__body { padding: 25px 25px 23px; display: flex; flex-direction: column; min-width: 0; }
 .blog-card--featured .blog-card__body { padding: 38px; justify-content: center; }
-.blog-card__meta { display: flex; flex-wrap: wrap; gap: 8px; color: #7a8782; font-size: 11px; font-weight: 750; }
+.blog-card__meta { display: flex; flex-wrap: wrap; gap: 8px; color: #596a63; font-size: 11px; font-weight: 750; }
 .blog-card h3 { margin: 14px 0 12px; font-size: 20px; line-height: 1.55; letter-spacing: -.35px; }
 .blog-card--featured h3 { max-width: 760px; font-size: clamp(25px, 3vw, 34px); line-height: 1.45; }
 .blog-card h3 a { transition: color .2s ease; }

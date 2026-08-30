@@ -172,7 +172,7 @@ export function LoginForm() {
   return (
     <div className="auth-form-stack">
       <SocialAuth />
-      <form className="auth-form" onSubmit={onSubmit}>
+      <form className="auth-form" method="post" onSubmit={onSubmit}>
         <div className="auth-field"><label htmlFor="login-email">البريد الإلكتروني</label><input id="login-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
         <div className="auth-field">
           <div className="auth-field__row"><label htmlFor="login-password">كلمة المرور</label><Link href="/account/forgot-password">نسيت كلمة المرور؟</Link></div>
@@ -226,7 +226,7 @@ export function RegisterForm() {
   return (
     <div className="auth-form-stack">
       <SocialAuth />
-      <form className="auth-form" onSubmit={onSubmit}>
+      <form className="auth-form" method="post" onSubmit={onSubmit}>
         <div className="auth-field"><label htmlFor="register-name">الاسم</label><input id="register-name" name="name" type="text" autoComplete="name" required minLength={2} maxLength={80} placeholder="اسمك كما تحب أن يظهر" /></div>
         <div className="auth-field"><label htmlFor="register-email">البريد الإلكتروني</label><input id="register-email" name="email" type="email" autoComplete="email" inputMode="email" required placeholder="name@example.com" /></div>
         <div className="auth-field auth-field--password">
@@ -272,7 +272,7 @@ export function ForgotPasswordForm() {
 
   if (sent) return <div className="auth-success"><strong>راجع بريدك الإلكتروني</strong><p>إذا كان البريد مرتبطًا بحساب، ستصلك رسالة لإعادة تعيين كلمة المرور.</p><Link href="/account/login">العودة لتسجيل الدخول</Link></div>;
   return (
-    <form className="auth-form" onSubmit={onSubmit}>
+    <form className="auth-form" method="post" onSubmit={onSubmit}>
       <div className="auth-field"><label htmlFor="forgot-email">البريد الإلكتروني</label><input id="forgot-email" name="email" type="email" autoComplete="email" inputMode="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@example.com" /></div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
       <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الإرسال…' : 'إرسال رابط الاستعادة'}</button>
@@ -307,7 +307,7 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <form className="auth-form" onSubmit={onSubmit}>
+    <form className="auth-form" method="post" onSubmit={onSubmit}>
       <div className="auth-field auth-field--password">
         <label htmlFor="reset-password">كلمة المرور الجديدة</label>
         <PasswordInput id="reset-password" name="password" autoComplete="new-password" minLength={PASSWORD_MIN_LENGTH} value={password} onChange={(event) => setPassword(event.target.value)} describedBy="reset-password-strength" placeholder={`${PASSWORD_MIN_LENGTH} أحرف + حرف ورقم`} />

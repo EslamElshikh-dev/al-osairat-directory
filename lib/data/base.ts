@@ -66,8 +66,8 @@ export const categories: CategoryInfo[] = [
   },
   {
     id: 'community',
-    label: 'دوواين ومنادر العسيرات',
-    shortLabel: 'دوواين ومنادر العسيرات',
+    label: 'دواوين ومنادر العسيرات',
+    shortLabel: 'دواوين ومنادر العسيرات',
     description: 'دواوين ومجالس ومنادر العائلات والمعالم المجتمعية المحلية داخل نطاق العسيرات.',
     icon: 'community',
   },
@@ -88,7 +88,7 @@ export const categories: CategoryInfo[] = [
   {
     id: 'emergency',
     label: 'أرقام الطوارئ المهمة',
-    shortLabel: 'الطوارئ',
+    shortLabel: 'أرقام الطوارئ',
     description: 'أرقام مختصرة للطوارئ والخدمات الأساسية في مصر.',
     icon: 'emergency',
   },

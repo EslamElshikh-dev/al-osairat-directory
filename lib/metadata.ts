@@ -77,6 +77,7 @@ export function buildArticleMetadata({
 
   return {
     ...buildPageMetadata({ title, description, path, noIndex, imageAlt }),
+    title: { absolute: title },
     openGraph: {
       type: 'article',
       locale: siteConfig.locale,

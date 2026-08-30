@@ -633,8 +633,7 @@
   min-height: 190px;
   border-radius: 24px;
   background: linear-gradient(100deg, #f0f1ef 25%, #f8f8f7 40%, #f0f1ef 60%);
-  background-size: 300% 100%;
-  animation: member-review-shimmer 1.4s ease infinite;
+  animation: member-review-pulse 1.4s ease-in-out infinite;
 }
 
 .member-reviews__loading span:nth-child(2) {
@@ -662,9 +661,8 @@
   color: #fff;
 }
 
-@keyframes member-review-shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: 0 0; }
+@keyframes member-review-pulse {
+  50% { opacity: 0.5; }
 }
 
 @media (max-width: 980px) {

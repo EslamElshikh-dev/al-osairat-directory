@@ -6,7 +6,7 @@ import { blogArticles } from '@/lib/blog-published';
 import { buildPageMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
-const title = 'مدونة العسيرات | تاريخ ومعالم وشخصيات وعائلات مركز العسيرات';
+const title = 'مدونة العسيرات: التاريخ والمعالم والشخصيات';
 const description = 'مقالات بحثية وموسوعية عن مركز العسيرات بمحافظة سوهاج: التاريخ، القرى، المعالم، أعلام ومشاهير العسيرات، أصل التسمية والعائلات المعروفة محليًا.';
 
 export const metadata: Metadata = {
