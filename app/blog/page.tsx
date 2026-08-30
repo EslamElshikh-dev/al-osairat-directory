@@ -3,28 +3,23 @@ import Link from 'next/link';
 import { BlogCard } from '@/components/blog-card';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles } from '@/lib/blog-published';
+import { buildPageMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
 const title = 'مدونة العسيرات | تاريخ ومعالم وشخصيات وعائلات مركز العسيرات';
 const description = 'مقالات بحثية وموسوعية عن مركز العسيرات بمحافظة سوهاج: التاريخ، القرى، المعالم، أعلام ومشاهير العسيرات، أصل التسمية والعائلات المعروفة محليًا.';
 
 export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: '/blog' },
+  ...buildPageMetadata({
+    title,
+    description,
+    path: '/blog',
+    imageAlt: 'مدونة وموسوعة العسيرات',
+  }),
   keywords: [
     'مدونة العسيرات', 'تاريخ العسيرات', 'مركز العسيرات', 'معالم العسيرات',
     'مشاهير العسيرات', 'عائلات العسيرات', 'قرى العسيرات', 'سوهاج',
   ],
-  openGraph: {
-    type: 'website',
-    title,
-    description,
-    url: `${siteConfig.url}/blog`,
-    siteName: siteConfig.name,
-    locale: siteConfig.locale,
-  },
-  twitter: { card: 'summary', title, description },
 };
 
 export default function BlogPage() {
