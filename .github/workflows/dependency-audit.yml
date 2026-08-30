@@ -8,7 +8,7 @@ on:
       - .github/workflows/dependency-audit.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   audit:
@@ -16,12 +16,23 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: fix/security-seo-search-hardening-2026-08-30
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
       - run: npm ci --ignore-scripts
-      - name: Production dependency audit
-        run: npm audit --omit=dev --audit-level=low || true
-      - name: Full dependency audit
-        run: npm audit --audit-level=low || true
+      - name: Write audit reports
+        shell: bash
+        run: |
+          npm audit --omit=dev --json > audit-production.json || true
+          npm audit --json > audit-full.json || true
+      - name: Commit audit reports
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audit-production.json audit-full.json
+          git commit -m "test: capture dependency audit reports" || exit 0
+          git push origin HEAD:fix/security-seo-search-hardening-2026-08-30
