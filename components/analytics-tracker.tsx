@@ -227,6 +227,17 @@ export function AnalyticsTracker() {
       const link = target?.closest('a[href]') as HTMLAnchorElement | null;
       if (!link) return;
 
+      const newsSource = stringParam(link.dataset.newsSource);
+      if (newsSource) {
+        trackEvent('news_source_click', {
+          source: newsSource,
+          topic: stringParam(link.dataset.newsTopic),
+          village: stringParam(link.dataset.newsVillage),
+          transport_type: 'beacon',
+        }, { immediate: true });
+        return;
+      }
+
       const eventName = classifyLink(link.getAttribute('href') || '');
       if (!eventName) return;
 
