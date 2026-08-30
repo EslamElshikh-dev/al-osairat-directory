@@ -113,7 +113,7 @@ export default async function NewsPage() {
             <div className={styles.monitorMetrics}>
               <div><strong>{feed.items.length}</strong><span>تغطية متاحة</span></div>
               <div><strong>{feed.connectedSourceCount}/{feed.totalSourceCount}</strong><span>قنوات متصلة</span></div>
-              <div><strong>30</strong><span>دقيقة للتحديث الخلفي</span></div>
+              <div><strong>25</strong><span>دقيقة بين فحوص الزيارة</span></div>
             </div>
             <p>آخر فحص: <time dateTime={feed.checkedAt}>{dateTimeFormatter.format(new Date(feed.checkedAt))}</time></p>
           </aside>
