@@ -45,6 +45,14 @@ type Ga4Analytics = {
   locations?: Array<{ country: string; city: string; activeUsers: number }>;
   events?: Array<{ name: string; count: number; keyEvents: number }>;
   conversions?: Array<{ name: string; count: number; keyEvents: number }>;
+  webVitals?: Array<{
+    name: string;
+    samples: number;
+    average: number;
+    goodRate: number;
+    needsImprovementRate: number;
+    poorRate: number;
+  }>;
 };
 
 type AnalyticsPayload = {
@@ -67,6 +75,15 @@ const eventLabels: Record<string, string> = {
   favorite_remove: 'إزالة من المفضلة',
 };
 
+const webVitalLabels: Record<string, string> = {
+  LCP: 'LCP — ظهور المحتوى الرئيسي',
+  INP: 'INP — سرعة الاستجابة للتفاعل',
+  CLS: 'CLS — ثبات التصميم',
+  TTFB: 'TTFB — استجابة الخادم',
+  FCP: 'FCP — ظهور أول محتوى',
+  FID: 'FID — تأخر أول تفاعل',
+};
+
 function n(value: number | undefined) {
   return Number(value || 0).toLocaleString('ar-EG');
 }
@@ -83,6 +100,16 @@ function formatDate(value: string) {
   } catch {
     return '—';
   }
+}
+
+function formatWebVital(name: string, value: number) {
+  if (name === 'CLS') {
+    return value.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+  }
+  if (value >= 1000) {
+    return `${(value / 1000).toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ث`;
+  }
+  return `${Math.round(value).toLocaleString('ar-EG')} مللي ثانية`;
 }
 
 function cleanTitle(value: string) {
@@ -253,6 +280,7 @@ export function AdminAnalyticsDashboard() {
 
   const db = data.database;
   const ga = data.ga4;
+  const webVitals = ga.webVitals || [];
   const comparison = ga.comparison7d;
   const memberGrowth = growth(db.members.last7d, db.members.previous7d);
   const conversionTotal = (ga.conversions || []).reduce((sum, item) => sum + item.count, 0);
@@ -286,6 +314,34 @@ export function AdminAnalyticsDashboard() {
             <ComparisonCard label="المشاهدات" current={comparison.current.views} previous={comparison.previous.views} />
             <ComparisonCard label="الأحداث الرئيسية" current={comparison.current.keyEvents} previous={comparison.previous.keyEvents} />
           </div>
+        </>
+      )}
+
+      {ga.connected && (
+        <>
+          <div className="analytics-section-heading analytics-section-heading--decision">
+            <div><span>أداء حقيقي من أجهزة الزوار</span><h2>Core Web Vitals — آخر 30 يومًا</h2></div>
+          </div>
+          {webVitals.length ? (
+            <div className="analytics-metric-grid">
+              {webVitals.map((metric) => (
+                <MetricCard
+                  key={metric.name}
+                  label={webVitalLabels[metric.name] || metric.name}
+                  value={`${percent(metric.goodRate)} جيد`}
+                  hint={`متوسط ${formatWebVital(metric.name, metric.average)} · ${percent(metric.poorRate)} ضعيف · ${n(metric.samples)} عينة`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="analytics-ga-setup">
+              <div className="analytics-ga-setup__icon" aria-hidden="true">⚡</div>
+              <div>
+                <strong>بدأ جمع مؤشرات الأداء الفعلية</strong>
+                <p>ستظهر المتوسطات ونسبة الحالات الجيدة هنا تلقائيًا بعد وصول أول عينات من زيارات الموقع.</p>
+              </div>
+            </div>
+          )}
         </>
       )}
 

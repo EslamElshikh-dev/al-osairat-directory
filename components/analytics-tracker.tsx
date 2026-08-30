@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useReportWebVitals } from 'next/web-vitals';
 import {
   initializeAnalyticsQueue,
   isGoogleAnalyticsLoaded,
@@ -17,6 +18,27 @@ type OperationalEvent = {
   village?: string;
   category?: string;
   resultCount?: number;
+};
+
+type ReportWebVitalsCallback = Parameters<typeof useReportWebVitals>[0];
+
+const reportWebVital: ReportWebVitalsCallback = (metric) => {
+  if (typeof window === 'undefined') return;
+
+  const metricName = metric.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 16);
+  const rating = metric.rating.replace(/[^a-z0-9]+/g, '_').slice(0, 24);
+  if (!metricName || !rating) return;
+
+  // GA4's standard `value` parameter is integer-only for reliable aggregation.
+  // CLS is scaled by 1,000 here and converted back when the admin report reads it.
+  const scale = metric.name === 'CLS' ? 1000 : 1;
+  trackEvent(`web_vital_${metricName}_${rating}`, {
+    value: Math.round(metric.value * scale),
+    metric_delta: Math.round(metric.delta * scale),
+    metric_id: metric.id.slice(0, 80),
+    navigation_type: metric.navigationType,
+    non_interaction: true,
+  });
 };
 
 function classifyLink(href: string) {
@@ -135,6 +157,8 @@ function trackMutation(path: string, body: Record<string, unknown>) {
 export function AnalyticsTracker() {
   const pathname = usePathname();
   const previousPageUrl = useRef<string | null>(null);
+
+  useReportWebVitals(reportWebVital);
 
   useEffect(() => {
     initializeAnalyticsQueue();

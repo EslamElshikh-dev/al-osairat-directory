@@ -40,6 +40,14 @@ export type Ga4AdminData = {
   locations?: Array<{ country: string; city: string; activeUsers: number }>;
   events?: Array<{ name: string; count: number; keyEvents: number }>;
   conversions?: Array<{ name: string; count: number; keyEvents: number }>;
+  webVitals?: Array<{
+    name: string;
+    samples: number;
+    average: number;
+    goodRate: number;
+    needsImprovementRate: number;
+    poorRate: number;
+  }>;
 };
 
 const analyticsScope = 'https://www.googleapis.com/auth/analytics.readonly';
@@ -63,6 +71,8 @@ const trackedEventNames = [
   'favorite_add',
   'favorite_remove',
 ];
+const webVitalOrder = ['lcp', 'inp', 'cls', 'ttfb', 'fcp', 'fid'];
+const webVitalEventPattern = /^web_vital_(lcp|inp|cls|ttfb|fcp|fid)_(good|needs_improvement|poor)$/;
 
 function base64Url(value: string | Buffer) {
   return Buffer.from(value).toString('base64url');
@@ -152,6 +162,52 @@ function pageRows(report: ReportResponse) {
   }));
 }
 
+function readWebVitals(report: ReportResponse) {
+  const totals = new Map<string, {
+    samples: number;
+    totalValue: number;
+    good: number;
+    needsImprovement: number;
+    poor: number;
+  }>();
+
+  for (const row of report.rows || []) {
+    const eventName = row.dimensionValues?.[0]?.value || '';
+    const match = webVitalEventPattern.exec(eventName);
+    if (!match) continue;
+
+    const [, name, rating] = match;
+    const samples = numberValue(row.metricValues?.[0]?.value);
+    const current = totals.get(name) || {
+      samples: 0,
+      totalValue: 0,
+      good: 0,
+      needsImprovement: 0,
+      poor: 0,
+    };
+    current.samples += samples;
+    current.totalValue += numberValue(row.metricValues?.[1]?.value);
+    if (rating === 'good') current.good += samples;
+    if (rating === 'needs_improvement') current.needsImprovement += samples;
+    if (rating === 'poor') current.poor += samples;
+    totals.set(name, current);
+  }
+
+  return webVitalOrder.flatMap((name) => {
+    const item = totals.get(name);
+    if (!item?.samples) return [];
+    const scale = name === 'cls' ? 1000 : 1;
+    return [{
+      name: name.toUpperCase(),
+      samples: item.samples,
+      average: (item.totalValue / item.samples) / scale,
+      goodRate: item.good / item.samples,
+      needsImprovementRate: item.needsImprovement / item.samples,
+      poorRate: item.poor / item.samples,
+    }];
+  });
+}
+
 export async function getGa4AdminData(): Promise<Ga4AdminData> {
   const propertyId = process.env.GA4_PROPERTY_ID?.trim() || defaultPropertyId;
   const clientEmail = process.env.GA4_SERVICE_ACCOUNT_EMAIL?.trim();
@@ -182,6 +238,7 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
       sourceReport,
       locationReport,
       eventReport,
+      webVitalsReport,
     ] = await Promise.all([
       runReport(token, propertyId, {
         dateRanges,
@@ -264,6 +321,18 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
         orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
         limit: '20',
       }),
+      runReport(token, propertyId, {
+        dateRanges,
+        dimensions: [{ name: 'eventName' }],
+        metrics: [{ name: 'eventCount' }, { name: 'eventValue' }],
+        dimensionFilter: {
+          filter: {
+            fieldName: 'eventName',
+            stringFilter: { matchType: 'BEGINS_WITH', value: 'web_vital_', caseSensitive: false },
+          },
+        },
+        limit: '30',
+      }),
     ]);
 
     const events = (eventReport.rows || []).map((row) => ({
@@ -297,6 +366,7 @@ export async function getGa4AdminData(): Promise<Ga4AdminData> {
       })),
       events,
       conversions,
+      webVitals: readWebVitals(webVitalsReport),
     };
   } catch {
     return { connected: false, reason: 'api_error' };
