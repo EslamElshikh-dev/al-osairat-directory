@@ -75,7 +75,8 @@
   gap: 0;
   direction: ltr;
   transform: translateX(-50%);
-  animation: category-ticker-flow 38s linear infinite;
+  animation: category-ticker-flow 24s linear infinite;
+  animation-delay: -3s;
   will-change: transform;
 }
 
@@ -186,7 +187,7 @@
   }
 
   .category-ticker__track {
-    animation-duration: 32s;
+    animation-duration: 22s;
   }
 
   .results-bar--ticker .results-bar__context {
