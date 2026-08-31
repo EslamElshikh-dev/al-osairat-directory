@@ -9,6 +9,12 @@ const securityHeaders = [
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
 ];
 
+const legacyVercelHosts = [
+  'al-osairat-directory.vercel.app',
+  'al-osairat-directory-moqawel1215-3361s-projects.vercel.app',
+  'al-osairat-directory-git-main-moqawel1215-3361s-projects.vercel.app',
+];
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   env: {
@@ -16,6 +22,12 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      ...legacyVercelHosts.map((host) => ({
+        source: '/:path*',
+        has: [{ type: 'host' as const, value: host }],
+        destination: 'https://usayrat.online/:path*',
+        permanent: true,
+      })),
       {
         source: '/map',
         destination: '/villages',
