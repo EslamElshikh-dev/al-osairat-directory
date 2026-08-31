@@ -7,7 +7,7 @@ import {
   collectLocalNewsFromSources,
   fetchSourceDetail,
   type LocalNewsItem,
-} from '@/lib/news';
+} from '@/lib/news-resilient';
 import {
   completeNewsIngestion,
   getStoredNewsProcessingState,
