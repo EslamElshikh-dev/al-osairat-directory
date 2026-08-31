@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/site';
 
 const defaultSocialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
-const defaultSocialImageAlt = 'دليل العسيرات - بتدور علي ايه وإحنا ندلّك عليه من قلب العسيرات';
+const defaultSocialImageAlt = 'دليل العسيرات - بتدور على إيه؟ وإحنا ندلّك عليه من قلب العسيرات';
 
 type BaseMetadataInput = {
   title: string;

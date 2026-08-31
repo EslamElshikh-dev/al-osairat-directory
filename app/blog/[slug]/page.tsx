@@ -51,6 +51,19 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   const related = blogArticles.filter((item) => item.slug !== article.slug).slice(0, 3);
   const articleUrl = `${siteConfig.url}/blog/${article.slug}`;
   const faqGroup = `article-faq-${article.slug}`;
+  const sectionSources = article.sections.flatMap((section) => (
+    section.entries?.flatMap((entry) => entry.sourceUrl ? [entry.sourceUrl] : []) ?? []
+  ));
+  const citations = [...new Set([...article.sources.map((source) => source.url), ...sectionSources])];
+  const articleBody = [
+    article.lead,
+    article.highlight,
+    ...article.sections.flatMap((section) => [
+      ...section.paragraphs,
+      ...(section.bullets ?? []),
+      ...(section.entries?.map((entry) => `${entry.name}: ${entry.description}`) ?? []),
+    ]),
+  ].join(' ');
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -66,7 +79,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         dateModified: article.updatedAt,
         inLanguage: 'ar-EG',
         articleSection: article.category,
-        articleBody: [article.lead, article.highlight, ...article.sections.flatMap((section) => section.paragraphs)].join(' '),
+        articleBody,
         author: {
           '@type': 'Person',
           name: authorName,
@@ -90,7 +103,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           '@type': 'Place',
           name: 'مركز العسيرات، سوهاج، مصر',
         },
-        citation: article.sources.map((source) => source.url),
+        citation: citations,
       },
       {
         '@type': 'BreadcrumbList',
@@ -166,6 +179,21 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                 <ul className="article-list">
                   {section.bullets.map((item) => <li key={item}>{item}</li>)}
                 </ul>
+              ) : null}
+              {section.entries?.length ? (
+                <div className="article-entry-grid">
+                  {section.entries.map((entry) => (
+                    <div key={entry.name} className="article-entry">
+                      <h3>{entry.name}</h3>
+                      <p>{entry.description}</p>
+                      {entry.sourceUrl && entry.sourceLabel ? (
+                        <a href={entry.sourceUrl} target="_blank" rel="noreferrer">
+                          {entry.sourceLabel}<span aria-hidden="true">↗</span>
+                        </a>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
               ) : null}
             </section>
           ))}

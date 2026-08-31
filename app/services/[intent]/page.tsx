@@ -138,7 +138,7 @@ export default async function ServiceIntentPage({
 
       <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="service-authority-title">
         <div className="seo-growth-hub__heading">
-          <span>صفحة متخصصة وليست فلترًا مؤرشفًا</span>
+          <span>صفحة متخصصة وليست نتيجة بحث مؤرشفة</span>
           <h2 id="service-authority-title">معلومات تساعدك قبل التواصل</h2>
           <p>{intent.intro}</p>
           <p>{intent.guidance}</p>

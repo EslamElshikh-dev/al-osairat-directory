@@ -74,7 +74,7 @@ export default function VillagesPage() {
           <aside className="geo-hero__panel" aria-label="ملخص القرى">
             <span className="geo-hero__mark" aria-hidden="true"><BrandMark /></span>
             <strong>مركز العسيرات · سوهاج</strong>
-            <p>هيكل محلي منظم يساعدك على الوصول للخدمة حسب القرية والنجع والتابع.</p>
+            <p>تنظيم محلي يساعدك على الوصول إلى الخدمة بحسب القرية أو النجع أو التابع.</p>
             <div className="catalog-hero__metrics">
               <span><b>{mainVillages.length.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
               <span><b>{totalLocalities.toLocaleString('ar-EG')}</b><small>توابع مسماة</small></span>
@@ -88,8 +88,8 @@ export default function VillagesPage() {
         <div className="section-heading interior-section-heading">
           <div>
             <span className="eyebrow eyebrow--dark">استكشف حسب المكان</span>
-            <h2>كل قرية لها صفحة مستقلة</h2>
-            <p>تظهر داخل كل صفحة الأقسام المتاحة والتوابع والأنشطة المنشورة في نفس النطاق.</p>
+            <h2>صفحة مستقلة لكل قرية</h2>
+            <p>تعرض كل صفحة الأقسام المتاحة والتوابع والأنشطة المنشورة في النطاق نفسه.</p>
           </div>
           <span className="interior-section-heading__count">{mainVillages.length.toLocaleString('ar-EG')} قرى</span>
         </div>
@@ -107,7 +107,7 @@ export default function VillagesPage() {
                 <p>{village.description}</p>
                 <div className="village-card__meta">
                   <span><b>{count.toLocaleString('ar-EG')}</b> سجل</span>
-                  <span><b>{village.localities.length.toLocaleString('ar-EG')}</b> تابع/نجع</span>
+                  <span><b>{village.localities.length.toLocaleString('ar-EG')}</b> تابعًا ونجعًا</span>
                 </div>
                 <span className="village-card__cta">فتح دليل القرية ←</span>
               </Link>

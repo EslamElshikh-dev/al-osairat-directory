@@ -7,11 +7,11 @@ import { villages } from '@/lib/data/base';
 import { validateBusinessSubmissionInput } from '@/lib/business-submission-validation';
 
 const vehicleTypes = [
-  'سيارة خاصة / تاكسي',
+  'سيارة خاصة / سيارة أجرة',
   'ميكروباص',
   'توك توك',
-  'أتوبيس / نقل جماعي',
-  'موتوسيكل توصيل',
+  'حافلة / نقل جماعي',
+  'دراجة نارية للتوصيل',
   'وسيلة نقل أخرى',
 ];
 
@@ -137,7 +137,7 @@ export function TransportSubmissionForm() {
       }));
       setServiceAreas('');
       setContactPublishConsent(false);
-      setMessage('تم إرسال بيانات السائق أو وسيلة النقل للمراجعة. لن تظهر في الدليل قبل التحقق منها واعتمادها.');
+      setMessage('أُرسلت بيانات السائق أو وسيلة النقل للمراجعة، ولن تظهر في الدليل قبل التحقق منها واعتمادها.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر إرسال الطلب الآن.');
     } finally {
@@ -189,7 +189,7 @@ export function TransportSubmissionForm() {
           </label>
 
           <label>
-            <span>التابع / النجع</span>
+            <span>التابع أو النجع</span>
             <input value={form.locality} onChange={(event) => update('locality', event.target.value)} maxLength={100} list="transport-localities" disabled={!form.village} placeholder="اختياري" />
             <datalist id="transport-localities">
               {(selectedVillage?.localities || []).map((locality) => <option value={locality} key={locality} />)}
@@ -202,7 +202,7 @@ export function TransportSubmissionForm() {
           </label>
 
           <label className="business-submission-field--wide">
-            <span>خط السير / المناطق التي تخدمها <b>*</b></span>
+            <span>خط السير أو المناطق التي تخدمها <b>*</b></span>
             <input value={serviceAreas} onChange={(event) => { setServiceAreas(event.target.value); setError(''); setMessage(''); }} minLength={3} maxLength={300} placeholder="مثال: أولاد حمزة - العسيرات - سوهاج / جرجا / المنشأة" required />
             <small>اكتب القرى أو المدن التي يقبل السائق التوصيل إليها.</small>
           </label>
@@ -253,20 +253,20 @@ export function TransportSubmissionForm() {
 
         <div className="business-submission-form__note">
           <strong>شروط النشر</strong>
-          <p>يُقبل فقط رقم منشور للخدمة أو رقم يرسله صاحب الخدمة بنفسه، ويجب أن تكون الخدمة داخل نطاق مركز العسيرات وقراه. لا يتم نشر الطلب تلقائيًا.</p>
+          <p>يُقبل فقط رقم منشور للخدمة أو رقم يرسله صاحب الخدمة بنفسه، ويجب أن تعمل الخدمة داخل نطاق مركز العسيرات وقراه. ولا يُنشر الطلب تلقائيًا.</p>
         </div>
 
         {error && <div className="business-submission-feedback is-error" role="alert">{error}</div>}
         {message && <div className="business-submission-feedback is-success" role="status">{message}</div>}
 
         <div className="business-submission-submit-row">
-          <span>{loadingProfile ? 'جاري تجهيز النموذج…' : 'يلزم تسجيل الدخول وتأكيد البريد قبل الإرسال.'}</span>
-          <button type="submit" disabled={saving}>{saving ? 'جاري إرسال الطلب…' : 'إرسال للمراجعة'}</button>
+          <span>{loadingProfile ? 'جارٍ تجهيز النموذج…' : 'يلزم تسجيل الدخول وتأكيد البريد قبل الإرسال.'}</span>
+          <button type="submit" disabled={saving}>{saving ? 'جارٍ إرسال الطلب…' : 'إرسال الطلب للمراجعة'}</button>
         </div>
       </form>
 
       <div className="business-submission-form__note">
-        <strong>عندك حساب بالفعل؟</strong>
+        <strong>لديك حساب بالفعل؟</strong>
         <p>يمكنك متابعة حالة الطلبات من <Link href="/account#business-submissions">مساحة العضو</Link>.</p>
       </div>
     </section>

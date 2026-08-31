@@ -10,7 +10,7 @@ import { getEligibleServiceIntents, getProgrammaticCollectionStats } from '@/lib
 import { siteConfig } from '@/lib/site';
 
 const pageTitle = 'خدمات العسيرات حسب التخصص';
-const pageDescription = 'صفحات متخصصة للخدمات التي لديها بيانات كافية وطلب بحث واضح داخل دليل العسيرات، بدون إنشاء صفحات ضعيفة أو مكررة.';
+const pageDescription = 'صفحات متخصصة لخدمات العسيرات التي تتوافر لها بيانات كافية وطلب بحث واضح، من دون إنشاء صفحات ضعيفة أو مكررة.';
 
 export const metadata: Metadata = buildPageMetadata({
   title: pageTitle,
@@ -71,7 +71,7 @@ export default async function ServicesPage() {
           <div className="catalog-hero__copy">
             <span className="catalog-hero__kicker"><BrandMark compact /> بحث حسب التخصص</span>
             <h1>خدمات العسيرات <em>حسب التخصص</em></h1>
-            <p>صفحات منتقاة لا تظهر إلا عندما يتوفر لها عدد كافٍ من السجلات وبيانات قابلة للاستخدام، بدل إنشاء صفحات آلية متشابهة بلا قيمة حقيقية.</p>
+            <p>صفحات منتقاة لا تظهر إلا عندما يتوافر لها عدد كافٍ من السجلات وبيانات قابلة للاستخدام، حتى يجد الزائر نتائج مفيدة وغير مكررة.</p>
             <div className="catalog-hero__actions">
               <Link href="#service-intents" className="button button--light">استكشف الخدمات</Link>
               <Link href="/directory" className="button button--outline-light">الدليل الكامل</Link>
@@ -91,7 +91,7 @@ export default async function ServicesPage() {
         <div className="seo-growth-hub__heading">
           <span>بحث أكثر دقة</span>
           <h2 id="service-intents-title">اختر الخدمة التي تبحث عنها</h2>
-          <p>كل صفحة أدناه مبنية على تخصص ظاهر في بيانات السجلات نفسها، وتُراجع أهليتها آليًا بحسب العدد واكتمال البيانات.</p>
+          <p>تستند كل صفحة أدناه إلى تخصص ظاهر في بيانات السجلات نفسها، وتُراجع أهليتها بحسب العدد ومدى اكتمال البيانات.</p>
         </div>
         {eligible.length > 0 ? (
           <nav className="seo-growth-hub__links" aria-label="الخدمات المتخصصة في العسيرات">
@@ -106,7 +106,7 @@ export default async function ServicesPage() {
             })}
           </nav>
         ) : (
-          <div className="empty-state"><strong>لا توجد صفحات متخصصة مؤهلة بعد</strong><p>ستظل نتائج الخدمات متاحة من البحث الرئيسي حتى تتوفر بيانات كافية لإنشاء صفحة مستقلة ذات قيمة.</p></div>
+          <div className="empty-state"><strong>لا توجد صفحات متخصصة مؤهلة بعد</strong><p>ستظل نتائج الخدمات متاحة من البحث الرئيسي حتى تتوافر بيانات كافية لإنشاء صفحة مستقلة ذات قيمة.</p></div>
         )}
       </section>
 

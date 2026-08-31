@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
-import { blogArticles } from '@/lib/blog';
+import { blogArticles } from '@/lib/blog-published';
 import { mergeDirectoryListings } from '@/lib/directory-query';
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';

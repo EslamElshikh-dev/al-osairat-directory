@@ -199,7 +199,7 @@ export default async function CategoryPage({
             </div>
             <div className="catalog-hero__scope-note">
               <strong>{query.village && query.village !== 'all' ? query.village : 'كل نطاق العسيرات'}</strong>
-              <span>يمكن تغيير القرية من أدوات التصفية بالأسفل.</span>
+              <span>يمكن تغيير القرية من أدوات التصفية أدناه.</span>
             </div>
           </aside>
         </div>
@@ -245,7 +245,7 @@ export default async function CategoryPage({
           <div className="seo-growth-hub__heading">
             <span>بحث حسب التخصص</span>
             <h2 id="specialist-intents-title">صفحات أكثر دقة داخل {info.shortLabel}</h2>
-            <p>هذه الصفحات لا تُنشأ إلا للتخصصات التي لديها عدد كافٍ من السجلات وبيانات قابلة للاستخدام.</p>
+            <p>لا تُنشأ هذه الصفحات إلا للتخصصات التي يتوافر لها عدد كافٍ من السجلات وبيانات قابلة للاستخدام.</p>
           </div>
           <nav className="seo-growth-hub__links" aria-label={`تخصصات داخل ${info.shortLabel}`}>
             {specialistIntents.map(({ intent, listings: matched }) => (
@@ -260,7 +260,7 @@ export default async function CategoryPage({
           <div className="seo-growth-hub__heading">
             <span>تغطية محلية</span>
             <h2 id="category-villages-title">{info.shortLabel} حسب قرى العسيرات</h2>
-            <p>التركيبات التي تمتلك بيانات كافية تفتح صفحة محلية متخصصة، أما النتائج الأقل اكتمالًا فتوجّه إلى صفحة القرية الأساسية بدل إنشاء صفحة ضعيفة.</p>
+            <p>يُفتح لكل قسم داخل القرية صفحة محلية متخصصة عندما تتوافر بيانات كافية؛ أما النتائج الأقل اكتمالًا فتنتقل إلى صفحة القرية الأساسية.</p>
           </div>
           <nav className="seo-growth-hub__links" aria-label={`${info.shortLabel} حسب القرية`}>
             {villageLinks.map(({ village, count, qualified }) => (

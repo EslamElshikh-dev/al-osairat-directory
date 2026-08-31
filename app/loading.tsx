@@ -11,8 +11,8 @@ export default function Loading() {
             </span>
           </span>
           <span className="status-card__eyebrow">دليل العسيرات</span>
-          <h1 id="page-loading-title">جاري تجهيز الصفحة…</h1>
-          <p>لحظات بسيطة ونكمل من نفس المكان.</p>
+          <h1 id="page-loading-title">جارٍ تجهيز الصفحة…</h1>
+          <p>لحظات قليلة، وسنكمل من الموضع نفسه.</p>
           <div className="status-skeleton" aria-hidden="true">
             <span />
             <span />

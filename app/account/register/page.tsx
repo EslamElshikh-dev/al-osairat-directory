@@ -14,7 +14,7 @@ export default function RegisterPage() {
           <div className="auth-heading"><span className="auth-eyebrow">انضم إلى الدليل</span><h1 id="register-title">إنشاء حساب عضو</h1><p>حساب بسيط وآمن باسمك وبريدك الإلكتروني، جاهز للمزايا القادمة.</p></div>
           <RegisterForm />
         </section>
-        <aside className="auth-side auth-side--register" aria-hidden="true"><span className="auth-side__mark"><BrandMark /></span><div><b>ابدأ من هنا</b><h2>حساب واحد لكل ما يخصك في الدليل.</h2><p>نبدأ بالهوية الأساسية للعضو، ثم نبني فوقها المفضلة والمساهمات وخدمات أصحاب الأنشطة بدون إعادة تسجيل.</p></div></aside>
+        <aside className="auth-side auth-side--register" aria-hidden="true"><span className="auth-side__mark"><BrandMark /></span><div><b>ابدأ من هنا</b><h2>حساب واحد لكل ما يخصك في الدليل.</h2><p>نبدأ بالهوية الأساسية للعضو، ثم نبني عليها المفضلة والمساهمات وخدمات أصحاب الأنشطة من دون إعادة التسجيل.</p></div></aside>
       </div>
     </main>
   );

@@ -179,7 +179,7 @@ export function LoginForm() {
           <PasswordInput id="login-password" name="password" autoComplete="current-password" minLength={8} placeholder="••••••••" />
         </div>
         {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
-        <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الدخول…' : 'تسجيل الدخول'}</button>
+        <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جارٍ تسجيل الدخول…' : 'تسجيل الدخول'}</button>
         <p className="auth-switch">ليس لديك حساب؟ <Link href="/account/register">أنشئ حسابًا جديدًا</Link></p>
       </form>
     </div>
@@ -241,7 +241,7 @@ export function RegisterForm() {
         </div>
         <label className="auth-consent"><input name="consent" type="checkbox" value="yes" required /><span>أوافق على استخدام الاسم والبريد وبيانات الجلسة اللازمة لتشغيل عضويتي في دليل العسيرات.</span></label>
         {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
-        <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري إنشاء الحساب…' : 'إنشاء الحساب'}</button>
+        <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جارٍ إنشاء الحساب…' : 'إنشاء الحساب'}</button>
         <p className="auth-switch">لديك حساب بالفعل؟ <Link href="/account/login">تسجيل الدخول</Link></p>
       </form>
     </div>
@@ -275,7 +275,7 @@ export function ForgotPasswordForm() {
     <form className="auth-form" method="post" onSubmit={onSubmit}>
       <div className="auth-field"><label htmlFor="forgot-email">البريد الإلكتروني</label><input id="forgot-email" name="email" type="email" autoComplete="email" inputMode="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@example.com" /></div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
-      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الإرسال…' : 'إرسال رابط الاستعادة'}</button>
+      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جارٍ الإرسال…' : 'إرسال رابط الاستعادة'}</button>
       <p className="auth-switch"><Link href="/account/login">العودة لتسجيل الدخول</Link></p>
     </form>
   );
@@ -319,7 +319,7 @@ export function ResetPasswordForm() {
         {confirmPassword && <small className={`password-match ${password === confirmPassword ? 'is-match' : 'is-mismatch'}`}>{password === confirmPassword ? '✓ كلمتا المرور متطابقتان' : 'كلمتا المرور غير متطابقتين بعد'}</small>}
       </div>
       {error && <p className="auth-message auth-message--error" role="alert">{error}</p>}
-      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جاري الحفظ…' : 'حفظ كلمة المرور الجديدة'}</button>
+      <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'جارٍ الحفظ…' : 'حفظ كلمة المرور الجديدة'}</button>
     </form>
   );
 }

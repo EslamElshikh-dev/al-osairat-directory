@@ -56,7 +56,7 @@ export function OwnedListingPerformance() {
         </div>
       </div>
 
-      {loading ? <div className={styles.empty}>جاري تحميل الأداء…</div> : error ? <div className={styles.error}>{error}</div> : items.length ? (
+      {loading ? <div className={styles.empty}>جارٍ تحميل الأداء…</div> : error ? <div className={styles.error}>{error}</div> : items.length ? (
         <div className={styles.items}>
           {items.map((item) => (
             <article className={styles.item} key={item.listingId}>

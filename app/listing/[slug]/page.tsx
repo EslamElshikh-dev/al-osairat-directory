@@ -236,9 +236,9 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
 
         <aside className="detail-aside detail-aside--premium">
           <div className="detail-aside__heading">
-            <span className="eyebrow eyebrow--dark">في نفس النطاق</span>
+            <span className="eyebrow eyebrow--dark">في النطاق نفسه</span>
             <h2>{fallbackScope ? 'خدمات قريبة ضمن مركز العسيرات' : `خدمات قريبة في ${listing.village}`}</h2>
-            <p>{fallbackScope ? 'نتائج من نفس القسم ضمن النطاق العام لمركز العسيرات.' : 'نتائج من نفس القسم والقرية لمساعدتك على المقارنة والوصول بسرعة.'}</p>
+            <p>{fallbackScope ? 'نتائج من القسم نفسه ضمن النطاق العام لمركز العسيرات.' : 'نتائج من القسم والقرية نفسيهما لمساعدتك على المقارنة والوصول بسرعة.'}</p>
           </div>
           <div className="detail-aside__list">
             {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}

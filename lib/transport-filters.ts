@@ -9,7 +9,7 @@ export const transportVehicleFilters: Array<{ value: TransportVehicleFilter; lab
   { value: 'car', label: 'سيارة خاصة' },
   { value: 'microbus', label: 'ميكروباص' },
   { value: 'tuktuk', label: 'توك توك' },
-  { value: 'bus', label: 'أتوبيس' },
+  { value: 'bus', label: 'حافلة' },
 ];
 
 export const transportDestinationFilters: Array<{ value: TransportDestinationFilter; label: string }> = [
@@ -39,7 +39,7 @@ function matchesVehicle(listing: DirectoryListing, filter: TransportVehicleFilte
   if (filter === 'car') return /(سياره خاصه|تاكسي|ملاكي)/.test(subCategory);
   if (filter === 'microbus') return /ميكروباص/.test(subCategory);
   if (filter === 'tuktuk') return /(توك توك|تكاتك|تكتك)/.test(subCategory);
-  if (filter === 'bus') return /(اتوبيس|باص|نقل جماعي|نقل داخلي)/.test(subCategory);
+  if (filter === 'bus') return /(حافله|اتوبيس|باص|نقل جماعي|نقل داخلي)/.test(subCategory);
   return true;
 }
 

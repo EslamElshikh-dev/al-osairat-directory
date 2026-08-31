@@ -54,6 +54,8 @@ export function GlobalSearch() {
     if (loading) return 'جارٍ البحث…';
     if (error) return error;
     if (!items.length) return 'لا توجد نتائج مطابقة.';
+    if (items.length === 1) return 'نتيجة سريعة واحدة';
+    if (items.length === 2) return 'نتيجتان سريعتان';
     return `${items.length.toLocaleString('ar-EG')} نتائج سريعة`;
   }, [error, hasQuery, items.length, loading]);
 
@@ -158,7 +160,7 @@ export function GlobalSearch() {
           <div className="global-search__head">
             <div>
               <span>بحث سريع</span>
-              <strong>ابحث في كل دليل العسيرات</strong>
+              <strong>ابحث في دليل العسيرات كاملًا</strong>
             </div>
             <button type="button" className="global-search__close" aria-label="إغلاق البحث" onClick={() => setOpen(false)}>×</button>
           </div>
@@ -184,7 +186,7 @@ export function GlobalSearch() {
 
           <div className={`global-search__status${error ? ' is-error' : ''}`} aria-live="polite">
             <span>{statusText}</span>
-            {hasQuery && !loading && !error ? <small>Enter لعرض كل النتائج</small> : null}
+            {hasQuery && !loading && !error ? <small>اضغط Enter لعرض جميع النتائج</small> : null}
           </div>
 
           <div id="global-search-results" className="global-search__results" role="listbox" aria-label="نتائج البحث السريع">
@@ -214,7 +216,7 @@ export function GlobalSearch() {
               <div className="global-search__empty">
                 <span aria-hidden="true">⌕</span>
                 <strong>لا توجد نتيجة مباشرة</strong>
-                <small>اضغط Enter للبحث الموسع داخل الدليل.</small>
+                <small>اضغط Enter لإجراء بحث موسّع داخل الدليل.</small>
               </div>
             ) : (
               <div className="global-search__suggestions">

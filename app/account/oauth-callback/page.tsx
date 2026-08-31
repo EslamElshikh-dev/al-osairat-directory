@@ -76,7 +76,7 @@ export default function OAuthCallbackPage() {
               <Link href="/account/login">العودة إلى تسجيل الدخول</Link>
             </div>
           ) : (
-            <><span /><p>جاري إكمال تسجيل الدخول بواسطة Google…</p></>
+            <><span /><p>جارٍ إكمال تسجيل الدخول بواسطة Google…</p></>
           )}
         </div>
       </div>

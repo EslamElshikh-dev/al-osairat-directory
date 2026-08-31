@@ -180,7 +180,7 @@ export default async function VillagePage({
             <span className="catalog-hero__summary-label">{fallbackScope ? 'ملخص النطاق' : 'ملخص القرية'}</span>
             <div className="catalog-hero__metrics">
               <span><b>{result.total.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
-              {!fallbackScope && <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابع/نجع</small></span>}
+              {!fallbackScope && <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابعًا ونجعًا</small></span>}
               <span><b>{categorySummary.length.toLocaleString('ar-EG')}</b><small>أقسام متاحة</small></span>
             </div>
           </aside>
@@ -249,7 +249,7 @@ export default async function VillagePage({
         ) : (
           <div className="empty-state">
             <strong>{fallbackScope ? 'لا توجد سجلات غير محددة القرية حاليًا' : 'لم تُنشر بيانات مؤكدة لهذه القرية بعد'}</strong>
-            <p>{fallbackScope ? 'كلما تم تحديد القرية الفعلية لسجل، يُنقل إلى نطاقه الصحيح داخل الدليل.' : 'القرية موجودة في هيكل الموسوعة وسيتم ربط الأنشطة بها عند اكتمال المراجعة.'}</p>
+            <p>{fallbackScope ? 'عندما تُحدَّد القرية الفعلية لسجل، يُنقل إلى نطاقه الصحيح داخل الدليل.' : 'القرية موجودة في هيكل الموسوعة، وستُربط الأنشطة بها عند اكتمال المراجعة.'}</p>
           </div>
         )}
       </section>

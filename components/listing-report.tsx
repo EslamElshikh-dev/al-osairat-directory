@@ -113,7 +113,7 @@ export function ListingReport({ listingId, listingTitle }: { listingId: string; 
 
           <div className="listing-report__submit">
             <small>لا ترسل كلمات مرور أو رموز تحقق أو بيانات شخصية حساسة.</small>
-            <button type="submit" disabled={saving || details.trim().length < 8}>{saving ? 'جاري الإرسال…' : 'إرسال البلاغ للمراجعة'}</button>
+            <button type="submit" disabled={saving || details.trim().length < 8}>{saving ? 'جارٍ الإرسال…' : 'إرسال البلاغ للمراجعة'}</button>
           </div>
         </form>
       )}

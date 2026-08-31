@@ -107,10 +107,10 @@ export default function BlogPage() {
         <div className="shell">
           <div className="section-heading">
             <div>
-              <span className="eyebrow eyebrow--dark">إصدار البداية</span>
-              <h2>خمسة ملفات موسوعية عن مركز العسيرات</h2>
+              <span className="eyebrow eyebrow--dark">موسوعة متجددة</span>
+              <h2>ملفات بحثية عن مركز العسيرات</h2>
             </div>
-            <span className="blog-count">{blogArticles.length} مقالات</span>
+            <span className="blog-count">{blogArticles.length.toLocaleString('ar-EG')} مقالات</span>
           </div>
           <div className="blog-grid">
             {blogArticles.map((article, index) => (

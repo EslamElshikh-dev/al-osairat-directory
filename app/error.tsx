@@ -20,8 +20,8 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
             </span>
           </span>
           <span className="status-card__eyebrow">تعذر إكمال الطلب</span>
-          <h1 id="page-error-title">حصل خطأ مؤقت</h1>
-          <p>تعذر عرض هذا الجزء بشكل صحيح. جرّب مرة ثانية، أو ارجع للدليل لو استمرت المشكلة.</p>
+          <h1 id="page-error-title">حدث خطأ مؤقت</h1>
+          <p>تعذر عرض هذا الجزء بصورة صحيحة. حاول مرة أخرى، أو عُد إلى الدليل إذا استمرت المشكلة.</p>
           <div className="status-card__actions">
             <button className="button button--primary" type="button" onClick={reset}>إعادة المحاولة</button>
             <Link className="button button--ghost" href="/directory">العودة إلى الدليل</Link>

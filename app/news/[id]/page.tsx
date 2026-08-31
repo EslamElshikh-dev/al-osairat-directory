@@ -200,7 +200,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
               <div>
-                <strong>موجز موسّع موثّق — بدون ذكاء اصطناعي</strong>
+                <strong>موجز موسّع موثّق — من دون ذكاء اصطناعي</strong>
                 <p>
                   جُلبت هذه التفاصيل مباشرة من صفحة {item.source}، ثم قُسمت إلى مقتطفات قصيرة
                   مع بقاء المقال الكامل وحقوقه لدى الناشر الأصلي.

@@ -186,7 +186,7 @@ export function MyBusinessesPanel() {
       if (!response.ok) throw new Error(payload.error || 'تعذر إرسال طلب التعديل.');
       setMessage(editingRequestId
         ? 'تم استكمال التعديلات وإعادة إرسال الطلب للمراجعة.'
-        : 'تم إرسال التعديلات للمراجعة. ستبقى بيانات النشاط الحالية كما هي حتى الاعتماد.');
+        : 'أُرسلت التعديلات للمراجعة، وستبقى بيانات النشاط الحالية كما هي حتى اعتمادها.');
       cancelEditing();
       await load();
     } catch (cause) {
@@ -211,7 +211,7 @@ export function MyBusinessesPanel() {
       {message && <div className="my-businesses-feedback is-success" role="status">{message}</div>}
 
       {loading ? (
-        <div className="my-businesses-empty">جاري تحميل أنشطتك…</div>
+        <div className="my-businesses-empty">جارٍ تحميل أنشطتك…</div>
       ) : businesses.length ? (
         <div className="my-businesses-list">
           {businesses.map((business) => {
@@ -271,7 +271,7 @@ export function MyBusinessesPanel() {
                     <div className="my-business-edit-note">لن يتم تغيير الصفحة العامة الآن. ستظهر التعديلات فقط بعد اعتمادها من إدارة الدليل.</div>
                     <div className="my-business-edit-actions">
                       <button type="button" onClick={cancelEditing} disabled={saving}>إلغاء</button>
-                      <button type="submit" disabled={saving}>{saving ? 'جاري إرسال التعديلات…' : editingRequestId ? 'إعادة إرسال للمراجعة' : 'إرسال التعديلات للمراجعة'}</button>
+                      <button type="submit" disabled={saving}>{saving ? 'جارٍ إرسال التعديلات…' : editingRequestId ? 'إعادة الإرسال للمراجعة' : 'إرسال التعديلات للمراجعة'}</button>
                     </div>
                   </form>
                 )}

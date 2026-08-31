@@ -88,7 +88,7 @@ export function MemberProfileForm({ onSaved }: { onSaved?: (profile: EditableMem
   }
 
   if (loading) {
-    return <section className="member-profile-card"><div className="member-profile-loading">جاري تحميل بيانات العضو…</div></section>;
+    return <section className="member-profile-card"><div className="member-profile-loading">جارٍ تحميل بيانات العضو…</div></section>;
   }
 
   if (!profile) {
@@ -129,7 +129,7 @@ export function MemberProfileForm({ onSaved }: { onSaved?: (profile: EditableMem
         <div className="member-profile-field">
           <label htmlFor="member-email">البريد الإلكتروني</label>
           <input id="member-email" value={profile.email} readOnly disabled dir="ltr" />
-          <small>البريد مرتبط بطريقة تسجيل الدخول ولا يتم تغييره من هنا.</small>
+          <small>يرتبط البريد بطريقة تسجيل الدخول، ولا يمكن تغييره من هنا.</small>
         </div>
 
         <div className="member-profile-field">
@@ -183,7 +183,7 @@ export function MemberProfileForm({ onSaved }: { onSaved?: (profile: EditableMem
           <div className="member-profile-feedback" aria-live="polite">
             {error ? <span className="is-error">{error}</span> : message ? <span className="is-success">{message}</span> : <span>يمكنك تعديل البيانات في أي وقت.</span>}
           </div>
-          <button type="submit" disabled={saving}>{saving ? 'جاري الحفظ…' : 'حفظ التعديلات'}</button>
+          <button type="submit" disabled={saving}>{saving ? 'جارٍ الحفظ…' : 'حفظ التعديلات'}</button>
         </div>
       </form>
     </section>

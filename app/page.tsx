@@ -9,7 +9,7 @@ import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
 import { MemberReviews } from '@/components/member-reviews';
 import { homeFaq } from '@/lib/faq';
-import { blogArticles } from '@/lib/blog';
+import { blogArticles } from '@/lib/blog-published';
 import { getLocalNews, selectHomepageNews } from '@/lib/news';
 import { siteConfig } from '@/lib/site';
 import newsStyles from './home-news.module.css';
@@ -65,7 +65,7 @@ export default async function HomePage() {
         <div className="shell hero__grid">
           <div className="hero__content">
             <div className="hero__meta-line">
-              <span className="hero__live-badge"><i aria-hidden="true" /> دليل محلي محدث باستمرار</span>
+              <span className="hero__live-badge"><i aria-hidden="true" /> دليل محلي متجدد باستمرار</span>
               <span className="hero__location">مركز العسيرات · سوهاج</span>
             </div>
 
@@ -73,13 +73,13 @@ export default async function HomePage() {
             <h1>دليل العسيرات المحلي… <em>خدماتك ومكانك</em> في بحث واحد.</h1>
             <p>
               ابحث عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والخدمات داخل مركز العسيرات،
-              ببيانات منظمة وروابط خرائط مباشرة تساعدك توصل للمكان الصحيح أسرع.
+              ببيانات منظّمة وروابط خرائط مباشرة تساعدك على الوصول إلى المكان المناسب بسرعة.
             </p>
 
             <form action="/directory" className="hero-search hero-search--premium">
               <span className="hero-search__brand" aria-hidden="true"><BrandMark compact /></span>
               <label className="sr-only" htmlFor="home-search">ابحث في دليل العسيرات</label>
-              <input id="home-search" name="q" placeholder="ابحث باسم خدمة، نشاط أو قرية…" />
+              <input id="home-search" name="q" placeholder="ابحث باسم خدمة أو نشاط أو قرية…" />
               <button type="submit"><span>ابحث في الدليل</span><b aria-hidden="true">←</b></button>
             </form>
 
@@ -113,7 +113,7 @@ export default async function HomePage() {
 
             <div className="hero__panel-stat">
               <strong>{directoryStats.total}</strong>
-              <div><b>مكان وخدمة</b><span>منظمين داخل دليل واحد</span></div>
+              <div><b>مكان وخدمة</b><span>منظّمان داخل دليل واحد</span></div>
             </div>
 
             <div className="hero__panel-label">استكشف حسب القرية</div>
@@ -131,8 +131,8 @@ export default async function HomePage() {
         <div className="section-heading section-heading--editorial">
           <div>
             <span className="eyebrow eyebrow--dark">أقسام الموسوعة</span>
-            <h2>ابدأ من نوع الخدمة التي تحتاجها</h2>
-            <p>الأقسام مرتبة لتصل للمعلومة أو المكان بأقل عدد من الخطوات.</p>
+            <h2>ابدأ بنوع الخدمة التي تحتاج إليها</h2>
+            <p>الأقسام مرتبة لتصل إلى المعلومة أو المكان بأقل عدد من الخطوات.</p>
           </div>
           <Link href="/directory" className="text-link text-link--arrow">عرض الدليل بالكامل <b aria-hidden="true">←</b></Link>
         </div>
@@ -243,9 +243,9 @@ export default async function HomePage() {
       <section className="section shell data-note data-note--editorial">
         <div><span className="eyebrow eyebrow--dark">منهجية البيانات</span><h2>الدقة قبل العدد</h2><p className="data-note__intro">كل سجل يمر بمنهج واضح قبل أن يصبح جزءًا من تجربة البحث العامة.</p></div>
         <div className="data-note__grid">
-          <p><b>01</b> الموقع لا يعرض السجلات غير المؤكدة جغرافيًا ضمن النتائج العامة. البيانات القديمة تُراجع وتُنظف قبل النشر.</p>
+          <p><b>01</b> لا يعرض الموقع السجلات غير المؤكدة جغرافيًا ضمن النتائج العامة؛ فالبيانات القديمة تُراجع وتُنقَّح قبل النشر.</p>
           <p><b>02</b> أماكن خرائط Google تُحفظ مع معرف المكان عند توفره، لتسهيل المطابقة ومنع إنشاء سجلات مكررة.</p>
-          <p><b>03</b> التقييمات المحفوظة من المصدر القديم أو Google موسومة داخليًا بمصدرها، ولا تُستخدم كسكيما تقييمات غنية بشكل مضلل.</p>
+          <p><b>03</b> تُوسم التقييمات المحفوظة من المصدر القديم أو من Google بمصدرها داخليًا، ولا تُستخدم في البيانات المنظّمة بطريقة قد توهم الزائر.</p>
         </div>
       </section>
 

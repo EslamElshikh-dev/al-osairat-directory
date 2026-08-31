@@ -166,7 +166,7 @@ export function OwnershipClaimPanel() {
       setRelationship('');
       setProofMethod('');
       setProofDetails('');
-      setMessage('تم إرسال مطالبة الملكية للمراجعة بنجاح. لن يتم اعتماد الملكية قبل التحقق.');
+      setMessage('أُرسلت مطالبة الملكية للمراجعة بنجاح، ولن تُعتمد الملكية قبل التحقق.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر إرسال مطالبة الملكية الآن.');
     } finally {
@@ -285,7 +285,7 @@ export function OwnershipClaimPanel() {
 
         <div className="ownership-claim-submit-row">
           <span>{selectedListing ? `سترسل المطالبة على: ${selectedListing.title}` : 'اختر نشاطًا من نتائج البحث أولًا.'}</span>
-          <button type="submit" disabled={saving || !selectedId}>{saving ? 'جاري إرسال المطالبة…' : 'إرسال مطالبة الملكية'}</button>
+          <button type="submit" disabled={saving || !selectedId}>{saving ? 'جارٍ إرسال المطالبة…' : 'إرسال مطالبة الملكية'}</button>
         </div>
       </form>
 
@@ -296,7 +296,7 @@ export function OwnershipClaimPanel() {
         </div>
 
         {loading ? (
-          <div className="ownership-history-empty">جاري تحميل مطالباتك…</div>
+          <div className="ownership-history-empty">جارٍ تحميل مطالباتك…</div>
         ) : claims.length ? (
           <div className="ownership-history-list">
             {claims.map((claim) => {

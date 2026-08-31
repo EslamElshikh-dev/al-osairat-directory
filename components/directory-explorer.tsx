@@ -46,7 +46,7 @@ export function DirectoryExplorer({
           <div className="explorer__toolbar-heading">
             <div>
               <span className="explorer__toolbar-kicker">دليل سواقين العسيرات</span>
-              <strong>فلتر سريع حسب نوع المركبة والوجهة</strong>
+              <strong>تصفية سريعة بحسب نوع المركبة والوجهة</strong>
             </div>
             <span className="explorer__toolbar-mark" aria-hidden="true"><BrandMark compact /></span>
           </div>

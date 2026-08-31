@@ -161,7 +161,7 @@ export function BusinessSubmissionPanel() {
         village: current.village,
         locality: current.locality,
       }));
-      setMessage('تم إرسال النشاط للمراجعة بنجاح. لن يظهر في الدليل قبل اعتماد البيانات.');
+      setMessage('أُرسل النشاط للمراجعة بنجاح، ولن يظهر في الدليل قبل اعتماد البيانات.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر إرسال الطلب الآن.');
     } finally {
@@ -301,7 +301,7 @@ export function BusinessSubmissionPanel() {
 
         <div className="business-submission-submit-row">
           <span>أضف هاتفًا أو واتساب أو رابط خرائط واحدًا على الأقل.</span>
-          <button type="submit" disabled={saving}>{saving ? 'جاري إرسال الطلب…' : 'إرسال للمراجعة'}</button>
+          <button type="submit" disabled={saving}>{saving ? 'جارٍ إرسال الطلب…' : 'إرسال الطلب للمراجعة'}</button>
         </div>
       </form>
 
@@ -312,7 +312,7 @@ export function BusinessSubmissionPanel() {
         </div>
 
         {loading ? (
-          <div className="member-submissions__empty">جاري تحميل الطلبات…</div>
+          <div className="member-submissions__empty">جارٍ تحميل الطلبات…</div>
         ) : submissions.length ? (
           <div className="member-submissions__list">
             {submissions.map((submission) => {

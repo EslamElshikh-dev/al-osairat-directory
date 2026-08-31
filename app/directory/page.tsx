@@ -13,7 +13,7 @@ import { getEligibleServiceIntents } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 
 const directoryTitle = 'الدليل الشامل لخدمات وأنشطة العسيرات';
-const directoryDescription = 'ابحث في دليل مركز العسيرات عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والمحامين والخدمات.';
+const directoryDescription = 'ابحث في دليل مركز العسيرات عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والمحامين وسائر الخدمات المحلية.';
 
 type DirectorySearchParams = { q?: string; village?: string; page?: string };
 
@@ -131,7 +131,7 @@ export default async function DirectoryPage({
           <div className="seo-growth-hub__heading">
             <span>بحث حسب الخدمة</span>
             <h2 id="directory-service-intents-title">صفحات متخصصة ببيانات كافية</h2>
-            <p>بدل أرشفة كل عبارة بحث أو فلتر، نعرض فقط الصفحات المتخصصة التي تجاوزت حدًا أدنى من السجلات واكتمال البيانات.</p>
+            <p>من دون إنشاء صفحة لكل عبارة بحث، نعرض فقط التخصصات التي يتوافر لها عدد كافٍ من السجلات وبيانات مكتملة.</p>
           </div>
           <nav className="seo-growth-hub__links" aria-label="خدمات متخصصة في دليل العسيرات">
             {serviceIntents.map(({ intent, listings: matched }) => (
@@ -157,7 +157,7 @@ export default async function DirectoryPage({
         <div className="seo-growth-hub__heading">
           <span>روابط استكشاف مباشرة</span>
           <h2 id="directory-discovery-title">استكشف الدليل حسب القسم أو القرية</h2>
-          <p>صفحات ثابتة تساعد الزائر ومحركات البحث على الانتقال بين أهم كيانات دليل العسيرات بدون الاعتماد على نتائج البحث والفلاتر.</p>
+          <p>صفحات ثابتة تساعد الزائر ومحركات البحث على الانتقال بين أقسام دليل العسيرات وقراه من دون الاعتماد على نتائج البحث والمرشحات.</p>
         </div>
         <div className="seo-growth-hub__columns">
           <nav aria-label="أقسام دليل العسيرات">

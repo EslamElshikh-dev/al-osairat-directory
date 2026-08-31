@@ -132,7 +132,7 @@ export function NotificationCenter() {
         <div className="notification-center__actions">
           <span>{loading ? '...' : unreadCount ? `${unreadCount} غير مقروء` : 'كلها مقروءة'}</span>
           <button type="button" onClick={markAllRead} disabled={!unreadCount || Boolean(savingId)}>
-            {savingId === 'all' ? 'جاري التحديث…' : 'تحديد الكل كمقروء'}
+            {savingId === 'all' ? 'جارٍ التحديث…' : 'تحديد الكل كمقروء'}
           </button>
         </div>
       </div>
@@ -140,7 +140,7 @@ export function NotificationCenter() {
       {error && <div className="notification-center__error" role="alert">{error}</div>}
 
       {loading ? (
-        <div className="notification-center__empty">جاري تحميل الإشعارات…</div>
+        <div className="notification-center__empty">جارٍ تحميل الإشعارات…</div>
       ) : items.length ? (
         <div className="notification-list">
           {items.map((item) => (

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { blogArticles } from '@/lib/blog';
+import { blogArticles } from '@/lib/blog-published';
 import { categories, categoryById, listings, villages } from '@/lib/data';
 import {
   canonicalizeDirectoryQuery,
@@ -105,8 +105,13 @@ export async function GET(request: Request) {
     }
 
     for (const article of blogArticles) {
-      const sectionHeadings = article.sections.map((section) => section.heading).join(' ');
-      const score = relevance(searchable(article.title, article.seoTitle, article.description, article.category, article.eyebrow, sectionHeadings), normalizedQuery);
+      const sectionContent = article.sections.flatMap((section) => [
+        section.heading,
+        ...section.paragraphs,
+        ...(section.bullets ?? []),
+        ...(section.entries?.flatMap((entry) => [entry.name, entry.description]) ?? []),
+      ]).join(' ');
+      const score = relevance(searchable(article.title, article.seoTitle, article.description, article.category, article.eyebrow, sectionContent), normalizedQuery);
       if (score) navigationCandidates.push({
         score,
         item: {

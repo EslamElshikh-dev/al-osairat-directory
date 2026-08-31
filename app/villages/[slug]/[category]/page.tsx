@@ -116,7 +116,7 @@ export default async function VillageCategoryPage({
   const pageItems = localListings.slice(start, start + DIRECTORY_PAGE_SIZE);
   const pathname = villageCategoryLandingPath(village, category);
   const label = localQueryLabel(category.id, village.name, category.shortLabel);
-  const description = `${label}: نتائج محلية من السجلات المنشورة داخل ${village.name} مع ربط مباشر بصفحة القرية وقسم ${category.shortLabel}.`;
+  const description = `${label}: نتائج محلية من السجلات المنشورة في ${village.name}، مع ربط مباشر بصفحة القرية وقسم ${category.shortLabel}.`;
   const relatedCategories = categories
     .filter((candidate) => candidate.id !== category.id && candidate.id !== 'emergency')
     .filter((candidate) => isVillageCategoryLandingEligible(allListings, village.name, candidate.id))
@@ -178,7 +178,7 @@ export default async function VillageCategoryPage({
         <div className="seo-growth-hub__heading">
           <span><BrandMark compact /> سياق محلي حقيقي</span>
           <h2 id="local-context-title">عن {category.shortLabel} في {village.name}</h2>
-          <p>هذه الصفحة لا تُنشأ لمجرد الجمع بين اسم خدمة واسم قرية؛ ظهرت لأنها تجاوزت حدًا أدنى من عدد السجلات واكتمال البيانات، وتعرض فقط السجلات المؤهلة من نفس القرية والقسم.</p>
+          <p>لا تُنشأ هذه الصفحة لمجرد الجمع بين اسم خدمة واسم قرية؛ بل تظهر بعد توافر حد أدنى من السجلات المكتملة، ولا تعرض إلا السجلات المؤهلة من القرية والقسم نفسيهما.</p>
           {village.localities.length > 0 && <p>ترتبط {village.name} في هيكل الدليل بتوابع ونجوع مسجلة بالاسم مثل {village.localities.slice(0, 5).join('، ')}. وجودها هنا يصف النطاق الجغرافي للقرية ولا يعني أن كل مقدم خدمة يغطي جميع هذه التوابع.</p>}
         </div>
         {topSpecialties.length > 0 && (
