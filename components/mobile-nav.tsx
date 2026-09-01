@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link, { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 
 type NavItem = {
@@ -84,6 +84,17 @@ const items: NavItem[] = [
   },
 ];
 
+function MobileNavProgress() {
+  const { pending } = useLinkStatus();
+
+  return (
+    <span
+      className={`mobile-nav__progress${pending ? ' is-pending' : ''}`}
+      aria-hidden="true"
+    />
+  );
+}
+
 export function MobileNav() {
   const pathname = usePathname();
 
@@ -102,6 +113,7 @@ export function MobileNav() {
               <span className="mobile-nav__icon">{item.icon}</span>
               <span className="mobile-nav__label">{item.label}</span>
               <span className="mobile-nav__active-dot" aria-hidden="true" />
+              <MobileNavProgress />
             </Link>
           );
         })}
