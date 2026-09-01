@@ -10,7 +10,7 @@ import { resolveAdminSession } from '@/lib/auth/admin-server';
 
 export const metadata: Metadata = {
   title: 'لوحة إدارة الدليل',
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: false, noarchive: true, nocache: true },
 };
 
 export const dynamic = 'force-dynamic';
@@ -26,28 +26,28 @@ export default async function AdminPage() {
           <div className="workspace-hero__copy">
             <span className="workspace-hero__kicker">
               <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /></span>
-              مركز تشغيل الدليل
+              جلسة الإدارة المصرح بها
             </span>
-            <h1>لوحة إدارة <em>دليل العسيرات</em></h1>
-            <p>مركز واحد لمتابعة النمو، قراءة سلوك البحث، مراجعة جودة البيانات وطلبات الأعضاء واتخاذ القرار بسرعة.</p>
+            <h1>مركز تشغيل <em>دليل العسيرات</em></h1>
+            <p>مرحبًا {session.displayName}. ابدأ بالعمل المفتوح، ثم راجع البلاغات ومؤشرات النمو وجودة بيانات الدليل بترتيب تنفيذي واضح.</p>
             <nav className="workspace-hero__links" aria-label="اختصارات لوحة الإدارة">
-              <a href="#analytics-overview">الإحصاءات</a>
+              <a href="#analytics-overview">النظرة التنفيذية</a>
+              <a href="#admin-requests">صندوق العمل</a>
+              <a href="#listing-reports">بلاغات البيانات</a>
               <a href="#directory-intelligence">ذكاء البحث</a>
-              <a href="#data-quality">جودة البيانات</a>
-              <a href="#admin-requests">المراجعات</a>
-              <a href="#listing-reports">البلاغات</a>
+              <a href="#data-quality">جودة الدليل</a>
             </nav>
           </div>
           <aside className="workspace-hero__panel" aria-label="أقسام لوحة الإدارة">
-            <span className="workspace-hero__panel-label">لوحة خاصة · غير مفهرسة</span>
+            <span className="workspace-hero__panel-label">خاصة بحساب مدير الدليل فقط</span>
             <div className="workspace-hero__panel-brand">
               <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /><span className="brand-mark__line" /></span>
-              <strong>تشغيل · قياس · مراجعة</strong>
+              <strong>قرار · متابعة · جودة</strong>
             </div>
             <div className="workspace-hero__metrics">
-              <span><b>01</b><small>قياس الأداء</small></span>
-              <span><b>02</b><small>قرارات تشغيلية</small></span>
-              <span><b>03</b><small>جودة البيانات</small></span>
+              <span><b>خاص</b><small>وصول إداري</small></span>
+              <span><b>مباشر</b><small>بيانات محدثة</small></span>
+              <span><b>آمن</b><small>غير مفهرس</small></span>
             </div>
           </aside>
         </div>
@@ -55,18 +55,18 @@ export default async function AdminPage() {
 
       <div className="shell admin-workspace-shell">
         <nav className="admin-section-nav admin-section-nav--premium" aria-label="أقسام لوحة الإدارة">
-          <a href="#analytics-overview"><span>01</span>الإحصاءات</a>
-          <a href="#directory-intelligence"><span>02</span>ذكاء البحث والأداء</a>
-          <a href="#data-quality"><span>03</span>جودة البيانات</a>
-          <a href="#admin-requests"><span>04</span>طلبات ومراجعات الأعضاء</a>
-          <a href="#listing-reports"><span>05</span>بلاغات بيانات الأنشطة</a>
+          <a href="#analytics-overview"><span>01</span>النظرة التنفيذية</a>
+          <a href="#admin-requests"><span>02</span>طلبات تحتاج إجراء</a>
+          <a href="#listing-reports"><span>03</span>بلاغات البيانات</a>
+          <a href="#directory-intelligence"><span>04</span>ذكاء البحث والأداء</a>
+          <a href="#data-quality"><span>05</span>جودة وسلطة البيانات</a>
         </nav>
         <AdminAnalyticsDashboard />
+        <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
+        <AdminListingReports />
         <AdminDirectoryIntelligence />
         <AdminDataQuality />
         <AdminAuthorityBatch />
-        <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
-        <AdminListingReports />
       </div>
     </main>
   );

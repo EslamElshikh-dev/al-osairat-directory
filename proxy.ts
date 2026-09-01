@@ -5,6 +5,7 @@ import {
   getEligibleServiceIntents,
   getEligibleVillageCategoryLandings,
 } from '@/lib/programmatic-seo';
+import { AUTH_ACCESS_COOKIE, AUTH_REFRESH_COOKIE } from '@/lib/auth/supabase-rest';
 
 const allowedServiceIntents = new Set(
   getEligibleServiceIntents(listings).map(({ intent }) => intent.id),
@@ -70,6 +71,14 @@ export function proxy(request: NextRequest) {
 
   const segments = request.nextUrl.pathname.split('/').filter(Boolean).map(decodeSegment);
 
+  if (segments.length === 1 && segments[0] === 'admin') {
+    const hasAuthSession = request.cookies.has(AUTH_ACCESS_COOKIE)
+      || request.cookies.has(AUTH_REFRESH_COOKIE);
+    if (!hasAuthSession) {
+      return NextResponse.redirect(new URL('/account/login', request.url));
+    }
+  }
+
   if (segments[0] === 'services' && segments.length === 2) {
     if (!allowedServiceIntents.has(segments[1] as 'electrician' | 'plumber' | 'libraries')) {
       return hardNotFoundResponse();
@@ -87,5 +96,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/services/:intent', '/villages/:slug/:category'],
+  matcher: ['/admin', '/services/:intent', '/villages/:slug/:category'],
 };

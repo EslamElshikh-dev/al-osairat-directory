@@ -328,7 +328,7 @@
 }
 .admin-page--premium .analytics-admin__eyebrow { display: inline-flex; align-items: center; gap: 7px; }
 .admin-page--premium .analytics-admin__eyebrow::before { content: ''; width: 18px; height: 2px; border-radius: 999px; background: var(--workspace-gold); }
-.admin-page--premium .analytics-admin__hero h1 { font-size: clamp(24px,3vw,34px); letter-spacing: -.4px; }
+.admin-page--premium .analytics-admin__hero :is(h1,h2) { font-size: clamp(24px,3vw,34px); letter-spacing: -.4px; }
 .admin-page--premium .analytics-admin__meta { border: 1px solid rgba(16,42,36,.055); background: #f5f7f3; }
 .admin-page--premium .analytics-section-heading { position: relative; }
 .admin-page--premium .analytics-section-heading h2 { font-size: 18px; }
@@ -369,7 +369,7 @@
   background: linear-gradient(140deg,#173a31,#214c40);
 }
 .admin-page--premium .admin-anchor-section .admin-avatar { width: 49px; height: 49px; border-radius: 15px; }
-.admin-page--premium .admin-anchor-section .admin-hero h1 { font-size: 20px; }
+.admin-page--premium .admin-anchor-section .admin-hero :is(h1,h2) { font-size: 20px; }
 .admin-page--premium .admin-anchor-section .admin-hero p { max-width: 690px; }
 .admin-page--premium .admin-stats { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 9px; }
 .admin-page--premium .admin-stats article {
