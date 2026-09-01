@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'الصفحة غير موجودة',
+  description: 'تعذر العثور على الصفحة المطلوبة في دليل العسيرات.',
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (

@@ -331,7 +331,7 @@
   }
 
   .hero--editorial .hero__trust b { font-size: 16px; }
-  .hero--editorial .hero__trust small { overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+  .hero--editorial .hero__trust small { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 
   .hero__panel--spotlight {
     padding: 18px;
@@ -762,7 +762,7 @@
   .account-trigger { margin-inline-start: 2px; }
 
   .mobile-nav__dock { padding-inline: 5px; border-radius: 22px; }
-  .mobile-nav__item { min-height: 56px; font-size: 8.2px; }
+  .mobile-nav__item { min-height: 56px; font-size: 9.25px; }
   .mobile-nav__icon { width: 28px; height: 28px; }
   .mobile-nav__icon svg { width: 19px; height: 19px; }
   .mobile-nav__item--primary .mobile-nav__icon { width: 48px; height: 48px; margin-top: -18px; }
@@ -785,7 +785,7 @@
   :root { --shell: min(100% - 20px, 1180px); }
   .brand__copy { display: none; }
   .site-header__brand { flex-basis: 43px; }
-  .mobile-nav__label { font-size: 7.5px; }
+  .mobile-nav__label { font-size: 9px; }
   .mobile-nav__item { padding-inline: 0; }
 }
 
