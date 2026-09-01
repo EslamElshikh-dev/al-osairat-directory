@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NEWS_PAGE_SIZE, newsPageHref, paginateNews } from '../lib/news-pagination.ts';
+import { NEWS_PAGE_SIZE, getNewsPageCount, newsPageHref, paginateNews } from '../lib/news-pagination.ts';
 
 const readProjectFile = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
@@ -17,6 +17,9 @@ test('news pagination keeps each page lightweight and preserves item order', () 
   assert.equal(lastPage.startItem, 33);
   assert.equal(lastPage.endItem, 35);
   assert.equal(lastPage.totalPages, 3);
+  assert.equal(getNewsPageCount(0), 1);
+  assert.equal(getNewsPageCount(63), 4);
+  assert.equal(getNewsPageCount(80), 5);
 });
 
 test('news pagination rejects invalid and out-of-range pages', () => {

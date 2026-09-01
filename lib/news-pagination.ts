@@ -9,13 +9,17 @@ export type NewsPagination<T> = {
   pageItems: T[];
 };
 
+export function getNewsPageCount(totalItems: number) {
+  return Math.max(1, Math.ceil(Math.max(0, totalItems) / NEWS_PAGE_SIZE));
+}
+
 export function paginateNews<T>(items: T[], requestedPage: number): NewsPagination<T> {
   if (!Number.isSafeInteger(requestedPage) || requestedPage < 1) {
     throw new RangeError('News page must be a positive integer.');
   }
 
   const totalItems = items.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / NEWS_PAGE_SIZE));
+  const totalPages = getNewsPageCount(totalItems);
 
   if (requestedPage > totalPages) {
     throw new RangeError('News page is outside the available range.');
