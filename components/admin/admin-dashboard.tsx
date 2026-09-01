@@ -263,7 +263,7 @@ export function AdminDashboard() {
     return (
       <section className="admin-denied">
         <span>لوحة خاصة</span>
-        <h1>تعذر فتح لوحة الإدارة</h1>
+        <h2>تعذر فتح صندوق العمل</h2>
         <p>{error}</p>
         <div><Link href="/account">العودة إلى حسابي</Link><button type="button" onClick={load}>إعادة المحاولة</button></div>
       </section>
@@ -280,9 +280,9 @@ export function AdminDashboard() {
           {data.admin.avatarUrl ? <img src={data.admin.avatarUrl} alt="صورة مدير الدليل" referrerPolicy="no-referrer" /> : <span>{initial}</span>}
         </div>
         <div className="admin-hero__copy">
-          <span>إدارة خاصة · غير مفهرسة</span>
-          <h1>لوحة إدارة دليل العسيرات</h1>
-          <p>راجع طلبات إضافة الأنشطة ومطالبات الملكية وتعديلات بيانات الأنشطة، واعتمد ما يستوفي المراجعة من مكان واحد.</p>
+          <span>أولوية التشغيل</span>
+          <h2>صندوق الطلبات والمراجعات</h2>
+          <p>ابدأ بالعناصر التي تحتاج إجراء: طلبات إضافة الأنشطة ومطالبات الملكية وتعديلات البيانات.</p>
         </div>
         <div className="admin-hero__actions">
           <button type="button" onClick={load} disabled={loading}>{loading ? 'جاري التحديث…' : 'تحديث البيانات'}</button>

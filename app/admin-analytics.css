@@ -18,7 +18,7 @@
   gap: 18px;
 }
 
-.analytics-admin__hero h1,
+.analytics-admin__hero :is(h1, h2),
 .analytics-section-heading h2,
 .analytics-trend-card h3,
 .analytics-table-card h3 {
@@ -26,7 +26,7 @@
   color: #102a24;
 }
 
-.analytics-admin__hero h1 { font-size: clamp(1.45rem, 2vw, 2rem); }
+.analytics-admin__hero :is(h1, h2) { font-size: clamp(1.45rem, 2vw, 2rem); }
 .analytics-admin__hero p { max-width: 780px; margin: 8px 0 0; color: #5f6f68; line-height: 1.8; }
 .analytics-admin__eyebrow,
 .analytics-section-heading span,
