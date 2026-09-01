@@ -197,12 +197,15 @@
   .card,
   .compact {
     grid-template-columns: 1fr;
-    border-radius: 21px;
+    border-color: rgba(16, 42, 36, .095);
+    border-radius: 22px;
+    background: linear-gradient(180deg, #fff, #fbfbf7);
+    box-shadow: 0 13px 34px rgba(16, 42, 36, .065), inset 0 1px 0 rgba(255, 255, 255, .92);
   }
 
   .visual,
   .compact .visual {
-    min-height: 92px;
+    min-height: 82px;
     padding: 14px 16px;
     flex-direction: row;
     align-items: center;
@@ -213,12 +216,23 @@
   .topic { max-width: 120px; text-align: end; }
   .pattern { width: 104px; height: 104px; bottom: -66px; }
   .body,
-  .compact .body { padding: 18px; }
+  .compact .body { padding: 17px; }
   .body h3,
-  .compact .body h3 { font-size: 16px; line-height: 1.65; }
-  .footer { align-items: flex-end; }
+  .compact .body h3 { margin-top: 12px; font-size: 16.5px; line-height: 1.65; }
+  .footer { align-items: center; }
   .actions { gap: 7px; }
   .details { padding-inline-end: 7px; }
+  .card:active { transform: scale(.987); }
+}
+
+@media (max-width: 380px) {
+  .footer {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .actions { justify-content: space-between; }
 }
 
 @media (prefers-reduced-motion: reduce) {
