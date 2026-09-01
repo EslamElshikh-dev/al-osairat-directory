@@ -263,7 +263,7 @@ export function AdminDashboard() {
     return (
       <section className="admin-denied">
         <span>لوحة خاصة</span>
-        <h1>تعذر فتح لوحة الإدارة</h1>
+        <h2>تعذر فتح صندوق المراجعة</h2>
         <p>{error}</p>
         <div><Link href="/account">العودة إلى حسابي</Link><button type="button" onClick={load}>إعادة المحاولة</button></div>
       </section>
@@ -274,21 +274,20 @@ export function AdminDashboard() {
   const initial = data.admin.displayName.trim().charAt(0) || 'إ';
 
   return (
-    <div className="admin-dashboard">
-      <section className="admin-hero">
+    <section className="admin-dashboard" aria-labelledby="admin-review-title">
+      <div className="admin-review-head">
         <div className={`admin-avatar${data.admin.avatarUrl ? ' has-photo' : ''}`}>
           {data.admin.avatarUrl ? <img src={data.admin.avatarUrl} alt="صورة مدير الدليل" referrerPolicy="no-referrer" /> : <span>{initial}</span>}
         </div>
-        <div className="admin-hero__copy">
-          <span>إدارة خاصة · غير مفهرسة</span>
-          <h1>لوحة إدارة دليل العسيرات</h1>
-          <p>راجع طلبات إضافة الأنشطة ومطالبات الملكية وتعديلات بيانات الأنشطة، واعتمد ما يستوفي المراجعة من مكان واحد.</p>
+        <div className="admin-review-head__copy">
+          <span>صندوق المراجعة المركزي</span>
+          <h2 id="admin-review-title">طلبات الأعضاء والقرارات التشغيلية</h2>
+          <p>ابدأ بالعناصر التي تحتاج إجراء، وسجّل سبب الاستكمال أو الرفض قبل اعتماد أي قرار.</p>
         </div>
-        <div className="admin-hero__actions">
+        <div className="admin-review-head__actions">
           <button type="button" onClick={load} disabled={loading}>{loading ? 'جاري التحديث…' : 'تحديث البيانات'}</button>
-          <Link href="/account">حسابي</Link>
         </div>
-      </section>
+      </div>
 
       <section className="admin-stats" aria-label="إحصائيات المراجعة">
         <article><span>طلبات إضافة تحتاج إجراء</span><strong>{data.stats.pendingSubmissions}</strong><small>من {data.stats.totalSubmissions} طلب</small></article>
@@ -305,21 +304,27 @@ export function AdminDashboard() {
       <section className="admin-workspace">
         <div className="admin-toolbar">
           <div className="admin-tabs" role="tablist" aria-label="نوع الطلبات">
-            <button className={tab === 'submissions' ? 'is-active' : ''} type="button" onClick={() => setTab('submissions')}>إضافة الأنشطة <b>{data.stats.pendingSubmissions}</b></button>
-            <button className={tab === 'claims' ? 'is-active' : ''} type="button" onClick={() => setTab('claims')}>مطالبات الملكية <b>{data.stats.pendingClaims}</b></button>
-            <button className={tab === 'changes' ? 'is-active' : ''} type="button" onClick={() => setTab('changes')}>تعديلات الأنشطة <b>{data.stats.pendingChanges}</b></button>
+            <button id="admin-tab-submissions" role="tab" aria-selected={tab === 'submissions'} aria-controls="admin-review-panel" className={tab === 'submissions' ? 'is-active' : ''} type="button" onClick={() => setTab('submissions')}>إضافة الأنشطة <b>{data.stats.pendingSubmissions}</b></button>
+            <button id="admin-tab-claims" role="tab" aria-selected={tab === 'claims'} aria-controls="admin-review-panel" className={tab === 'claims' ? 'is-active' : ''} type="button" onClick={() => setTab('claims')}>مطالبات الملكية <b>{data.stats.pendingClaims}</b></button>
+            <button id="admin-tab-changes" role="tab" aria-selected={tab === 'changes'} aria-controls="admin-review-panel" className={tab === 'changes' ? 'is-active' : ''} type="button" onClick={() => setTab('changes')}>تعديلات الأنشطة <b>{data.stats.pendingChanges}</b></button>
           </div>
-          <select value={filter} onChange={(event) => setFilter(event.target.value as typeof filter)} aria-label="تصفية حسب الحالة">
-            <option value="open">تحتاج إجراء</option>
-            <option value="all">كل الحالات</option>
-            <option value="pending">قيد المراجعة</option>
-            <option value="needs_changes">يحتاج استكمال</option>
-            <option value="approved">مقبول</option>
-            <option value="rejected">مرفوض</option>
-          </select>
+          <div className="admin-toolbar__tools">
+            <span className="admin-results-count">{currentItems.length.toLocaleString('ar-EG')} نتيجة</span>
+            <label className="admin-filter">
+              <span>الحالة</span>
+              <select value={filter} onChange={(event) => setFilter(event.target.value as typeof filter)}>
+                <option value="open">تحتاج إجراء</option>
+                <option value="all">كل الحالات</option>
+                <option value="pending">قيد المراجعة</option>
+                <option value="needs_changes">يحتاج استكمال</option>
+                <option value="approved">مقبول</option>
+                <option value="rejected">مرفوض</option>
+              </select>
+            </label>
+          </div>
         </div>
 
-        <div className="admin-list">
+        <div id="admin-review-panel" className="admin-list" role="tabpanel" aria-labelledby={`admin-tab-${tab}`} tabIndex={0}>
           {currentItems.length === 0 ? (
             <div className="admin-empty"><strong>لا توجد عناصر في هذا العرض</strong><p>غيّر الفلتر أو حدّث البيانات.</p></div>
           ) : tab === 'submissions' ? (
@@ -385,6 +390,6 @@ export function AdminDashboard() {
           )}
         </div>
       </section>
-    </div>
+    </section>
   );
 }

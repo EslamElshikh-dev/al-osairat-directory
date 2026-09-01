@@ -290,7 +290,7 @@ export function AdminAnalyticsDashboard() {
       <div className="analytics-admin__hero">
         <div>
           <span className="analytics-admin__eyebrow">مركز القرار</span>
-          <h1 id="analytics-admin-title">إحصاءات دليل العسيرات</h1>
+          <h2 id="analytics-admin-title">ملخص الأداء واتجاهات النمو</h2>
           <p>لوحة تشغيلية تجمع نمو المجتمع، أداء الزيارات، أكثر القرى والأقسام طلبًا، والتحويلات المهمة في مكان واحد.</p>
         </div>
         <div className="analytics-admin__actions">

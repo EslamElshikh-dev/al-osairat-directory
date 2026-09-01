@@ -100,7 +100,7 @@ export function AdminAuthorityBatch() {
         }
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'تعذر تحميل Authority Batch #1.');
+      setError(cause instanceof Error ? cause.message : 'تعذر تحميل دفعة التوثيق ذات الأولوية.');
     } finally {
       setLoading(false);
     }
@@ -149,13 +149,13 @@ export function AdminAuthorityBatch() {
   }
 
   return (
-    <section className={styles.batch} aria-labelledby="authority-batch-title">
+    <section id="authority-batch" className={`${styles.batch} admin-anchor-section`} aria-labelledby="authority-batch-title">
       <div className={styles.queueHead}>
         <div>
-          <span>Authority Batch #1</span>
+          <span>دفعة التوثيق ذات الأولوية</span>
           <h3 id="authority-batch-title">معالجة أول 20 سجلًا حسب الأثر</h3>
         </div>
-        <small>الحفظ يحدّث السجل المركزي + Override دائم + دليل التحقق</small>
+        <small>الحفظ يحدّث السجل المركزي وطبقة العرض ودليل التحقق معًا</small>
       </div>
 
       {loading && !items.length ? <p className={styles.empty}>جاري تحميل أول 20 سجلًا…</p> : null}

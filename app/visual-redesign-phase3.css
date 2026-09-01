@@ -148,6 +148,8 @@
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 .workspace-hero__panel-brand > .brand-mark { transform: scale(.95); flex: 0 0 auto; }
+.workspace-hero__panel-brand > div { display: grid; gap: 2px; min-width: 0; }
+.workspace-hero__panel-brand small { color: #a9bbb4; font-size: 9px; font-weight: 800; }
 .workspace-hero__panel-brand strong { color: #fff; font-size: 17px; line-height: 1.4; }
 .workspace-hero__metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 16px; }
 .workspace-hero__metrics span {
@@ -163,6 +165,23 @@
 }
 .workspace-hero__metrics b { color: #f0cf79; font-size: 20px; line-height: 1; }
 .workspace-hero__metrics small { color: #a9bbb4; font-size: 8.5px; line-height: 1.55; }
+.workspace-hero__admin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.workspace-hero__admin-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 39px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  background: rgba(255,255,255,.055);
+  color: #e8efec;
+  font-size: 9px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.workspace-hero__admin-actions a:hover { transform: translateY(-1px); border-color: rgba(239,207,121,.24); background: rgba(255,255,255,.1); color: #fff; }
 
 /* ---------- Member workspace ---------- */
 .account-page--premium {
@@ -247,6 +266,8 @@
 #owned-performance,
 #analytics-overview,
 #directory-intelligence,
+#data-quality,
+#authority-batch,
 #listing-reports { scroll-margin-top: 160px; }
 
 .account-page--premium :is(.notification-center,.member-profile-card,.business-submission-panel,.ownership-claim-panel,.my-businesses-panel,.account-favorites-card,.account-actions-card,.account-member-hub) {
@@ -328,7 +349,7 @@
 }
 .admin-page--premium .analytics-admin__eyebrow { display: inline-flex; align-items: center; gap: 7px; }
 .admin-page--premium .analytics-admin__eyebrow::before { content: ''; width: 18px; height: 2px; border-radius: 999px; background: var(--workspace-gold); }
-.admin-page--premium .analytics-admin__hero h1 { font-size: clamp(24px,3vw,34px); letter-spacing: -.4px; }
+.admin-page--premium .analytics-admin__hero h2 { font-size: clamp(24px,3vw,34px); letter-spacing: -.4px; }
 .admin-page--premium .analytics-admin__meta { border: 1px solid rgba(16,42,36,.055); background: #f5f7f3; }
 .admin-page--premium .analytics-section-heading { position: relative; }
 .admin-page--premium .analytics-section-heading h2 { font-size: 18px; }
@@ -361,7 +382,7 @@
 
 .admin-page--premium .admin-anchor-section { margin-bottom: 28px; }
 .admin-page--premium .admin-anchor-section .admin-dashboard { gap: 14px; }
-.admin-page--premium .admin-anchor-section .admin-hero {
+.admin-page--premium .admin-anchor-section .admin-review-head {
   grid-template-columns: auto 1fr auto;
   padding: 18px 20px;
   border-radius: 21px;
@@ -369,8 +390,8 @@
   background: linear-gradient(140deg,#173a31,#214c40);
 }
 .admin-page--premium .admin-anchor-section .admin-avatar { width: 49px; height: 49px; border-radius: 15px; }
-.admin-page--premium .admin-anchor-section .admin-hero h1 { font-size: 20px; }
-.admin-page--premium .admin-anchor-section .admin-hero p { max-width: 690px; }
+.admin-page--premium .admin-anchor-section .admin-review-head h2 { font-size: 20px; }
+.admin-page--premium .admin-anchor-section .admin-review-head p { max-width: 690px; }
 .admin-page--premium .admin-stats { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 9px; }
 .admin-page--premium .admin-stats article {
   min-height: 112px;
@@ -418,7 +439,7 @@
 .admin-page--premium .admin-review-actions .approve:hover:not(:disabled) { box-shadow: 0 11px 24px rgba(23,58,49,.18); }
 
 /* ---------- Final global micro-interactions ---------- */
-:where(.button,.header-cta,.footer__cta,.account-quick-links a,.account-favorite-open,.admin-access-card a,.village-card,.category-pill,.catalog-hero__quick-links a) {
+:where(.button,.header-cta,.footer__cta,.account-quick-links a,.account-favorite-open,.village-card,.category-pill,.catalog-hero__quick-links a) {
   -webkit-tap-highlight-color: transparent;
 }
 :where(a,button,input,select,textarea):focus-visible {
@@ -429,15 +450,13 @@
 .header-cta,
 .footer__cta,
 .account-quick-links a,
-.account-favorite-open,
-.admin-access-card a {
+.account-favorite-open {
   transition: transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease,color .18s ease,opacity .18s ease;
 }
 .button:hover,
 .header-cta:hover,
 .footer__cta:hover,
-.account-favorite-open:hover,
-.admin-access-card a:hover { transform: translateY(-2px); }
+.account-favorite-open:hover { transform: translateY(-2px); }
 .button:active,
 .header-cta:active,
 .footer__cta:active,
@@ -472,8 +491,8 @@
   .admin-page--premium .analytics-admin { padding: 17px; border-radius: 22px; }
   .admin-page--premium .admin-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .admin-page--premium .admin-toolbar { top: 127px; }
-  .admin-page--premium .admin-anchor-section .admin-hero { grid-template-columns: auto 1fr; padding: 16px; }
-  .admin-page--premium .admin-anchor-section .admin-hero__actions { grid-column: 1/-1; }
+  .admin-page--premium .admin-anchor-section .admin-review-head { grid-template-columns: auto 1fr; padding: 16px; }
+  .admin-page--premium .admin-anchor-section .admin-review-head__actions { grid-column: 1/-1; }
 }
 @media (max-width: 520px) {
   .workspace-hero__links { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
@@ -488,11 +507,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .workspace-hero__links a,
+  .workspace-hero__admin-actions a,
   .account-section-nav a,
   .admin-section-nav--premium a,
   .account-page--premium :is(.notification-item,.member-submission-item,.account-favorite-item),
   .admin-page--premium :is(.analytics-metric-card,.analytics-table-card,.analytics-trend-card,.analytics-ranked-card,.analytics-comparison-card,.admin-stats article,.admin-review-card),
-  .button,.header-cta,.footer__cta,.account-quick-links a,.account-favorite-open,.admin-access-card a,.listing-card,.village-card,.category-card {
+  .button,.header-cta,.footer__cta,.account-quick-links a,.account-favorite-open,.listing-card,.village-card,.category-card {
     transition: none !important;
     transform: none !important;
   }

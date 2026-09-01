@@ -91,9 +91,9 @@ export function AdminDirectoryIntelligence() {
     <section id="directory-intelligence" className={styles.panel} aria-labelledby="directory-intelligence-title">
       <div className={styles.head}>
         <div>
-          <span>Search Intelligence + Listing Performance</span>
+          <span>ذكاء البحث وأداء الأنشطة</span>
           <h2 id="directory-intelligence-title">ماذا يبحث عنه أهل العسيرات؟ وما الأنشطة التي تحقق تفاعلًا؟</h2>
-          <p>طبقة قياس First‑Party داخل الدليل تربط البحث بالنتائج وفتح الأنشطة، وتعرض أداء كل نشاط بدون الاعتماد على Custom Dimensions في GA4.</p>
+          <p>طبقة قياس مباشرة داخل الدليل تربط البحث بالنتائج وفتح الأنشطة، وتعرض أداء كل نشاط دون الاعتماد على الأبعاد المخصصة في GA4.</p>
         </div>
         <button className={styles.refresh} type="button" onClick={() => void load()} disabled={loading}>{loading ? 'تحديث…' : 'تحديث البيانات'}</button>
       </div>
@@ -113,7 +113,7 @@ export function AdminDirectoryIntelligence() {
       </div>
 
       <section className={styles.card} style={{ marginTop: 18 }}>
-        <div className={styles.sectionTitle}><span>Performance لكل نشاط</span><h3>أداء الأنشطة — آخر 30 يومًا</h3></div>
+        <div className={styles.sectionTitle}><span>الأداء حسب النشاط</span><h3>أداء الأنشطة — آخر 30 يومًا</h3></div>
         {data.topListings?.length ? (
           <div className={styles.tableWrap}>
             <table className={styles.table}>

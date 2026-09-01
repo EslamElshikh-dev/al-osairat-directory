@@ -54,7 +54,7 @@ export async function GET() {
     if (!response.ok) {
       const detail = await response.text().catch(() => '');
       console.error('AUTHORITY_BATCH_LOAD_FAILED', response.status, detail.slice(0, 500));
-      return adminJson({ error: 'تعذر تحميل Authority Batch #1 الآن.' }, session, 502);
+      return adminJson({ error: 'تعذر تحميل دفعة التوثيق ذات الأولوية الآن.' }, session, 502);
     }
 
     const items = await response.json();

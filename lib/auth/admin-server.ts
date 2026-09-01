@@ -92,7 +92,13 @@ export async function resolveAdminSession(options: { allowRefresh?: boolean } = 
 }
 
 export function adminJson(payload: unknown, session: AdminSession | null, status = 200) {
-  const response = NextResponse.json(payload, { status });
+  const response = NextResponse.json(payload, {
+    status,
+    headers: {
+      'Cache-Control': 'private, no-store, max-age=0',
+      Vary: 'Cookie',
+    },
+  });
   if (session?.refreshed) {
     response.cookies.set(AUTH_ACCESS_COOKIE, session.refreshed.accessToken, {
       ...authCookieBase,

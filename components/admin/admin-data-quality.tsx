@@ -134,7 +134,7 @@ export async function AdminDataQuality() {
     <section id="data-quality" className={`${styles.panel} admin-anchor-section`} aria-labelledby="data-quality-title">
       <div className={styles.head}>
         <div className={styles.headCopy}>
-          <span>Phase 7 · Data Authority</span>
+          <span>المرحلة السابعة · موثوقية البيانات</span>
           <h2 id="data-quality-title">سلطة واكتمال بيانات الدليل</h2>
           <p>القياس الآن مبني على طبقة البيانات المركزية نفسها: جودة السجل، قوة المصدر، اكتمال خرائط Google وبيانات التواصل والوصف. الهدف ليس زيادة عدد السجلات فقط، بل رفع نسبة السجلات القابلة للتحقق والثقة.</p>
         </div>
@@ -160,9 +160,9 @@ export async function AdminDataQuality() {
       <div className={styles.authorityGrid}>
         <section className={styles.card} aria-labelledby="authority-coverage-title">
           <div className={styles.sectionTitle}>
-            <span>Authority Coverage</span>
+            <span>تغطية البيانات الموثوقة</span>
             <h3 id="authority-coverage-title">نسب تغطية البيانات الأساسية</h3>
-            <p>هذه النسب هي المؤشر الأوضح لتقدم Phase 7 من دفعة تنظيف إلى أخرى.</p>
+            <p>هذه النسب هي المؤشر الأوضح لتقدم المرحلة السابعة من دفعة تنظيف إلى أخرى.</p>
           </div>
           <div className={styles.coverage}>
             <CoverageRow label="مصدر موثوق" detail={`${summary.trusted.toLocaleString('ar-EG')} من ${summary.total.toLocaleString('ar-EG')} سجل`} value={coverage.trustedPct} />
@@ -175,13 +175,13 @@ export async function AdminDataQuality() {
 
         <section className={styles.card} aria-labelledby="authority-sources-title">
           <div className={styles.sectionTitle}>
-            <span>Source Authority</span>
+            <span>قوة مصادر البيانات</span>
             <h3 id="authority-sources-title">توزيع حالة المصدر</h3>
             <p>نرفع السجلات تدريجيًا من مصدر أساسي إلى مراجعة متعددة أو توثيق Google عندما تتوفر أدلة فعلية.</p>
           </div>
           <div className={styles.sources}>
             <article className={styles.source}><span>Google موثق</span><b>{summary.googleVerified.toLocaleString('ar-EG')}</b><small>أعلى حالة حالية</small></article>
-            <article className={styles.source}><span>مراجع من أكثر من مصدر</span><b>{summary.crossChecked.toLocaleString('ar-EG')}</b><small>Cross checked</small></article>
+            <article className={styles.source}><span>مراجع من أكثر من مصدر</span><b>{summary.crossChecked.toLocaleString('ar-EG')}</b><small>تحقق متعدد المصادر</small></article>
             <article className={styles.source}><span>مصدر أساسي فقط</span><b>{summary.sourceOnly.toLocaleString('ar-EG')}</b><small>أكبر فرصة للتحسين</small></article>
             <article className={styles.source}><span>يحتاج مراجعة</span><b>{summary.needsReview.toLocaleString('ar-EG')}</b><small>أولوية فورية</small></article>
           </div>
@@ -190,7 +190,7 @@ export async function AdminDataQuality() {
 
       <section className={styles.queue} aria-labelledby="authority-queue-title">
         <div className={styles.queueHead}>
-          <div><span>Smart Priority Queue</span><h3 id="authority-queue-title">السجلات ذات أكبر أثر عند إصلاحها</h3></div>
+          <div><span>قائمة الأولويات الذكية</span><h3 id="authority-queue-title">السجلات ذات أكبر أثر عند إصلاحها</h3></div>
           <small>حالة المصدر ← خرائط وPlace ID ← الهاتف ← الوصف ← درجة الجودة</small>
         </div>
         {queue.length ? (
