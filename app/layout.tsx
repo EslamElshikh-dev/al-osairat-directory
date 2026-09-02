@@ -116,6 +116,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     url: siteConfig.url,
     inLanguage: 'ar-EG',
     description: siteConfig.description,
+    creator: {
+      '@type': 'Person',
+      '@id': 'https://www.eslam-elshikh.com/#person',
+      name: 'إسلام الشيخ',
+      alternateName: ['المهندس إسلام الشيخ', 'Eslam Elshikh'],
+      url: 'https://www.eslam-elshikh.com/',
+    },
   };
 
   return (
