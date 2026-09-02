@@ -141,7 +141,7 @@ export function Footer() {
           <span className="footer__separator" aria-hidden="true">•</span>
           <span>جميع البيانات قابلة للتحديث والمراجعة</span>
         </div>
-        <a href="https://www.eslam-elshikh.com/about/" target="_blank" rel="noreferrer" className="footer__signature">
+        <a href="https://www.eslam-elshikh.com/" target="_blank" rel="noreferrer" className="footer__signature">
           <span>تصميم وتطوير:</span>
           <b>المهندس إسلام الشيخ</b>
           <span className="footer__signature-arrow" aria-hidden="true">↗</span>
