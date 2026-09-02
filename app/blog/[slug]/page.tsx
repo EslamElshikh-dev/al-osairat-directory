@@ -9,7 +9,7 @@ import { buildArticleMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
 const authorName = 'المهندس إسلام الشيخ';
-const authorUrl = 'https://www.eslam-elshikh.com/about/';
+const authorUrl = 'https://www.eslam-elshikh.com/';
 
 export function generateStaticParams() {
   return blogArticles.map((article) => ({ slug: article.slug }));
