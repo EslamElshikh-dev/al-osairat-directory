@@ -20,7 +20,10 @@ create table if not exists public.news_sources (
   constraint news_sources_kind_check check (source_kind in ('facebook')),
   constraint news_sources_name_check check (char_length(btrim(name)) between 2 and 120),
   constraint news_sources_external_id_check check (char_length(btrim(external_id)) between 2 and 120),
-  constraint news_sources_url_check check (source_url ~* '^https://(www\\.)?facebook\\.com/'),
+  constraint news_sources_url_check check (
+    source_url like 'https://www.facebook.com/%'
+    or source_url like 'https://facebook.com/%'
+  ),
   constraint news_sources_trust_check check (trust_level in ('official','trusted','review')),
   constraint news_sources_publish_mode_check check (publish_mode in ('automatic','review')),
   constraint news_sources_poll_interval_check check (poll_interval_seconds between 60 and 3600),
