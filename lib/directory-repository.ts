@@ -155,6 +155,12 @@ export async function queryCanonicalDirectory(
     if (!payload.canonicalReady) return null;
 
     const items = Array.isArray(payload.items) ? payload.items.map(serialize) : [];
+
+    // A stale or not-yet-synced canonical catalog must not hide valid records
+    // that are already shipped in the local directory dataset. Returning null
+    // here lets every consumer fall back to the merged static/published catalog.
+    if (query && items.length === 0) return null;
+
     if (options.excludeEmergency) {
       // The public directory currently keeps emergency records on their dedicated route.
       // Once the canonical catalog is active this defensive filter preserves that behavior.
