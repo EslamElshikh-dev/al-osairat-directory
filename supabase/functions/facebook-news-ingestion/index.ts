@@ -3,6 +3,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import {
   fetchActiveFacebookSources,
   markSourceChecked,
+  readFacebookGraphTokenFromVault,
   setResolvedFacebookPageId,
   upsertFacebookNews,
   type FacebookSource,
@@ -53,10 +54,12 @@ function safeErrorMessage(error: unknown) {
   return message.replace(/\s+/g, " ").slice(0, 300);
 }
 
-function facebookToken() {
-  return Deno.env.get("FACEBOOK_GRAPH_ACCESS_TOKEN")?.trim()
+async function facebookToken() {
+  const direct = Deno.env.get("FACEBOOK_GRAPH_ACCESS_TOKEN")?.trim()
     || Deno.env.get("META_GRAPH_ACCESS_TOKEN")?.trim()
     || "";
+  if (direct) return direct;
+  return await readFacebookGraphTokenFromVault();
 }
 
 async function processSource(source: FacebookSource, token: string) {
@@ -98,13 +101,13 @@ Deno.serve(async (request: Request) => {
   if (request.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405);
   if (!(await requestIsAuthorized(request))) return jsonResponse({ error: "Unauthorized" }, 401);
 
-  const token = facebookToken();
+  const token = await facebookToken();
   if (!token) {
     return jsonResponse({
       ok: true,
       configured: false,
       reason: "facebook-access-token-missing",
-      message: "Set FACEBOOK_GRAPH_ACCESS_TOKEN after Meta app approval before enabling Facebook polling.",
+      message: "Store facebook_graph_access_token_v1 in Supabase Vault after Meta app approval before enabling Facebook polling.",
     }, 200);
   }
 
