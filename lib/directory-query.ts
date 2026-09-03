@@ -4,7 +4,7 @@ export const DIRECTORY_PAGE_SIZE = 24;
 
 const ARABIC_DIACRITICS = /[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g;
 const NON_SEARCH_CHARS = /[^\p{L}\p{N}\s]/gu;
-const MIN_PARTIAL_TOKEN_LENGTH = 3;
+const MIN_PARTIAL_TOKEN_LENGTH = 4;
 
 const synonymGroups = [
   ['دكتور', 'دكتوره', 'طبيب', 'طبيبه', 'د'],
