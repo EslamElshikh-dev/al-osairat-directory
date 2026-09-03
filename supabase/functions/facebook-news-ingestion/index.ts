@@ -3,12 +3,14 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import {
   fetchActiveFacebookSources,
   markSourceChecked,
+  setResolvedFacebookPageId,
   upsertFacebookNews,
   type FacebookSource,
 } from "./database.ts";
 import {
   fetchFacebookPagePosts,
   mapFacebookPostToNews,
+  resolveFacebookPageId,
 } from "./facebook.ts";
 
 const EXPECTED_TOKEN_SHA256 = "9005b67e2135db28cc45fb788271755db56243e2393bed17e2cfb49d71f9ce9a";
@@ -64,9 +66,14 @@ async function processSource(source: FacebookSource, token: string) {
   let skipped = 0;
 
   try {
-    const posts = await fetchFacebookPagePosts(source, token);
+    const resolvedPageId = await resolveFacebookPageId(source, token);
+    if (resolvedPageId !== source.graphPageId) {
+      await setResolvedFacebookPageId(source.id, resolvedPageId);
+    }
+    const effectiveSource: FacebookSource = { ...source, graphPageId: resolvedPageId };
+    const posts = await fetchFacebookPagePosts(effectiveSource, token);
     const mapped = posts.flatMap((post) => {
-      const item = mapFacebookPostToNews(source, post);
+      const item = mapFacebookPostToNews(effectiveSource, post);
       if (!item) {
         skipped += 1;
         return [];
@@ -79,7 +86,7 @@ async function processSource(source: FacebookSource, token: string) {
 
     await upsertFacebookNews(mapped);
     await markSourceChecked(source.id, { success: true });
-    return { sourceId: source.id, discovered, published, heldForReview, skipped };
+    return { sourceId: source.id, graphPageId: resolvedPageId, discovered, published, heldForReview, skipped };
   } catch (error) {
     const message = safeErrorMessage(error);
     await markSourceChecked(source.id, { success: false, error: message });
