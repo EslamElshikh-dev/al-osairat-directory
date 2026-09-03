@@ -8,6 +8,8 @@ export type FacebookSource = {
   requireLocalMatch: boolean;
   allowSensitiveAutoPublish: boolean;
   pollIntervalSeconds: number;
+  graphPageId?: string;
+  defaultVillage?: string;
   lastCheckedAt?: string;
 };
 
@@ -96,9 +98,11 @@ export async function fetchActiveFacebookSources() {
     require_local_match: boolean;
     allow_sensitive_auto_publish: boolean;
     poll_interval_seconds: number;
+    graph_page_id: string | null;
+    default_village: string | null;
     last_checked_at: string | null;
   }>>(
-    "news_sources?select=id,name,external_id,source_url,trust_level,publish_mode,require_local_match,allow_sensitive_auto_publish,poll_interval_seconds,last_checked_at&source_kind=eq.facebook&active=eq.true&order=name.asc",
+    "news_sources?select=id,name,external_id,source_url,trust_level,publish_mode,require_local_match,allow_sensitive_auto_publish,poll_interval_seconds,graph_page_id,default_village,last_checked_at&source_kind=eq.facebook&active=eq.true&order=name.asc",
   );
 
   const now = Date.now();
@@ -117,9 +121,23 @@ export async function fetchActiveFacebookSources() {
       requireLocalMatch: row.require_local_match,
       allowSensitiveAutoPublish: row.allow_sensitive_auto_publish,
       pollIntervalSeconds: row.poll_interval_seconds,
+      ...(row.graph_page_id ? { graphPageId: row.graph_page_id } : {}),
+      ...(row.default_village ? { defaultVillage: row.default_village } : {}),
       ...(row.last_checked_at ? { lastCheckedAt: row.last_checked_at } : {}),
     } satisfies FacebookSource];
   });
+}
+
+export async function setResolvedFacebookPageId(sourceId: string, graphPageId: string) {
+  if (!/^\d{3,30}$/.test(graphPageId)) throw new Error("Invalid resolved Facebook Page ID");
+  await serviceRequest<void>(
+    `news_sources?id=eq.${encodeURIComponent(sourceId)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ graph_page_id: graphPageId, updated_at: new Date().toISOString() }),
+    },
+    "return=minimal",
+  );
 }
 
 export async function markSourceChecked(
