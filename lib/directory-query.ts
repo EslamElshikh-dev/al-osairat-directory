@@ -4,6 +4,7 @@ export const DIRECTORY_PAGE_SIZE = 24;
 
 const ARABIC_DIACRITICS = /[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g;
 const NON_SEARCH_CHARS = /[^\p{L}\p{N}\s]/gu;
+const MIN_PARTIAL_TOKEN_LENGTH = 3;
 
 const synonymGroups = [
   ['دكتور', 'دكتوره', 'طبيب', 'طبيبه', 'د'],
@@ -103,6 +104,13 @@ function normalizedField(value?: string) {
   return value ? canonicalizeDirectoryQuery(value) : '';
 }
 
+function meaningfulPartialMatch(candidate: string, queryToken: string) {
+  if (candidate.length < MIN_PARTIAL_TOKEN_LENGTH || queryToken.length < MIN_PARTIAL_TOKEN_LENGTH) {
+    return false;
+  }
+  return candidate.includes(queryToken) || queryToken.includes(candidate);
+}
+
 function tokenMatchRatio(value: string, queryTokens: string[]) {
   if (!value || !queryTokens.length) return 0;
   const fieldTokens = value.split(' ').filter(Boolean);
@@ -110,8 +118,7 @@ function tokenMatchRatio(value: string, queryTokens: string[]) {
     fieldTokens.some(
       (candidate) =>
         candidate === queryToken
-        || candidate.includes(queryToken)
-        || queryToken.includes(candidate)
+        || meaningfulPartialMatch(candidate, queryToken)
         || editDistanceAtMostOne(candidate, queryToken),
     ),
   ).length;
