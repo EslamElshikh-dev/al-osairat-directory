@@ -136,12 +136,19 @@ export async function queryCanonicalDirectory(
   const page = Number.isFinite(options.page) ? Math.max(1, Math.trunc(options.page || 1)) : 1;
   const query = options.query?.trim() ? canonicalizeDirectoryQuery(options.query) : '';
 
+  // Until the canonical table is guaranteed to be synchronized on every data
+  // publish, user-entered searches must use the merged live catalog. A stale
+  // canonical index can return a plausible but incomplete non-zero subset and
+  // hide newly published records. Browsing/pagination without a query can still
+  // use the server-side canonical table.
+  if (query) return null;
+
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/search_directory_entities`, {
       method: 'POST',
       headers: publicRpcHeaders(),
       body: JSON.stringify({
-        p_query: query || null,
+        p_query: null,
         p_category: options.category || null,
         p_village: options.village && options.village !== 'all' ? options.village : null,
         p_page: page,
@@ -155,11 +162,6 @@ export async function queryCanonicalDirectory(
     if (!payload.canonicalReady) return null;
 
     const items = Array.isArray(payload.items) ? payload.items.map(serialize) : [];
-
-    // A stale or not-yet-synced canonical catalog must not hide valid records
-    // that are already shipped in the local directory dataset. Returning null
-    // here lets every consumer fall back to the merged static/published catalog.
-    if (query && items.length === 0) return null;
 
     if (options.excludeEmergency) {
       // The public directory currently keeps emergency records on their dedicated route.
