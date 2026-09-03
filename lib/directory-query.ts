@@ -14,7 +14,9 @@ const synonymGroups = [
   ['محامي', 'محام', 'محامين', 'محامون'],
   ['مطعم', 'مطاعم'],
   ['حرفي', 'حرفيين', 'حرفيون'],
-  ['معمل', 'مختبر', 'تحاليل'],
+  ['معمل', 'معامل', 'مختبر', 'مختبرات', 'تحاليل'],
+  ['حضانه', 'حضانات', 'روضه', 'روضات'],
+  ['اسنان', 'dentist', 'dental'],
   ['اطفال', 'طفل'],
 ];
 
@@ -153,6 +155,32 @@ export function directorySearchRelevance(listing: DirectoryListing, query: strin
 }
 
 function matchesSearch(listing: DirectoryListing, query: string) {
+  const normalizedQuery = canonicalizeDirectoryQuery(query);
+  if (!normalizedQuery) return false;
+
+  const queryTokens = Array.from(new Set(normalizedQuery.split(' ').filter(Boolean)));
+  if (!queryTokens.length) return false;
+
+  // For compound searches such as "حضانات جزيرة أولاد حمزة", require every
+  // meaningful token to be present somewhere across the listing. This prevents
+  // a village-only match from returning unrelated shops, hospitals or trades.
+  if (queryTokens.length > 1) {
+    const searchableCorpus = [
+      listing.title,
+      listing.subCategory,
+      listing.description,
+      listing.village,
+      listing.locality,
+      listing.location,
+      listing.phone,
+    ]
+      .map((value) => normalizedField(value))
+      .filter(Boolean)
+      .join(' ');
+
+    if (tokenMatchRatio(searchableCorpus, queryTokens) < 1) return false;
+  }
+
   return directorySearchRelevance(listing, query) > 0;
 }
 
