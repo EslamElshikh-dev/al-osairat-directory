@@ -87,6 +87,14 @@ async function serviceRequest<T>(path: string, init: RequestInit = {}, prefer?: 
   return JSON.parse(text) as T;
 }
 
+export async function readFacebookGraphTokenFromVault() {
+  const token = await serviceRequest<string | null>(
+    "rpc/get_facebook_graph_token_internal",
+    { method: "POST", body: "{}" },
+  );
+  return typeof token === "string" ? token.trim() : "";
+}
+
 export async function fetchActiveFacebookSources() {
   const rows = await serviceRequest<Array<{
     id: string;
