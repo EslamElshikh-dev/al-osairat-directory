@@ -12,6 +12,12 @@ type FacebookPostsResponse = {
   error?: { message?: string; code?: number; type?: string };
 };
 
+type FacebookPageLookupResponse = {
+  id?: unknown;
+  name?: unknown;
+  error?: { message?: string; code?: number; type?: string };
+};
+
 const GRAPH_API_VERSION = "v26.0";
 const GRAPH_TIMEOUT_MS = 12_000;
 const MAX_MESSAGE_LENGTH = 12_000;
@@ -118,25 +124,52 @@ function makeSummary(message: string, title: string) {
   return summary === title ? null : summary;
 }
 
-export async function fetchFacebookPagePosts(source: FacebookSource, token: string) {
-  const endpoint = new URL(
-    `https://graph.facebook.com/${GRAPH_API_VERSION}/${encodeURIComponent(source.externalId)}/posts`,
-  );
-  endpoint.searchParams.set("fields", "id,message,created_time,permalink_url");
-  endpoint.searchParams.set("limit", "12");
-
+async function graphJson<T>(endpoint: URL, token: string): Promise<T> {
   const response = await fetch(endpoint, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
     signal: AbortSignal.timeout(GRAPH_TIMEOUT_MS),
   });
-  const payload = await response.json().catch(() => ({})) as FacebookPostsResponse;
+  const payload = await response.json().catch(() => ({})) as T & {
+    error?: { message?: string; code?: number; type?: string };
+  };
   if (!response.ok || payload.error) {
     const code = payload.error?.code ? ` #${payload.error.code}` : "";
     const message = payload.error?.message?.replace(/\s+/g, " ").slice(0, 220)
       || `HTTP ${response.status}`;
     throw new Error(`Meta Graph API${code}: ${message}`);
   }
+  return payload;
+}
+
+export async function resolveFacebookPageId(source: FacebookSource, token: string) {
+  const existing = source.graphPageId?.trim() || "";
+  if (/^\d{3,30}$/.test(existing)) return existing;
+
+  const ref = source.externalId.trim();
+  if (/^\d{3,30}$/.test(ref)) return ref;
+
+  const endpoint = new URL(
+    `https://graph.facebook.com/${GRAPH_API_VERSION}/${encodeURIComponent(ref)}`,
+  );
+  endpoint.searchParams.set("fields", "id,name");
+  const payload = await graphJson<FacebookPageLookupResponse>(endpoint, token);
+  const id = typeof payload.id === "string" ? payload.id.trim() : "";
+  if (!/^\d{3,30}$/.test(id)) throw new Error(`Meta Graph API returned no numeric Page ID for ${source.id}`);
+  return id;
+}
+
+export async function fetchFacebookPagePosts(source: FacebookSource, token: string) {
+  const pageId = source.graphPageId?.trim() || source.externalId.trim();
+  if (!/^\d{3,30}$/.test(pageId)) throw new Error(`Facebook source ${source.id} has no resolved numeric Page ID`);
+
+  const endpoint = new URL(
+    `https://graph.facebook.com/${GRAPH_API_VERSION}/${encodeURIComponent(pageId)}/posts`,
+  );
+  endpoint.searchParams.set("fields", "id,message,created_time,permalink_url");
+  endpoint.searchParams.set("limit", "12");
+
+  const payload = await graphJson<FacebookPostsResponse>(endpoint, token);
   return Array.isArray(payload.data) ? payload.data : [];
 }
 
@@ -166,6 +199,10 @@ export function mapFacebookPostToNews(
   const canAutoPublish = trustedForAutomatic
     && (!sensitive || source.allowSensitiveAutoPublish);
   const now = new Date().toISOString();
+  const detectedVillage = detectVillage(message);
+  const village = detectedVillage === "مركز العسيرات" && source.defaultVillage
+    ? source.defaultVillage
+    : detectedVillage;
 
   return {
     id: `facebook-${stableId(postId)}`,
@@ -175,7 +212,7 @@ export function mapFacebookPostToNews(
     source: source.name,
     source_url: source.sourceUrl,
     published_at: new Date(publishedAt).toISOString(),
-    village: detectVillage(message),
+    village,
     topic: detectTopic(message),
     origin: "live",
     status: canAutoPublish ? "published" : "hidden",
@@ -183,7 +220,7 @@ export function mapFacebookPostToNews(
     source_excerpt: summary || title,
     source_kind: "facebook",
     source_external_id: postId,
-    source_parent_external_id: source.externalId,
+    source_parent_external_id: source.graphPageId || source.externalId,
     source_trust_level: source.trustLevel,
     last_seen_at: now,
     updated_at: now,
