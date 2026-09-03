@@ -14,6 +14,7 @@ import { community } from './community';
 import { transport } from './transport';
 import { emergency } from './emergency';
 import { googleMapsIntake20260829 } from './google-maps-intake-2026-08-29';
+import { serviceScan20260904 } from './service-scan-2026-09-04';
 
 export * from '../types';
 export { categories, villages };
@@ -32,6 +33,7 @@ const rawListings: DirectoryListing[] = [
   ...transport,
   ...emergency,
   ...googleMapsIntake20260829,
+  ...serviceScan20260904,
 ];
 
 // Keep immutable IDs/slugs untouched while standardizing user-facing legacy data
