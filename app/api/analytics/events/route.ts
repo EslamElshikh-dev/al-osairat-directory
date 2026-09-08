@@ -12,6 +12,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const allowedEvents = new Set([
+  'page_view',
   'directory_search',
   'view_listing',
   'phone_click',
@@ -19,6 +20,14 @@ const allowedEvents = new Set([
   'maps_click',
   'favorite_add',
   'favorite_remove',
+]);
+
+const listingOptionalEvents = new Set([
+  'page_view',
+  'directory_search',
+  'phone_click',
+  'whatsapp_click',
+  'maps_click',
 ]);
 
 function clean(value: unknown, maxLength: number) {
@@ -36,13 +45,30 @@ function safeSearchTerm(value: unknown) {
   return term;
 }
 
+function safeUrl(value: unknown, maxLength = 500) {
+  const raw = clean(value, maxLength);
+  if (!raw) return '';
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '';
+    parsed.username = '';
+    parsed.password = '';
+    return parsed.toString().slice(0, maxLength);
+  } catch {
+    return '';
+  }
+}
+
 async function resolveListing(eventType: string, listingId: string, listingSlug: string) {
   if (listingId) {
     const staticListing = listings.find((item) => item.id === listingId);
     return { listingId, listingSlug: staticListing?.slug || listingSlug };
   }
 
-  if (!listingSlug || eventType === 'directory_search') return { listingId: '', listingSlug };
+  if (!listingSlug || eventType === 'directory_search' || eventType === 'page_view') {
+    return { listingId: '', listingSlug };
+  }
+
   const normalizedSlug = normalizeRouteSlug(listingSlug);
   const staticListing = listings.find((item) => item.slug === normalizedSlug);
   if (staticListing) return { listingId: staticListing.id, listingSlug: staticListing.slug };
@@ -63,8 +89,23 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const eventType = clean(body?.eventType, 40);
   const sessionId = clean(body?.sessionId, 80);
-  if (!allowedEvents.has(eventType) || !/^[A-Za-z0-9_-]{8,80}$/.test(sessionId)) {
+  const visitorId = clean(body?.visitorId, 80);
+  if (
+    !allowedEvents.has(eventType)
+    || !/^[A-Za-z0-9_-]{8,80}$/.test(sessionId)
+    || !/^[A-Za-z0-9_-]{8,80}$/.test(visitorId)
+  ) {
     return NextResponse.json({ error: 'حدث غير صالح.' }, { status: 400 });
+  }
+
+  const searchTerm = eventType === 'directory_search' ? safeSearchTerm(body?.searchTerm) : '';
+  const village = eventType === 'directory_search' ? clean(body?.village, 100) || 'all' : '';
+  const category = eventType === 'directory_search' ? clean(body?.category, 100) || 'all' : '';
+
+  // A directory search must represent an explicit user action. Completely empty
+  // all/all requests are rejected so a page load can never inflate search counts.
+  if (eventType === 'directory_search' && !searchTerm && village === 'all') {
+    return NextResponse.json({ accepted: false }, { status: 202 });
   }
 
   const listing = await resolveListing(
@@ -73,7 +114,7 @@ export async function POST(request: Request) {
     clean(body?.listingSlug, 180),
   );
 
-  if (eventType !== 'directory_search' && !listing.listingId) {
+  if (!listingOptionalEvents.has(eventType) && !listing.listingId) {
     return NextResponse.json({ accepted: false }, { status: 202 });
   }
 
@@ -81,15 +122,23 @@ export async function POST(request: Request) {
   const payload = {
     event_type: eventType,
     session_id: sessionId,
+    visitor_id: visitorId,
     listing_id: listing.listingId || null,
     listing_slug: listing.listingSlug || null,
-    search_term: eventType === 'directory_search' ? safeSearchTerm(body?.searchTerm) || null : null,
-    village: eventType === 'directory_search' ? clean(body?.village, 100) || null : null,
-    category: eventType === 'directory_search' ? clean(body?.category, 100) || null : null,
+    search_term: eventType === 'directory_search' ? searchTerm || null : null,
+    village: eventType === 'directory_search' ? village || null : null,
+    category: eventType === 'directory_search' ? category || null : null,
     result_count: eventType === 'directory_search' && Number.isFinite(resultCountValue)
       ? Math.max(0, Math.min(100000, Math.trunc(resultCountValue)))
       : null,
     source_path: clean(body?.sourcePath, 240) || null,
+    page_url: safeUrl(body?.pageUrl) || null,
+    referrer: safeUrl(body?.referrer) || null,
+    utm_source: clean(body?.utmSource, 120) || null,
+    utm_medium: clean(body?.utmMedium, 120) || null,
+    utm_campaign: clean(body?.utmCampaign, 180) || null,
+    utm_term: clean(body?.utmTerm, 180) || null,
+    utm_content: clean(body?.utmContent, 180) || null,
   };
 
   const response = await fetch(`${SUPABASE_URL}/rest/v1/directory_analytics_events`, {
