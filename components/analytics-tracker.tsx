@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
 import {
   initializeAnalyticsQueue,
@@ -20,6 +20,23 @@ type OperationalEvent = {
   resultCount?: number;
 };
 
+type Attribution = {
+  referrer: string;
+  utmSource: string;
+  utmMedium: string;
+  utmCampaign: string;
+  utmTerm: string;
+  utmContent: string;
+};
+
+type PendingDirectorySearch = {
+  query: string;
+  village: string;
+  category: string;
+  pathname: string;
+  createdAt: number;
+};
+
 type ReportWebVitalsCallback = Parameters<typeof useReportWebVitals>[0];
 
 const reportWebVital: ReportWebVitalsCallback = (metric) => {
@@ -29,8 +46,6 @@ const reportWebVital: ReportWebVitalsCallback = (metric) => {
   const rating = metric.rating.replace(/[^a-z0-9]+/g, '_').slice(0, 24);
   if (!metricName || !rating) return;
 
-  // GA4's standard `value` parameter is integer-only for reliable aggregation.
-  // CLS is scaled by 1,000 here and converted back when the admin report reads it.
   const scale = metric.name === 'CLS' ? 1000 : 1;
   trackEvent(`web_vital_${metricName}_${rating}`, {
     value: Math.round(metric.value * scale),
@@ -65,22 +80,68 @@ function stringParam(value: unknown) {
   return typeof value === 'string' ? value.trim().slice(0, 80) : '';
 }
 
+function createClientId() {
+  return typeof crypto?.randomUUID === 'function'
+    ? crypto.randomUUID().replace(/-/g, '')
+    : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 18)}`;
+}
+
 function operationalSessionId() {
   if (typeof window === 'undefined') return '';
   const key = 'osayrat:analytics-session';
   const existing = window.sessionStorage.getItem(key);
   if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
-  const created = typeof crypto?.randomUUID === 'function'
-    ? crypto.randomUUID().replace(/-/g, '')
-    : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 18)}`;
+  const created = createClientId();
   window.sessionStorage.setItem(key, created);
+  return created;
+}
+
+function operationalVisitorId() {
+  if (typeof window === 'undefined') return '';
+  const key = 'osayrat:analytics-visitor';
+  const existing = window.localStorage.getItem(key);
+  if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
+  const created = createClientId();
+  window.localStorage.setItem(key, created);
+  return created;
+}
+
+function getAttribution(): Attribution {
+  if (typeof window === 'undefined') {
+    return { referrer: '', utmSource: '', utmMedium: '', utmCampaign: '', utmTerm: '', utmContent: '' };
+  }
+
+  const key = 'osayrat:analytics-attribution';
+  const existing = window.sessionStorage.getItem(key);
+  if (existing) {
+    try {
+      const parsed = JSON.parse(existing) as Attribution;
+      if (parsed && typeof parsed === 'object') return parsed;
+    } catch {
+      // Rebuild corrupt attribution below.
+    }
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const created: Attribution = {
+    referrer: document.referrer || '',
+    utmSource: String(params.get('utm_source') || '').slice(0, 120),
+    utmMedium: String(params.get('utm_medium') || '').slice(0, 120),
+    utmCampaign: String(params.get('utm_campaign') || '').slice(0, 180),
+    utmTerm: String(params.get('utm_term') || '').slice(0, 180),
+    utmContent: String(params.get('utm_content') || '').slice(0, 180),
+  };
+  window.sessionStorage.setItem(key, JSON.stringify(created));
   return created;
 }
 
 function sendOperationalEvent(event: OperationalEvent) {
   if (typeof window === 'undefined') return;
   const sessionId = operationalSessionId();
-  if (!sessionId) return;
+  const visitorId = operationalVisitorId();
+  if (!sessionId || !visitorId) return;
+  const attribution = getAttribution();
+
   void window.fetch('/api/analytics/events', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -89,7 +150,10 @@ function sendOperationalEvent(event: OperationalEvent) {
     body: JSON.stringify({
       ...event,
       sessionId,
+      visitorId,
       sourcePath: window.location.pathname,
+      pageUrl: `${window.location.origin}${window.location.pathname}`,
+      ...attribution,
     }),
   }).catch(() => null);
 }
@@ -105,6 +169,29 @@ function parseArabicNumber(value: string) {
     .replace(/[٬,\s]/g, '');
   const parsed = Number(western);
   return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+}
+
+function savePendingDirectorySearch(pending: PendingDirectorySearch) {
+  if (typeof window === 'undefined') return;
+  window.sessionStorage.setItem('osayrat:pending-directory-search', JSON.stringify(pending));
+}
+
+function consumePendingDirectorySearch(pathname: string) {
+  if (typeof window === 'undefined') return null;
+  const key = 'osayrat:pending-directory-search';
+  const raw = window.sessionStorage.getItem(key);
+  if (!raw) return null;
+
+  try {
+    const pending = JSON.parse(raw) as PendingDirectorySearch;
+    const isFresh = Date.now() - Number(pending.createdAt || 0) < 30_000;
+    if (!isFresh || pending.pathname !== pathname) return null;
+    window.sessionStorage.removeItem(key);
+    return pending;
+  } catch {
+    window.sessionStorage.removeItem(key);
+    return null;
+  }
 }
 
 function trackMutation(path: string, body: Record<string, unknown>) {
@@ -156,12 +243,17 @@ function trackMutation(path: string, body: Record<string, unknown>) {
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchKey = searchParams.toString();
   const previousPageUrl = useRef<string | null>(null);
 
   useReportWebVitals(reportWebVital);
 
   useEffect(() => {
     initializeAnalyticsQueue();
+    operationalVisitorId();
+    operationalSessionId();
+    getAttribution();
     previousPageUrl.current = window.location.href;
   }, []);
 
@@ -174,6 +266,8 @@ export function AnalyticsTracker() {
     }
     previousPageUrl.current = currentUrl;
 
+    sendOperationalEvent({ eventType: 'page_view' });
+
     if (pathname.startsWith('/listing/')) {
       const listingSlug = listingSlugFromPath(pathname);
       trackEvent('view_listing', { content_type: 'directory_listing' });
@@ -181,24 +275,21 @@ export function AnalyticsTracker() {
     }
 
     if (pathname === '/directory' || pathname.startsWith('/directory/')) {
-      const params = new URLSearchParams(window.location.search);
-      const query = String(params.get('q') || '').trim().slice(0, 120);
-      const village = String(params.get('village') || 'all').trim().slice(0, 100);
-      const category = pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all';
-      if (query || village !== 'all') {
+      const pending = consumePendingDirectorySearch(pathname);
+      if (pending) {
         window.setTimeout(() => {
           const resultText = document.querySelector('.results-bar strong')?.textContent || '0';
           sendOperationalEvent({
             eventType: 'directory_search',
-            searchTerm: query,
-            village,
-            category,
+            searchTerm: pending.query,
+            village: pending.village,
+            category: pending.category,
             resultCount: parseArabicNumber(resultText),
           });
         }, 0);
       }
     }
-  }, [pathname]);
+  }, [pathname, searchKey]);
 
   useEffect(() => {
     const originalFetch = window.fetch.bind(window);
@@ -257,7 +348,10 @@ export function AnalyticsTracker() {
         content_type: listingSlug ? 'directory_listing' : 'site',
         transport_type: 'beacon',
       }, { immediate: true });
-      if (listingSlug) sendOperationalEvent({ eventType: eventName, listingSlug });
+      sendOperationalEvent({
+        eventType: eventName,
+        ...(listingSlug ? { listingSlug } : {}),
+      });
     }
 
     function handleSubmit(event: SubmitEvent) {
@@ -265,14 +359,26 @@ export function AnalyticsTracker() {
       if (!form?.classList.contains('explorer__tools')) return;
 
       const data = new FormData(form);
-      const query = String(data.get('q') || '').trim();
-      const village = String(data.get('village') || 'all');
+      const query = String(data.get('q') || '').trim().slice(0, 120);
+      const village = String(data.get('village') || 'all').trim().slice(0, 100) || 'all';
+      const category = pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all';
+
+      // Do not treat an empty/default submit as a search.
+      if (!query && village === 'all') return;
+
+      savePendingDirectorySearch({
+        query,
+        village,
+        category,
+        pathname,
+        createdAt: Date.now(),
+      });
 
       trackEvent('directory_search', {
         has_query: Boolean(query),
         query_length: Math.min(query.length, 200),
         village_filter: village === 'all' ? 'all' : village.slice(0, 80),
-        category_scope: pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all',
+        category_scope: category,
         transport_type: 'beacon',
       }, { immediate: true });
     }
