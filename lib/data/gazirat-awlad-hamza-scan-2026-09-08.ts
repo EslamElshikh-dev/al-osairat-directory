@@ -109,7 +109,7 @@ export const gaziratAwladHamzaScan20260908: DirectoryListing[] = [
     subCategory: 'دوار ومجلس عائلي',
     location: '9RPQ+XJW، نجع الطود، جزيرة أولاد حمزة، مركز العسيرات، محافظة سوهاج',
     village: 'جزيرة أولاد حمزة',
-    locality: 'نجع الطود',
+    locality: 'الطود',
     hours: 'مفتوح 24 ساعة يوميًا بحسب المصدر',
     description: 'دوار ومجلس عائلي في نجع الطود التابع لجزيرة أولاد حمزة.',
     reviewCount: 0,
