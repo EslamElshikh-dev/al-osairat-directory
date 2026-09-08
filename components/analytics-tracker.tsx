@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
 import {
   initializeAnalyticsQueue,
@@ -27,14 +27,6 @@ type Attribution = {
   utmCampaign: string;
   utmTerm: string;
   utmContent: string;
-};
-
-type PendingDirectorySearch = {
-  query: string;
-  village: string;
-  category: string;
-  pathname: string;
-  createdAt: number;
 };
 
 type ReportWebVitalsCallback = Parameters<typeof useReportWebVitals>[0];
@@ -171,29 +163,6 @@ function parseArabicNumber(value: string) {
   return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
 }
 
-function savePendingDirectorySearch(pending: PendingDirectorySearch) {
-  if (typeof window === 'undefined') return;
-  window.sessionStorage.setItem('osayrat:pending-directory-search', JSON.stringify(pending));
-}
-
-function consumePendingDirectorySearch(pathname: string) {
-  if (typeof window === 'undefined') return null;
-  const key = 'osayrat:pending-directory-search';
-  const raw = window.sessionStorage.getItem(key);
-  if (!raw) return null;
-
-  try {
-    const pending = JSON.parse(raw) as PendingDirectorySearch;
-    const isFresh = Date.now() - Number(pending.createdAt || 0) < 30_000;
-    if (!isFresh || pending.pathname !== pathname) return null;
-    window.sessionStorage.removeItem(key);
-    return pending;
-  } catch {
-    window.sessionStorage.removeItem(key);
-    return null;
-  }
-}
-
 function trackMutation(path: string, body: Record<string, unknown>) {
   if (path === '/api/auth/register') {
     trackEvent('sign_up', { method: 'password' }, { immediate: true });
@@ -243,8 +212,6 @@ function trackMutation(path: string, body: Record<string, unknown>) {
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const searchKey = searchParams.toString();
   const previousPageUrl = useRef<string | null>(null);
 
   useReportWebVitals(reportWebVital);
@@ -273,23 +240,7 @@ export function AnalyticsTracker() {
       trackEvent('view_listing', { content_type: 'directory_listing' });
       if (listingSlug) sendOperationalEvent({ eventType: 'view_listing', listingSlug });
     }
-
-    if (pathname === '/directory' || pathname.startsWith('/directory/')) {
-      const pending = consumePendingDirectorySearch(pathname);
-      if (pending) {
-        window.setTimeout(() => {
-          const resultText = document.querySelector('.results-bar strong')?.textContent || '0';
-          sendOperationalEvent({
-            eventType: 'directory_search',
-            searchTerm: pending.query,
-            village: pending.village,
-            category: pending.category,
-            resultCount: parseArabicNumber(resultText),
-          });
-        }, 0);
-      }
-    }
-  }, [pathname, searchKey]);
+  }, [pathname]);
 
   useEffect(() => {
     const originalFetch = window.fetch.bind(window);
@@ -363,15 +314,16 @@ export function AnalyticsTracker() {
       const village = String(data.get('village') || 'all').trim().slice(0, 100) || 'all';
       const category = pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all';
 
-      // Do not treat an empty/default submit as a search.
+      // Opening a filter or submitting the default state is not a search.
       if (!query && village === 'all') return;
 
-      savePendingDirectorySearch({
-        query,
+      const resultText = document.querySelector('.results-bar strong')?.textContent || '';
+      sendOperationalEvent({
+        eventType: 'directory_search',
+        searchTerm: query,
         village,
         category,
-        pathname,
-        createdAt: Date.now(),
+        ...(resultText ? { resultCount: parseArabicNumber(resultText) } : {}),
       });
 
       trackEvent('directory_search', {
