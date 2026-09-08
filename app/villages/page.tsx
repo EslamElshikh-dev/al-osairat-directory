@@ -109,10 +109,22 @@ export default function VillagesPage() {
                   <span><b>{count.toLocaleString('ar-EG')}</b> سجل</span>
                   <span><b>{village.localities.length.toLocaleString('ar-EG')}</b> تابعًا ونجعًا</span>
                 </div>
+                <div className="village-card__localities" aria-label={`أشهر توابع ${village.name}`}>
+                  {village.localities.slice(0, 4).map((locality) => <span key={locality}>{locality}</span>)}
+                  {village.localities.length > 4 && <span>+{(village.localities.length - 4).toLocaleString('ar-EG')}</span>}
+                </div>
                 <span className="village-card__cta">فتح دليل القرية ←</span>
               </Link>
             );
           })}
+        </div>
+        <div className="villages-localities-cta">
+          <div>
+            <span className="eyebrow eyebrow--light">دليل جغرافي مفصل</span>
+            <h2>كل أسماء النجوع والتوابع في صفحة واحدة</h2>
+            <p>استعرض الأسماء مرتبة تحت القرية الأم وابحث عن الخدمات داخل كل نطاق محلي.</p>
+          </div>
+          <Link href="/localities" className="button button--light">استكشف النجوع والتوابع</Link>
         </div>
       </section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />

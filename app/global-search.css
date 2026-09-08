@@ -237,6 +237,11 @@
   color: #35637a;
 }
 
+.global-search__result-icon.kind-locality {
+  background: #f4efe2;
+  color: #8a651b;
+}
+
 .global-search__result-copy {
   min-width: 0;
   display: grid;

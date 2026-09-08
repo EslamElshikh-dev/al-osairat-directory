@@ -45,8 +45,24 @@ test('site-wide security policy covers core sources and blocks unsafe embedding'
 test('small-phone navigation labels remain readable', async () => {
   const css = await readProjectFile('app/mobile-system.css');
 
-  assert.match(css, /max-width: 390px[\s\S]*?mobile-nav__item \{ min-height: 56px; font-size: 9\.25px; \}/);
-  assert.match(css, /max-width: 340px[\s\S]*?mobile-nav__label \{ font-size: 9px; \}/);
+  assert.match(css, /max-width: 390px[\s\S]*?mobile-nav__item \{ min-height: 56px; font-size: 10px; \}/);
+  assert.match(css, /max-width: 340px[\s\S]*?mobile-nav__label \{ font-size: 10px; \}/);
+});
+
+test('locality SEO hub is linked, searchable and included in the sitemap', async () => {
+  const [page, shell, search, sitemap] = await Promise.all([
+    readProjectFile('app/localities/page.tsx'),
+    readProjectFile('components/site-shell.tsx'),
+    readProjectFile('app/api/site-search/route.ts'),
+    readProjectFile('app/sitemap.ts'),
+  ]);
+
+  assert.match(page, /نجوع وقرى العسيرات - الدليل الجغرافي الكامل/);
+  assert.match(page, /'@type': 'ItemList'/);
+  assert.match(page, /numberOfItems: localities\.length/);
+  assert.match(shell, /href="\/localities"/);
+  assert.match(search, /kind: 'locality'/);
+  assert.match(sitemap, /absoluteUrl\('\/localities'\)/);
 });
 
 test('404 page has explicit non-indexable metadata', async () => {

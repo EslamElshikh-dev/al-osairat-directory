@@ -37,11 +37,19 @@ export default async function HomePage() {
     about: {
       '@type': 'Place',
       name: 'مركز العسيرات، محافظة سوهاج، مصر',
+      alternateName: ['العسيرات', 'مركز العسيرات', 'El Usayrat'],
       address: {
         '@type': 'PostalAddress',
         addressRegion: 'سوهاج',
         addressCountry: 'EG',
       },
+      containsPlace: villages
+        .filter((village) => village.name !== 'مركز العسيرات')
+        .map((village) => ({
+          '@type': 'Place',
+          name: village.name,
+          url: `${siteConfig.url}/villages/${village.slug}`,
+        })),
     },
   };
 
@@ -89,6 +97,7 @@ export default async function HomePage() {
               <Link href="/directory/pharmacies">الصيدليات</Link>
               <Link href="/directory/shops">المحلات</Link>
               <Link href="/villages">القرى</Link>
+              <Link href="/localities">النجوع والتوابع</Link>
             </div>
 
             <div className="hero__trust">

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 type SearchItem = {
-  kind: 'listing' | 'category' | 'village' | 'article' | 'page';
+  kind: 'listing' | 'category' | 'village' | 'locality' | 'article' | 'page';
   title: string;
   subtitle: string;
   href: string;
@@ -31,6 +31,7 @@ function resultGlyph(kind: SearchItem['kind']) {
   if (kind === 'listing') return '⌖';
   if (kind === 'category') return '▦';
   if (kind === 'village') return '⌂';
+  if (kind === 'locality') return '⌖';
   if (kind === 'article') return '≡';
   return '↗';
 }

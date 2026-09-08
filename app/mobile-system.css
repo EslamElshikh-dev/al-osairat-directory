@@ -583,7 +583,7 @@
     padding: 5px 2px 3px;
     border-radius: 16px;
     color: #74817b;
-    font-size: 9.5px;
+    font-size: 10.5px;
     font-weight: 850;
     line-height: 1;
     outline-offset: 2px;
@@ -762,7 +762,7 @@
   .account-trigger { margin-inline-start: 2px; }
 
   .mobile-nav__dock { padding-inline: 5px; border-radius: 22px; }
-  .mobile-nav__item { min-height: 56px; font-size: 9.25px; }
+  .mobile-nav__item { min-height: 56px; font-size: 10px; }
   .mobile-nav__icon { width: 28px; height: 28px; }
   .mobile-nav__icon svg { width: 19px; height: 19px; }
   .mobile-nav__item--primary .mobile-nav__icon { width: 48px; height: 48px; margin-top: -18px; }
@@ -785,7 +785,7 @@
   :root { --shell: min(100% - 20px, 1180px); }
   .brand__copy { display: none; }
   .site-header__brand { flex-basis: 43px; }
-  .mobile-nav__label { font-size: 9px; }
+  .mobile-nav__label { font-size: 10px; }
   .mobile-nav__item { padding-inline: 0; }
 }
 

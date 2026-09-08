@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 type SearchItem = {
-  kind: 'listing' | 'category' | 'village' | 'article' | 'page';
+  kind: 'listing' | 'category' | 'village' | 'locality' | 'article' | 'page';
   title: string;
   subtitle: string;
   href: string;
@@ -25,6 +25,7 @@ type SearchItem = {
 const corePages = [
   { title: 'الدليل الشامل', subtitle: 'كل الأنشطة والخدمات داخل مركز العسيرات', href: '/directory', badge: 'صفحة' },
   { title: 'قرى العسيرات', subtitle: 'تصفح القرى الأساسية والتوابع', href: '/villages', badge: 'صفحة' },
+  { title: 'نجوع وتوابع العسيرات', subtitle: 'دليل أسماء النجوع والتوابع مرتبًا حسب القرية الأم', href: '/localities', badge: 'صفحة' },
   { title: 'مدونة العسيرات', subtitle: 'مقالات ومحتوى محلي عن المركز وقراه', href: '/blog', badge: 'صفحة' },
   { title: 'أرقام الطوارئ', subtitle: 'أرقام الطوارئ والخدمات المهمة', href: '/emergency', badge: 'خدمة' },
   { title: 'الخدمات المتخصصة', subtitle: 'صفحات بحث متخصصة ببيانات كافية', href: '/services', badge: 'صفحة' },
@@ -102,6 +103,20 @@ export async function GET(request: Request) {
           badge: 'قرية',
         },
       });
+
+      for (const locality of village.localities) {
+        const localityScore = relevance(searchable(locality), normalizedQuery);
+        if (localityScore) navigationCandidates.push({
+          score: localityScore + 12,
+          item: {
+            kind: 'locality',
+            title: locality,
+            subtitle: `نجع أو تابع لقرية ${village.name} في مركز العسيرات`,
+            href: `/villages/${encodeURIComponent(village.slug)}#localities`,
+            badge: 'نجع / تابع',
+          },
+        });
+      }
     }
 
     for (const article of blogArticles) {

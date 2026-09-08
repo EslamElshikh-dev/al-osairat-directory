@@ -37,7 +37,7 @@ const items: NavItem[] = [
   {
     href: '/villages',
     label: 'القرى',
-    match: (pathname) => pathname.startsWith('/villages'),
+    match: (pathname) => pathname.startsWith('/villages') || pathname.startsWith('/localities'),
     icon: (
       <svg {...iconProps}>
         <path d="M4 20V9.7L9.1 6v14" />

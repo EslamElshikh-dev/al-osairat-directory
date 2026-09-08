@@ -53,10 +53,10 @@ export async function generateMetadata({
   const purePagination = !fallbackScope && page > 1;
   const baseTitle = fallbackScope
     ? 'سجلات غير محددة القرية داخل مركز العسيرات'
-    : `دليل ${village.name} - مركز العسيرات`;
+    : `دليل ${village.name}: الخدمات والأنشطة والنجوع`;
   const baseDescription = fallbackScope
     ? village.description
-    : `الخدمات والأنشطة والبيانات المحلية المنشورة في ${village.name} ضمن مركز العسيرات بمحافظة سوهاج.`;
+    : `دليل ${village.name} في مركز العسيرات: الخدمات والأنشطة المحلية، وأسماء النجوع والتوابع ومنها ${village.localities.slice(0, 5).join('، ')}.`;
   const title = purePagination
     ? `${baseTitle} - الصفحة ${page.toLocaleString('ar-EG')}`
     : baseTitle;
@@ -129,7 +129,9 @@ export default async function VillagePage({
         '@type': 'Place',
         '@id': `${canonicalUrl}#place`,
         name: village.name,
+        description: village.description,
         containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
+        containsPlace: village.localities.map((locality) => ({ '@type': 'Place', name: locality })),
         url: canonicalUrl,
       },
       {
@@ -168,7 +170,7 @@ export default async function VillagePage({
                 <span className="village-hero__scope">مركز العسيرات · سوهاج</span>
               </div>
             </div>
-            <h1>{fallbackScope ? 'سجلات غير محددة القرية' : village.name}</h1>
+            <h1>{fallbackScope ? 'سجلات غير محددة القرية' : `دليل ${village.name}`}</h1>
             <p>{village.description}</p>
             <div className="catalog-hero__actions">
               <Link href="#village-listings" className="button button--light">عرض الأنشطة</Link>
@@ -189,12 +191,21 @@ export default async function VillagePage({
 
       <section className="shell page-section village-detail-content">
         {village.localities.length > 0 && (
-          <div className="localities-panel localities-panel--premium">
+          <div id="localities" className="localities-panel localities-panel--premium">
             <div className="localities-panel__heading">
               <span className="localities-panel__mark" aria-hidden="true"><BrandMark compact /></span>
               <div><span>نطاقات محلية</span><h2>التوابع والنجوع المسجلة بالاسم</h2></div>
             </div>
-            <div>{village.localities.map((locality) => <span key={locality}>{locality}</span>)}</div>
+            <div>
+              {village.localities.map((locality) => (
+                <Link
+                  key={locality}
+                  href={`/directory?village=${encodeURIComponent(village.name)}&q=${encodeURIComponent(locality)}`}
+                >
+                  {locality}<b aria-hidden="true">←</b>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 

@@ -26,7 +26,6 @@ import './blog-mobile-fix.css';
 import './visual-redesign-phase1.css';
 import './visual-redesign-phase2.css';
 import './visual-redesign-phase3.css';
-import './visual-redesign-phase4.css';
 import './seo-growth.css';
 import './member-reviews.css';
 import './member-review-polish.css';
@@ -35,6 +34,7 @@ import './directory-ticker.css';
 import './navigation-scroll.css';
 import './sand-assistant.css';
 import './mobile-system.css';
+import './visual-redesign-phase4.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
