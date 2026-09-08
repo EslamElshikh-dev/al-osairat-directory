@@ -7,14 +7,18 @@ export const community:DirectoryListing[]=[
     title:'ديوان آل حمد',
     category:'community',
     subCategory:'ديوان ومجلس عائلي',
-    location:'مركز العسيرات، محافظة سوهاج',
-    village:'مركز العسيرات',
-    description:'ديوان ومجلس عائلي مُدرج على خرائط Google داخل نطاق مركز العسيرات. يحتاج تحديد القرية أو التابع بدقة عند توفر مصدر إضافي.',
-    reviewCount:0,
+    location:'9RRV+GJ4، نجع موسى حمد، جزيرة أولاد حمزة، مركز العسيرات، محافظة سوهاج',
+    village:'جزيرة أولاد حمزة',
+    locality:'موسى حمد',
+    description:'ديوان ومجلس عائلي لآل حمد في نجع موسى حمد بجزيرة أولاد حمزة؛ تأكد الموقع من عنوان خرائط Google ومن مراجعات المكان المحلية.',
+    rating:5,
+    reviewCount:9,
+    ratingSource:'google',
     source:'google_maps',
-    sourceStatus:'needs_review',
+    sourceStatus:'cross_checked',
+    googleMapsPlusCode:'9RRV+GJ4',
     googleMapsUrl:'https://maps.app.goo.gl/jeH636oF2vGXWDaB6?g_st=afm',
-    lastUpdatedAt:'2026-08-29'
+    lastUpdatedAt:'2026-09-08'
   },
   {
     id:'community-دوار-الشحمات',
@@ -44,13 +48,13 @@ export const community:DirectoryListing[]=[
     village:'جزيرة أولاد حمزة',
     description:'دوار ومجلس عائلي في جزيرة أولاد حمزة ضمن مركز العسيرات.',
     rating:5,
-    reviewCount:1,
+    reviewCount:2,
     ratingSource:'google',
     source:'google_maps',
     sourceStatus:'google_verified',
     googlePlaceId:'ChIJw85HsI1PTxQRQ3sR3EwGQ2M',
     googleMapsPlusCode:'9RRR+WPM',
     googleMapsUrl:'https://maps.app.goo.gl/JVevsB8o3S9VB2Eb8?g_st=afm',
-    lastUpdatedAt:'2026-08-29'
+    lastUpdatedAt:'2026-09-08'
   }
 ] as DirectoryListing[];
