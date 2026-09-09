@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated during prebuild from the tracked activity image manifest and seeds
+/public/images/activities/
+/public/images/activity-seeds/

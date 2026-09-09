@@ -1,0 +1,1940 @@
+{
+  "doctors-د-محمد-صفوت-الاقرع": {
+    "src": "/images/activities/activity-6899f03b9db00a.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "د/ محمد صفوت الاقرع",
+    "village": "مركز العسيرات"
+  },
+  "doctors-د-ولاء-عمر": {
+    "src": "/images/activities/activity-3d3aa411777d6f.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "د/ ولاء عمر",
+    "village": "مركز العسيرات"
+  },
+  "doctors-مستشفي-العوضي": {
+    "src": "/images/activities/activity-06ab5292bfc6ce.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "مستشفى العوضي",
+    "village": "مركز العسيرات"
+  },
+  "doctors-حضانه-د-ياسر-عثمان": {
+    "src": "/images/activities/activity-a765bdb8dfc587.webp",
+    "source": "activity-seeds/pediatrics.webp",
+    "title": "حضانة د/ ياسر عثمان",
+    "village": "مركز العسيرات"
+  },
+  "doctors-د-عمر-فتحي": {
+    "src": "/images/activities/activity-98e77cb958058b.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "د/ عمر فتحي",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-اسامه-احمد-تمام": {
+    "src": "/images/activities/activity-c1d18a6e5af27a.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور اسامه احمد تمام",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-هاني-قريطم": {
+    "src": "/images/activities/activity-e17fdf6b45c4de.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور/ هاني قريطم",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-مينا-رفعت-فواد": {
+    "src": "/images/activities/activity-d1b450fc31324a.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور مينا رفعت فؤاد",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-عبدالمجيد-بكري": {
+    "src": "/images/activities/activity-61c81dc0156fb7.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور عبدالمجيد بكري",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-بسام-عبدالرحيم": {
+    "src": "/images/activities/activity-49696c6180bb4a.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور بسام عبدالرحيم",
+    "village": "أولاد حمزة"
+  },
+  "doctors-الدكتور-مصطفي-احمد-هريدي": {
+    "src": "/images/activities/activity-f27f547038fff5.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "الدكتور مصطفي احمد هريدي",
+    "village": "مركز العسيرات"
+  },
+  "doctors-خدمات-تمريضيه-منزليه": {
+    "src": "/images/activities/activity-871dc9840acddb.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "خدمات تمريضية منزلية",
+    "village": "مركز العسيرات"
+  },
+  "doctors-عياده-الدكتور-جمال-جوده": {
+    "src": "/images/activities/activity-d6638b3319cb71.webp",
+    "source": "activity-seeds/pediatrics.webp",
+    "title": "عيادة الدكتور جمال جوده",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-مينا-منير-رشدي": {
+    "src": "/images/activities/activity-609752a0fe2300.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور مينا منير رشدي",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-محمد-صفوت-حلبص": {
+    "src": "/images/activities/activity-846863236bc163.webp",
+    "source": "activity-seeds/dentist.webp",
+    "title": "دكتور محمد صفوت حلبص",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-محمد-الهواري": {
+    "src": "/images/activities/activity-7d7e1e47760143.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور محمد الهواري",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-ابراهيم-محمد-الجيلايني": {
+    "src": "/images/activities/activity-30950173e33ca6.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور ابراهيم محمد الجيلايني",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-احمد-شريف": {
+    "src": "/images/activities/activity-533c1d21c7db9c.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور احمد شريف",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-مدحت-فرغلي": {
+    "src": "/images/activities/activity-267f23d263d6a7.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور مدحت فرغلي",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتوره-نورهان-عبدالراضي": {
+    "src": "/images/activities/activity-8bb5e6e75c2b28.webp",
+    "source": "activity-seeds/pediatrics.webp",
+    "title": "دكتورة نورهان عبدالراضي",
+    "village": "مركز العسيرات"
+  },
+  "doctors-مركز-الرجاء-للعلاج-الطبيعي": {
+    "src": "/images/activities/activity-8a376ff2052cc8.webp",
+    "source": "activity-seeds/physical-therapy.webp",
+    "title": "مركز الرجاء للعلاج الطبيعي",
+    "village": "مركز العسيرات"
+  },
+  "doctors-الدكتور-فادي-رفعت-نصر-الله": {
+    "src": "/images/activities/activity-099aa78a943ee7.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "الدكتور فادي رفعت نصر الله",
+    "village": "مركز العسيرات"
+  },
+  "doctors-الدكتوره-اسراء-محمود-ابو-حساب": {
+    "src": "/images/activities/activity-0f1cd777a90515.webp",
+    "source": "activity-seeds/dentist.webp",
+    "title": "الدكتورة اسراء محمود ابو حساب",
+    "village": "أولاد حمزة"
+  },
+  "doctors-الدكتور-محمد-مصطفي-عرفات": {
+    "src": "/images/activities/activity-a7c4f2866c3ebd.webp",
+    "source": "activity-seeds/pediatrics.webp",
+    "title": "الدكتور محمد مصطفي عرفات",
+    "village": "مركز العسيرات"
+  },
+  "doctors-معمل-الشريف-للتحاليل-الطبيه": {
+    "src": "/images/activities/activity-bc0525e2c80cf0.webp",
+    "source": "activity-seeds/medical-lab.webp",
+    "title": "معمل الشريف للتحاليل الطبية",
+    "village": "أولاد حمزة"
+  },
+  "doctors-دكتور-ماجد-فتحي-نجيب": {
+    "src": "/images/activities/activity-b2b5b2df0ed147.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور ماجد فتحي نجيب",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-اندرو-اسعد-عبدالملاك": {
+    "src": "/images/activities/activity-4c005f3fc7cca4.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور اندرو اسعد عبدالملاك",
+    "village": "مركز العسيرات"
+  },
+  "doctors-دكتور-معتز-عبد-اللطيف-مازن": {
+    "src": "/images/activities/activity-0f5168d403f6ec.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور معتز عبد اللطيف مازن",
+    "village": "أولاد بهيج"
+  },
+  "doctors-دكتور-محمد-لطفي-رسلان": {
+    "src": "/images/activities/activity-082406ebb03082.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "دكتور محمد لطفي رسلان",
+    "village": "مركز العسيرات"
+  },
+  "doctors-عبدالرحيم-بدوي": {
+    "src": "/images/activities/activity-38990437e629da.webp",
+    "source": "activity-seeds/pediatrics.webp",
+    "title": "عبدالرحيم بدوي",
+    "village": "المساعيد"
+  },
+  "doctors-المس-هاجر-امام": {
+    "src": "/images/activities/activity-a6a0f5b58a4361.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "المس هاجر امام",
+    "village": "أولاد حمزة"
+  },
+  "doctors-د-واليد-اسامه-عطا": {
+    "src": "/images/activities/activity-d9cfab4d8d3372.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "د/ واليد اسامة عطا",
+    "village": "أولاد حمزة"
+  },
+  "doctors-معمل-مكه-للتحاليل-الطبيه": {
+    "src": "/images/activities/activity-92288fdad0760c.webp",
+    "source": "activity-seeds/medical-lab.webp",
+    "title": "معمل مكة للتحاليل الطبية",
+    "village": "مركز العسيرات"
+  },
+  "doctors-معمل-الحياه-للتحاليل-الطبيه": {
+    "src": "/images/activities/activity-1186499df9fa1f.webp",
+    "source": "activity-seeds/medical-lab.webp",
+    "title": "معمل الحياة للتحاليل الطبية",
+    "village": "مركز العسيرات"
+  },
+  "doctors-معمل-الحياه-للتحاليل-الطبيه-وابحاث-الدم": {
+    "src": "/images/activities/activity-d0f0d0d196aeb1.webp",
+    "source": "activity-seeds/medical-lab.webp",
+    "title": "معمل الحياة للتحاليل الطبية وابحاث الدم",
+    "village": "مركز العسيرات"
+  },
+  "pharmacies-صيدليه-د-اشرف-صلاح": {
+    "src": "/images/activities/activity-fac5dc5bbb8ba2.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د أشرف صلاح",
+    "village": "مركز العسيرات"
+  },
+  "pharmacies-الصيدليه-الحديثه-فرع-طوخ": {
+    "src": "/images/activities/activity-2313b3adff5ab1.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "الصيدلية الحديثة فرع طوخ",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-صيدليه-د-اشرف-صلاح-الجديده": {
+    "src": "/images/activities/activity-ef1e08d7828ab1.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د أشرف صلاح الجديدة",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-الرايد-للمستلزمات-الطبيه": {
+    "src": "/images/activities/activity-d2261f0accf0db.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "الرائد للمستلزمات الطبية",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-صيدليه-د-محمد-عبد-الناصر": {
+    "src": "/images/activities/activity-5ee811b5c0cd8c.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د محمد عبد الناصر",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "pharmacies-صيدليه-الدكتوره-هويدا-احمد": {
+    "src": "/images/activities/activity-cd8ecc754c38b5.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية الدكتورة هويدا أحمد",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-صيدليه-الدكتور-عبدالله-السيد": {
+    "src": "/images/activities/activity-7af0f1caed0c46.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية الدكتور عبدالله السيد",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "pharmacies-صيدليات-دكتور-عصام-حسني-فرع-نجع-رضوان": {
+    "src": "/images/activities/activity-ca28acde029974.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدليات دكتور عصام حسني - فرع نجع رضوان",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-صيدليات-دكتور-عصام-حسني-فرع-العسيرات": {
+    "src": "/images/activities/activity-b7119f201fa682.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدليات دكتور عصام حسني - فرع العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-صيدليه-دكتور-عصام-حسني-فرع-العجوبيه": {
+    "src": "/images/activities/activity-21b7bf1f179181.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية دكتور عصام حسني - فرع العجوبية",
+    "village": "الرشايدة"
+  },
+  "pharmacies-صيدليه-د-طارق-عبدالعال": {
+    "src": "/images/activities/activity-cab162fba01c76.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د. طارق عبدالعال",
+    "village": "الرشايدة"
+  },
+  "pharmacies-صيدليه-د-محمود-درويش-شارع-ال-حميد": {
+    "src": "/images/activities/activity-abbddfc839ed34.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د. محمود درويش - شارع آل حميد",
+    "village": "أولاد حمزة"
+  },
+  "pharmacies-صيدليه-د-محمود-درويش-مركز-العسيرات": {
+    "src": "/images/activities/activity-070f6df89a676c.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د. محمود درويش - مركز العسيرات",
+    "village": "مركز العسيرات"
+  },
+  "shops-شيخ-العطارين": {
+    "src": "/images/activities/activity-3919d003cd261a.webp",
+    "source": "activity-seeds/herbs-perfumes.webp",
+    "title": "شيخ العطارين",
+    "village": "مركز العسيرات"
+  },
+  "shops-شركه-الوليد-للتجاره-والتوزيع": {
+    "src": "/images/activities/activity-05faa38df2f19e.webp",
+    "source": "activity-seeds/clothing.webp",
+    "title": "شركة الوليد للتجارة والتوزيع",
+    "village": "أولاد بهيج"
+  },
+  "shops-سلسلات-محلات-كاسيت-فون": {
+    "src": "/images/activities/activity-980cf1aabad72a.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "سلسلات محلات كاسيت فون",
+    "village": "أولاد حمزة"
+  },
+  "shops-سنترال-الحلواني-للاتصالات-وخدمات-الموبايل": {
+    "src": "/images/activities/activity-a0ee85ac49aef8.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "سنترال الحلوانى للاتصالات وخدمات الموبايل",
+    "village": "الرشايدة"
+  },
+  "shops-معرض-ابو-عطيه-للسباكه-والكهرباء": {
+    "src": "/images/activities/activity-fbd96dfbbc2e92.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض ابو عطيه للسباكه والكهرباء",
+    "village": "الرشايدة"
+  },
+  "shops-محلات-روماا": {
+    "src": "/images/activities/activity-4428a58e15254c.webp",
+    "source": "directory/category-shops.webp",
+    "title": "محلات روماا",
+    "village": "مركز العسيرات"
+  },
+  "shops-الحديوي-للاحذيه": {
+    "src": "/images/activities/activity-fc1747f23aa00c.webp",
+    "source": "activity-seeds/clothing.webp",
+    "title": "الحديوي للاحذية",
+    "village": "مركز العسيرات"
+  },
+  "shops-عطاره-الشيخان": {
+    "src": "/images/activities/activity-f2b1c110c9d0c5.webp",
+    "source": "activity-seeds/herbs-perfumes.webp",
+    "title": "عطارة الشيخان",
+    "village": "مركز العسيرات"
+  },
+  "shops-معرض-الحجيري-الادوات-الصحيه": {
+    "src": "/images/activities/activity-ee24bac33f3af1.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض الحجيري الأدوات الصحية",
+    "village": "مركز العسيرات"
+  },
+  "shops-معرض-اوسكار": {
+    "src": "/images/activities/activity-c18010b160a5c7.webp",
+    "source": "activity-seeds/clothing.webp",
+    "title": "معرض اوسكار",
+    "village": "أولاد حمزة"
+  },
+  "shops-مغسله-ومكوي-عاصم": {
+    "src": "/images/activities/activity-05f749e74378e6.webp",
+    "source": "activity-seeds/tailor-laundry.webp",
+    "title": "مغسلة ومكوي عاصم",
+    "village": "مركز العسيرات"
+  },
+  "shops-هايبر-الاخوه-محمد-و-عبده-وعمر": {
+    "src": "/images/activities/activity-59b08eaf473b86.webp",
+    "source": "directory/category-shops.webp",
+    "title": "هايبر الاخوه محمد و عبده وعمر",
+    "village": "الرشايدة"
+  },
+  "shops-مطبعه-القدس-للدعايه-والاعلان": {
+    "src": "/images/activities/activity-2aec20cdffccc4.webp",
+    "source": "directory/category-shops.webp",
+    "title": "مطبعه القدس للدعايه والاعلان",
+    "village": "أولاد حمزة"
+  },
+  "shops-عطاره-الحسين": {
+    "src": "/images/activities/activity-b94e731a40fb3a.webp",
+    "source": "activity-seeds/herbs-perfumes.webp",
+    "title": "عطارة الحسين",
+    "village": "مركز العسيرات"
+  },
+  "shops-مركز-الباشا-لخدمات-المحمول": {
+    "src": "/images/activities/activity-9d8fe5fa350fd0.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "مركز الباشا لخدمات المحمول",
+    "village": "مركز العسيرات"
+  },
+  "shops-مركز-فرحه-فون": {
+    "src": "/images/activities/activity-15179a202d0152.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "مركز فرحه فون",
+    "village": "أولاد حمزة"
+  },
+  "shops-عطاره-الميدان": {
+    "src": "/images/activities/activity-fc53cd4458b16d.webp",
+    "source": "activity-seeds/herbs-perfumes.webp",
+    "title": "عطاره الميدان",
+    "village": "أولاد حمزة"
+  },
+  "shops-فراشه-الاخوه": {
+    "src": "/images/activities/activity-f2bbe092d71908.webp",
+    "source": "activity-seeds/events.webp",
+    "title": "فراشة الاخوه",
+    "village": "أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-الحاج-علي-فراج": {
+    "src": "/images/activities/activity-de40c1a51f3050.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت علي فراج",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-انجاز-للانظمه-الامنيه-وكاميرات-المراقبه": {
+    "src": "/images/activities/activity-9602b0559178ac.webp",
+    "source": "activity-seeds/security-cameras.webp",
+    "title": "انجاز للانظمة الامنية وكاميرات المراقبة",
+    "village": "مركز العسيرات"
+  },
+  "shops-كيرو-ابو-مارك": {
+    "src": "/images/activities/activity-b625598a0f875d.webp",
+    "source": "activity-seeds/agriculture-supplies.webp",
+    "title": "كيرو ابو مارك",
+    "village": "مركز العسيرات"
+  },
+  "shops-موبايلي-للصيانه": {
+    "src": "/images/activities/activity-f68daf98ba3449.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "موبايلي للصيانة",
+    "village": "مركز العسيرات"
+  },
+  "shops-ابراهيم-كاش": {
+    "src": "/images/activities/activity-69066fd8686bbe.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "ابراهيم كاش",
+    "village": "مركز العسيرات"
+  },
+  "shops-المفتاح-الذكي": {
+    "src": "/images/activities/activity-2d35abea69bb16.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "المفتاح الذكي",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-سيراميك-وبروسلين-محمد-ابو-شابون": {
+    "src": "/images/activities/activity-c12eb7384cec75.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض سيراميك وبروسلين محمد ابو شابون",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-مول-العروسه": {
+    "src": "/images/activities/activity-7ba13c8564a947.webp",
+    "source": "directory/category-shops.webp",
+    "title": "معرض مول العروسة",
+    "village": "أولاد حمزة"
+  },
+  "shops-ورشه-السبعاوي": {
+    "src": "/images/activities/activity-556a375cd3aa47.webp",
+    "source": "directory/category-shops.webp",
+    "title": "ورشه السبعاوي",
+    "village": "مركز العسيرات"
+  },
+  "shops-مكتبه-محمد-وحفصه": {
+    "src": "/images/activities/activity-fc54cadfb84b47.webp",
+    "source": "directory/category-shops.webp",
+    "title": "مكتبة محمد وحفصه",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-محطه-تحليه-مياه": {
+    "src": "/images/activities/activity-0a5f4816ccb340.webp",
+    "source": "directory/category-shops.webp",
+    "title": "محطه تحليه مياه",
+    "village": "مركز العسيرات"
+  },
+  "shops-ابو-يحي-لتجاره-الدقيق-الفاخر": {
+    "src": "/images/activities/activity-7b113ceec6a14c.webp",
+    "source": "activity-seeds/agriculture-supplies.webp",
+    "title": "ابو يحي لتجارة الدقيق الفاخر",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-بيت-العيله": {
+    "src": "/images/activities/activity-7e10eea1f031b2.webp",
+    "source": "directory/category-shops.webp",
+    "title": "معرض بيت العيلة",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-الاصدقاء-للادوات-الصحيه": {
+    "src": "/images/activities/activity-55be80bd921696.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض الاصدقاء للادوات الصحية",
+    "village": "مركز العسيرات"
+  },
+  "shops-الصمدي-لتاجير-المعدات": {
+    "src": "/images/activities/activity-817edee79fb805.webp",
+    "source": "directory/category-shops.webp",
+    "title": "الصمدي لتاجير المعدات",
+    "village": "مركز العسيرات"
+  },
+  "shops-الجداوي-للطباعه": {
+    "src": "/images/activities/activity-f8a49a81a054a7.webp",
+    "source": "directory/category-shops.webp",
+    "title": "الجداوي للطباعه",
+    "village": "مركز العسيرات"
+  },
+  "shops-معرض-العزقلاني": {
+    "src": "/images/activities/activity-c65c054929cdb2.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض العزقلاني",
+    "village": "الرشايدة"
+  },
+  "shops-سوبر-ماركت-فارس-بكري": {
+    "src": "/images/activities/activity-aa76ce75c4815a.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "سوبر ماركت فارس بكري",
+    "village": "عوامر العسيرات"
+  },
+  "shops-اضواء-المدينه": {
+    "src": "/images/activities/activity-871c28dc50ee74.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "أضواء المدينة",
+    "village": "مركز العسيرات"
+  },
+  "shops-مجمدات-الطارق": {
+    "src": "/images/activities/activity-3de49467ca0898.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مجمدات الطارق",
+    "village": "أولاد حمزة"
+  },
+  "shops-بشار-للمنظفات": {
+    "src": "/images/activities/activity-1b29cbd1a31cd2.webp",
+    "source": "directory/category-shops.webp",
+    "title": "بشار للمنظفات",
+    "village": "أولاد حمزة"
+  },
+  "shops-كافيه-وبلايستشن-الكهف": {
+    "src": "/images/activities/activity-77e0543ffa2bcc.webp",
+    "source": "directory/category-shops.webp",
+    "title": "كافية وبلايستشن الكهف",
+    "village": "مركز العسيرات"
+  },
+  "shops-معرض-طموح-للمفروشات-والسجاد-وتجهيز-العرايس-شارع-ال-حميد-بجوار-مسجد-ال-حميد-اداره-ابو-مروان": {
+    "src": "/images/activities/activity-263ef65233a600.webp",
+    "source": "directory/category-shops.webp",
+    "title": "معرض طموح للمفروشات والسجاد وتجهيز العرايس شارع ال حميد بجوار مسجد ال. حميد اداره ابو مروان",
+    "village": "أولاد حمزة"
+  },
+  "shops-طلعت-الفكهاني-للفواكه-والخضروات": {
+    "src": "/images/activities/activity-ec0653170f46fa.webp",
+    "source": "directory/category-shops.webp",
+    "title": "طلعت الفكهاني للفواكه والخضروات",
+    "village": "المساعيد"
+  },
+  "shops-معرض-الفتح": {
+    "src": "/images/activities/activity-db7ffae1f3bb41.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض الفتح",
+    "village": "أولاد حمزة"
+  },
+  "shops-اللبان2-لقطع-الغيار-المتوسكلات": {
+    "src": "/images/activities/activity-a12fd353a5bb36.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "اللبان2 لقطع الغيار المتوسكلات",
+    "village": "أولاد جبارة"
+  },
+  "shops-باشا-مصر": {
+    "src": "/images/activities/activity-f6c17ffc1d0982.webp",
+    "source": "activity-seeds/herbs-perfumes.webp",
+    "title": "باشا مصر",
+    "village": "مركز العسيرات"
+  },
+  "shops-امير": {
+    "src": "/images/activities/activity-d356e1457cc4e0.webp",
+    "source": "directory/category-shops.webp",
+    "title": "امير",
+    "village": "مركز العسيرات"
+  },
+  "shops-سنتر-شاهين": {
+    "src": "/images/activities/activity-7089829fcd8b15.webp",
+    "source": "activity-seeds/appliance-repair.webp",
+    "title": "سنتر شاهين",
+    "village": "مركز العسيرات"
+  },
+  "shops-الهندسيه-لكاميرات-المراقبه": {
+    "src": "/images/activities/activity-2e86d9b15c3421.webp",
+    "source": "activity-seeds/security-cameras.webp",
+    "title": "الهندسيه لكاميرات المراقبه",
+    "village": "أولاد حمزة"
+  },
+  "shops-يحيي-فون-yehia-phone": {
+    "src": "/images/activities/activity-ca428bb5b5b9fe.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "يحيى فون Yehia phone",
+    "village": "أولاد حمزة"
+  },
+  "shops-مكتبه-كيان": {
+    "src": "/images/activities/activity-226982b1cb1f9e.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "مكتبه كيان",
+    "village": "أولاد حمزة"
+  },
+  "shops-al-walaa-الولاء-شوز": {
+    "src": "/images/activities/activity-5c46624b61b3c4.webp",
+    "source": "directory/category-shops.webp",
+    "title": "al walaa الولاء شوز",
+    "village": "أولاد حمزة"
+  },
+  "shops-apple-لخدمات-المحمول-والصيانه-الفوريه": {
+    "src": "/images/activities/activity-85ad2b2269bae9.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "Apple لخدمات المحمول والصيانة الفورية",
+    "village": "أولاد حمزة"
+  },
+  "shops-بنزينه-العسيرات-اولاد-جباره": {
+    "src": "/images/activities/activity-22b84810e29d05.webp",
+    "source": "activity-seeds/gas-station.webp",
+    "title": "بنزينة العسيرات - أولاد جبارة",
+    "village": "أولاد جبارة"
+  },
+  "shops-جمعيتي-للسلع-التموينيه-خلف-عشري": {
+    "src": "/images/activities/activity-56b4e019e5c9fd.webp",
+    "source": "directory/category-shops.webp",
+    "title": "جمعيتي للسلع التموينية - خلف عشري",
+    "village": "الرشايدة"
+  },
+  "shops-سوبر-ماركت-المناهري": {
+    "src": "/images/activities/activity-1d3157d67dc1eb.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت المناهري",
+    "village": "النويرات"
+  },
+  "shops-ماركت-العسيرات": {
+    "src": "/images/activities/activity-f52caa668f8b3c.webp",
+    "source": "directory/category-shops.webp",
+    "title": "ماركت العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-احمد-فراج": {
+    "src": "/images/activities/activity-248102eb7f7e94.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أحمد فراج",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-عبداللاه-ابو-السيك": {
+    "src": "/images/activities/activity-72235bdb6a1287.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت عبداللاه أبو السيك",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-راما-ماركت-الامير-حسن-ابو-القاضي": {
+    "src": "/images/activities/activity-37eb4b053879ed.webp",
+    "source": "directory/category-shops.webp",
+    "title": "راما ماركت - الأمير حسن أبو القاضي",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-الارزاق-بالله": {
+    "src": "/images/activities/activity-741f40356e6fc7.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الأرزاق بالله",
+    "village": "أولاد حمزة"
+  },
+  "shops-ابناء-حسن-سعاده": {
+    "src": "/images/activities/activity-093f106dc40bc8.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أبناء حسن سعادة",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-معرض-ابناء-الشيخ-للاجهزة-الكهربائيه": {
+    "src": "/images/activities/activity-d08505055153a7.webp",
+    "source": "activity-seeds/appliance-repair.webp",
+    "title": "معرض أبناء الشيخ للأجهزة الكهربائية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-مكتبة-عمر": {
+    "src": "/images/activities/activity-7cfe332e226d6a.webp",
+    "source": "directory/category-shops.webp",
+    "title": "مكتبة عمر",
+    "village": "مركز العسيرات"
+  },
+  "education-مدرسة-نجع-موسى-حمد-المشتركة": {
+    "src": "/images/activities/activity-719a00ea438fcf.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة نجع موسى حمد المشتركة",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "education-حضانة-يوريكا-كيدز": {
+    "src": "/images/activities/activity-bdc974373188b9.webp",
+    "source": "directory/category-education.webp",
+    "title": "حضانة يوريكا كيدز",
+    "village": "أولاد حمزة"
+  },
+  "education-هابي-كيدز-للغات-رضوان": {
+    "src": "/images/activities/activity-5423a990f6747d.webp",
+    "source": "directory/category-education.webp",
+    "title": "Happy Kids - حضانة هابي كيدز للغات",
+    "village": "أولاد حمزة"
+  },
+  "education-حضانة-سفير-كيدز-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-4f10f130b4ee5c.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "حضانة سفير كيدز الخاصة بالعسيرات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "education-جولدن-كيدز-المساعيد": {
+    "src": "/images/activities/activity-09c105d82e7606.webp",
+    "source": "directory/category-education.webp",
+    "title": "جولدن كيدز Golden Kids",
+    "village": "المساعيد"
+  },
+  "crafts-مصطفي-ابو-قطب-من-الاولاد-بهيج": {
+    "src": "/images/activities/activity-4ac827f0538a4c.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "مصطفى ابو قطب من الأولاد بهيج",
+    "village": "أولاد بهيج"
+  },
+  "crafts-ايمن-حربي": {
+    "src": "/images/activities/activity-c383e1bb1de73a.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "ايمن حربي",
+    "village": "الرشايدة"
+  },
+  "crafts-محمود-ابو-كرم": {
+    "src": "/images/activities/activity-c8429383c86a73.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "محمود ابو كرم",
+    "village": "أولاد حمزة"
+  },
+  "crafts-شركه-ابوطالب-نصار-للخرسانات-وتشيد-المباني": {
+    "src": "/images/activities/activity-d32f8dfacedc3e.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "شركة ابوطالب نصار للخرسانات وتشيد المباني",
+    "village": "الرشايدة"
+  },
+  "crafts-كيرلس-روماني": {
+    "src": "/images/activities/activity-56ac4d6ae85e04.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "كيرلس روماني",
+    "village": "مركز العسيرات"
+  },
+  "crafts-موسسه-ابو-طالب-نصار": {
+    "src": "/images/activities/activity-276e9388501ec5.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "مؤسسه ابو طالب نصار",
+    "village": "أولاد حمزة"
+  },
+  "crafts-محمد-يحيي-مركز-ابو-يحيي": {
+    "src": "/images/activities/activity-841b6bc9c1eece.webp",
+    "source": "activity-seeds/auto-mechanic.webp",
+    "title": "محمد يحيي مركز ابـو يحيي",
+    "village": "مركز العسيرات"
+  },
+  "crafts-ورشه-الاخوه-للحداده": {
+    "src": "/images/activities/activity-cd3b4fe6f6c564.webp",
+    "source": "activity-seeds/carpenter-upholstery.webp",
+    "title": "ورشه الاخوه للحداده",
+    "village": "الرشايدة"
+  },
+  "crafts-محمد-جمال-احمد": {
+    "src": "/images/activities/activity-31904c93a9f7c1.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "محمد جمال احمد",
+    "village": "مركز العسيرات"
+  },
+  "crafts-مقاول-تشطيبات-محمد-احمد": {
+    "src": "/images/activities/activity-96c044bf35057a.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "مقاول تشطيبات محمد احمد",
+    "village": "مركز العسيرات"
+  },
+  "crafts-حمدي-ابوعمار-الاخميمي": {
+    "src": "/images/activities/activity-4edd63621d0f07.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "حمدي ابوعمار الاخميمي",
+    "village": "مركز العسيرات"
+  },
+  "crafts-عاطف-علي": {
+    "src": "/images/activities/activity-e7a6cdea8d2247.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "عاطف علي",
+    "village": "مركز العسيرات"
+  },
+  "crafts-حماده-فواز": {
+    "src": "/images/activities/activity-4879b5673ea8a9.webp",
+    "source": "activity-seeds/electrician.webp",
+    "title": "حماده فواز",
+    "village": "أولاد حمزة"
+  },
+  "crafts-سعد-كمال": {
+    "src": "/images/activities/activity-e411ad8de8166e.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "سعد كمال",
+    "village": "مركز العسيرات"
+  },
+  "crafts-احمد-حامد": {
+    "src": "/images/activities/activity-681680ae66880d.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "احمد حامد",
+    "village": "مركز العسيرات"
+  },
+  "crafts-الامير-ابوالحلقان": {
+    "src": "/images/activities/activity-fe487c85ea71ef.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "الامير ابوالحلقان",
+    "village": "مركز العسيرات"
+  },
+  "crafts-احمد-حسن-ابوسما": {
+    "src": "/images/activities/activity-1a1f3111e1c394.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "احمد حسن ابوسما",
+    "village": "مركز العسيرات"
+  },
+  "crafts-المعلم-ايمن": {
+    "src": "/images/activities/activity-f1b2f6beb3ccfc.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "المعلم ايمن",
+    "village": "النويرات"
+  },
+  "crafts-محمد-وحيد": {
+    "src": "/images/activities/activity-80e38e6ea60f24.webp",
+    "source": "activity-seeds/electrician.webp",
+    "title": "محمد وحيد",
+    "village": "مركز العسيرات"
+  },
+  "crafts-محمد-رمضان": {
+    "src": "/images/activities/activity-35ec5b651e3308.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "محمد رمضان",
+    "village": "مركز العسيرات"
+  },
+  "crafts-عبدالله-علاء": {
+    "src": "/images/activities/activity-a8cb28770fe8fd.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "عبدالله علاء",
+    "village": "أولاد حمزة"
+  },
+  "crafts-ابو-نوره": {
+    "src": "/images/activities/activity-0a9d6227c611c0.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "ابو نوره",
+    "village": "مركز العسيرات"
+  },
+  "crafts-معرض-الجوهره": {
+    "src": "/images/activities/activity-75d4a3d2b78c48.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "معرض الجوهرة",
+    "village": "مركز العسيرات"
+  },
+  "crafts-احمد-بركات": {
+    "src": "/images/activities/activity-e970548d1d673a.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "احمد بركات",
+    "village": "مركز العسيرات"
+  },
+  "crafts-مهندس-جمال-عفيفي": {
+    "src": "/images/activities/activity-ed30cc613268aa.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "مهندس جمال عفيفي",
+    "village": "مركز العسيرات"
+  },
+  "crafts-مروان-رجب-لصيانه-جميع-الاجهزه-الكهرباييه": {
+    "src": "/images/activities/activity-5d6b642bb50c9d.webp",
+    "source": "activity-seeds/appliance-repair.webp",
+    "title": "مروان رجب لصيانه جميع الاجهزة الكهربائيه",
+    "village": "مركز العسيرات"
+  },
+  "crafts-محمد": {
+    "src": "/images/activities/activity-acdfdc1a82b27f.webp",
+    "source": "activity-seeds/appliance-repair.webp",
+    "title": "محمد",
+    "village": "مركز العسيرات"
+  },
+  "crafts-حمدي-ابو-كبد": {
+    "src": "/images/activities/activity-b86c91be09f004.webp",
+    "source": "activity-seeds/security-cameras.webp",
+    "title": "حمدي ابو كبد",
+    "village": "أولاد حمزة"
+  },
+  "crafts-عبدالروف-محمود-رضوان": {
+    "src": "/images/activities/activity-a3994f65096884.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "عبدالرؤف محمود رضوان",
+    "village": "مركز العسيرات"
+  },
+  "crafts-عبدالحكيم-عبدالغني": {
+    "src": "/images/activities/activity-c32d64c00c40bf.webp",
+    "source": "activity-seeds/electrician.webp",
+    "title": "عبدالحكيم عبدالغني",
+    "village": "مركز العسيرات"
+  },
+  "crafts-محمد-ابو-محمود": {
+    "src": "/images/activities/activity-edf4fc293512fa.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "محمد ابو محمود",
+    "village": "أولاد حمزة"
+  },
+  "crafts-احمد-خلف": {
+    "src": "/images/activities/activity-3adb6b9e1b62ec.webp",
+    "source": "activity-seeds/carpenter-upholstery.webp",
+    "title": "احمد خلف",
+    "village": "أولاد حمزة"
+  },
+  "crafts-المهندس-شنوده-رافت": {
+    "src": "/images/activities/activity-c1ead2099d5f3d.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "المهندس شنوده رافت",
+    "village": "النويرات"
+  },
+  "crafts-العالمي-لخدمات-الانترنت-والانظمه-الامنيه": {
+    "src": "/images/activities/activity-ba5efa451617a1.webp",
+    "source": "activity-seeds/security-cameras.webp",
+    "title": "العالمي لخدمات الإنترنت والأنظمة الأمنيه",
+    "village": "مركز العسيرات"
+  },
+  "crafts-ابو-يزن-لنجاره-المسلحه-والخرسانات": {
+    "src": "/images/activities/activity-7b25df2020beac.webp",
+    "source": "activity-seeds/carpenter-upholstery.webp",
+    "title": "ابو يزن لنجاره المسلحه والخرسانات",
+    "village": "الرشايدة"
+  },
+  "crafts-مينا-انور": {
+    "src": "/images/activities/activity-0db378fddc539f.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "مينا انور",
+    "village": "مركز العسيرات"
+  },
+  "crafts-سلطان-اسامه-عويس": {
+    "src": "/images/activities/activity-9bcb0b459d9469.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "سلطان اسامه عويس",
+    "village": "أولاد حمزة"
+  },
+  "crafts-م-رايف-رضوان": {
+    "src": "/images/activities/activity-d74c45a7b01a39.webp",
+    "source": "activity-seeds/appliance-repair.webp",
+    "title": "م رائف رضوان",
+    "village": "مركز العسيرات"
+  },
+  "crafts-عبدالله-ابوعويضه": {
+    "src": "/images/activities/activity-9126d994db0da0.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "عبدالله ابوعويضه",
+    "village": "أولاد حمزة"
+  },
+  "crafts-محمود-ابوعويضه-السباك": {
+    "src": "/images/activities/activity-89aea8fb69e018.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "محمود ابوعويضه السباك",
+    "village": "أولاد حمزة"
+  },
+  "crafts-الامير-القرقار": {
+    "src": "/images/activities/activity-b9837bc6dfc6b0.webp",
+    "source": "activity-seeds/security-cameras.webp",
+    "title": "الامير القرقار",
+    "village": "الرشايدة"
+  },
+  "crafts-حسام-ابو-حسين-اللبان": {
+    "src": "/images/activities/activity-d104764509dab9.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "حسام ابو حسين اللبان",
+    "village": "مركز العسيرات"
+  },
+  "crafts-فارس-خالد": {
+    "src": "/images/activities/activity-c7760f623f59ab.webp",
+    "source": "activity-seeds/security-cameras.webp",
+    "title": "فارس خالد",
+    "village": "الشهداء"
+  },
+  "crafts-خالد-ابو-العميد": {
+    "src": "/images/activities/activity-c908fe99b94418.webp",
+    "source": "activity-seeds/carpenter-upholstery.webp",
+    "title": "خالد أبو العميد",
+    "village": "عوامر العسيرات"
+  },
+  "crafts-محمد-الامير": {
+    "src": "/images/activities/activity-d0bc5890725a20.webp",
+    "source": "activity-seeds/electrician.webp",
+    "title": "محمد الامير",
+    "village": "المساعيد"
+  },
+  "crafts-ابوجمال": {
+    "src": "/images/activities/activity-a7e15f36b9e28f.webp",
+    "source": "activity-seeds/painter.webp",
+    "title": "ابوجمال",
+    "village": "مركز العسيرات"
+  },
+  "crafts-عبدالعظيم-محمد-احمد": {
+    "src": "/images/activities/activity-2d7dcabbc9b87c.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "عبدالعظيم محمد أحمد",
+    "village": "أولاد حمزة"
+  },
+  "crafts-ابو-اسحق": {
+    "src": "/images/activities/activity-43befb74c1df72.webp",
+    "source": "activity-seeds/electrician.webp",
+    "title": "ابو اسحق",
+    "village": "أولاد جبارة"
+  },
+  "crafts-محمد-جمال-احمد-محمد": {
+    "src": "/images/activities/activity-b1284ef5ad67a1.webp",
+    "source": "activity-seeds/plumber.webp",
+    "title": "محمد جمال احمد محمد",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "crafts-ورشه-حماده-الفار": {
+    "src": "/images/activities/activity-7448c6f29d8d0e.webp",
+    "source": "activity-seeds/carpenter-upholstery.webp",
+    "title": "ورشة حماده الفار",
+    "village": "الرشايدة"
+  },
+  "restaurants-ام-عمار-الشريف-للاكل-البيتي": {
+    "src": "/images/activities/activity-f6bbfd1c3a936f.webp",
+    "source": "activity-seeds/bakery.webp",
+    "title": "أم عمار الشريف للأكل البيتي",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-مطعم-المغفلق-امام-البوسطه": {
+    "src": "/images/activities/activity-d22f1c84a5d7db.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مطعم المغفلق - أمام البوسطة",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-احمد-ابو-حمزه": {
+    "src": "/images/activities/activity-1bd01247f2d2e2.webp",
+    "source": "activity-seeds/agriculture-supplies.webp",
+    "title": "أحمد أبو حمزة",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-مطعم-الرحمن-ابو-العز": {
+    "src": "/images/activities/activity-51ce41d0523e25.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مطعم الرحمن أبو العز",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-مطعم-المغفلق-امام-البريد-والنادي": {
+    "src": "/images/activities/activity-829ee8138e8c9b.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مطعم المغفلق - أمام البريد والنادي",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-مطعم-ابو-حماد": {
+    "src": "/images/activities/activity-6abbf20ba3126b.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مطعم أبو حماد",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-شيف-مومن-زايد": {
+    "src": "/images/activities/activity-b56706da8bda62.webp",
+    "source": "activity-seeds/events.webp",
+    "title": "شيف مؤمن زايد",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-مطبخ-الشيف-زايد-والشيف-عمرو": {
+    "src": "/images/activities/activity-5c1eb1041c6331.webp",
+    "source": "activity-seeds/events.webp",
+    "title": "مطبخ الشيف زايد والشيف عمرو",
+    "village": "مركز العسيرات"
+  },
+  "restaurants-الشيف-علي-جمال": {
+    "src": "/images/activities/activity-f88a660d9b02c4.webp",
+    "source": "activity-seeds/events.webp",
+    "title": "الشيف علي جمال",
+    "village": "أولاد حمزة"
+  },
+  "restaurants-بروست-الخديوي": {
+    "src": "/images/activities/activity-ac8f958bac2eea.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "بروست الخديوي",
+    "village": "مركز العسيرات"
+  },
+  "lawyers-المحام-ابوالمكارم-جابر": {
+    "src": "/images/activities/activity-d91add7f976096.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام ابوالمكارم جابر",
+    "village": "مركز العسيرات"
+  },
+  "lawyers-المحام-ياسين-محمود-ياسين": {
+    "src": "/images/activities/activity-ad470731b78474.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام ياسين محمود ياسين",
+    "village": "أولاد جبارة"
+  },
+  "lawyers-المحام-طارق-احمد-تمام": {
+    "src": "/images/activities/activity-005f1048c3bf80.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام طارق احمد تمام",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-غريب-عبدالستار-عبدالعال": {
+    "src": "/images/activities/activity-080f2fecbe4ccb.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "غريب عبدالستار عبدالعال",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحاميه-علياء-الدنف": {
+    "src": "/images/activities/activity-8f591160e3c447.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحامية علياء الدنف",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحامي-شاطر-محمد-الشاطر": {
+    "src": "/images/activities/activity-04252d62063790.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحامي شاطر محمد الشاطر",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحامي-محمد-ابوعارف": {
+    "src": "/images/activities/activity-e033bbd2730ce9.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحامي محمد ابوعارف",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-محمد-صلاح-القرقار": {
+    "src": "/images/activities/activity-2691594f22608a.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام محمد صلاح القرقار",
+    "village": "الرشايدة"
+  },
+  "lawyers-المحام-ابراهيم-الليثي": {
+    "src": "/images/activities/activity-4e4485b5c9cfd8.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام ابراهيم الليثي",
+    "village": "مركز العسيرات"
+  },
+  "lawyers-المحامي-احمد-الدنف": {
+    "src": "/images/activities/activity-35e6a3c91f02d1.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحامي احمد الدنف",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحامي-وليد-الشريف": {
+    "src": "/images/activities/activity-a73783566d99da.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحامي وليد الشريف",
+    "village": "مركز العسيرات"
+  },
+  "lawyers-المحام-عامر-ابوالمواهب": {
+    "src": "/images/activities/activity-d15f977d1ac393.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام عامر ابوالمواهب",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "lawyers-المحام-محمود-الهلباوي": {
+    "src": "/images/activities/activity-e5aab635001b44.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام محمود الهلباوي",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-عادل-الشيمي": {
+    "src": "/images/activities/activity-8b08ec33dc7dc9.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام عادل الشيمي",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-ابوالوفا-رشوان": {
+    "src": "/images/activities/activity-af765a55298bb2.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام ابوالوفا رشوان",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-خضر-ابوغويل": {
+    "src": "/images/activities/activity-3ace9ddcd21199.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام خضر ابوغويل",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-خالد-ابو-سند": {
+    "src": "/images/activities/activity-14e2bca85fc881.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام خالد ابو سند",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-خلف-عبدالرحيم": {
+    "src": "/images/activities/activity-098c6252a26350.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام خلف عبدالرحيم",
+    "village": "عوامر العسيرات"
+  },
+  "lawyers-المحام-محمود-ابوعوض": {
+    "src": "/images/activities/activity-a1939fad1e019c.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام محمود ابوعوض",
+    "village": "المساعيد"
+  },
+  "lawyers-المحام-محمد-عابدين": {
+    "src": "/images/activities/activity-85945bcc1b5a24.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام محمد عابدين",
+    "village": "أولاد بهيج"
+  },
+  "lawyers-المحام-عبدالحميد-عباس": {
+    "src": "/images/activities/activity-b5a90c0a70fb1c.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام عبدالحميد عباس",
+    "village": "أولاد بهيج"
+  },
+  "lawyers-المحام-محمود-علي": {
+    "src": "/images/activities/activity-9be033b6253d20.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام محمود علي",
+    "village": "أولاد بهيج"
+  },
+  "lawyers-المحام-محمود-خضيري-احمد": {
+    "src": "/images/activities/activity-a17936b20de06e.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام محمود خضيري احمد",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-ممدوح-صبري": {
+    "src": "/images/activities/activity-7a323765c0de22.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام ممدوح صبري",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-المحام-اسلام-الخطيب": {
+    "src": "/images/activities/activity-1cc221b1c99527.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام اسلام الخطيب",
+    "village": "الأحايوة غرب"
+  },
+  "lawyers-المحام-شحات-عارف": {
+    "src": "/images/activities/activity-567416fce8a30d.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام شحات عارف",
+    "village": "الأحايوة غرب"
+  },
+  "lawyers-المحام-شرف-القاضي": {
+    "src": "/images/activities/activity-c85a85ed01d072.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام شرف القاضي",
+    "village": "الأحايوة غرب"
+  },
+  "lawyers-الاحمدي-القاضي": {
+    "src": "/images/activities/activity-d1666e4b2dfd06.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "الاحمدي القاضي",
+    "village": "الأحايوة غرب"
+  },
+  "lawyers-المحام-عادل-النبيقي": {
+    "src": "/images/activities/activity-6a5e9bd5985dd5.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "المحام عادل النبيقي",
+    "village": "أولاد حمزة"
+  },
+  "lawyers-محمد-صلاح-عبدالله-قرقار": {
+    "src": "/images/activities/activity-ff56a18d9483d2.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "محمد صلاح عبدالله قرقار",
+    "village": "أولاد جبارة"
+  },
+  "lawyers-موسسه-ابو-عمير-للاستشارات-القانونيه-واعمال-المحاماه": {
+    "src": "/images/activities/activity-00e56ee154ab55.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "مؤسسة أبو عمير للاستشارات القانونية وأعمال المحاماه",
+    "village": "عوامر العسيرات"
+  },
+  "lawyers-مكتب-المحامي-ماهر-ابو-الحمد-فراج-ابو-ماضي": {
+    "src": "/images/activities/activity-25200bc94ebdef.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "مكتب المحامي / ماهر ابو الحمد فراج ابو ماضي",
+    "village": "أولاد جبارة"
+  },
+  "clerics-الماذون-ابراهيم-عبدالحليم": {
+    "src": "/images/activities/activity-50da3d61583b33.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون إبراهيم عبدالحليم",
+    "village": "أولاد حمزة"
+  },
+  "clerics-الماذون-عبدالعظيم": {
+    "src": "/images/activities/activity-9b6be162964d5b.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون عبدالعظيم",
+    "village": "أولاد جبارة"
+  },
+  "clerics-الماذون-علاء-ثابت-عبدالصادق": {
+    "src": "/images/activities/activity-3a444d79d74916.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون علاء ثابت عبدالصادق",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "clerics-الماذون-محمد-الرملي": {
+    "src": "/images/activities/activity-47342a47a1955a.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون محمد الرملي",
+    "village": "الرشايدة"
+  },
+  "clerics-الماذون-حسن-ابو-هلالي": {
+    "src": "/images/activities/activity-95982e4f6ebfc0.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون حسن أبو هلالي",
+    "village": "أولاد بهيج"
+  },
+  "clerics-الماذون-عبدالرحيم": {
+    "src": "/images/activities/activity-4827438784177c.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون عبدالرحيم",
+    "village": "أولاد حمزة"
+  },
+  "clerics-الماذون-عبدالناصر": {
+    "src": "/images/activities/activity-922696e5e0c898.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "المأذون عبدالناصر",
+    "village": "عوامر العسيرات"
+  },
+  "clerics-الشيخ-حازم-قدري-ابو-العمده": {
+    "src": "/images/activities/activity-24bf2bda7cb12c.webp",
+    "source": "directory/category-clerics.webp",
+    "title": "الشيخ حازم قدري أبو العمدة",
+    "village": "الأحايوة غرب"
+  },
+  "government-مكتب-الصفوه-للخدمات-الحكوميه-واستخراج-الاوراق": {
+    "src": "/images/activities/activity-3bc14d687b7965.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب الصفوة للخدمات الحكوميه واستخراج الاوراق",
+    "village": "أولاد حمزة"
+  },
+  "government-مكتب-اركان-للخدمات-الحكوميه": {
+    "src": "/images/activities/activity-23e1e3292bf20d.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب اركان للخدمات الحكوميه",
+    "village": "مركز العسيرات"
+  },
+  "government-مستشفي-جزيره-اولاد-حمزه": {
+    "src": "/images/activities/activity-9c4ff640dc6256.webp",
+    "source": "directory/category-government.webp",
+    "title": "مستشفى جزيرة أولاد حمزة",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "government-مكتب-بريد-جزيره-اولاد-حمزه": {
+    "src": "/images/activities/activity-e2c6d0745d4963.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب بريد جزيرة أولاد حمزة",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "government-محطه-مياه-جزيره-اولاد-حمزه-الارتوازيه": {
+    "src": "/images/activities/activity-59204a30085092.webp",
+    "source": "directory/category-government.webp",
+    "title": "محطة مياه جزيرة أولاد حمزة الارتوازية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "government-مكتب-بريد-عوامر-العسيرات": {
+    "src": "/images/activities/activity-2c6074993df875.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب بريد عوامر العسيرات",
+    "village": "عوامر العسيرات"
+  },
+  "government-مكتب-بريد-اولاد-جباره": {
+    "src": "/images/activities/activity-7f6b6c0db51c6f.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب بريد أولاد جبارة",
+    "village": "أولاد جبارة"
+  },
+  "community-ديوان-ال-حمد": {
+    "src": "/images/activities/activity-655aa66ae6ed9b.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان آل حمد",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "community-دوار-الشحمات": {
+    "src": "/images/activities/activity-386ca0d2faade2.webp",
+    "source": "directory/blog-families.webp",
+    "title": "دوار الشُحمات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "community-دوار-ال-خبل": {
+    "src": "/images/activities/activity-ad85ddcfa4623e.webp",
+    "source": "directory/blog-families.webp",
+    "title": "دوار آل خبل",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "transport-موقف-سيارات-العسيرات-سوهاج": {
+    "src": "/images/activities/activity-dcf260fd59b722.webp",
+    "source": "directory/category-transport.webp",
+    "title": "موقف سيارات العسيرات - سوهاج",
+    "village": "أولاد حمزة"
+  },
+  "transport-موقف-سيارات-العسيرات-المنشاة": {
+    "src": "/images/activities/activity-7ff22033f6ff3e.webp",
+    "source": "directory/category-transport.webp",
+    "title": "موقف سيارات العسيرات - المنشأة",
+    "village": "أولاد حمزة"
+  },
+  "transport-موقف-سيارات-العسيرات-جرجا": {
+    "src": "/images/activities/activity-651b071c01ee7b.webp",
+    "source": "directory/category-transport.webp",
+    "title": "موقف سيارات العسيرات - جرجا",
+    "village": "أولاد حمزة"
+  },
+  "transport-موقف-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-61ce62b45ebdd7.webp",
+    "source": "directory/category-transport.webp",
+    "title": "موقف جزيرة أولاد حمزة",
+    "village": "أولاد حمزة"
+  },
+  "transport-موقف-حورس-باص-العسيرات": {
+    "src": "/images/activities/activity-d9a94abb7e1c94.webp",
+    "source": "directory/category-transport.webp",
+    "title": "موقف حورس باص - العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "transport-محطة-العسيرات": {
+    "src": "/images/activities/activity-c9cc6f209d35cb.webp",
+    "source": "directory/category-transport.webp",
+    "title": "محطة قطار العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "emergency-مرفق-الاسعاف-المركزي": {
+    "src": "/images/activities/activity-74d9a1a1d888a2.webp",
+    "source": "directory/category-emergency.webp",
+    "title": "مرفق الإسعاف المركزي",
+    "village": "مركز العسيرات"
+  },
+  "emergency-شرطه-النجده-والامن-العام": {
+    "src": "/images/activities/activity-5354dea8f792d7.webp",
+    "source": "directory/category-emergency.webp",
+    "title": "شرطة النجدة والأمن العام",
+    "village": "مركز العسيرات"
+  },
+  "emergency-مطافي-والحمايه-المدنيه": {
+    "src": "/images/activities/activity-7e7ceae3a572c1.webp",
+    "source": "directory/category-emergency.webp",
+    "title": "مطافئ والحماية المدنية",
+    "village": "مركز العسيرات"
+  },
+  "emergency-طواري-شبكه-الكهرباء": {
+    "src": "/images/activities/activity-cb7c4efaaedb54.webp",
+    "source": "directory/category-emergency.webp",
+    "title": "طوارئ شبكة الكهرباء",
+    "village": "مركز العسيرات"
+  },
+  "emergency-طواري-شركه-مياه-الشرب": {
+    "src": "/images/activities/activity-0290b1d165772e.webp",
+    "source": "directory/category-emergency.webp",
+    "title": "طوارئ شركة مياه الشرب",
+    "village": "مركز العسيرات"
+  },
+  "pharmacies-صيدلية-طه-احمد-ياسين": {
+    "src": "/images/activities/activity-1c7287aecec501.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية طه أحمد ياسين",
+    "village": "أولاد حمزة"
+  },
+  "crafts-هشام-نت-بالعسيرات": {
+    "src": "/images/activities/activity-20456c99dbebb9.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "هشام نت بالعسيرات",
+    "village": "أولاد حمزة"
+  },
+  "shops-محل-الجميل-لتجارة-الزجاج": {
+    "src": "/images/activities/activity-3acc32a0b881c9.webp",
+    "source": "directory/category-shops.webp",
+    "title": "محل الجميل لتجارة الزجاج",
+    "village": "أولاد حمزة"
+  },
+  "doctors-المعمل-الطبي-للتحاليل-الطبية-بالعسيرات": {
+    "src": "/images/activities/activity-49fb7f50382bbe.webp",
+    "source": "activity-seeds/medical-lab.webp",
+    "title": "المعمل الطبي للتحاليل الطبية بالعسيرات",
+    "village": "أولاد حمزة"
+  },
+  "crafts-شركة-تراست-لخدمات-الكمبيوتر-والانترنت": {
+    "src": "/images/activities/activity-de05d3fcc35325.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "شركة تراست لخدمات الكمبيوتر والإنترنت",
+    "village": "أولاد حمزة"
+  },
+  "community-الكنيسة-الانجيلية-المشيخية-بالشيخ-دفع-العسيرات": {
+    "src": "/images/activities/activity-71e0a907a113f5.webp",
+    "source": "directory/category-worship.webp",
+    "title": "الكنيسة الإنجيلية المشيخية بالشيخ دفع العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "community-مسجد-النور-بالعسيرات": {
+    "src": "/images/activities/activity-a830cd1f5ac5f1.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد النور بالعسيرات",
+    "village": "أولاد حمزة"
+  },
+  "shops-ماركت-حسانين-للتجار": {
+    "src": "/images/activities/activity-71da76b3a1f993.webp",
+    "source": "directory/category-shops.webp",
+    "title": "ماركت حسانين للتجار",
+    "village": "أولاد حمزة"
+  },
+  "community-مسجد-الهادي": {
+    "src": "/images/activities/activity-81e146fead3cd5.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الهادي",
+    "village": "أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-القذافي-واولاده": {
+    "src": "/images/activities/activity-68829b80e29a91.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت القذافي وأولاده",
+    "village": "أولاد حمزة"
+  },
+  "education-معهد-فتيات-العسيرات-الازهري": {
+    "src": "/images/activities/activity-17e439f695c66f.webp",
+    "source": "directory/category-education.webp",
+    "title": "معهد فتيات العسيرات الأزهري",
+    "village": "أولاد حمزة"
+  },
+  "education-معهد-العسيرات-الاعدادي-بنون": {
+    "src": "/images/activities/activity-72da5e9e98446e.webp",
+    "source": "directory/category-education.webp",
+    "title": "معهد العسيرات الإعدادي بنون",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-عالم-الالوان": {
+    "src": "/images/activities/activity-92cf819240feb2.webp",
+    "source": "directory/category-shops.webp",
+    "title": "معرض عالم الألوان",
+    "village": "أولاد حمزة"
+  },
+  "community-دوار-مناسبات-ال-ابو-عباسية": {
+    "src": "/images/activities/activity-533e644c07d8b8.webp",
+    "source": "activity-seeds/events.webp",
+    "title": "دوار مناسبات آل أبو عباسية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "doctors-عيادة-الدكتور-خالد-اسنان-اولاد-حمزة": {
+    "src": "/images/activities/activity-dfde9236a3fc6d.webp",
+    "source": "activity-seeds/dentist.webp",
+    "title": "عيادة الدكتور خالد",
+    "village": "أولاد حمزة"
+  },
+  "doctors-معمل-الشفا-للتحاليل-الطبية-اولاد-حمزة": {
+    "src": "/images/activities/activity-cdfe0584b7eee7.webp",
+    "source": "activity-seeds/medical-lab.webp",
+    "title": "معمل الشفا للتحاليل الطبية",
+    "village": "أولاد حمزة"
+  },
+  "education-حضانة-الجزيره-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-ccad4b25f2b62d.webp",
+    "source": "directory/category-education.webp",
+    "title": "حضانة الجزيره",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "crafts-ورشة-الهده-والنور-للموبليا-والابواب": {
+    "src": "/images/activities/activity-a645f75f3af539.webp",
+    "source": "activity-seeds/carpenter-upholstery.webp",
+    "title": "ورشة الهده والنور للموبليا والأبواب",
+    "village": "الأحايوة غرب"
+  },
+  "crafts-خالد-عزت-ال-شحات-للتبريد-والتكييف": {
+    "src": "/images/activities/activity-05b777304cc2a1.webp",
+    "source": "activity-seeds/appliance-repair.webp",
+    "title": "خالد عزت آل شحات للتبريد والتكييف",
+    "village": "المساعيد"
+  },
+  "crafts-شركة-الفادي-للمقاولات-العامة": {
+    "src": "/images/activities/activity-816c95ee14c412.webp",
+    "source": "directory/category-crafts.webp",
+    "title": "شركة الفادي للمقاولات العامة",
+    "village": "أولاد حمزة"
+  },
+  "crafts-مغسلة-المحروسة-للسيارات": {
+    "src": "/images/activities/activity-2a154e93a5bdb4.webp",
+    "source": "activity-seeds/tailor-laundry.webp",
+    "title": "مغسلة المحروسة للسيارات",
+    "village": "الرشايدة"
+  },
+  "crafts-مغسلة-العسيرات-الحديثة": {
+    "src": "/images/activities/activity-67e9a2d75bf1b7.webp",
+    "source": "activity-seeds/tailor-laundry.webp",
+    "title": "مغسلة العسيرات الحديثة",
+    "village": "أولاد حمزة"
+  },
+  "crafts-مغسلة-العمدة-اولاد-حمزة": {
+    "src": "/images/activities/activity-b4b41487e3c23b.webp",
+    "source": "activity-seeds/tailor-laundry.webp",
+    "title": "مغسلة العمدة",
+    "village": "أولاد حمزة"
+  },
+  "crafts-الورشة-الفنية-لتصليح-التكاتك": {
+    "src": "/images/activities/activity-a1ec0f2ce3e6ba.webp",
+    "source": "activity-seeds/auto-mechanic.webp",
+    "title": "الورشة الفنية لتصليح التكاتك",
+    "village": "أولاد حمزة"
+  },
+  "shops-مؤسسة-الخطيب-لادوات-الصحية": {
+    "src": "/images/activities/activity-360be0d8662955.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "مؤسسة الخطيب للأدوات الصحية",
+    "village": "أولاد حمزة"
+  },
+  "shops-محل-الرحمة-لمواد-البناء": {
+    "src": "/images/activities/activity-fd891a4268c966.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "محل الرحمة لمواد البناء",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-الاخوة-للدهانات-والحدايد": {
+    "src": "/images/activities/activity-2ad865cf996873.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض الأخوة للدهانات والحدايد",
+    "village": "أولاد حمزة"
+  },
+  "shops-ابو-غالي-للحدايد-والبويات": {
+    "src": "/images/activities/activity-46476a9d6a97b9.webp",
+    "source": "directory/category-shops.webp",
+    "title": "أبو غالي للحدايد والبويات",
+    "village": "الرشايدة"
+  },
+  "shops-مستودعات-الاصدقاء-لمواد-البناء": {
+    "src": "/images/activities/activity-b6f3f737731b67.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "مستودعات الأصدقاء لمواد البناء",
+    "village": "أولاد بهيج"
+  },
+  "shops-مشتل-هاني-بشري-وحازم": {
+    "src": "/images/activities/activity-f52186147ca81d.webp",
+    "source": "activity-seeds/agriculture-supplies.webp",
+    "title": "مشتل هاني بشري وحازم",
+    "village": "أولاد حمزة"
+  },
+  "shops-المعلم-فايز-لقطع-غيار-الدراجات": {
+    "src": "/images/activities/activity-94662bb3c50388.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "المعلم فايز لقطع غيار الدراجات",
+    "village": "أولاد حمزة"
+  },
+  "shops-ابو-الشيخ-لقطع-غيار-الدراجات": {
+    "src": "/images/activities/activity-f807c6c288b0e2.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "أبو الشيخ لقطع غيار الدراجات",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-المحطة-لكماليات-السيارات": {
+    "src": "/images/activities/activity-2fd37613b08f91.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "معرض المحطة لكماليات السيارات",
+    "village": "أولاد حمزة"
+  },
+  "shops-الاصدقاء-لقطع-الغيار-اولاد-حمزة": {
+    "src": "/images/activities/activity-f4bfc0cd8f30df.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "الأصدقاء لقطع الغيار",
+    "village": "أولاد حمزة"
+  },
+  "shops-شركة-ال-مصطفى-لقطع-غيار-الدراجات": {
+    "src": "/images/activities/activity-7f5356bdbe4b43.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "شركة آل مصطفى",
+    "village": "أولاد حمزة"
+  },
+  "shops-معانا-يارب-لقطع-غيار-التكاتك": {
+    "src": "/images/activities/activity-04702b54a07f07.webp",
+    "source": "activity-seeds/vehicle-parts.webp",
+    "title": "معانا يارب لقطع غيار التكاتك",
+    "village": "أولاد حمزة"
+  },
+  "shops-معرض-فيديليتي-للسيراميك": {
+    "src": "/images/activities/activity-5db8e25b52f895.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "معرض فيديليتي للسيراميك",
+    "village": "أولاد حمزة"
+  },
+  "shops-مكتبة-الرحمة-لادوات-المدرسية": {
+    "src": "/images/activities/activity-78c9e3f9b86ff6.webp",
+    "source": "directory/category-shops.webp",
+    "title": "مكتبة الرحمة للأدوات المدرسية",
+    "village": "المساعيد"
+  },
+  "shops-محلات-اولاد-الشيخ-عبدالظاهر": {
+    "src": "/images/activities/activity-ee2457ce72ac6c.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "محلات أولاد الشيخ عبدالظاهر",
+    "village": "النويرات"
+  },
+  "shops-فرع-اتصالات-العسيرات": {
+    "src": "/images/activities/activity-ebb5f0bf68b1a5.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "فرع اتصالات العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "shops-المصرية-للاتصالات-فرع-العسيرات": {
+    "src": "/images/activities/activity-13e941c7af19c2.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "المصرية للاتصالات - فرع العسيرات",
+    "village": "أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-ابناء-الشيخ-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-299e1d2569f3c6.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أبناء الشيخ",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-الشمندي-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-b588819dd780e5.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الشمندي",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-ماهر-ماركت-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-fe177ddfad52f6.webp",
+    "source": "directory/category-shops.webp",
+    "title": "ماهر ماركت",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-جمعيتي-للسلع-التموينية-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-f9f1b5a76633ad.webp",
+    "source": "directory/category-shops.webp",
+    "title": "جمعيتي للسلع التموينية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-ادوات-منزلية-وكهربائية-لتجهيز-العرائس-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-d190038ce5849a.webp",
+    "source": "directory/category-shops.webp",
+    "title": "أدوات منزلية وكهربائية لتجهيز العرائس",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "community-دوار-ال-عبدالقادر-نجع-الطود": {
+    "src": "/images/activities/activity-4fe9929cc3cc76.webp",
+    "source": "directory/blog-families.webp",
+    "title": "دوار آل عبدالقادر",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "government-nbe-atm-الوحدة-الصحية-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-f613f566bc6a33.webp",
+    "source": "directory/category-government.webp",
+    "title": "ماكينة البنك الأهلي المصري – الوحدة الصحية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "education-مدرسة-جزيرة-اولاد-حمزة-الابتدائية": {
+    "src": "/images/activities/activity-a4b15032659b84.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة جزيرة أولاد حمزة الابتدائية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "education-مدرسة-الطود-والقلعاية-الابتدائية": {
+    "src": "/images/activities/activity-80b33e5aadd7de.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة الطود والقلعاية الابتدائية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "education-مدرسة-الطود-والقلعاية-الاعدادية": {
+    "src": "/images/activities/activity-e316bcee4b70ec.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة الطود والقلعاية الإعدادية بأولاد حمزة",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مجمع-النور-الاسلامي-بالقلعاية": {
+    "src": "/images/activities/activity-951ca5978ac27e.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مجمع النور الإسلامي بالقلعاية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-الجمعية-الشرعية-لجنة-فتح-الباري": {
+    "src": "/images/activities/activity-989415e81fed1b.webp",
+    "source": "directory/category-worship.webp",
+    "title": "الجمعية الشرعية – لجنة فتح الباري",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-علي-بن-ابي-طالب-بالشحومات": {
+    "src": "/images/activities/activity-b5899292ee1b06.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد علي بن أبي طالب بالشُحمات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-ال-فارس-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-b6d69b4d2872b9.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد آل فارس",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-جزيرة-العسيرات": {
+    "src": "/images/activities/activity-a0c9acb2ed3745.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد جزيرة العسيرات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-السلام-ال-الاعصر": {
+    "src": "/images/activities/activity-acd8339441c9d6.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد السلام – آل الأعصر",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-الحاوي-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-3758e8a0824e42.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الحاوي",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-الرحمة-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-42cfdfa5c5a8c5.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الرحمة",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-موسى-حمد": {
+    "src": "/images/activities/activity-bd9d58c0c71325.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد موسى حمد",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-فرن-محمد-عثمان-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-a95c08c2868fc9.webp",
+    "source": "activity-seeds/bakery.webp",
+    "title": "فرن محمد عثمان",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-النور-الرشايدة-غرب": {
+    "src": "/images/activities/activity-5a0cf7fa0c858a.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد النور – الرشايدة غرب",
+    "village": "الرشايدة"
+  },
+  "worship-مسجد-الفتح-الغنانشة-الرشايدة": {
+    "src": "/images/activities/activity-77d39aab84107f.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الفتح – الغنانشة",
+    "village": "الرشايدة"
+  },
+  "worship-مسجد-ال-عمران-الرشايدة": {
+    "src": "/images/activities/activity-cdc3f85006c810.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد آل عمران بالرشايدة",
+    "village": "الرشايدة"
+  },
+  "worship-مسجد-الرمايلة-الرشايدة": {
+    "src": "/images/activities/activity-12e05363abb326.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الرمايلة",
+    "village": "الرشايدة"
+  },
+  "worship-مسجد-العمارة-الرشايدة": {
+    "src": "/images/activities/activity-2b1a5c96a48feb.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد العمارة",
+    "village": "الرشايدة"
+  },
+  "worship-مسجد-حمزة-بن-عبدالمطلب-الرشايدة": {
+    "src": "/images/activities/activity-6abf2cedc05474.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد حمزة بن عبدالمطلب",
+    "village": "الرشايدة"
+  },
+  "worship-كنيسة-مارجرجس-نجع-جبرة": {
+    "src": "/images/activities/activity-224fea9176456f.webp",
+    "source": "directory/category-worship.webp",
+    "title": "كنيسة الشهيد العظيم مارجرجس بنجع جبرة",
+    "village": "الرشايدة"
+  },
+  "education-مدرسة-الشهيد-مدحت-ابو-بكر-قاعود-الرشايدة": {
+    "src": "/images/activities/activity-39e987d54e1612.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة الشهيد مدحت أبو بكر قاعود",
+    "village": "الرشايدة"
+  },
+  "education-مدرسة-نجع-جبرة-الابتدائية": {
+    "src": "/images/activities/activity-13d2227a546187.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة نجع جبرة الابتدائية",
+    "village": "الرشايدة"
+  },
+  "education-مدرسة-العجوبية-الابتدائية": {
+    "src": "/images/activities/activity-0367f1d55d06e9.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة العجوبية الابتدائية",
+    "village": "الرشايدة"
+  },
+  "government-مستشفى-الرشايدة": {
+    "src": "/images/activities/activity-4d9e52b682d3ba.webp",
+    "source": "directory/category-government.webp",
+    "title": "مستشفى الرشايدة",
+    "village": "الرشايدة"
+  },
+  "government-مكتب-بريد-العسيرات-الرشايدة": {
+    "src": "/images/activities/activity-76ce15fa1ea5ff.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب بريد العسيرات – الرشايدة",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-عائلة-الخطيب-الرشايدة": {
+    "src": "/images/activities/activity-eb439942b1ebfc.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان عائلة الخطيب",
+    "village": "الرشايدة"
+  },
+  "shops-محطة-بنزين-الرشايدة-العسيرات": {
+    "src": "/images/activities/activity-b5d0767a0b9752.webp",
+    "source": "activity-seeds/gas-station.webp",
+    "title": "محطة بنزين الرشايدة – العسيرات",
+    "village": "الرشايدة"
+  },
+  "shops-مخبز-الاندلس-للحلويات-الرشايدة": {
+    "src": "/images/activities/activity-65846967585e31.webp",
+    "source": "activity-seeds/bakery.webp",
+    "title": "مخبز الأندلس للحلويات",
+    "village": "الرشايدة"
+  },
+  "shops-مخبز-فرن-بلدي-الرشايدة": {
+    "src": "/images/activities/activity-7967368c3ffbf4.webp",
+    "source": "activity-seeds/bakery.webp",
+    "title": "مخبز فرن بلدي",
+    "village": "الرشايدة"
+  },
+  "shops-سوبر-ماركت-ابو-عمر-الرشايدة": {
+    "src": "/images/activities/activity-52ed3285df7329.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أبو عمر جملة وقطاعي",
+    "village": "الرشايدة"
+  },
+  "shops-سوبر-ماركت-الاخلاص-الرشايدة": {
+    "src": "/images/activities/activity-9500dbd4d72498.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الإخلاص",
+    "village": "الرشايدة"
+  },
+  "shops-بقالة-ابو-بكر-عبداللطيف-الرشايدة": {
+    "src": "/images/activities/activity-3a0d20859e711d.webp",
+    "source": "directory/category-shops.webp",
+    "title": "بقالة أبو بكر عبداللطيف عبدالرحيم",
+    "village": "الرشايدة"
+  },
+  "shops-سوبر-ماركت-الصفا-الرشايدة": {
+    "src": "/images/activities/activity-833cd115c34a02.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الصفا – أحمد رشاد عياش الصولي",
+    "village": "الرشايدة"
+  },
+  "shops-بقالة-شنودة-الحلواني-العجوبية": {
+    "src": "/images/activities/activity-ba35f915c5f869.webp",
+    "source": "directory/category-shops.webp",
+    "title": "بقالة شنودة الحلواني",
+    "village": "الرشايدة"
+  },
+  "shops-سوبر-ماركت-كمال-فاروق-الرشايدة-غرب": {
+    "src": "/images/activities/activity-1840ad20a09ccf.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت كمال فاروق",
+    "village": "الرشايدة"
+  },
+  "shops-ميني-ماركت-الاندلس-الهريدي-جبرة": {
+    "src": "/images/activities/activity-1578081497c01c.webp",
+    "source": "directory/category-shops.webp",
+    "title": "ميني ماركت الأندلس الهريدي",
+    "village": "الرشايدة"
+  },
+  "shops-معرض-يوسف-للتجميل-والاكسسوارات-جبرة": {
+    "src": "/images/activities/activity-5fdc366d6ba98d.webp",
+    "source": "activity-seeds/clothing.webp",
+    "title": "معرض يوسف للتجميل والإكسسوارات",
+    "village": "الرشايدة"
+  },
+  "lawyers-احمد-حسن-مايز-الرشايدة": {
+    "src": "/images/activities/activity-16572201a70849.webp",
+    "source": "directory/category-lawyers.webp",
+    "title": "مكتب الأستاذ أحمد حسن مايز المحامي",
+    "village": "الرشايدة"
+  }
+}

@@ -19,7 +19,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
       <Link href={`/listing/${listing.slug}`} className="listing-card__media" aria-label={`عرض ${listing.title}`}>
         <Image src={image.src} alt={image.alt} fill sizes={compact ? '(max-width: 620px) 100vw, 360px' : '(max-width: 620px) 100vw, (max-width: 1100px) 50vw, 360px'} />
         <span className="directory-media__shade" aria-hidden="true" />
-        <span className="directory-media__label">صورة تعبيرية</span>
+        <span className="directory-media__label">{image.label}</span>
         <span className="listing-card__media-category">{category.shortLabel}</span>
       </Link>
 

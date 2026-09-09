@@ -195,7 +195,12 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <div className="detail-hero__media">
               <Image src={coverImage.src} alt={coverImage.alt} fill priority sizes="(max-width: 760px) 100vw, 390px" />
               <span className="directory-media__shade" aria-hidden="true" />
-              <span className="directory-media__label">صورة تعبيرية</span>
+              <span className="directory-media__label">{coverImage.label}</span>
+              {(listing.googlePlaceId || listing.googleMapsUrl) && (
+                <a className="detail-hero__media-source" href={maps} target="_blank" rel="noreferrer">
+                  صور ومعلومات المكان على خرائط Google
+                </a>
+              )}
             </div>
             <span className="catalog-hero__summary-label">بيانات موثقة داخل الدليل</span>
             <div className="detail-hero__summary-brand"><span aria-hidden="true"><BrandMark compact /></span><strong>{dataSourceLabel}</strong></div>

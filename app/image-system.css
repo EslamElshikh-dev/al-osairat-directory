@@ -186,7 +186,7 @@
 .listing-card__media .directory-media__label {
   position: absolute;
   right: 12px;
-  bottom: 11px;
+  top: 11px;
 }
 .listing-card__media-category {
   position: absolute;
@@ -221,7 +221,29 @@
 .detail-hero__media .directory-media__label {
   position: absolute;
   right: 14px;
-  bottom: 13px;
+  top: 13px;
+}
+.detail-hero__media-source {
+  position: absolute;
+  z-index: 3;
+  left: 14px;
+  top: 13px;
+  max-width: 175px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(8,42,33,.72);
+  box-shadow: 0 7px 20px rgba(0,0,0,.13);
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.45;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.detail-hero__media-source:hover {
+  background: rgba(8,42,33,.92);
 }
 
 /* Blog cover cards */
