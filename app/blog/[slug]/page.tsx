@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BlogCard } from '@/components/blog-card';
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: article.description,
       path: `/blog/${article.slug}`,
       imageAlt: `${article.title} - مدونة دليل العسيرات`,
+      imageUrl: article.image,
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
       authors: [authorName],
@@ -79,6 +81,11 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         dateModified: article.updatedAt,
         inLanguage: 'ar-EG',
         articleSection: article.category,
+        image: {
+          '@type': 'ImageObject',
+          url: `${siteConfig.url}${article.image}`,
+          caption: article.imageAlt,
+        },
         articleBody,
         author: {
           '@type': 'Person',
@@ -127,26 +134,33 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   return (
     <main id="main-content" className="article-page">
       <header className="article-hero">
-        <div className="shell article-hero__shell">
-          <nav className="breadcrumbs breadcrumbs--dark" aria-label="مسار التنقل">
-            <Link href="/">الرئيسية</Link><span>/</span>
-            <Link href="/blog">المدونة</Link><span>/</span>
-            <span>{article.category}</span>
-          </nav>
-          <div className="article-hero__meta">
-            <span>{article.category}</span>
-            <span aria-hidden="true">•</span>
-            <span>{article.readingTime}</span>
-            <span aria-hidden="true">•</span>
-            <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+        <div className="shell article-hero__shell article-hero__shell--visual">
+          <div className="article-hero__copy">
+            <nav className="breadcrumbs breadcrumbs--dark" aria-label="مسار التنقل">
+              <Link href="/">الرئيسية</Link><span>/</span>
+              <Link href="/blog">المدونة</Link><span>/</span>
+              <span>{article.category}</span>
+            </nav>
+            <div className="article-hero__meta">
+              <span>{article.category}</span>
+              <span aria-hidden="true">•</span>
+              <span>{article.readingTime}</span>
+              <span aria-hidden="true">•</span>
+              <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+            </div>
+            <h1>{article.title}</h1>
+            <p className="article-hero__lead">{article.lead}</p>
+            <div className="article-hero__author">
+              <span className="article-hero__author-mark" aria-hidden="true"><BrandMark compact /></span>
+              <span>إعداد وتحرير</span>
+              <a href={authorUrl} target="_blank" rel="noreferrer">{authorName}</a>
+            </div>
           </div>
-          <h1>{article.title}</h1>
-          <p className="article-hero__lead">{article.lead}</p>
-          <div className="article-hero__author">
-            <span className="article-hero__author-mark" aria-hidden="true"><BrandMark compact /></span>
-            <span>إعداد وتحرير</span>
-            <a href={authorUrl} target="_blank" rel="noreferrer">{authorName}</a>
-          </div>
+          <figure className="article-hero__visual">
+            <Image src={article.image} alt={article.imageAlt} fill priority sizes="(max-width: 860px) 100vw, 42vw" />
+            <span className="article-hero__visual-shade" aria-hidden="true" />
+            <figcaption>صورة تعبيرية أُعدت خصيصًا لمحتوى المقال</figcaption>
+          </figure>
         </div>
       </header>
 

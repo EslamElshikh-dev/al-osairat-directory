@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { categoryById, type DirectoryListing } from '@/lib/data';
+import { imageForListing } from '@/lib/directory-images';
 import { googleMapsHref, phoneHref, sourceLabel } from '@/lib/site';
 import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
@@ -8,10 +10,18 @@ import { FavoriteButton } from './favorite-button';
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
+  const image = imageForListing(listing);
 
   return (
     <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
       {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
+
+      <Link href={`/listing/${listing.slug}`} className="listing-card__media" aria-label={`عرض ${listing.title}`}>
+        <Image src={image.src} alt={image.alt} fill sizes={compact ? '(max-width: 620px) 100vw, 360px' : '(max-width: 620px) 100vw, (max-width: 1100px) 50vw, 360px'} />
+        <span className="directory-media__shade" aria-hidden="true" />
+        <span className="directory-media__label">صورة تعبيرية</span>
+        <span className="listing-card__media-category">{category.shortLabel}</span>
+      </Link>
 
       <div className="listing-card__header">
         <CategoryVisual category={listing.category} size={compact ? 'md' : 'lg'} />

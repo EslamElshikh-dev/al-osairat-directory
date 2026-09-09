@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { categories, directoryStats, listings, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
@@ -12,6 +13,7 @@ import { homeFaq } from '@/lib/faq';
 import { blogArticles } from '@/lib/blog-published';
 import { getLocalNews, selectHomepageNews } from '@/lib/news';
 import { siteConfig } from '@/lib/site';
+import { imageForCategory } from '@/lib/directory-images';
 import newsStyles from './home-news.module.css';
 
 export const metadata: Metadata = {
@@ -107,31 +109,24 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <aside className="hero__panel hero__panel--spotlight" aria-label="نطاق تغطية دليل العسيرات">
-            <div className="hero__panel-brand" aria-hidden="true">
-              <span><BrandMark /></span>
-              <i />
+          <aside className="hero__place-card" aria-label="مشهد تعبيري لمركز العسيرات">
+            <Image
+              src="/images/directory/hero-al-osairat.webp"
+              alt="مشهد تعبيري لمركز العسيرات وحقوله وقراه وقت الشروق"
+              fill
+              priority
+              sizes="(max-width: 900px) 100vw, 420px"
+            />
+            <span className="hero__place-shade" aria-hidden="true" />
+            <div className="hero__place-top">
+              <span className="hero__place-brand" aria-hidden="true"><BrandMark /></span>
+              <span className="directory-media__label">صورة تعبيرية أصلية</span>
             </div>
-            <div className="hero__panel-head">
-              <div>
-                <span>نطاق التغطية</span>
-                <strong>من قلب مركز العسيرات</strong>
-              </div>
-              <span className="hero__panel-status"><i aria-hidden="true" /> محلي</span>
+            <div className="hero__place-caption">
+              <span>مركز العسيرات · محافظة سوهاج</span>
+              <strong>الأرض والقرى والخدمات في دليل واحد</strong>
+              <Link href="/villages">استكشف قرى العسيرات <b aria-hidden="true">←</b></Link>
             </div>
-
-            <div className="hero__panel-stat">
-              <strong>{directoryStats.total}</strong>
-              <div><b>مكان وخدمة</b><span>منظّمان داخل دليل واحد</span></div>
-            </div>
-
-            <div className="hero__panel-label">استكشف حسب القرية</div>
-            <div className="village-cloud">
-              {villages.filter((v) => v.name !== 'مركز العسيرات').map((village) => (
-                <Link key={village.slug} href={`/villages/${village.slug}`}>{village.name}</Link>
-              ))}
-            </div>
-            <Link href="/villages" className="text-link hero__panel-link">كل القرى والتوابع <b aria-hidden="true">←</b></Link>
           </aside>
         </div>
       </section>
@@ -148,11 +143,14 @@ export default async function HomePage() {
         <div className="category-grid category-grid--editorial">
           {categories.map((category) => {
             const count = listings.filter((item) => item.category === category.id).length;
+            const categoryImage = imageForCategory(category.id);
             return (
               <Link key={category.id} href={`/directory/${category.id}`} className={`category-card category-card--${category.id}`}>
-                <div className="category-card__visual-row">
+                <div className="category-card__media">
+                  <Image src={categoryImage.src} alt={categoryImage.alt} fill sizes="(max-width: 620px) 100vw, (max-width: 1020px) 50vw, 25vw" />
+                  <span className="category-card__media-shade" aria-hidden="true" />
                   <CategoryVisual category={category.id} size="md" />
-                  <span className="category-card__brand" aria-hidden="true"><BrandMark compact /></span>
+                  <span className="directory-media__label">صورة تعبيرية</span>
                 </div>
                 <span className="category-card__number">{String(count).padStart(2, '0')}</span>
                 <h3>{category.shortLabel}</h3>

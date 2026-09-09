@@ -31,6 +31,8 @@ export type BlogArticle = {
   description: string;
   eyebrow: string;
   category: string;
+  image: string;
+  imageAlt: string;
   readingTime: string;
   publishedAt: string;
   updatedAt: string;
@@ -49,6 +51,8 @@ export const blogArticles: BlogArticle[] = [
     description: 'دليل موسوعي عن مركز العسيرات بمحافظة سوهاج: موقعه، تاريخه الإداري، القرى التابعة له، تعداد السكان الرسمي، أهم الخدمات ومشروعات التطوير.',
     eyebrow: 'دليل جغرافي وتاريخي',
     category: 'مركز العسيرات',
+    image: '/images/directory/hero-al-osairat.webp',
+    imageAlt: 'مشهد تعبيري لمركز العسيرات وحقوله وقراه وقت الشروق',
     readingTime: '8 دقائق قراءة',
     publishedAt: '2026-08-28',
     updatedAt: '2026-08-28',
@@ -135,6 +139,8 @@ export const blogArticles: BlogArticle[] = [
     description: 'تعرف على أشهر المعالم المحلية في مركز العسيرات: كنيسة العذراء بأولاد حمزة، مجمع النور الإسلامي، مسجد الفتح، محطة القطار، مستشفى العسيرات المركزي ومعالم الخدمة اليومية.',
     eyebrow: 'معالم ومكان',
     category: 'معالم العسيرات',
+    image: '/images/directory/blog-landmarks.webp',
+    imageAlt: 'مشهد تعبيري لمعالم العسيرات الدينية والخدمية ومحطة القطار',
     readingTime: '7 دقائق قراءة',
     publishedAt: '2026-08-28',
     updatedAt: '2026-08-28',
@@ -209,6 +215,8 @@ export const blogArticles: BlogArticle[] = [
     description: 'ملف تعريفي بأبرز الأسماء المرتبطة بمركز العسيرات في العلم والأزهر والأدب والثقافة والعمل العام، اعتمادًا على مصادر صحفية وأكاديمية ومحلية.',
     eyebrow: 'شخصيات من العسيرات',
     category: 'أعلام ومشاهير',
+    image: '/images/directory/blog-famous-people.webp',
+    imageAlt: 'صورة تعبيرية للكتب والوثائق المرتبطة بأعلام العسيرات',
     readingTime: '8 دقائق قراءة',
     publishedAt: '2026-08-28',
     updatedAt: '2026-08-28',
@@ -276,6 +284,8 @@ export const blogArticles: BlogArticle[] = [
     description: 'بحث مبسط في أصل اسم العسيرات بسوهاج: رواية بني أسرات الهوارية، ورواية الصلة بعسير، وتاريخ طوخ الجبل وتحول أسماء قرى المنطقة.',
     eyebrow: 'حكاية اسم',
     category: 'تاريخ العسيرات',
+    image: '/images/directory/blog-origin-name.webp',
+    imageAlt: 'صورة تعبيرية لخريطة ووثائق تاريخية من صعيد مصر',
     readingTime: '9 دقائق قراءة',
     publishedAt: '2026-08-28',
     updatedAt: '2026-08-28',
@@ -342,6 +352,8 @@ export const blogArticles: BlogArticle[] = [
     description: 'قراءة اجتماعية وتاريخية في أسماء العائلات والبيوت المعروفة في قرى مركز العسيرات، تبدأ بآل حمد وتعرض نماذج من السعدات وأبو رحاب والقاضي وفواز والرملي وغيرها دون ادعاء ترتيب رسمي للأنساب.',
     eyebrow: 'العائلات والذاكرة المحلية',
     category: 'عائلات العسيرات',
+    image: '/images/directory/blog-families.webp',
+    imageAlt: 'صورة تعبيرية لديوان عائلي في قرية من قرى العسيرات',
     readingTime: '10 دقائق قراءة',
     publishedAt: '2026-08-28',
     updatedAt: '2026-08-28',

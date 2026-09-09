@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
@@ -14,6 +15,7 @@ import { FavoriteButton } from '@/components/favorite-button';
 import { ListingReport } from '@/components/listing-report';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
+import { imageForListing } from '@/lib/directory-images';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     : category.shortLabel;
   const location = listing.location.length <= 48 ? listing.location : listing.village;
   const description = `${listing.title}، ${service} في ${location}. بيانات التواصل والموقع ضمن دليل العسيرات.`;
+  const image = imageForListing(listing);
 
   return buildPageMetadata({
     title,
@@ -51,6 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     path: `/listing/${listing.slug}`,
     noIndex: !isListingIndexable(listing),
     imageAlt: `${listing.title} في دليل العسيرات`,
+    imageUrl: image.src,
   });
 }
 
@@ -91,6 +95,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const fallbackScope = isFallbackScope(listing.village);
   const villagePath = villagePathByName(listing.village);
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
+  const coverImage = imageForListing(listing);
 
   const [publishedNearby, overriddenStatic] = await Promise.all([
     getPublishedListings({ category: listing.category, village: listing.village }),
@@ -187,6 +192,11 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </div>
 
           <aside className="detail-hero__summary" aria-label="ملخص بيانات النشاط">
+            <div className="detail-hero__media">
+              <Image src={coverImage.src} alt={coverImage.alt} fill priority sizes="(max-width: 760px) 100vw, 390px" />
+              <span className="directory-media__shade" aria-hidden="true" />
+              <span className="directory-media__label">صورة تعبيرية</span>
+            </div>
             <span className="catalog-hero__summary-label">بيانات موثقة داخل الدليل</span>
             <div className="detail-hero__summary-brand"><span aria-hidden="true"><BrandMark compact /></span><strong>{dataSourceLabel}</strong></div>
             <div className="detail-hero__summary-list">

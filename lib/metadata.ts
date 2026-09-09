@@ -10,6 +10,7 @@ type BaseMetadataInput = {
   path: string;
   noIndex?: boolean;
   imageAlt?: string;
+  imageUrl?: string;
 };
 
 type ArticleMetadataInput = BaseMetadataInput & {
@@ -19,12 +20,12 @@ type ArticleMetadataInput = BaseMetadataInput & {
   section?: string;
 };
 
-function socialImage(imageAlt = defaultSocialImageAlt) {
+function socialImage(imageAlt = defaultSocialImageAlt, imageUrl = defaultSocialImage) {
+  const resolvedUrl = imageUrl.startsWith('http') ? imageUrl : `${siteConfig.url}${imageUrl}`;
   return {
-    url: defaultSocialImage,
-    width: 1200,
-    height: 630,
+    url: resolvedUrl,
     alt: imageAlt,
+    ...(resolvedUrl === defaultSocialImage ? { width: 1200, height: 630 } : {}),
   };
 }
 
@@ -34,9 +35,10 @@ export function buildPageMetadata({
   path,
   noIndex = false,
   imageAlt,
+  imageUrl,
 }: BaseMetadataInput): Metadata {
   const url = `${siteConfig.url}${path}`;
-  const image = socialImage(imageAlt);
+  const image = socialImage(imageAlt, imageUrl);
 
   return {
     title,
@@ -55,7 +57,7 @@ export function buildPageMetadata({
       card: 'summary_large_image',
       title,
       description,
-      images: [defaultSocialImage],
+      images: [image.url],
     },
     ...(noIndex ? { robots: { index: false, follow: true } } : {}),
   };
@@ -67,16 +69,17 @@ export function buildArticleMetadata({
   path,
   noIndex = false,
   imageAlt,
+  imageUrl,
   publishedTime,
   modifiedTime,
   authors = [],
   section,
 }: ArticleMetadataInput): Metadata {
   const url = `${siteConfig.url}${path}`;
-  const image = socialImage(imageAlt);
+  const image = socialImage(imageAlt, imageUrl);
 
   return {
-    ...buildPageMetadata({ title, description, path, noIndex, imageAlt }),
+    ...buildPageMetadata({ title, description, path, noIndex, imageAlt, imageUrl }),
     title: { absolute: title },
     openGraph: {
       type: 'article',

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { BlogArticle } from '@/lib/blog';
 import { blogBySlug } from '@/lib/blog-published';
@@ -9,10 +10,11 @@ export function BlogCard({ article, featured = false }: { article: BlogArticle; 
   return (
     <article className={`blog-card${featured ? ' blog-card--featured' : ''}`}>
       <Link href={`/blog/${publishedArticle.slug}`} className="blog-card__visual" aria-label={`قراءة ${publishedArticle.title}`}>
+        <Image src={publishedArticle.image} alt={publishedArticle.imageAlt} fill sizes={featured ? '(max-width: 760px) 100vw, 46vw' : '(max-width: 620px) 100vw, 360px'} />
         <span className="blog-card__pattern" aria-hidden="true" />
         <span className="blog-card__brand" aria-hidden="true"><BrandMark /></span>
         <span className="blog-card__category">{publishedArticle.category}</span>
-        <span className="blog-card__visual-title">العسيرات</span>
+        <span className="blog-card__visual-title">صورة تعبيرية</span>
       </Link>
       <div className="blog-card__body">
         <div className="blog-card__meta">
