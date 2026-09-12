@@ -3,6 +3,7 @@ import { siteConfig } from '@/lib/site';
 
 const defaultSocialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
 const defaultSocialImageAlt = 'دليل العسيرات - بتدور على إيه؟ وإحنا ندلّك عليه من قلب العسيرات';
+const SITE_TITLE_SUFFIX = /\s*(?:[-–—|])\s*دليل العسيرات\s*$/;
 
 type BaseMetadataInput = {
   title: string;
@@ -19,6 +20,10 @@ type ArticleMetadataInput = BaseMetadataInput & {
   authors?: string[];
   section?: string;
 };
+
+function normalizePageTitle(title: string) {
+  return title.replace(SITE_TITLE_SUFFIX, '').trim();
+}
 
 function socialImage(imageAlt = defaultSocialImageAlt, imageUrl = defaultSocialImage) {
   const resolvedUrl = imageUrl.startsWith('http') ? imageUrl : `${siteConfig.url}${imageUrl}`;
@@ -39,23 +44,24 @@ export function buildPageMetadata({
 }: BaseMetadataInput): Metadata {
   const url = `${siteConfig.url}${path}`;
   const image = socialImage(imageAlt, imageUrl);
+  const normalizedTitle = normalizePageTitle(title);
 
   return {
-    title,
+    title: normalizedTitle,
     description,
     alternates: { canonical: path },
     openGraph: {
       type: 'website',
       locale: siteConfig.locale,
       url,
-      title,
+      title: normalizedTitle,
       description,
       siteName: siteConfig.name,
       images: [image],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: normalizedTitle,
       description,
       images: [image.url],
     },
@@ -77,15 +83,16 @@ export function buildArticleMetadata({
 }: ArticleMetadataInput): Metadata {
   const url = `${siteConfig.url}${path}`;
   const image = socialImage(imageAlt, imageUrl);
+  const normalizedTitle = normalizePageTitle(title);
 
   return {
-    ...buildPageMetadata({ title, description, path, noIndex, imageAlt, imageUrl }),
-    title: { absolute: title },
+    ...buildPageMetadata({ title: normalizedTitle, description, path, noIndex, imageAlt, imageUrl }),
+    title: { absolute: normalizedTitle },
     openGraph: {
       type: 'article',
       locale: siteConfig.locale,
       url,
-      title,
+      title: normalizedTitle,
       description,
       siteName: siteConfig.name,
       images: [image],
