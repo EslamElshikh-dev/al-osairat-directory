@@ -25,6 +25,12 @@ function normalizePageTitle(title: string) {
   return title.replace(SITE_TITLE_SUFFIX, '').trim();
 }
 
+function normalizeDescription(description: string, path: string) {
+  const normalized = description.trim();
+  if (!path.startsWith('/directory/') || normalized.length >= 90) return normalized;
+  return `${normalized} تصفح السجلات المنشورة وبيانات التواصل والموقع المتاحة داخل مركز العسيرات وقراه بمحافظة سوهاج.`;
+}
+
 function socialImage(imageAlt = defaultSocialImageAlt, imageUrl = defaultSocialImage) {
   const resolvedUrl = imageUrl.startsWith('http') ? imageUrl : `${siteConfig.url}${imageUrl}`;
   return {
@@ -45,24 +51,25 @@ export function buildPageMetadata({
   const url = `${siteConfig.url}${path}`;
   const image = socialImage(imageAlt, imageUrl);
   const normalizedTitle = normalizePageTitle(title);
+  const normalizedDescription = normalizeDescription(description, path);
 
   return {
     title: normalizedTitle,
-    description,
+    description: normalizedDescription,
     alternates: { canonical: path },
     openGraph: {
       type: 'website',
       locale: siteConfig.locale,
       url,
       title: normalizedTitle,
-      description,
+      description: normalizedDescription,
       siteName: siteConfig.name,
       images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title: normalizedTitle,
-      description,
+      description: normalizedDescription,
       images: [image.url],
     },
     ...(noIndex ? { robots: { index: false, follow: true } } : {}),
