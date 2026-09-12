@@ -75,6 +75,8 @@ type DirectoryEntityRow = {
   last_updated_at: string | null;
 };
 
+type DirectoryEntityIdRow = { id: string };
+
 const canonicalSelect = [
   'id', 'slug', 'title', 'category', 'sub_category', 'location', 'village', 'locality',
   'phone', 'whatsapp', 'hours', 'description', 'rating', 'review_count', 'rating_source',
@@ -147,6 +149,21 @@ export async function queryCanonicalDirectory(
 
   if (!rows || rows.length < MIN_CANONICAL_DIRECTORY_ROWS) return null;
   return queryDirectoryListings(rows.map(serializeDirectoryEntity), options);
+}
+
+export async function getCanonicalDirectoryTotal(fallbackTotal: number) {
+  const params = new URLSearchParams({
+    select: 'id',
+    is_active: 'eq.true',
+    limit: '1000',
+  });
+  const rows = await fetchSupabasePublicJson<DirectoryEntityIdRow[]>(
+    `${SUPABASE_URL}/rest/v1/directory_entities?${params.toString()}`,
+    { headers: publicReadHeaders() },
+  );
+
+  if (!rows || rows.length < MIN_CANONICAL_DIRECTORY_ROWS) return fallbackTotal;
+  return rows.length;
 }
 
 export async function getDirectoryAuthorityReport(limit = 12): Promise<DirectoryAuthorityReport | null> {
