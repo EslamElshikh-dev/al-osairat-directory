@@ -1,6 +1,7 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
-import type { DirectoryQueryOptions, DirectoryQueryResult } from '@/lib/directory-query';
-import type { DirectoryCategory, SourceStatus } from '@/lib/types';
+import { queryDirectoryListings, type DirectoryQueryOptions, type DirectoryQueryResult } from '@/lib/directory-query';
+import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
+import type { DataSource, DirectoryCategory, DirectoryListing, SourceStatus } from '@/lib/types';
 
 export type DirectoryAuthoritySummary = {
   total: number;
@@ -48,6 +49,44 @@ export type DirectoryAuthorityReport = {
   queue: DirectoryAuthorityQueueItem[];
 };
 
+type DirectoryEntityRow = {
+  id: string;
+  slug: string;
+  title: string;
+  category: DirectoryCategory;
+  sub_category: string | null;
+  location: string;
+  village: string;
+  locality: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  hours: string | null;
+  description: string | null;
+  rating: number | null;
+  review_count: number | null;
+  rating_source: 'legacy' | 'google' | null;
+  source: DataSource;
+  source_status: SourceStatus;
+  delivery_available: boolean | null;
+  emergency: boolean | null;
+  google_place_id: string | null;
+  google_maps_plus_code: string | null;
+  google_maps_url: string | null;
+  last_updated_at: string | null;
+};
+
+const canonicalSelect = [
+  'id', 'slug', 'title', 'category', 'sub_category', 'location', 'village', 'locality',
+  'phone', 'whatsapp', 'hours', 'description', 'rating', 'review_count', 'rating_source',
+  'source', 'source_status', 'delivery_available', 'emergency', 'google_place_id',
+  'google_maps_plus_code', 'google_maps_url', 'last_updated_at',
+].join(',');
+
+// The synchronized table currently mirrors the full public catalog. If a future
+// sync partially fails, refuse the canonical cutover and let callers use their
+// existing static + published fallback instead of hiding large parts of the site.
+const MIN_CANONICAL_DIRECTORY_ROWS = 300;
+
 function publicRpcHeaders() {
   return {
     apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -57,15 +96,57 @@ function publicRpcHeaders() {
   };
 }
 
+function publicReadHeaders() {
+  return {
+    apikey: SUPABASE_PUBLISHABLE_KEY,
+    Accept: 'application/json',
+  };
+}
+
+function serializeDirectoryEntity(row: DirectoryEntityRow): DirectoryListing {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    category: row.category,
+    subCategory: row.sub_category || undefined,
+    location: row.location,
+    village: row.village,
+    locality: row.locality || undefined,
+    phone: row.phone || undefined,
+    whatsapp: row.whatsapp || undefined,
+    hours: row.hours || undefined,
+    description: row.description || undefined,
+    rating: row.rating == null ? undefined : Number(row.rating),
+    reviewCount: row.review_count || 0,
+    ratingSource: row.rating_source || undefined,
+    source: row.source,
+    sourceStatus: row.source_status,
+    deliveryAvailable: row.delivery_available || undefined,
+    emergency: row.emergency || undefined,
+    googlePlaceId: row.google_place_id || undefined,
+    googleMapsPlusCode: row.google_maps_plus_code || undefined,
+    googleMapsUrl: row.google_maps_url || undefined,
+    lastUpdatedAt: row.last_updated_at || undefined,
+  };
+}
+
 export async function queryCanonicalDirectory(
-  _options: DirectoryQueryOptions = {},
+  options: DirectoryQueryOptions = {},
 ): Promise<DirectoryQueryResult | null> {
-  // Public browsing and search temporarily use the merged live catalog as the
-  // source of truth. The canonical Supabase directory table can lag behind a
-  // code/data publish, which previously hid fresh listings and caused false
-  // zero-result states. Re-enable this repository path only after automatic
-  // directory_entities synchronization is guaranteed for every publish.
-  return null;
+  const params = new URLSearchParams({
+    select: canonicalSelect,
+    is_active: 'eq.true',
+    limit: '1000',
+  });
+
+  const rows = await fetchSupabasePublicJson<DirectoryEntityRow[]>(
+    `${SUPABASE_URL}/rest/v1/directory_entities?${params.toString()}`,
+    { headers: publicReadHeaders() },
+  );
+
+  if (!rows || rows.length < MIN_CANONICAL_DIRECTORY_ROWS) return null;
+  return queryDirectoryListings(rows.map(serializeDirectoryEntity), options);
 }
 
 export async function getDirectoryAuthorityReport(limit = 12): Promise<DirectoryAuthorityReport | null> {
