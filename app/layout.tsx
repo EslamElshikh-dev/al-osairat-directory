@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     google: 'a5AfDDI67VsUYxqSvx00gPy5bqSb1V9YoZ1DX8-GkxY',
   },
   keywords: [
-    'العسيرات', 'مركز العسيرات', 'دليل العسيرات', 'قرى العسيرات', 'سوهاج',
+    'العسيرات', 'العسيرات سوهاج', 'مركز العسيرات', 'مركز العسيرات سوهاج', 'دليل العسيرات', 'قرى العسيرات', 'سوهاج',
     'أطباء العسيرات', 'صيدليات العسيرات', 'محلات العسيرات', 'حرفيين العسيرات',
     'تاريخ العسيرات', 'معالم العسيرات', 'مشاهير العسيرات', 'عائلات العسيرات',
   ],
@@ -108,22 +108,58 @@ const scrollRestorationScript = `
 `;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const websiteSchema = {
+  const siteSchema = {
     '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    '@id': `${siteConfig.url}#website`,
-    name: siteConfig.shortName,
-    alternateName: siteConfig.name,
-    url: siteConfig.url,
-    inLanguage: 'ar-EG',
-    description: siteConfig.description,
-    creator: {
-      '@type': 'Person',
-      '@id': 'https://www.eslam-elshikh.com/#person',
-      name: 'إسلام الشيخ',
-      alternateName: ['المهندس إسلام الشيخ', 'Eslam Elshikh'],
-      url: 'https://www.eslam-elshikh.com/',
-    },
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${siteConfig.url}#organization`,
+        name: siteConfig.name,
+        alternateName: siteConfig.shortName,
+        url: siteConfig.url,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${siteConfig.url}/icon.svg`,
+        },
+      },
+      {
+        '@type': 'Place',
+        '@id': `${siteConfig.url}#al-osairat`,
+        name: 'مركز العسيرات',
+        alternateName: ['العسيرات', 'العسيرات سوهاج', 'مركز العسيرات سوهاج', 'El Usayrat'],
+        address: {
+          '@type': 'PostalAddress',
+          addressRegion: 'سوهاج',
+          addressCountry: 'EG',
+        },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${siteConfig.url}#website`,
+        name: siteConfig.shortName,
+        alternateName: [siteConfig.name, 'موسوعة العسيرات', 'دليل مركز العسيرات'],
+        url: siteConfig.url,
+        inLanguage: 'ar-EG',
+        description: siteConfig.description,
+        publisher: { '@id': `${siteConfig.url}#organization` },
+        about: { '@id': `${siteConfig.url}#al-osairat` },
+        creator: {
+          '@type': 'Person',
+          '@id': 'https://www.eslam-elshikh.com/#person',
+          name: 'إسلام الشيخ',
+          alternateName: ['المهندس إسلام الشيخ', 'Eslam Elshikh'],
+          url: 'https://www.eslam-elshikh.com/',
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${siteConfig.url}/directory?q={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
   };
 
   return (
@@ -145,7 +181,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AnalyticsTracker />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
         />
       </body>
     </html>
