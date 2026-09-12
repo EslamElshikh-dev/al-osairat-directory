@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { categories, directoryStats } from '@/lib/data';
+import { getCanonicalDirectoryTotal } from '@/lib/directory-repository';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
 import { NotificationBell } from './auth/notification-bell';
@@ -57,7 +58,9 @@ export function SiteHeader() {
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  const canonicalTotal = await getCanonicalDirectoryTotal(directoryStats.total);
+
   return (
     <footer className="footer">
       <div className="footer__accent" aria-hidden="true" />
@@ -91,7 +94,7 @@ export function Footer() {
         <section className="footer__about" aria-labelledby="footer-stats-title">
           <span className="footer__section-label" id="footer-stats-title">الدليل في أرقام</span>
           <div className="footer__stats">
-            <span><b>{directoryStats.total}</b> سجل منظم</span>
+            <span><b>{canonicalTotal}</b> سجل منظم</span>
             <span><b>{directoryStats.villages}</b> قرى أساسية</span>
             <span><b>{directoryStats.categories}</b> أقسام</span>
           </div>
