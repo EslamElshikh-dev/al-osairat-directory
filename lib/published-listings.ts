@@ -1,4 +1,5 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
+import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
 import type { DirectoryCategory, DirectoryListing } from '@/lib/data';
 
 type PublishedBusinessRow = {
@@ -54,60 +55,43 @@ function serialize(row: PublishedBusinessRow): PublishedListing {
 const publishedSelect = 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,published_at,updated_at';
 
 export async function getPublishedListings(filters?: { category?: DirectoryCategory; village?: string }) {
-  try {
-    const params = new URLSearchParams({
-      select: publishedSelect,
-      order: 'published_at.desc',
-    });
-    if (filters?.category) params.set('category', `eq.${filters.category}`);
-    if (filters?.village) params.set('village', `eq.${filters.village}`);
+  const params = new URLSearchParams({
+    select: publishedSelect,
+    order: 'published_at.desc',
+  });
+  if (filters?.category) params.set('category', `eq.${filters.category}`);
+  if (filters?.village) params.set('village', `eq.${filters.village}`);
 
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/published_businesses?${params.toString()}`, {
-      headers: publicHeaders(),
-      cache: 'no-store',
-    });
-    if (!response.ok) return [] as PublishedListing[];
-    const rows = await response.json() as PublishedBusinessRow[];
-    return rows.map(serialize);
-  } catch {
-    return [] as PublishedListing[];
-  }
+  const rows = await fetchSupabasePublicJson<PublishedBusinessRow[]>(
+    `${SUPABASE_URL}/rest/v1/published_businesses?${params.toString()}`,
+    { headers: publicHeaders() },
+  );
+
+  return rows?.map(serialize) || [] as PublishedListing[];
 }
 
 export async function getPublishedListingBySlug(slug: string) {
-  try {
-    const params = new URLSearchParams({
-      select: publishedSelect,
-      slug: `eq.${slug}`,
-      limit: '1',
-    });
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/published_businesses?${params.toString()}`, {
-      headers: publicHeaders(),
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const rows = await response.json() as PublishedBusinessRow[];
-    return rows[0] ? serialize(rows[0]) : null;
-  } catch {
-    return null;
-  }
+  const params = new URLSearchParams({
+    select: publishedSelect,
+    slug: `eq.${slug}`,
+    limit: '1',
+  });
+  const rows = await fetchSupabasePublicJson<PublishedBusinessRow[]>(
+    `${SUPABASE_URL}/rest/v1/published_businesses?${params.toString()}`,
+    { headers: publicHeaders() },
+  );
+  return rows?.[0] ? serialize(rows[0]) : null;
 }
 
 export async function getPublishedListingById(listingId: string) {
-  try {
-    const params = new URLSearchParams({
-      select: publishedSelect,
-      listing_id: `eq.${listingId}`,
-      limit: '1',
-    });
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/published_businesses?${params.toString()}`, {
-      headers: publicHeaders(),
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const rows = await response.json() as PublishedBusinessRow[];
-    return rows[0] ? serialize(rows[0]) : null;
-  } catch {
-    return null;
-  }
+  const params = new URLSearchParams({
+    select: publishedSelect,
+    listing_id: `eq.${listingId}`,
+    limit: '1',
+  });
+  const rows = await fetchSupabasePublicJson<PublishedBusinessRow[]>(
+    `${SUPABASE_URL}/rest/v1/published_businesses?${params.toString()}`,
+    { headers: publicHeaders() },
+  );
+  return rows?.[0] ? serialize(rows[0]) : null;
 }

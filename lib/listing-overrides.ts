@@ -1,4 +1,5 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
+import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
 import type { DirectoryListing, SourceStatus } from '@/lib/types';
 
 type EditableListingFields = {
@@ -30,17 +31,13 @@ function publicHeaders() {
 }
 
 export async function getListingOverrides() {
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/listing_overrides?select=listing_id,fields,updated_at`,
-      { headers: publicHeaders(), cache: 'no-store' },
-    );
-    if (!response.ok) return new Map<string, ListingOverrideRow>();
-    const rows = await response.json() as ListingOverrideRow[];
-    return new Map(rows.map((row) => [row.listing_id, row]));
-  } catch {
-    return new Map<string, ListingOverrideRow>();
-  }
+  const rows = await fetchSupabasePublicJson<ListingOverrideRow[]>(
+    `${SUPABASE_URL}/rest/v1/listing_overrides?select=listing_id,fields,updated_at`,
+    { headers: publicHeaders() },
+  );
+
+  if (!rows) return new Map<string, ListingOverrideRow>();
+  return new Map(rows.map((row) => [row.listing_id, row]));
 }
 
 function optionalValue(value: unknown) {

@@ -35,8 +35,13 @@ export default function BlogPage() {
         inLanguage: 'ar-EG',
         publisher: {
           '@type': 'Organization',
+          '@id': `${siteConfig.url}#organization`,
           name: siteConfig.name,
           url: siteConfig.url,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${siteConfig.url}/icon.svg`,
+          },
         },
       },
       {
@@ -101,6 +106,22 @@ export default function BlogPage() {
             قدر أكبر من التحفظ والتحقق.
           </p>
         </div>
+      </section>
+
+      <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="blog-discovery-title">
+        <div className="seo-growth-hub__heading">
+          <span>استكشف مركز العسيرات</span>
+          <h2 id="blog-discovery-title">من المعرفة إلى الخدمة والمكان</h2>
+          <p>روابط مباشرة لأهم صفحات المركز والقرى والخدمات حتى تصل من المعلومة العامة إلى الجهة أو النشاط المحلي بأقل عدد من الخطوات.</p>
+        </div>
+        <nav className="seo-growth-hub__links" aria-label="روابط استكشاف العسيرات">
+          <Link href="/blog/markaz-al-osairat"><span>مركز العسيرات بسوهاج</span><small>التاريخ والقرى والخدمات</small></Link>
+          <Link href="/villages"><span>قرى مركز العسيرات</span><small>استكشف القرى والتوابع</small></Link>
+          <Link href="/directory/education"><span>المدارس والتعليم</span><small>دليل المؤسسات التعليمية</small></Link>
+          <Link href="/directory/doctors"><span>أطباء العسيرات</span><small>التخصصات والعيادات</small></Link>
+          <Link href="/directory/pharmacies"><span>صيدليات العسيرات</span><small>الصيدليات وبيانات التواصل</small></Link>
+          <Link href="/directory/community"><span>الدواوين والمنادر</span><small>المجتمع المحلي والعائلات</small></Link>
+        </nav>
       </section>
 
       <section id="articles" className="section section--muted blog-listing-section">
