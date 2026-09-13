@@ -17,7 +17,7 @@ for (const shard of [1, 2, 3, 4]) {
 test('every registered activity has one distinct, optimized image file', () => {
   const sources = entries.map(([, image]) => image.src);
 
-  assert.equal(entries.length, 345);
+  assert.equal(entries.length, 375);
   assert.equal(new Set(sources).size, entries.length);
   for (const [, image] of entries) {
     assert.match(image.src, /^\/images\/activities\/activity-[a-f0-9]{14}\.webp$/);

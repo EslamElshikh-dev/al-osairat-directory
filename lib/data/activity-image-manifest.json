@@ -2068,5 +2068,185 @@
     "source": "directory/blog-families.webp",
     "title": "مقر وديوان الحاج صبري خلف أبو نصار",
     "village": "الرشايدة"
+  },
+  "pharmacies-صيدلية-الدكتورة-ازهار-قناوي-الاحايوة-غرب": {
+    "src": "/images/activities/activity-a551934e283c8d.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية الدكتورة أزهار قناوي",
+    "village": "الأحايوة غرب"
+  },
+  "education-مدرسة-الاحايوة-غرب-الابتدائية": {
+    "src": "/images/activities/activity-f036029ed7ce61.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة الأحايوة غرب الابتدائية",
+    "village": "الأحايوة غرب"
+  },
+  "education-مدرسة-الاميرية-الاحايوة-غرب": {
+    "src": "/images/activities/activity-f8f2732a13f13d.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة الأميرية بالأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "education-مدرسة-الفصل-الواحد-بالاحايوة-غرب": {
+    "src": "/images/activities/activity-bbc6fd7895ac09.webp",
+    "source": "directory/category-education.webp",
+    "title": "مدرسة الفصل الواحد بالأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "worship-مسجد-الاشراف-بالاحايوة-غرب": {
+    "src": "/images/activities/activity-9da5d9f912e7ee.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الأشراف بقرية الأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "worship-الجامع-الكبير-الاحايوة-غرب": {
+    "src": "/images/activities/activity-dd63925679b4cb.webp",
+    "source": "directory/category-worship.webp",
+    "title": "الجامع الكبير بالأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "worship-مسجد-وساحة-السيدة-زينب-الاحايوة-غرب": {
+    "src": "/images/activities/activity-d45bcfc0bdc314.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد وساحة السيدة زينب",
+    "village": "الأحايوة غرب"
+  },
+  "worship-مسجد-الحاج-علي-الحياوي": {
+    "src": "/images/activities/activity-be959cc5a23894.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الحاج علي الحياوي",
+    "village": "الأحايوة غرب"
+  },
+  "worship-مسجد-اولاد-زيان-بالاحايوة-غرب": {
+    "src": "/images/activities/activity-5106face478f7b.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد أولاد زيان بالأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "worship-مسجد-الرحمن-بنجع-عسر": {
+    "src": "/images/activities/activity-e0b3243b200d81.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد الرحمن بنجع عسر",
+    "village": "الأحايوة غرب"
+  },
+  "shops-سوبر-ماركت-عباد-الرحمن-الاحايوة-غرب": {
+    "src": "/images/activities/activity-d3e1bc11d055ed.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت عباد الرحمن",
+    "village": "الأحايوة غرب"
+  },
+  "shops-سوبر-ماركت-الوخري-الاحايوة-غرب": {
+    "src": "/images/activities/activity-3216b35526c757.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الوخري",
+    "village": "الأحايوة غرب"
+  },
+  "shops-سوبر-ماركت-اولاد-الريس-الاحايوة-غرب": {
+    "src": "/images/activities/activity-b9760bf9daa8a8.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أولاد الريس",
+    "village": "الأحايوة غرب"
+  },
+  "shops-سوبر-ماركت-ابو-عاطف-الاحايوة-غرب": {
+    "src": "/images/activities/activity-1cac4c4d24ecd3.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أبو عاطف",
+    "village": "الأحايوة غرب"
+  },
+  "shops-سوبر-ماركت-الطيب-واولاده-الاحايوة-غرب": {
+    "src": "/images/activities/activity-da6739caf81b7a.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الطيب وأولاده",
+    "village": "الأحايوة غرب"
+  },
+  "shops-ماركت-سعد-الاحايوة-غرب": {
+    "src": "/images/activities/activity-99fef6cb451ff1.webp",
+    "source": "directory/category-shops.webp",
+    "title": "ماركت سعد",
+    "village": "الأحايوة غرب"
+  },
+  "restaurants-مخابز-اولاد-الحاج-ناصر-توفيق": {
+    "src": "/images/activities/activity-acf3f58ce772d6.webp",
+    "source": "activity-seeds/bakery.webp",
+    "title": "مخابز أولاد الحاج ناصر توفيق",
+    "village": "الأحايوة غرب"
+  },
+  "restaurants-مطعم-الحاج-هاشم-الزمار": {
+    "src": "/images/activities/activity-91bca50483b5f7.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مطعم الحاج هاشم الزمار",
+    "village": "الأحايوة غرب"
+  },
+  "restaurants-ابو-ياسين-فطائر-الاحايوة-غرب": {
+    "src": "/images/activities/activity-93c653d339fc26.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "أبو ياسين للفطائر",
+    "village": "الأحايوة غرب"
+  },
+  "transport-محطة-الاحايوة": {
+    "src": "/images/activities/activity-3e7668bf88957b.webp",
+    "source": "directory/category-transport.webp",
+    "title": "محطة الأحايوة",
+    "village": "الأحايوة غرب"
+  },
+  "government-محطة-تحلية-مياه-الاحايوة-غرب": {
+    "src": "/images/activities/activity-6c2e53d986e17b.webp",
+    "source": "directory/category-government.webp",
+    "title": "محطة تحلية مياه الأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "government-وحدة-طب-اسرة-الاحايوة-غرب": {
+    "src": "/images/activities/activity-866e93fbb9ceb6.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "وحدة طب أسرة الأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "government-مكتب-بريد-الاحايوة-غرب": {
+    "src": "/images/activities/activity-2c66275aada846.webp",
+    "source": "directory/category-government.webp",
+    "title": "مكتب بريد الأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "community-الجمعية-الشرعية-بالاحايوة-غرب": {
+    "src": "/images/activities/activity-9f0bfb457f8f6d.webp",
+    "source": "directory/blog-families.webp",
+    "title": "الجمعية الشرعية بالأحايوة غرب",
+    "village": "الأحايوة غرب"
+  },
+  "community-ديوان-عبد-الرحيم-الشريف-الاحايوة-غرب": {
+    "src": "/images/activities/activity-e6944872977793.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان عبد الرحيم الشريف",
+    "village": "الأحايوة غرب"
+  },
+  "community-ديوان-ال-الزاكي-الاحايوة-غرب": {
+    "src": "/images/activities/activity-779f21d901940c.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان آل الزاكي",
+    "village": "الأحايوة غرب"
+  },
+  "crafts-الاحايوة-630-مقاول-بناء": {
+    "src": "/images/activities/activity-95894b7eef1ec3.webp",
+    "source": "activity-seeds/building-materials.webp",
+    "title": "الأحايوة 630 – مقاول بناء",
+    "village": "الأحايوة غرب"
+  },
+  "community-نجع-ال-نوار-الاحايوة-غرب": {
+    "src": "/images/activities/activity-fc75065d0cf04d.webp",
+    "source": "directory/blog-families.webp",
+    "title": "نجع آل نوار",
+    "village": "الأحايوة غرب"
+  },
+  "community-نجع-القاضي-الاحايوة-غرب": {
+    "src": "/images/activities/activity-6492ff76cf8e98.webp",
+    "source": "directory/blog-families.webp",
+    "title": "نجع القاضي",
+    "village": "الأحايوة غرب"
+  },
+  "community-جزيرة-الاحايوة-غرب": {
+    "src": "/images/activities/activity-0ddc8422577338.webp",
+    "source": "directory/blog-families.webp",
+    "title": "جزيرة الأحايوة غرب",
+    "village": "الأحايوة غرب"
   }
 }
