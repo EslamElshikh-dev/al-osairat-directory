@@ -2008,5 +2008,65 @@
     "source": "activity-seeds/medical-clinic.webp",
     "title": "مستشفى آل عرفات",
     "village": "جزيرة أولاد حمزة"
+  },
+  "pharmacies-صيدلية-الدكتور-هيثم-العقيلي-العجوبية": {
+    "src": "/images/activities/activity-cce7a56e41b05e.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية الدكتور هيثم العقيلي بالعجوبية",
+    "village": "الرشايدة"
+  },
+  "shops-محلات-عاصم-ابوشابون": {
+    "src": "/images/activities/activity-6f9a9ddfe6673f.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "محلات عاصم أبوشابون",
+    "village": "الرشايدة"
+  },
+  "shops-محل-سلام-لخدمات-المحمول-والانترنت": {
+    "src": "/images/activities/activity-8ac42b9ccf6493.webp",
+    "source": "activity-seeds/mobile-shop.webp",
+    "title": "محل سلام لخدمات المحمول والإنترنت – أبوشابون",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-ال-الدكروني-نصار": {
+    "src": "/images/activities/activity-757b0a0c229562.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان آل الدكروني نصار",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-ال-نصار": {
+    "src": "/images/activities/activity-a8e798c54e369b.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان آل نصار",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-ال-شاهين-نصار": {
+    "src": "/images/activities/activity-f1c645908d57c3.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان آل شاهين نصار",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-ال-روأي": {
+    "src": "/images/activities/activity-84db22370d7d18.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان آل روأي",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-الخلايفهو": {
+    "src": "/images/activities/activity-c6eb282cb303c2.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان الخلايفهو",
+    "village": "الرشايدة"
+  },
+  "community-ديوان-الحاج-فراج-العربي": {
+    "src": "/images/activities/activity-8ce5363da61800.webp",
+    "source": "directory/blog-families.webp",
+    "title": "ديوان الحاج فراج العربي",
+    "village": "الرشايدة"
+  },
+  "community-مقر-وديوان-الحاج-صبري-خلف-ابو-نصار": {
+    "src": "/images/activities/activity-821488689c0ba9.webp",
+    "source": "directory/blog-families.webp",
+    "title": "مقر وديوان الحاج صبري خلف أبو نصار",
+    "village": "الرشايدة"
   }
 }
