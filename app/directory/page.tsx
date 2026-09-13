@@ -126,6 +126,15 @@ export default async function DirectoryPage({
         </div>
       </section>
 
+      <section id="directory-results" className="shell page-section interior-results-section">
+        <DirectoryExplorer
+          query={params.q || ''}
+          village={params.village || 'all'}
+          result={result}
+          pathname="/directory"
+        />
+      </section>
+
       {serviceIntents.length > 0 && (
         <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="directory-service-intents-title">
           <div className="seo-growth-hub__heading">
@@ -143,15 +152,6 @@ export default async function DirectoryPage({
           </nav>
         </section>
       )}
-
-      <section id="directory-results" className="shell page-section interior-results-section">
-        <DirectoryExplorer
-          query={params.q || ''}
-          village={params.village || 'all'}
-          result={result}
-          pathname="/directory"
-        />
-      </section>
 
       <section className="shell seo-growth-hub" aria-labelledby="directory-discovery-title">
         <div className="seo-growth-hub__heading">

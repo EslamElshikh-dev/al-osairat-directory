@@ -147,7 +147,12 @@ export default async function HomePage() {
             return (
               <Link key={category.id} href={`/directory/${category.id}`} className={`category-card category-card--${category.id}`}>
                 <div className="category-card__media">
-                  <Image src={categoryImage.src} alt={categoryImage.alt} fill sizes="(max-width: 620px) 100vw, (max-width: 1020px) 50vw, 25vw" />
+                  <Image
+                    src={categoryImage.src}
+                    alt={categoryImage.alt}
+                    fill
+                    sizes="(max-width: 420px) 96px, (max-width: 760px) 112px, (max-width: 1020px) 50vw, 25vw"
+                  />
                   <span className="category-card__media-shade" aria-hidden="true" />
                   <CategoryVisual category={category.id} size="md" />
                   <span className="directory-media__label">صورة تعبيرية</span>

@@ -67,7 +67,12 @@ export default function EmergencyPage() {
       <section className="shell page-section">
         <div className="emergency-grid">
           {emergency.map((item) => (
-            <a href={`tel:${item.phone}`} key={item.id} className="emergency-card">
+            <a
+              href={`tel:${item.phone}`}
+              key={item.id}
+              className="emergency-card"
+              aria-label={`اتصال مباشر بـ ${item.title} على الرقم ${item.phone}`}
+            >
               <div className="emergency-card__head">
                 <CategoryVisual category="emergency" size="md" />
                 <span className="emergency-card__brand" aria-hidden="true"><BrandMark compact /></span>
@@ -75,7 +80,10 @@ export default function EmergencyPage() {
               <span className="emergency-card__type">{item.subCategory}</span>
               <h2>{item.title}</h2>
               <p>{item.description}</p>
-              <strong>{item.phone}</strong>
+              <span className="emergency-card__call">
+                <span>اتصال مباشر</span>
+                <strong dir="ltr">{item.phone}</strong>
+              </span>
             </a>
           ))}
         </div>

@@ -49,6 +49,40 @@ test('small-phone navigation labels remain readable', async () => {
   assert.match(css, /max-width: 340px[\s\S]*?mobile-nav__label \{ font-size: 10px; \}/);
 });
 
+test('route loading state is meaningful and keeps the footer from jumping into view', async () => {
+  const source = await readProjectFile('app/loading.tsx');
+
+  assert.match(source, /status-page--loading/);
+  assert.match(source, /aria-busy="true"/);
+  assert.match(source, /نرتب لك دليل العسيرات/);
+  assert.doesNotMatch(source, /return null/);
+});
+
+test('directory puts search results before supporting SEO links', async () => {
+  const source = await readProjectFile('app/directory/page.tsx');
+
+  assert.ok(source.indexOf('<DirectoryExplorer') < source.indexOf('directory-service-intents-title'));
+});
+
+test('emergency contacts expose an explicit accessible call action', async () => {
+  const source = await readProjectFile('app/emergency/page.tsx');
+
+  assert.match(source, /aria-label=\{`اتصال مباشر بـ/);
+  assert.match(source, /emergency-card__call/);
+});
+
+test('final responsive QA keeps dense mobile content readable', async () => {
+  const [css, home] = await Promise.all([
+    readProjectFile('app/visual-redesign-phase4.css'),
+    readProjectFile('app/page.tsx'),
+  ]);
+
+  assert.match(css, /home-category-section \.category-grid--editorial \.category-card/);
+  assert.match(css, /listing-card__source\{font-size:11\.5px\}/);
+  assert.match(css, /max-width:420px[\s\S]*?sand-invite\{display:none\}/);
+  assert.match(home, /\(max-width: 420px\) 96px, \(max-width: 760px\) 112px/);
+});
+
 test('locality SEO hub is linked, searchable and included in the sitemap', async () => {
   const [page, shell, search, sitemap] = await Promise.all([
     readProjectFile('app/localities/page.tsx'),
