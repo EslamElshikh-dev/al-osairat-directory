@@ -17,7 +17,7 @@ for (const shard of [1, 2, 3, 4]) {
 test('every registered activity has one distinct, optimized image file', () => {
   const sources = entries.map(([, image]) => image.src);
 
-  assert.equal(entries.length, 375);
+  assert.equal(entries.length, 391);
   assert.equal(new Set(sources).size, entries.length);
   for (const [, image] of entries) {
     assert.match(image.src, /^\/images\/activities\/activity-[a-f0-9]{14}\.webp$/);
@@ -44,4 +44,20 @@ test('listing image resolver uses the individual manifest and clear disclosure',
   assert.match(source, /activity-image-manifest\.json/);
   assert.match(source, /listingImages\[listing\.id\]/);
   assert.match(source, /صورة تعبيرية مخصصة/);
+  assert.match(source, /صورة منشورة من ملف النشاط/);
+});
+
+test('owner-published Nuwairat media retains source attribution and is not labelled illustrative', () => {
+  const sourcedIds = [
+    'pharmacies-صيدلية-د-ايهاب-حشمت-الظني-النويرات',
+    'community-الكرمة-للرحلات-النويرات',
+  ];
+
+  for (const id of sourcedIds) {
+    const image = manifest[id];
+    assert.equal(image.sourceKind, 'owner_photo');
+    assert.equal(image.attribution, 'ملف النشاط على خرائط Google');
+    assert.match(image.sourceUrl, /^https:\/\/www\.google\.com\/maps\/search\/\?/);
+    assert.ok(existsSync(path.join(root, 'public/images', image.source)));
+  }
 });

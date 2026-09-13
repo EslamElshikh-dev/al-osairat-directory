@@ -5,7 +5,7 @@ export type DirectoryImage = {
   src: string;
   alt: string;
   position?: string;
-  kind: 'illustrative';
+  kind: 'illustrative' | 'sourced';
   label: string;
 };
 
@@ -25,7 +25,12 @@ const directoryImages: Record<DirectoryCategory, DirectoryImage> = {
   emergency: { src: '/images/directory/category-emergency.webp', alt: 'سيارة إسعاف ونقطة طبية للطوارئ', kind: 'illustrative', label: 'صورة تعبيرية للفئة' },
 };
 
-const listingImages = activityImageManifest as Record<string, { src: string }>;
+type ListingImage = {
+  src: string;
+  sourceKind?: 'owner_photo';
+};
+
+const listingImages = activityImageManifest as Record<string, ListingImage>;
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
   return directoryImages[category];
@@ -34,6 +39,15 @@ export function imageForCategory(category: DirectoryCategory): DirectoryImage {
 export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category' | 'title' | 'subCategory'>): DirectoryImage {
   const customImage = listingImages[listing.id];
   if (customImage) {
+    if (customImage.sourceKind === 'owner_photo') {
+      return {
+        src: customImage.src,
+        alt: `صورة منشورة من ملف النشاط على خرائط Google - ${listing.title}`,
+        kind: 'sourced',
+        label: 'صورة منشورة من ملف النشاط',
+      };
+    }
+
     return {
       src: customImage.src,
       alt: `صورة تعبيرية مخصصة عن ${listing.subCategory || 'النشاط'} - ${listing.title}`,

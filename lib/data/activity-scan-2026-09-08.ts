@@ -1,7 +1,10 @@
 import type { DirectoryListing } from '../types';
 
-const mapsSearchUrl = (query: string) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+const mapsSearchUrl = (query: string, placeId?: string) => {
+  const params = new URLSearchParams({ api: '1', query });
+  if (placeId) params.set('query_place_id', placeId);
+  return `https://www.google.com/maps/search/?${params.toString()}`;
+};
 
 // Intensive public-source scan completed on 2026-09-08. Every published
 // record below has an exact in-scope address or Plus Code linked from its
@@ -373,14 +376,18 @@ export const activityScan20260908: DirectoryListing[] = [
     subCategory: 'مواد بناء',
     location: 'CRH6+W3X، النويرات، مركز العسيرات، محافظة سوهاج',
     village: 'النويرات',
+    phone: '01007760580',
     hours: 'يوميًا من 7 صباحًا إلى 11 مساءً بحسب المصدر',
-    description: 'محلات لبيع مواد البناء في نطاق قرية النويرات بمركز العسيرات.',
-    reviewCount: 0,
+    description: 'محلات لبيع مواد البناء شمال نطاق قرية النويرات؛ أضيف رقم الهاتف والتقييم من ملف المكان المباشر على خرائط Google.',
+    rating: 4.6,
+    reviewCount: 8,
+    ratingSource: 'google',
     source: 'google_maps',
     sourceStatus: 'google_verified',
+    googlePlaceId: 'ChIJiZOOrwpRTxQRsLT2jlX1ioI',
     googleMapsPlusCode: 'CRH6+W3X',
-    googleMapsUrl: mapsSearchUrl('CRH6+W3X محلات أولاد الشيخ عبدالظاهر النويرات العسيرات'),
-    lastUpdatedAt: '2026-09-08',
+    googleMapsUrl: mapsSearchUrl('محلات أولاد الشيخ عبدالظاهر النويرات', 'ChIJiZOOrwpRTxQRsLT2jlX1ioI'),
+    lastUpdatedAt: '2026-09-13',
   },
   {
     id: 'shops-فرع-اتصالات-العسيرات',

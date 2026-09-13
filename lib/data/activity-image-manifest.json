@@ -2248,5 +2248,107 @@
     "source": "directory/blog-families.webp",
     "title": "جزيرة الأحايوة غرب",
     "village": "الأحايوة غرب"
+  },
+  "pharmacies-صيدلية-د-ايهاب-حشمت-الظني-النويرات": {
+    "src": "/images/activities/activity-68129399020700.webp",
+    "source": "activity-sources/nuwairat-pharmacy-eihab-owner.webp",
+    "title": "صيدلية د. إيهاب حشمت الظني",
+    "village": "النويرات",
+    "sourceKind": "owner_photo",
+    "sourceUrl": "https://www.google.com/maps/search/?api=1&query=%D8%B5%D9%8A%D8%AF%D9%84%D9%8A%D8%A9+%D8%AF+%D8%A5%D9%8A%D9%87%D8%A7%D8%A8+%D8%AD%D8%B4%D9%85%D8%AA+%D8%A7%D9%84%D8%B8%D9%86%D9%8A+%D8%A7%D9%84%D9%86%D9%88%D9%8A%D8%B1%D8%A7%D8%AA&query_place_id=ChIJz_aYr69PTxQRto2Q0__nwT8",
+    "attribution": "ملف النشاط على خرائط Google"
+  },
+  "government-الوحدة-الصحية-بالنويرات": {
+    "src": "/images/activities/activity-f67a55809cba6e.webp",
+    "source": "activity-sources/nuwairat-health-unit-illustrative.webp",
+    "title": "الوحدة الصحية بالنويرات",
+    "village": "النويرات"
+  },
+  "education-حضانة-ابو-صهيب-النويرات": {
+    "src": "/images/activities/activity-6dd59709376ec6.webp",
+    "source": "activity-sources/nuwairat-kindergarten-illustrative.webp",
+    "title": "حضانة أبو صهيب",
+    "village": "النويرات"
+  },
+  "worship-مسجد-جنوب-غرب-النويرات": {
+    "src": "/images/activities/activity-9b93ad75191dbf.webp",
+    "source": "activity-sources/nuwairat-mosque-illustrative.webp",
+    "title": "مسجد – جنوب غرب النويرات",
+    "village": "النويرات"
+  },
+  "worship-مسجد-عمر-بن-الخطاب-النويرات": {
+    "src": "/images/activities/activity-a3f2e8cc5f33db.webp",
+    "source": "activity-sources/nuwairat-mosque-illustrative.webp",
+    "title": "مسجد عمر بن الخطاب بالنويرات",
+    "village": "النويرات"
+  },
+  "worship-مسجد-ابو-بكر-الصديق-النويرات": {
+    "src": "/images/activities/activity-0d5a435a8e1ac2.webp",
+    "source": "activity-sources/nuwairat-mosque-illustrative.webp",
+    "title": "مسجد أبو بكر الصديق بالنويرات",
+    "village": "النويرات"
+  },
+  "worship-مسجد-الرحمن-طريق-المنشاة-الشرقي-النويرات": {
+    "src": "/images/activities/activity-227f7f22c9a8bc.webp",
+    "source": "activity-sources/nuwairat-mosque-illustrative.webp",
+    "title": "مسجد الرحمن – طريق المنشأة الشرقي",
+    "village": "النويرات"
+  },
+  "worship-مسجد-الرحمن-شمال-النويرات": {
+    "src": "/images/activities/activity-f01f6a682fecb7.webp",
+    "source": "activity-sources/nuwairat-mosque-illustrative.webp",
+    "title": "مسجد الرحمن – شمال النويرات",
+    "village": "النويرات"
+  },
+  "shops-الراعي-للتجارة-النويرات": {
+    "src": "/images/activities/activity-4b8a1662f251db.webp",
+    "source": "activity-sources/nuwairat-grocery-illustrative.webp",
+    "title": "الراعي للتجارة",
+    "village": "النويرات"
+  },
+  "shops-ماركت-اسعد-النويرات": {
+    "src": "/images/activities/activity-fdec2ae9d9933b.webp",
+    "source": "activity-sources/nuwairat-grocery-illustrative.webp",
+    "title": "ماركت أسعد",
+    "village": "النويرات"
+  },
+  "restaurants-مقهى-النويرات": {
+    "src": "/images/activities/activity-c881b8456858e3.webp",
+    "source": "activity-seeds/restaurant.webp",
+    "title": "مقهى النويرات",
+    "village": "النويرات"
+  },
+  "community-الكرمة-للرحلات-النويرات": {
+    "src": "/images/activities/activity-9b119917216d1a.webp",
+    "source": "activity-sources/nuwairat-alkarma-owner.webp",
+    "title": "الكرمة للرحلات",
+    "village": "النويرات",
+    "sourceKind": "owner_photo",
+    "sourceUrl": "https://www.google.com/maps/search/?api=1&query=%D8%A7%D9%84%D9%83%D8%B1%D9%85%D8%A9+%D9%84%D9%84%D8%B1%D8%AD%D9%84%D8%A7%D8%AA+%D8%A7%D9%84%D9%86%D9%88%D9%8A%D8%B1%D8%A7%D8%AA&query_place_id=ChIJJdTmgstPTxQR8OFPTZxqOKU",
+    "attribution": "ملف النشاط على خرائط Google"
+  },
+  "community-نادي-النويرات": {
+    "src": "/images/activities/activity-49b231fafe7c67.webp",
+    "source": "activity-sources/nuwairat-sports-club-illustrative.webp",
+    "title": "نادي النويرات",
+    "village": "النويرات"
+  },
+  "community-جمعية-تنمية-المجتمع-المحلي-بالنويرات": {
+    "src": "/images/activities/activity-7c76afddf0cf07.webp",
+    "source": "activity-sources/nuwairat-diwan-illustrative.webp",
+    "title": "جمعية تنمية المجتمع المحلي بالنويرات",
+    "village": "النويرات"
+  },
+  "community-دوار-ال-حمزة-عتمان-النويرات": {
+    "src": "/images/activities/activity-9802c730728a09.webp",
+    "source": "activity-sources/nuwairat-diwan-illustrative.webp",
+    "title": "دوار آل حمزة عتمان",
+    "village": "النويرات"
+  },
+  "government-هندسة-كهرباء-العسيرات-طريق-النويرات": {
+    "src": "/images/activities/activity-51151d09d6f14b.webp",
+    "source": "directory/category-government.webp",
+    "title": "هندسة كهرباء العسيرات",
+    "village": "النويرات"
   }
 }

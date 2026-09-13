@@ -96,11 +96,14 @@ for (const [listingId, listing] of Object.entries(manifest)) {
   const hue = (bytes[4] % 13) - 6;
 
   let pipeline = sharp(sourceInput(listing.source)).resize(canvasWidth, canvasHeight, { fit: 'cover' });
-  if (bytes[8] % 2 === 1) pipeline = pipeline.flop();
+  if (listing.sourceKind !== 'owner_photo' && bytes[8] % 2 === 1) pipeline = pipeline.flop();
+
+  pipeline = pipeline.extract({ left, top, width: 800, height: 533 });
+  if (listing.sourceKind !== 'owner_photo') {
+    pipeline = pipeline.modulate({ brightness, saturation, hue });
+  }
 
   await pipeline
-    .extract({ left, top, width: 800, height: 533 })
-    .modulate({ brightness, saturation, hue })
     .composite([{ input: overlayFor(listing, bytes), top: 0, left: 0 }])
     .webp({ quality: 70, effort: 5, smartSubsample: true })
     .toFile(outputPath);
