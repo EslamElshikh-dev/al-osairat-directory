@@ -3,8 +3,8 @@
 ## Rollout safeguards
 
 - Public Supabase reads use a 60-second revalidation window and a 4.5-second timeout.
-- `directory_entities` is preferred for directory search/browse only when at least 300 active rows are returned.
-- If the canonical read is unavailable or incomplete, the existing static catalog + overrides + published submissions remains the fallback.
+- `directory_entities` is preferred only when at least 300 active rows are returned.
+- If the canonical read is unavailable or incomplete, existing static data, published submissions, and listing overrides remain available as fallbacks.
 - No production data rows are deleted by this rollout.
 - Admin APIs remain `private, no-store`; `/admin` remains non-indexable and non-cacheable.
 - Legacy Vercel hosts continue to permanently redirect to `https://usayrat.online`.
@@ -20,7 +20,18 @@
 
 ## Canonical data phase
 
-This is phase 1 of the canonical cutover. Directory search and category browsing prefer `directory_entities`; detail, village, and service surfaces keep their current merged source until parity and runtime behavior are verified in Preview/Production telemetry.
+### Phase 1
+
+Directory search and category browsing prefer `directory_entities`, guarded by the 300-row minimum and the static fallback.
+
+### Phase 2
+
+- The canonical table is exposed through a shared `getCanonicalDirectoryListings()` repository loader.
+- Existing static-derived surfaces now receive canonical versions of matching listings through `applyListingOverrides()`, while unmatched records retain the legacy override fallback.
+- Listing detail, village pages, village/category landings, service intent pages, and sitemap generation therefore consume the same canonical values without duplicating fetch logic across each route.
+- The homepage uses the canonical catalog for featured listings, emergency listings, category counts, Google-verified counts, and the visible total.
+- The global footer uses the same canonical total, removing the previous 323/324 visible count mismatch.
+- Static data remains a seed and outage fallback; it is not deleted in this phase.
 
 ## Auth setting still external
 

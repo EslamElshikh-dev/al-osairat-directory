@@ -1,4 +1,5 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
+import { getCanonicalDirectoryListings } from '@/lib/directory-repository';
 import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
 import type { DirectoryListing, SourceStatus } from '@/lib/types';
 
@@ -73,6 +74,25 @@ export function applyListingOverride(listing: DirectoryListing, row?: ListingOve
 }
 
 export async function applyListingOverrides(listings: DirectoryListing[]) {
+  const canonicalListings = await getCanonicalDirectoryListings();
+
+  if (canonicalListings) {
+    const canonicalById = new Map(canonicalListings.map((listing) => [listing.id, listing]));
+    const canonicalBySlug = new Map(canonicalListings.map((listing) => [listing.slug, listing]));
+    const canonicalMatches = listings.map((listing) => canonicalById.get(listing.id) || canonicalBySlug.get(listing.slug));
+
+    if (canonicalMatches.every(Boolean)) {
+      return canonicalMatches as DirectoryListing[];
+    }
+
+    const overrides = await getListingOverrides();
+    return listings.map((listing, index) => {
+      const canonical = canonicalMatches[index];
+      if (canonical) return canonical;
+      return applyListingOverride(listing, overrides.get(listing.id));
+    });
+  }
+
   const overrides = await getListingOverrides();
   if (!overrides.size) return listings;
   return listings.map((listing) => applyListingOverride(listing, overrides.get(listing.id)));
