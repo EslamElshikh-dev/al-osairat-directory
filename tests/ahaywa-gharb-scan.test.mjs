@@ -42,4 +42,8 @@ test('the Al-Ahaywa Gharb scan covers services, commerce, worship, diwans and lo
     ahaywaGharbScan20260913.find((listing) => listing.id === 'government-مكتب-بريد-الاحايوة-غرب')?.phone,
     '0932440127',
   );
+  assert.equal(
+    ahaywaGharbScan20260913.find((listing) => listing.id === 'pharmacies-صيدلية-الدكتورة-ازهار-قناوي-الاحايوة-غرب')?.googleMapsPlusCode,
+    'CRJ5+QP',
+  );
 });
