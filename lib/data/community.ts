@@ -12,13 +12,14 @@ export const community:DirectoryListing[]=[
     locality:'موسى حمد',
     description:'ديوان ومجلس عائلي لآل حمد في نجع موسى حمد بجزيرة أولاد حمزة؛ تأكد الموقع من عنوان خرائط Google ومن مراجعات المكان المحلية.',
     rating:5,
-    reviewCount:9,
+    reviewCount:10,
     ratingSource:'google',
     source:'google_maps',
     sourceStatus:'cross_checked',
+    googlePlaceId:'ChIJVxXmIQBPTxQRSnCXP4tr-_0',
     googleMapsPlusCode:'9RRV+GJ4',
-    googleMapsUrl:'https://maps.app.goo.gl/jeH636oF2vGXWDaB6?g_st=afm',
-    lastUpdatedAt:'2026-09-08'
+    googleMapsUrl:'https://www.google.com/maps/search/?api=1&query=%D8%AF%D9%8A%D9%88%D8%A7%D9%86%20%D8%A2%D9%84%20%D8%AD%D9%85%D8%AF%20%D8%AC%D8%B2%D9%8A%D8%B1%D8%A9%20%D8%A3%D9%88%D9%84%D8%A7%D8%AF%20%D8%AD%D9%85%D8%B2%D8%A9&query_place_id=ChIJVxXmIQBPTxQRSnCXP4tr-_0',
+    lastUpdatedAt:'2026-09-13'
   },
   {
     id:'community-دوار-الشحمات',

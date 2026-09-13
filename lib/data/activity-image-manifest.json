@@ -1936,5 +1936,77 @@
     "source": "directory/category-lawyers.webp",
     "title": "مكتب الأستاذ أحمد حسن مايز المحامي",
     "village": "الرشايدة"
+  },
+  "shops-محلات-فاروق-بسطاوي-التجارية": {
+    "src": "/images/activities/activity-5fc1a265d05b59.webp",
+    "source": "directory/category-shops.webp",
+    "title": "محلات فاروق بسطاوي التجارية",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-محلات-اولاد-علي-للدواجن-والطيور": {
+    "src": "/images/activities/activity-054b6153cbbb51.webp",
+    "source": "directory/category-shops.webp",
+    "title": "محلات أولاد علي للدواجن والطيور والمجمدات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "pharmacies-صيدلية-د-ابراهيم-محمود": {
+    "src": "/images/activities/activity-38425ba6764676.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د. إبراهيم محمود",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "pharmacies-صيدلية-د-هيثم-محمد": {
+    "src": "/images/activities/activity-32c7e70b736ce4.webp",
+    "source": "activity-seeds/pharmacy.webp",
+    "title": "صيدلية د. هيثم محمد",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "restaurants-مخبز-الشحومات": {
+    "src": "/images/activities/activity-0fe87143d71dd3.webp",
+    "source": "activity-seeds/bakery.webp",
+    "title": "مخبز الشحومات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-ال-عرفات": {
+    "src": "/images/activities/activity-3c2352f0de70e8.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد آل عرفات",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "worship-مسجد-ال-بتاو": {
+    "src": "/images/activities/activity-7d2c9a592642d7.webp",
+    "source": "directory/category-worship.webp",
+    "title": "مسجد آل بتاو",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "community-دوار-ال-قرع-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-ed575de0347aa3.webp",
+    "source": "directory/blog-families.webp",
+    "title": "دوار آل القرع",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-الاستاذ-ايهاب": {
+    "src": "/images/activities/activity-01218bedf1f9fd.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت الأستاذ إيهاب",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-رجب-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-2467569eb53b1d.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت رجب",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "shops-سوبر-ماركت-ابو-احمد-جزيرة-اولاد-حمزة": {
+    "src": "/images/activities/activity-217c866f1f28ac.webp",
+    "source": "directory/category-shops.webp",
+    "title": "سوبر ماركت أبو أحمد",
+    "village": "جزيرة أولاد حمزة"
+  },
+  "government-مستشفى-ال-عرفات": {
+    "src": "/images/activities/activity-8b4955a6265613.webp",
+    "source": "activity-seeds/medical-clinic.webp",
+    "title": "مستشفى آل عرفات",
+    "village": "جزيرة أولاد حمزة"
   }
 }

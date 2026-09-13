@@ -19,6 +19,7 @@ import { activityScan20260908 } from './activity-scan-2026-09-08';
 import { gaziratAwladHamzaScan20260908 } from './gazirat-awlad-hamza-scan-2026-09-08';
 import { gaziratAwladHamzaFollowup20260908 } from './gazirat-awlad-hamza-followup-2026-09-08';
 import { gaziratAwladHamzaThirdPass20260908 } from './gazirat-awlad-hamza-third-pass-2026-09-08';
+import { gaziratAwladHamzaScan20260913 } from './gazirat-awlad-hamza-scan-2026-09-13';
 import { rashaidaScan20260908 } from './rashaida-scan-2026-09-08';
 
 export * from '../types';
@@ -43,6 +44,7 @@ const rawListings: DirectoryListing[] = [
   ...gaziratAwladHamzaScan20260908,
   ...gaziratAwladHamzaFollowup20260908,
   ...gaziratAwladHamzaThirdPass20260908,
+  ...gaziratAwladHamzaScan20260913,
   ...rashaidaScan20260908,
 ];
 
