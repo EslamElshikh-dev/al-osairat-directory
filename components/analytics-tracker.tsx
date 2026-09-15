@@ -227,18 +227,29 @@ export function AnalyticsTracker() {
   useEffect(() => {
     const currentUrl = window.location.href;
     const previousUrl = previousPageUrl.current;
+    const listingSlug = listingSlugFromPath(pathname);
 
-    if (previousUrl && previousUrl !== currentUrl && !isGoogleAnalyticsLoaded()) {
-      trackPageViewBeforeGoogleLoads(previousUrl);
+    if (previousUrl && previousUrl !== currentUrl) {
+      if (isGoogleAnalyticsLoaded()) {
+        trackEvent('page_view', {
+          page_location: currentUrl,
+          page_title: document.title,
+          page_referrer: previousUrl,
+        });
+      } else {
+        trackPageViewBeforeGoogleLoads(previousUrl);
+      }
     }
     previousPageUrl.current = currentUrl;
 
-    sendOperationalEvent({ eventType: 'page_view' });
+    sendOperationalEvent({
+      eventType: 'page_view',
+      ...(listingSlug ? { listingSlug } : {}),
+    });
 
-    if (pathname.startsWith('/listing/')) {
-      const listingSlug = listingSlugFromPath(pathname);
+    if (listingSlug) {
       trackEvent('view_listing', { content_type: 'directory_listing' });
-      if (listingSlug) sendOperationalEvent({ eventType: 'view_listing', listingSlug });
+      sendOperationalEvent({ eventType: 'view_listing', listingSlug });
     }
   }, [pathname]);
 
@@ -314,7 +325,6 @@ export function AnalyticsTracker() {
       const village = String(data.get('village') || 'all').trim().slice(0, 100) || 'all';
       const category = pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all';
 
-      // Opening a filter or submitting the default state is not a search.
       if (!query && village === 'all') return;
 
       const resultText = document.querySelector('.results-bar strong')?.textContent || '';
