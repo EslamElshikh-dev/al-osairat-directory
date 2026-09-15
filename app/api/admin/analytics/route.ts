@@ -1,6 +1,7 @@
 import { adminJson, adminRestHeaders, resolveAdminSession } from '@/lib/auth/admin-server';
 import { SUPABASE_URL } from '@/lib/auth/supabase-rest';
 import { getGa4AdminData } from '@/lib/analytics/google-analytics-admin';
+import { getSearchConsoleAdminData } from '@/lib/analytics/google-search-console-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,7 +10,7 @@ export async function GET() {
   const session = await resolveAdminSession();
   if (!session) return adminJson({ error: 'يلزم تسجيل الدخول بحساب إداري.' }, null, 401);
 
-  const [databaseResponse, ga4] = await Promise.all([
+  const [databaseResponse, ga4, searchConsole] = await Promise.all([
     fetch(`${SUPABASE_URL}/rest/v1/rpc/get_admin_analytics_stats`, {
       method: 'POST',
       headers: adminRestHeaders(session.accessToken, true),
@@ -17,6 +18,7 @@ export async function GET() {
       cache: 'no-store',
     }),
     getGa4AdminData(),
+    getSearchConsoleAdminData(),
   ]);
 
   if (!databaseResponse.ok) {
@@ -24,5 +26,5 @@ export async function GET() {
   }
 
   const database = await databaseResponse.json();
-  return adminJson({ database, ga4 }, session);
+  return adminJson({ database, ga4, searchConsole }, session);
 }
