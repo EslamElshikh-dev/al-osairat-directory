@@ -131,9 +131,7 @@ function serializeDirectoryEntity(row: DirectoryEntityRow): DirectoryListing {
   };
 }
 
-export async function queryCanonicalDirectory(
-  options: DirectoryQueryOptions = {},
-): Promise<DirectoryQueryResult | null> {
+export async function getCanonicalDirectoryListings(): Promise<DirectoryListing[] | null> {
   const params = new URLSearchParams({
     select: canonicalSelect,
     is_active: 'eq.true',
@@ -146,7 +144,15 @@ export async function queryCanonicalDirectory(
   );
 
   if (!rows || rows.length < MIN_CANONICAL_DIRECTORY_ROWS) return null;
-  return queryDirectoryListings(rows.map(serializeDirectoryEntity), options);
+  return rows.map(serializeDirectoryEntity);
+}
+
+export async function queryCanonicalDirectory(
+  options: DirectoryQueryOptions = {},
+): Promise<DirectoryQueryResult | null> {
+  const canonicalListings = await getCanonicalDirectoryListings();
+  if (!canonicalListings) return null;
+  return queryDirectoryListings(canonicalListings, options);
 }
 
 export async function getDirectoryAuthorityReport(limit = 12): Promise<DirectoryAuthorityReport | null> {
