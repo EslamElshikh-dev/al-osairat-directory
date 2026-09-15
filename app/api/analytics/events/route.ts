@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { listings } from '@/lib/data';
-import { getPublishedListingBySlug } from '@/lib/published-listings';
+import { categories, listings, villageBySlug } from '@/lib/data';
+import { getPublishedListingById, getPublishedListingBySlug } from '@/lib/published-listings';
 import {
   SUPABASE_PUBLISHABLE_KEY,
   SUPABASE_URL,
@@ -29,6 +29,19 @@ const listingOptionalEvents = new Set([
   'whatsapp_click',
   'maps_click',
 ]);
+
+const categoryIds = new Set(categories.map((item) => item.id));
+
+type ResolvedListing = {
+  listingId: string;
+  listingSlug: string;
+  village: string;
+  category: string;
+};
+
+function emptyListing(listingSlug = ''): ResolvedListing {
+  return { listingId: '', listingSlug, village: '', category: '' };
+}
 
 function clean(value: unknown, maxLength: number) {
   if (typeof value !== 'string') return '';
@@ -59,24 +72,80 @@ function safeUrl(value: unknown, maxLength = 500) {
   }
 }
 
-async function resolveListing(eventType: string, listingId: string, listingSlug: string) {
-  if (listingId) {
-    const staticListing = listings.find((item) => item.id === listingId);
-    return { listingId, listingSlug: staticListing?.slug || listingSlug };
+function decodeSegment(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function inferPathContext(sourcePath: string) {
+  const parts = sourcePath.split('/').filter(Boolean).map(decodeSegment);
+  let village = '';
+  let category = '';
+
+  if (parts[0] === 'directory' && parts[1] && categoryIds.has(parts[1] as never)) {
+    category = parts[1];
   }
 
-  if (!listingSlug || eventType === 'directory_search' || eventType === 'page_view') {
-    return { listingId: '', listingSlug };
+  if (parts[0] === 'villages' && parts[1]) {
+    const villageInfo = villageBySlug[normalizeRouteSlug(parts[1])];
+    village = villageInfo?.name || '';
+    if (parts[2] && categoryIds.has(parts[2] as never)) category = parts[2];
   }
+
+  if (parts[0] === 'emergency') category = 'emergency';
+  if (parts[0] === 'transport') category = 'transport';
+
+  return { village, category };
+}
+
+async function resolveListing(eventType: string, listingId: string, listingSlug: string): Promise<ResolvedListing> {
+  if (listingId) {
+    const staticListing = listings.find((item) => item.id === listingId);
+    if (staticListing) {
+      return {
+        listingId: staticListing.id,
+        listingSlug: staticListing.slug,
+        village: staticListing.village,
+        category: staticListing.category,
+      };
+    }
+
+    const publishedById = await getPublishedListingById(listingId).catch(() => null);
+    if (publishedById) {
+      return {
+        listingId: publishedById.id,
+        listingSlug: publishedById.slug,
+        village: publishedById.village,
+        category: publishedById.category,
+      };
+    }
+  }
+
+  if (!listingSlug || eventType === 'directory_search') return emptyListing(listingSlug);
 
   const normalizedSlug = normalizeRouteSlug(listingSlug);
   const staticListing = listings.find((item) => item.slug === normalizedSlug);
-  if (staticListing) return { listingId: staticListing.id, listingSlug: staticListing.slug };
+  if (staticListing) {
+    return {
+      listingId: staticListing.id,
+      listingSlug: staticListing.slug,
+      village: staticListing.village,
+      category: staticListing.category,
+    };
+  }
 
   const published = await getPublishedListingBySlug(normalizedSlug).catch(() => null);
   return published
-    ? { listingId: published.id, listingSlug: published.slug }
-    : { listingId: '', listingSlug: normalizedSlug };
+    ? {
+        listingId: published.id,
+        listingSlug: published.slug,
+        village: published.village,
+        category: published.category,
+      }
+    : emptyListing(normalizedSlug);
 }
 
 export async function POST(request: Request) {
@@ -99,12 +168,10 @@ export async function POST(request: Request) {
   }
 
   const searchTerm = eventType === 'directory_search' ? safeSearchTerm(body?.searchTerm) : '';
-  const village = eventType === 'directory_search' ? clean(body?.village, 100) || 'all' : '';
-  const category = eventType === 'directory_search' ? clean(body?.category, 100) || 'all' : '';
+  const searchVillage = eventType === 'directory_search' ? clean(body?.village, 100) || 'all' : '';
+  const searchCategory = eventType === 'directory_search' ? clean(body?.category, 100) || 'all' : '';
 
-  // A directory search must represent an explicit user action. Completely empty
-  // all/all requests are rejected so a page load can never inflate search counts.
-  if (eventType === 'directory_search' && !searchTerm && village === 'all') {
+  if (eventType === 'directory_search' && !searchTerm && searchVillage === 'all') {
     return NextResponse.json({ accepted: false }, { status: 202 });
   }
 
@@ -118,6 +185,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ accepted: false }, { status: 202 });
   }
 
+  const sourcePath = clean(body?.sourcePath, 240);
+  const pathContext = inferPathContext(sourcePath);
+  const requestVillage = clean(body?.village, 100);
+  const requestCategory = clean(body?.category, 100);
+
+  const eventVillage = eventType === 'directory_search'
+    ? (searchVillage !== 'all' ? searchVillage : pathContext.village)
+    : (listing.village || requestVillage || pathContext.village);
+  const eventCategory = eventType === 'directory_search'
+    ? (searchCategory !== 'all' ? searchCategory : pathContext.category)
+    : (listing.category || requestCategory || pathContext.category);
+
   const resultCountValue = Number(body?.resultCount);
   const payload = {
     event_type: eventType,
@@ -126,12 +205,12 @@ export async function POST(request: Request) {
     listing_id: listing.listingId || null,
     listing_slug: listing.listingSlug || null,
     search_term: eventType === 'directory_search' ? searchTerm || null : null,
-    village: eventType === 'directory_search' ? village || null : null,
-    category: eventType === 'directory_search' ? category || null : null,
+    village: eventVillage || null,
+    category: eventCategory || null,
     result_count: eventType === 'directory_search' && Number.isFinite(resultCountValue)
       ? Math.max(0, Math.min(100000, Math.trunc(resultCountValue)))
       : null,
-    source_path: clean(body?.sourcePath, 240) || null,
+    source_path: sourcePath || null,
     page_url: safeUrl(body?.pageUrl) || null,
     referrer: safeUrl(body?.referrer) || null,
     utm_source: clean(body?.utmSource, 120) || null,
