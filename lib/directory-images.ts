@@ -50,6 +50,14 @@ const curatedListingImages: Record<string, ListingImage> = {
   'worship-مسجد-ابو-بكر-الصديق-النويرات': { src: '/images/activities/nuwairat-abu-bakr-mosque.svg' },
   'restaurants-مقهى-النويرات': { src: '/images/activities/nuwairat-cafe.svg' },
   'government-مكتب-صابر-حسين-البتيتي-النويرات': { src: '/images/activities/nuwairat-saber-office.svg' },
+  'education-مدرسة-اولاد-حمزة-الثانوية-المشتركة': { src: '/images/activities/awlad-hamza-secondary-school.svg' },
+  'education-مدرسة-اولاد-حمزة-للتعليم-الاساسي': { src: '/images/activities/awlad-hamza-basic-school.svg' },
+  'government-البنك-الزراعي-المصري-اولاد-حمزة': { src: '/images/activities/awlad-hamza-agricultural-bank.svg' },
+  'government-بنك-مصر-atm-العسيرات': { src: '/images/activities/awlad-hamza-bank-misr-atm.svg' },
+  'worship-مسجد-اولاد-حمزة': { src: '/images/activities/awlad-hamza-mosque.svg' },
+  'restaurants-الف-هنا-اولاد-حمزة': { src: '/images/activities/awlad-hamza-alf-hana.svg' },
+  'shops-جلاكسي-اولاد-حمزة': { src: '/images/activities/awlad-hamza-galaxy-mobile.svg' },
+  'restaurants-مخبز-وحلواني-احباب-الرسول-اولاد-حمزة': { src: '/images/activities/awlad-hamza-ahbab-bakery.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
