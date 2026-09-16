@@ -59,6 +59,9 @@ const curatedListingImages: Record<string, ListingImage> = {
   'shops-جلاكسي-اولاد-حمزة': { src: '/images/activities/awlad-hamza-galaxy-mobile.svg' },
   'restaurants-مخبز-وحلواني-احباب-الرسول-اولاد-حمزة': { src: '/images/activities/awlad-hamza-ahbab-bakery.svg' },
   'shops-الحاج-عبدالناصر-محمد-جزيرة-اولاد-حمزة': { src: '/images/activities/gazirat-awlad-hamza-nursery.svg' },
+  'education-مدرسة-العجوبية-الاعدادية-المشتركة': { src: '/images/activities/rashaida-ajoubia-preparatory.svg' },
+  'education-مدرسة-نجع-جبرة-الاعدادية-المشتركة': { src: '/images/activities/rashaida-nag-jabra-preparatory.svg' },
+  'education-معهد-الرشايدة-غرب-الابتدائي': { src: '/images/activities/rashaida-west-azhar-institute.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
