@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { nuwairatFollowupScan20260916 } from '../lib/data/nuwairat-followup-scan-2026-09-16.ts';
 import { awladHamzaFollowupScan20260916 } from '../lib/data/awlad-hamza-followup-scan-2026-09-16.ts';
+import { gaziratAwladHamzaFollowup20260916 } from '../lib/data/gazirat-awlad-hamza-followup-2026-09-16.ts';
 
 function assertUnique(scan) {
   assert.equal(new Set(scan.map((x) => x.id)).size, scan.length);
@@ -25,8 +26,21 @@ test('Awlad Hamza follow-up adds eight duplicate-safe service records', () => {
   assert.ok(awladHamzaFollowupScan20260916.some((x) => x.title === 'مخبز وحلواني أحباب الرسول' && x.sourceStatus === 'cross_checked'));
 });
 
+test('Gazirat Awlad Hamza follow-up stays conservative and cross-checked', () => {
+  assert.equal(gaziratAwladHamzaFollowup20260916.length, 1);
+  assertUnique(gaziratAwladHamzaFollowup20260916);
+  const listing = gaziratAwladHamzaFollowup20260916[0];
+  assert.equal(listing.village, 'جزيرة أولاد حمزة');
+  assert.equal(listing.sourceStatus, 'cross_checked');
+  assert.equal(listing.googleMapsPlusCode, '9RQR+63R');
+});
+
 test('follow-up scans do not reuse IDs or slugs across villages', () => {
-  const all = [...nuwairatFollowupScan20260916, ...awladHamzaFollowupScan20260916];
+  const all = [
+    ...nuwairatFollowupScan20260916,
+    ...awladHamzaFollowupScan20260916,
+    ...gaziratAwladHamzaFollowup20260916,
+  ];
   assert.equal(new Set(all.map((x) => x.id)).size, all.length);
   assert.equal(new Set(all.map((x) => x.slug)).size, all.length);
 });
