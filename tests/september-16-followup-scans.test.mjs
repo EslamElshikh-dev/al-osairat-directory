@@ -3,6 +3,7 @@ import test from 'node:test';
 import { nuwairatFollowupScan20260916 } from '../lib/data/nuwairat-followup-scan-2026-09-16.ts';
 import { awladHamzaFollowupScan20260916 } from '../lib/data/awlad-hamza-followup-scan-2026-09-16.ts';
 import { gaziratAwladHamzaFollowup20260916 } from '../lib/data/gazirat-awlad-hamza-followup-2026-09-16.ts';
+import { rashaidaFollowupScan20260916 } from '../lib/data/rashaida-followup-scan-2026-09-16.ts';
 
 function assertUnique(scan) {
   assert.equal(new Set(scan.map((x) => x.id)).size, scan.length);
@@ -35,11 +36,21 @@ test('Gazirat Awlad Hamza follow-up stays conservative and cross-checked', () =>
   assert.equal(listing.googleMapsPlusCode, '9RQR+63R');
 });
 
+test('Rashaida follow-up adds only current cross-checked education gaps', () => {
+  assert.equal(rashaidaFollowupScan20260916.length, 3);
+  assertUnique(rashaidaFollowupScan20260916);
+  assert.ok(rashaidaFollowupScan20260916.every((x) => x.village === 'الرشايدة'));
+  assert.ok(rashaidaFollowupScan20260916.every((x) => x.category === 'education'));
+  assert.ok(rashaidaFollowupScan20260916.every((x) => x.sourceStatus === 'cross_checked'));
+  assert.ok(rashaidaFollowupScan20260916.some((x) => x.title === 'معهد الرشايدة غرب الابتدائي'));
+});
+
 test('follow-up scans do not reuse IDs or slugs across villages', () => {
   const all = [
     ...nuwairatFollowupScan20260916,
     ...awladHamzaFollowupScan20260916,
     ...gaziratAwladHamzaFollowup20260916,
+    ...rashaidaFollowupScan20260916,
   ];
   assert.equal(new Set(all.map((x) => x.id)).size, all.length);
   assert.equal(new Set(all.map((x) => x.slug)).size, all.length);
