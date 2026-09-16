@@ -32,15 +32,17 @@ type ListingImage = {
 
 const listingImages = activityImageManifest as Record<string, ListingImage>;
 
-// Fresh scan artwork is kept explicit here so each newly verified Awamer
-// listing receives a lightweight, original visual without reusing third-party
-// photography whose republication rights are unclear.
 const curatedListingImages: Record<string, ListingImage> = {
   'education-مدرسة-عوامر-العسيرات-الاعدادية': { src: '/images/activities/awamer-preparatory-school.svg' },
   'education-معهد-عوامر-العسيرات': { src: '/images/activities/awamer-azhar-institute.svg' },
   'worship-مسجد-ال-النميسي-عوامر-العسيرات': { src: '/images/activities/awamer-al-nemaisi-mosque.svg' },
   'government-الوحدة-الصحية-بعوامر-العسيرات': { src: '/images/activities/awamer-health-unit.svg' },
   'shops-معرض-النور-للادوات-الصحية-عوامر-العسيرات': { src: '/images/activities/awamer-sanitary-store.svg' },
+  'pharmacies-صيدلية-الدكتورة-ولاء-اولاد-جبارة': { src: '/images/activities/olad-gabara-walaa-pharmacy.svg' },
+  'government-مستشفى-العسيرات-العام': { src: '/images/activities/osairat-general-hospital.svg' },
+  'government-قسم-شرطة-العسيرات': { src: '/images/activities/osairat-police-station.svg' },
+  'doctors-معامل-الوسيط-للتحاليل-الطبية': { src: '/images/activities/al-waseet-lab.svg' },
+  'shops-الراعي-للتجارة-النويرات': { src: '/images/activities/al-raei-nuwairat-market.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
