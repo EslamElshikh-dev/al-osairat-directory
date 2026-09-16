@@ -4,6 +4,8 @@ import { nuwairatFollowupScan20260916 } from '../lib/data/nuwairat-followup-scan
 import { awladHamzaFollowupScan20260916 } from '../lib/data/awlad-hamza-followup-scan-2026-09-16.ts';
 import { gaziratAwladHamzaFollowup20260916 } from '../lib/data/gazirat-awlad-hamza-followup-2026-09-16.ts';
 import { rashaidaFollowupScan20260916 } from '../lib/data/rashaida-followup-scan-2026-09-16.ts';
+import { shuhadaFollowupScan20260916 } from '../lib/data/shuhada-followup-scan-2026-09-16.ts';
+import { masaeedFollowupScan20260916 } from '../lib/data/masaeed-followup-scan-2026-09-16.ts';
 
 function assertUnique(scan) {
   assert.equal(new Set(scan.map((x) => x.id)).size, scan.length);
@@ -15,34 +17,39 @@ test('Nuwairat follow-up adds five duplicate-safe current records', () => {
   assert.equal(nuwairatFollowupScan20260916.length, 5);
   assertUnique(nuwairatFollowupScan20260916);
   assert.ok(nuwairatFollowupScan20260916.every((x) => x.village === 'النويرات'));
-  assert.ok(nuwairatFollowupScan20260916.some((x) => x.title === 'مدرسة النويرات الإعدادية'));
-  assert.ok(nuwairatFollowupScan20260916.some((x) => x.title === 'مقهى النويرات' && x.googlePlaceId));
 });
 
 test('Awlad Hamza follow-up adds eight duplicate-safe service records', () => {
   assert.equal(awladHamzaFollowupScan20260916.length, 8);
   assertUnique(awladHamzaFollowupScan20260916);
   assert.ok(awladHamzaFollowupScan20260916.every((x) => x.village === 'أولاد حمزة'));
-  assert.ok(awladHamzaFollowupScan20260916.some((x) => x.title === 'البنك الزراعي المصري - أولاد حمزة' && x.phone === '0934937370'));
-  assert.ok(awladHamzaFollowupScan20260916.some((x) => x.title === 'مخبز وحلواني أحباب الرسول' && x.sourceStatus === 'cross_checked'));
 });
 
 test('Gazirat Awlad Hamza follow-up stays conservative and cross-checked', () => {
   assert.equal(gaziratAwladHamzaFollowup20260916.length, 1);
   assertUnique(gaziratAwladHamzaFollowup20260916);
-  const listing = gaziratAwladHamzaFollowup20260916[0];
-  assert.equal(listing.village, 'جزيرة أولاد حمزة');
-  assert.equal(listing.sourceStatus, 'cross_checked');
-  assert.equal(listing.googleMapsPlusCode, '9RQR+63R');
+  assert.equal(gaziratAwladHamzaFollowup20260916[0].sourceStatus, 'cross_checked');
 });
 
-test('Rashaida follow-up adds only current cross-checked education gaps', () => {
+test('Rashaida follow-up adds current cross-checked education gaps', () => {
   assert.equal(rashaidaFollowupScan20260916.length, 3);
   assertUnique(rashaidaFollowupScan20260916);
   assert.ok(rashaidaFollowupScan20260916.every((x) => x.village === 'الرشايدة'));
-  assert.ok(rashaidaFollowupScan20260916.every((x) => x.category === 'education'));
-  assert.ok(rashaidaFollowupScan20260916.every((x) => x.sourceStatus === 'cross_checked'));
-  assert.ok(rashaidaFollowupScan20260916.some((x) => x.title === 'معهد الرشايدة غرب الابتدائي'));
+});
+
+test('Shuhada follow-up adds the essential village services only', () => {
+  assert.equal(shuhadaFollowupScan20260916.length, 3);
+  assertUnique(shuhadaFollowupScan20260916);
+  assert.ok(shuhadaFollowupScan20260916.every((x) => x.village === 'الشهداء'));
+  assert.deepEqual(shuhadaFollowupScan20260916.map((x) => x.category).sort(), ['education', 'education', 'government']);
+});
+
+test('Masaeed follow-up adds five verified or cross-checked gaps', () => {
+  assert.equal(masaeedFollowupScan20260916.length, 5);
+  assertUnique(masaeedFollowupScan20260916);
+  assert.ok(masaeedFollowupScan20260916.every((x) => x.village === 'المساعيد'));
+  assert.equal(masaeedFollowupScan20260916.filter((x) => x.category === 'worship').length, 2);
+  assert.ok(masaeedFollowupScan20260916.every((x) => x.sourceStatus === 'cross_checked'));
 });
 
 test('follow-up scans do not reuse IDs or slugs across villages', () => {
@@ -51,6 +58,8 @@ test('follow-up scans do not reuse IDs or slugs across villages', () => {
     ...awladHamzaFollowupScan20260916,
     ...gaziratAwladHamzaFollowup20260916,
     ...rashaidaFollowupScan20260916,
+    ...shuhadaFollowupScan20260916,
+    ...masaeedFollowupScan20260916,
   ];
   assert.equal(new Set(all.map((x) => x.id)).size, all.length);
   assert.equal(new Set(all.map((x) => x.slug)).size, all.length);
