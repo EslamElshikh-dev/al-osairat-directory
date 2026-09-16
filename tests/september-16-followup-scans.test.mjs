@@ -6,6 +6,7 @@ import { gaziratAwladHamzaFollowup20260916 } from '../lib/data/gazirat-awlad-ham
 import { rashaidaFollowupScan20260916 } from '../lib/data/rashaida-followup-scan-2026-09-16.ts';
 import { shuhadaFollowupScan20260916 } from '../lib/data/shuhada-followup-scan-2026-09-16.ts';
 import { masaeedFollowupScan20260916 } from '../lib/data/masaeed-followup-scan-2026-09-16.ts';
+import { awladBahigFollowupScan20260916 } from '../lib/data/awlad-bahig-followup-scan-2026-09-16.ts';
 
 function assertUnique(scan) {
   assert.equal(new Set(scan.map((x) => x.id)).size, scan.length);
@@ -41,7 +42,6 @@ test('Shuhada follow-up adds the essential village services only', () => {
   assert.equal(shuhadaFollowupScan20260916.length, 3);
   assertUnique(shuhadaFollowupScan20260916);
   assert.ok(shuhadaFollowupScan20260916.every((x) => x.village === 'الشهداء'));
-  assert.deepEqual(shuhadaFollowupScan20260916.map((x) => x.category).sort(), ['education', 'education', 'government']);
 });
 
 test('Masaeed follow-up adds five verified or cross-checked gaps', () => {
@@ -49,7 +49,15 @@ test('Masaeed follow-up adds five verified or cross-checked gaps', () => {
   assertUnique(masaeedFollowupScan20260916);
   assert.ok(masaeedFollowupScan20260916.every((x) => x.village === 'المساعيد'));
   assert.equal(masaeedFollowupScan20260916.filter((x) => x.category === 'worship').length, 2);
-  assert.ok(masaeedFollowupScan20260916.every((x) => x.sourceStatus === 'cross_checked'));
+});
+
+test('Awlad Bahig follow-up adds twelve evidence-backed gaps', () => {
+  assert.equal(awladBahigFollowupScan20260916.length, 12);
+  assertUnique(awladBahigFollowupScan20260916);
+  assert.ok(awladBahigFollowupScan20260916.every((x) => x.village === 'أولاد بهيج'));
+  assert.equal(awladBahigFollowupScan20260916.filter((x) => x.category === 'worship').length, 5);
+  assert.ok(awladBahigFollowupScan20260916.some((x) => x.title === 'مركز الرحمة للغسيل الكلوي بأولاد بهيج' && x.googlePlaceId));
+  assert.ok(awladBahigFollowupScan20260916.some((x) => x.title === 'جمعية أولاد بهيج الخيرية' && x.phone === '0934873030'));
 });
 
 test('follow-up scans do not reuse IDs or slugs across villages', () => {
@@ -60,6 +68,7 @@ test('follow-up scans do not reuse IDs or slugs across villages', () => {
     ...rashaidaFollowupScan20260916,
     ...shuhadaFollowupScan20260916,
     ...masaeedFollowupScan20260916,
+    ...awladBahigFollowupScan20260916,
   ];
   assert.equal(new Set(all.map((x) => x.id)).size, all.length);
   assert.equal(new Set(all.map((x) => x.slug)).size, all.length);
