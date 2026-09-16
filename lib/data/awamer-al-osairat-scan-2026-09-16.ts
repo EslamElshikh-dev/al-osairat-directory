@@ -1,0 +1,100 @@
+import type { DirectoryListing } from '../types';
+
+const mapsSearchUrl = (query: string, placeId?: string) => {
+  const params = new URLSearchParams({ api: '1', query });
+  if (placeId) params.set('query_place_id', placeId);
+  return `https://www.google.com/maps/search/?${params.toString()}`;
+};
+
+// Focused Awamer Al-Usayrat scan completed on 2026-09-16 using live Google
+// Maps/business results, Google Search, recent school-result references and
+// public service directories. Nearby places outside the village were excluded.
+// The post office was not duplicated because it already exists in government.ts.
+export const awamerAlOsairatScan20260916: DirectoryListing[] = [
+  {
+    id: 'education-مدرسة-عوامر-العسيرات-الاعدادية',
+    slug: 'مدرسة-عوامر-العسيرات-الاعدادية',
+    title: 'مدرسة عوامر العسيرات الإعدادية',
+    category: 'education',
+    subCategory: 'مدرسة إعدادية حكومية',
+    location: 'CQ9X+WRR، عوامر العسيرات، مركز العسيرات، محافظة سوهاج',
+    village: 'عوامر العسيرات',
+    description: 'مدرسة إعدادية تخدم قرية عوامر العسيرات. طابق اسم المدرسة في خرائط Google ظهورها ضمن نتائج الشهادة الإعدادية لإدارة المنشأة لعام 2026.',
+    reviewCount: 0,
+    source: 'google_maps',
+    sourceStatus: 'cross_checked',
+    googlePlaceId: 'ChIJlTNXTCVQTxQRrSnq3u7wRVM',
+    googleMapsPlusCode: 'CQ9X+WRR',
+    googleMapsUrl: mapsSearchUrl('مدرسة عوامر العسيرات الإعدادية', 'ChIJlTNXTCVQTxQRrSnq3u7wRVM'),
+    lastUpdatedAt: '2026-09-16',
+  },
+  {
+    id: 'education-معهد-عوامر-العسيرات',
+    slug: 'معهد-عوامر-العسيرات',
+    title: 'معهد عوامر العسيرات',
+    category: 'education',
+    subCategory: 'معهد ديني',
+    location: 'CR82+VPG، عوامر العسيرات، مركز العسيرات، محافظة سوهاج',
+    village: 'عوامر العسيرات',
+    description: 'معهد ديني مسجل باسم «معهد عوامر العسيرات» وموقع محدد على الخرائط، مع تطابق العنوان المنشور في دليل أعمال عام.',
+    reviewCount: 0,
+    source: 'google_maps',
+    sourceStatus: 'cross_checked',
+    googlePlaceId: 'ChIJEZ8l225RTxQRxpM2CiefUsQ',
+    googleMapsPlusCode: 'CR82+VPG',
+    googleMapsUrl: mapsSearchUrl('معهد عوامر العسيرات', 'ChIJEZ8l225RTxQRxpM2CiefUsQ'),
+    lastUpdatedAt: '2026-09-16',
+  },
+  {
+    id: 'worship-مسجد-ال-النميسي-عوامر-العسيرات',
+    slug: 'مسجد-ال-النميسي-عوامر-العسيرات',
+    title: 'مسجد آل النميسي',
+    category: 'worship',
+    subCategory: 'مسجد',
+    location: 'CR73+945، عوامر العسيرات، مركز العسيرات، محافظة سوهاج',
+    village: 'عوامر العسيرات',
+    description: 'مسجد محلي داخل نطاق عوامر العسيرات، مثبت باسم وموقع مستقلين على خرائط Google.',
+    rating: 2,
+    reviewCount: 2,
+    ratingSource: 'google',
+    source: 'google_maps',
+    sourceStatus: 'google_verified',
+    googlePlaceId: 'ChIJEQv3is9RTxQRv5rW3YcWgws',
+    googleMapsPlusCode: 'CR73+945',
+    googleMapsUrl: mapsSearchUrl('مسجد آل النميسي عوامر العسيرات', 'ChIJEQv3is9RTxQRv5rW3YcWgws'),
+    lastUpdatedAt: '2026-09-16',
+  },
+  {
+    id: 'government-الوحدة-الصحية-بعوامر-العسيرات',
+    slug: 'الوحدة-الصحية-بعوامر-العسيرات',
+    title: 'الوحدة الصحية بعوامر العسيرات',
+    category: 'government',
+    subCategory: 'وحدة صحية / طب أسرة',
+    location: 'عوامر العسيرات، مركز العسيرات، محافظة سوهاج',
+    village: 'عوامر العسيرات',
+    phone: '0934938127',
+    description: 'وحدة الرعاية الصحية الأولية بعوامر العسيرات. تم تثبيت رقم الهاتف وموقع الخدمة من أدلة خدمات عامة ومراجع صحية منشورة.',
+    reviewCount: 0,
+    source: 'user_collected',
+    sourceStatus: 'cross_checked',
+    lastUpdatedAt: '2026-09-16',
+  },
+  {
+    id: 'shops-معرض-النور-للأدوات-الصحية-عوامر-العسيرات',
+    slug: 'معرض-النور-للأدوات-الصحية-عوامر-العسيرات',
+    title: 'معرض النور للأدوات الصحية',
+    category: 'shops',
+    subCategory: 'أدوات صحية وسباكة',
+    location: 'CR63+P38، عوامر العسيرات، مركز العسيرات، محافظة سوهاج',
+    village: 'عوامر العسيرات',
+    phone: '01154987198',
+    description: 'معرض محلي للأدوات الصحية في عوامر العسيرات، له موقع ورقم تواصل ظاهرين في ملف خرائط Google.',
+    reviewCount: 0,
+    source: 'google_maps',
+    sourceStatus: 'google_verified',
+    googlePlaceId: 'ChIJK3svv21RTxQRMdMtmn_Q_8Y',
+    googleMapsPlusCode: 'CR63+P38',
+    googleMapsUrl: mapsSearchUrl('معرض النور للادوات الصحيه عوامر العسيرات', 'ChIJK3svv21RTxQRMdMtmn_Q_8Y'),
+    lastUpdatedAt: '2026-09-16',
+  },
+];
