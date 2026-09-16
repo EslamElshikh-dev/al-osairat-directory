@@ -45,6 +45,11 @@ const curatedListingImages: Record<string, ListingImage> = {
   'shops-الراعي-للتجارة-النويرات': { src: '/images/activities/al-raei-nuwairat-market.svg' },
   'education-مدرسة-ثورة-25-يناير-اولاد-جبارة': { src: '/images/activities/awlad-gabara-25-jan-school.svg' },
   'education-مدرسة-اولاد-جبارة-الابتدائية-القديمة': { src: '/images/activities/awlad-gabara-old-primary-school.svg' },
+  'education-مدرسة-النويرات-الاعدادية': { src: '/images/activities/nuwairat-preparatory-school.svg' },
+  'community-مركز-شباب-النويرات': { src: '/images/activities/nuwairat-youth-center.svg' },
+  'worship-مسجد-ابو-بكر-الصديق-النويرات': { src: '/images/activities/nuwairat-abu-bakr-mosque.svg' },
+  'restaurants-مقهى-النويرات': { src: '/images/activities/nuwairat-cafe.svg' },
+  'government-مكتب-صابر-حسين-البتيتي-النويرات': { src: '/images/activities/nuwairat-saber-office.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
