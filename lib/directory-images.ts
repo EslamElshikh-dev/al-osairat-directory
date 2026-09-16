@@ -43,6 +43,8 @@ const curatedListingImages: Record<string, ListingImage> = {
   'government-قسم-شرطة-العسيرات': { src: '/images/activities/osairat-police-station.svg' },
   'doctors-معامل-الوسيط-للتحاليل-الطبية': { src: '/images/activities/al-waseet-lab.svg' },
   'shops-الراعي-للتجارة-النويرات': { src: '/images/activities/al-raei-nuwairat-market.svg' },
+  'education-مدرسة-ثورة-25-يناير-اولاد-جبارة': { src: '/images/activities/awlad-gabara-25-jan-school.svg' },
+  'education-مدرسة-اولاد-جبارة-الابتدائية-القديمة': { src: '/images/activities/awlad-gabara-old-primary-school.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
