@@ -26,6 +26,7 @@ import { ahaywaGharbScan20260913 } from './ahaywa-gharb-scan-2026-09-13';
 import { nuwairatScan20260913 } from './nuwairat-scan-2026-09-13';
 import { awamerAlOsairatScan20260916 } from './awamer-al-osairat-scan-2026-09-16';
 import { liveMapsScan20260916 } from './live-maps-scan-2026-09-16';
+import { awladGabaraEducationScan20260916 } from './awlad-gabara-education-scan-2026-09-16';
 
 export * from '../types';
 export { categories, villages };
@@ -56,6 +57,7 @@ const rawListings: DirectoryListing[] = [
   ...nuwairatScan20260913,
   ...awamerAlOsairatScan20260916,
   ...liveMapsScan20260916,
+  ...awladGabaraEducationScan20260916,
 ];
 
 // Keep immutable IDs/slugs untouched while standardizing user-facing legacy data
