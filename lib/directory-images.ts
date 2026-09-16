@@ -70,6 +70,18 @@ const curatedListingImages: Record<string, ListingImage> = {
   'community-نادي-الشباب-والرياضة-بالمساعيد': { src: '/images/activities/masaeed-youth-club.svg' },
   'worship-مسجد-الانوار-المحمدية-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-anwar-mohammedia-mosque.svg' },
   'worship-مسجد-الهادي-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-al-hadi-mosque.svg' },
+  'education-مدرسة-اولاد-بهيج-تعليم-اساسي-الاعدادية': { src: '/images/activities/awlad-bahig-basic-school.svg' },
+  'education-المدرسة-الابتدائية-باولاد-بهيج': { src: '/images/activities/awlad-bahig-primary-school.svg' },
+  'education-مدرسة-نجع-رشوان-باولاد-بهيج-الابتدائية': { src: '/images/activities/awlad-bahig-nag-rashwan-school.svg' },
+  'government-الوحدة-الصحية-باولاد-بهيج': { src: '/images/activities/awlad-bahig-health-unit.svg' },
+  'doctors-مركز-الرحمة-للغسيل-الكلوي-اولاد-بهيج': { src: '/images/activities/awlad-bahig-rahma-dialysis.svg' },
+  'community-جمعية-اولاد-بهيج-الخيرية': { src: '/images/activities/awlad-bahig-charity.svg' },
+  'worship-مسجد-ومجمع-الرحمة-اولاد-بهيج': { src: '/images/activities/awlad-bahig-rahma-mosque.svg' },
+  'worship-مسجد-ال-شحات-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-shahat-mosque.svg' },
+  'worship-مسجد-ال-يونس-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-yunus-mosque.svg' },
+  'worship-مسجد-ال-عسير-التاريخي-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-asir-mosque.svg' },
+  'worship-مسجد-ال-عيسى-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-eissa-mosque.svg' },
+  'shops-تسالي-الشروق-اولاد-بهيج': { src: '/images/activities/awlad-bahig-tasali-al-shorouk.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
