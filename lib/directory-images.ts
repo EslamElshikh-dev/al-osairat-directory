@@ -62,6 +62,14 @@ const curatedListingImages: Record<string, ListingImage> = {
   'education-مدرسة-العجوبية-الاعدادية-المشتركة': { src: '/images/activities/rashaida-ajoubia-preparatory.svg' },
   'education-مدرسة-نجع-جبرة-الاعدادية-المشتركة': { src: '/images/activities/rashaida-nag-jabra-preparatory.svg' },
   'education-معهد-الرشايدة-غرب-الابتدائي': { src: '/images/activities/rashaida-west-azhar-institute.svg' },
+  'education-مدرسة-الشهداء-الابتدائية': { src: '/images/activities/shuhada-primary-school.svg' },
+  'education-مدرسة-الشهداء-الاعدادية': { src: '/images/activities/shuhada-preparatory-school.svg' },
+  'government-الوحدة-الصحية-بقرية-الشهداء': { src: '/images/activities/shuhada-health-unit.svg' },
+  'education-مدرسة-المساعيد-الاعدادية-الثانوية': { src: '/images/activities/masaeed-secondary-school.svg' },
+  'government-الوحدة-الصحية-بالمساعيد': { src: '/images/activities/masaeed-health-unit.svg' },
+  'community-نادي-الشباب-والرياضة-بالمساعيد': { src: '/images/activities/masaeed-youth-club.svg' },
+  'worship-مسجد-الانوار-المحمدية-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-anwar-mohammedia-mosque.svg' },
+  'worship-مسجد-الهادي-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-al-hadi-mosque.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
