@@ -58,6 +58,7 @@ const curatedListingImages: Record<string, ListingImage> = {
   'restaurants-الف-هنا-اولاد-حمزة': { src: '/images/activities/awlad-hamza-alf-hana.svg' },
   'shops-جلاكسي-اولاد-حمزة': { src: '/images/activities/awlad-hamza-galaxy-mobile.svg' },
   'restaurants-مخبز-وحلواني-احباب-الرسول-اولاد-حمزة': { src: '/images/activities/awlad-hamza-ahbab-bakery.svg' },
+  'shops-الحاج-عبدالناصر-محمد-جزيرة-اولاد-حمزة': { src: '/images/activities/gazirat-awlad-hamza-nursery.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
