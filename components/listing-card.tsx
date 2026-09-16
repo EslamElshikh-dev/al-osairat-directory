@@ -7,10 +7,19 @@ import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
 import { FavoriteButton } from './favorite-button';
 
+function compactReviewDate(value?: string) {
+  if (!value) return null;
+  const [year, month, day] = value.split('-');
+  if (!year || !month || !day) return value;
+  return `${day}/${month}/${year}`;
+}
+
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
   const image = imageForListing(listing);
+  const reviewDate = compactReviewDate(listing.lastUpdatedAt);
+  const hasRating = typeof listing.rating === 'number' && listing.reviewCount > 0;
 
   return (
     <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
@@ -37,13 +46,27 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
       </div>
 
       <div className="listing-card__top">
-        {listing.sourceStatus === 'google_verified' && (
-          <span className="source-chip source-chip--maps">مرجع خرائط Google</span>
-        )}
         <h3>
           <Link href={`/listing/${listing.slug}`}>{listing.title}</Link>
         </h3>
         <p className="listing-card__location">{listing.location}</p>
+      </div>
+
+      <div className="listing-card__trust-row" aria-label="حالة مراجعة بيانات النشاط">
+        {listing.sourceStatus === 'google_verified' && (
+          <span className="listing-card__trust-chip listing-card__trust-chip--maps">مرجع خرائط Google</span>
+        )}
+        {listing.sourceStatus === 'cross_checked' && (
+          <span className="listing-card__trust-chip listing-card__trust-chip--checked">تمت مطابقة البيانات</span>
+        )}
+        {hasRating && (
+          <span className="listing-card__rating" aria-label={`تقييم ${listing.rating} من 5 بناءً على ${listing.reviewCount} مراجعة`}>
+            <b aria-hidden="true">★</b>
+            <strong>{listing.rating?.toFixed(1)}</strong>
+            <span>({listing.reviewCount})</span>
+          </span>
+        )}
+        {reviewDate && <time dateTime={listing.lastUpdatedAt}>مراجعة {reviewDate}</time>}
       </div>
 
       {!compact && (

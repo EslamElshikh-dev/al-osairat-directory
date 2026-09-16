@@ -32,12 +32,23 @@ type ListingImage = {
 
 const listingImages = activityImageManifest as Record<string, ListingImage>;
 
+// Fresh scan artwork is kept explicit here so each newly verified Awamer
+// listing receives a lightweight, original visual without reusing third-party
+// photography whose republication rights are unclear.
+const curatedListingImages: Record<string, ListingImage> = {
+  'education-مدرسة-عوامر-العسيرات-الاعدادية': { src: '/images/activities/awamer-preparatory-school.svg' },
+  'education-معهد-عوامر-العسيرات': { src: '/images/activities/awamer-azhar-institute.svg' },
+  'worship-مسجد-ال-النميسي-عوامر-العسيرات': { src: '/images/activities/awamer-al-nemaisi-mosque.svg' },
+  'government-الوحدة-الصحية-بعوامر-العسيرات': { src: '/images/activities/awamer-health-unit.svg' },
+  'shops-معرض-النور-للادوات-الصحية-عوامر-العسيرات': { src: '/images/activities/awamer-sanitary-store.svg' },
+};
+
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
   return directoryImages[category];
 }
 
 export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category' | 'title' | 'subCategory'>): DirectoryImage {
-  const customImage = listingImages[listing.id];
+  const customImage = curatedListingImages[listing.id] || listingImages[listing.id];
   if (customImage) {
     if (customImage.sourceKind === 'owner_photo') {
       return {
