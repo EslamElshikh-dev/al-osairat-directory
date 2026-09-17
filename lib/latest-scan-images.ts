@@ -23,6 +23,7 @@ const latestScanImages: Record<string, string> = {
   'education-مدرسة-نجع-السوالم-الاعدادية-المشتركة': '/images/activities/masaeed-nag-sawalem-school.svg',
   'education-معهد-اولاد-جبارة-الابتدائي': '/images/activities/awlad-gabara-azhar-institute.svg',
   'worship-مسجد-التوحيد-نجع-ابو-رجل': '/images/activities/awlad-gabara-tawhid-mosque.svg',
+  'education-معهد-بنين-المساعيد-الاعدادي-الثانوي': '/images/activities/masaeed-azhar-institute.svg',
 };
 
 export function latestScanImageForListing(
