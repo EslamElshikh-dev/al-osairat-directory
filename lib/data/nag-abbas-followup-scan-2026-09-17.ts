@@ -1,4 +1,5 @@
 import type { DirectoryListing } from '../types';
+import { awladAliCenterServicesScan20260917 } from './awlad-ali-center-services-scan-2026-09-17';
 
 const maps = (query: string, placeId?: string) => {
   const params = new URLSearchParams({ api: '1', query });
@@ -6,7 +7,7 @@ const maps = (query: string, placeId?: string) => {
   return `https://www.google.com/maps/search/?${params.toString()}`;
 };
 
-export const nagAbbasFollowupScan20260917: DirectoryListing[] = [
+const nagAbbasListings: DirectoryListing[] = [
   {
     id: 'education-معهد-بنين-نجع-عباس-الاعدادي-الثانوي',
     slug: 'معهد-بنين-نجع-عباس-الاعدادي-الثانوي',
@@ -78,4 +79,9 @@ export const nagAbbasFollowupScan20260917: DirectoryListing[] = [
     googleMapsUrl: maps('معرض مكة للادوات المنزلية نجع عباس', 'ChIJfQl3EsBPTxQRJevHTHPBH1M'),
     lastUpdatedAt: '2026-09-17',
   },
+];
+
+export const nagAbbasFollowupScan20260917: DirectoryListing[] = [
+  ...nagAbbasListings,
+  ...awladAliCenterServicesScan20260917,
 ];
