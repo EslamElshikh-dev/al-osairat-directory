@@ -15,6 +15,9 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-عباد-الرحمن-نجع-عبدالباري-اولاد-بهيج': '/images/activities/abdulbari-ebad-alrahman-mosque.svg',
   'worship-مسجد-الايمان-اولاد-بهيج': '/images/activities/awlad-bahig-al-iman-mosque.svg',
   'worship-كنيسة-السيدة-العذراء-مريم-والشهيد-ابانوب-الشهداء': '/images/activities/shuhada-virgin-mary-abanob-church.svg',
+  'worship-مسجد-ال-البايت-الشهداء': '/images/activities/shuhada-al-bait-mosque.svg',
+  'worship-مسجد-الرحمن-الشهداء': '/images/activities/shuhada-al-rahman-mosque.svg',
+  'transport-خط-المنشاة-نجع-البايت': '/images/activities/shuhada-al-bait-transport.svg',
 };
 
 export function latestScanImageForListing(
