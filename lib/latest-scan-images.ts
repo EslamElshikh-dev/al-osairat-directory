@@ -24,6 +24,12 @@ const latestScanImages: Record<string, string> = {
   'education-معهد-اولاد-جبارة-الابتدائي': '/images/activities/awlad-gabara-azhar-institute.svg',
   'worship-مسجد-التوحيد-نجع-ابو-رجل': '/images/activities/awlad-gabara-tawhid-mosque.svg',
   'education-معهد-بنين-المساعيد-الاعدادي-الثانوي': '/images/activities/masaeed-azhar-institute.svg',
+  'worship-مسجد-ال-غريب-نجع-ابو-زغيلة': '/images/activities/awlad-gabara-al-ghareeb-mosque.svg',
+  'worship-مسجد-مصعب-بن-عمير-نجع-عباس': '/images/activities/awlad-gabara-musab-mosque.svg',
+  'worship-مسجد-ال-بكري-نجع-عباس': '/images/activities/awlad-gabara-al-bakri-mosque.svg',
+  'worship-مسجد-خاتم-المرسلين-نجع-ابوزقالي': '/images/activities/masaeed-khatam-mosque.svg',
+  'worship-مسجد-التوفيق-نجع-ابوزقالي': '/images/activities/masaeed-tawfiq-mosque.svg',
+  'worship-مسجد-الانصار-المساعيد': '/images/activities/masaeed-ansar-mosque.svg',
 };
 
 export function latestScanImageForListing(
