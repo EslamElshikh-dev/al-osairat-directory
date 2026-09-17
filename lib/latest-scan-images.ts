@@ -32,6 +32,8 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-الانصار-المساعيد': '/images/activities/masaeed-ansar-mosque.svg',
   'worship-مسجد-نجع-العبيط-المساعيد': '/images/activities/masaeed-nag-al-abit-mosque.svg',
   'worship-كنيسة-الشهيد-العظيم-مارجرجس-النويرات': '/images/activities/nuwairat-st-george-church.svg',
+  'education-مدرسة-اولاد-غازي-التجريبية-للغات': '/images/activities/awlad-ghazi-language-school.svg',
+  'education-مدرسة-اولاد-غازي-الاعدادية-المشتركة': '/images/activities/awlad-ghazi-preparatory-school.svg',
 };
 
 export function latestScanImageForListing(
