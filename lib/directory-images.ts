@@ -82,6 +82,8 @@ const curatedListingImages: Record<string, ListingImage> = {
   'worship-مسجد-ال-عسير-التاريخي-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-asir-mosque.svg' },
   'worship-مسجد-ال-عيسى-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-eissa-mosque.svg' },
   'shops-تسالي-الشروق-اولاد-بهيج': { src: '/images/activities/awlad-bahig-tasali-al-shorouk.svg' },
+  'community-مركز-شباب-الاحايوة-غرب': { src: '/images/activities/ahaywa-gharb-youth-center.svg' },
+  'pharmacies-صيدلية-الدكتور-السيد-الاحايوة-غرب': { src: '/images/activities/ahaywa-gharb-al-sayed-pharmacy.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
