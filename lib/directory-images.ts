@@ -71,6 +71,7 @@ const curatedListingImages: Record<string, ListingImage> = {
   'community-نادي-الشباب-والرياضة-بالمساعيد': { src: '/images/activities/masaeed-youth-club.svg' },
   'worship-مسجد-الانوار-المحمدية-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-anwar-mohammedia-mosque.svg' },
   'worship-مسجد-الهادي-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-al-hadi-mosque.svg' },
+  'government-مكتب-بريد-المساعيد': { src: '/images/activities/masaeed-post-office.svg' },
   'education-مدرسة-اولاد-بهيج-تعليم-اساسي-الاعدادية': { src: '/images/activities/awlad-bahig-basic-school.svg' },
   'education-المدرسة-الابتدائية-باولاد-بهيج': { src: '/images/activities/awlad-bahig-primary-school.svg' },
   'education-مدرسة-نجع-رشوان-باولاد-بهيج-الابتدائية': { src: '/images/activities/awlad-bahig-nag-rashwan-school.svg' },
@@ -109,7 +110,6 @@ export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category
         label: 'صورة منشورة من ملف النشاط',
       };
     }
-
     return {
       src: customImage.src,
       alt: `صورة تعبيرية مخصصة عن ${listing.subCategory || 'النشاط'} - ${listing.title}`,
@@ -117,7 +117,6 @@ export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category
       label: 'صورة تعبيرية مخصصة',
     };
   }
-
   const image = imageForCategory(listing.category);
   return { ...image, alt: `صورة تعبيرية عن ${listing.subCategory || image.alt} - ${listing.title}` };
 }
