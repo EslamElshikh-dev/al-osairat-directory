@@ -82,6 +82,13 @@ const canonicalSelect = [
   'google_maps_plus_code', 'google_maps_url', 'last_updated_at',
 ].join(',');
 
+// Public catalog pages must not cut over to the synchronized canonical table until
+// the deploy pipeline guarantees that every Git release is synchronized first.
+// A row-count threshold alone cannot detect a stale-but-large snapshot and was
+// hiding newly deployed village scans. Keep canonical reporting available, but
+// prefer the deployed static + published fallback for public reads for now.
+const PUBLIC_CANONICAL_READS_ENABLED = false;
+
 // The synchronized table currently mirrors the full public catalog. If a future
 // sync partially fails, refuse the canonical cutover and let callers use their
 // existing static + published fallback instead of hiding large parts of the site.
@@ -134,6 +141,8 @@ function serializeDirectoryEntity(row: DirectoryEntityRow): DirectoryListing {
 export async function queryCanonicalDirectory(
   options: DirectoryQueryOptions = {},
 ): Promise<DirectoryQueryResult | null> {
+  if (!PUBLIC_CANONICAL_READS_ENABLED) return null;
+
   const params = new URLSearchParams({
     select: canonicalSelect,
     is_active: 'eq.true',
