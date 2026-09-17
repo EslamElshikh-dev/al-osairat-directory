@@ -37,6 +37,7 @@ import { awladBahigFollowupScan20260916 } from './awlad-bahig-followup-scan-2026
 import { ahaywaGharbFollowupScan20260917 } from './ahaywa-gharb-followup-scan-2026-09-17';
 import { nagAbbasFollowupScan20260917 } from './nag-abbas-followup-scan-2026-09-17';
 import { awladBahigLocalitiesScan20260917 } from './awlad-bahig-localities-scan-2026-09-17';
+import { awladBahigSheikhYusufScan20260917 } from './awlad-bahig-sheikh-yusuf-scan-2026-09-17';
 
 export * from '../types';
 export { categories, villages };
@@ -78,6 +79,7 @@ const rawListings: DirectoryListing[] = [
   ...ahaywaGharbFollowupScan20260917,
   ...nagAbbasFollowupScan20260917,
   ...awladBahigLocalitiesScan20260917,
+  ...awladBahigSheikhYusufScan20260917,
 ];
 
 // Keep immutable IDs/slugs untouched while standardizing user-facing legacy data
