@@ -45,6 +45,7 @@ import { awamerHafaydaFollowup20260918 } from './awamer-hafayda-followup-2026-09
 import { masaeedSchoolsFollowup20260918 } from './masaeed-schools-followup-2026-09-18';
 import { awladGabaraDeepScan20260918 } from './awlad-gabara-deep-scan-2026-09-18';
 import { masaeedAzharInstitute20260918 } from './masaeed-azhar-institute-2026-09-18';
+import { awqafMosqueGaps20260918 } from './awqaf-mosque-gaps-2026-09-18';
 
 export * from '../types';
 export { categories, villages };
@@ -94,6 +95,7 @@ const rawListings: DirectoryListing[] = [
   ...masaeedSchoolsFollowup20260918,
   ...awladGabaraDeepScan20260918,
   ...masaeedAzharInstitute20260918,
+  ...awqafMosqueGaps20260918,
 ];
 
 export const listings: DirectoryListing[] = rawListings.map(normalizeDirectoryListing);
