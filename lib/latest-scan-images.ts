@@ -7,6 +7,11 @@ const latestScanImages: Record<string, string> = {
   'government-مكتب-بريد-اولاد-بهيج': '/images/activities/awlad-bahig-post-office.svg',
   'pharmacies-صيدلية-دكتور-احمد-السيد-اولاد-بهيج': '/images/activities/awlad-bahig-ahmed-pharmacy.svg',
   'worship-مسجد-ال-حمد-اولاد-بهيج': '/images/activities/awlad-bahig-al-hamad-mosque.svg',
+  'worship-مسجد-عمر-بن-الخطاب-الشيخ-يوسف-اولاد-بهيج': '/images/activities/sheikh-yusuf-omar-mosque.svg',
+  'worship-مسجد-ال-رشوان-الشيخ-يوسف-اولاد-بهيج': '/images/activities/sheikh-yusuf-al-rashwan-mosque.svg',
+  'worship-مسجد-ال-حسان-اولاد-بهيج': '/images/activities/awlad-bahig-al-hassan-mosque.svg',
+  'worship-مسجد-النور-ال-عمران-اولاد-بهيج': '/images/activities/awlad-bahig-al-imran-noor-mosque.svg',
+  'worship-مسجد-الرحمن-الرحيم-اولاد-بهيج': '/images/activities/awlad-bahig-rahman-raheem-mosque.svg',
 };
 
 export function latestScanImageForListing(
