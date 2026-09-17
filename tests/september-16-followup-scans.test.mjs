@@ -11,7 +11,7 @@ import { awladBahigFollowupScan20260916 } from '../lib/data/awlad-bahig-followup
 function assertUnique(scan) {
   assert.equal(new Set(scan.map((x) => x.id)).size, scan.length);
   assert.equal(new Set(scan.map((x) => x.slug)).size, scan.length);
-  assert.ok(scan.every((x) => x.lastUpdatedAt === '2026-09-16'));
+  assert.ok(scan.every((x) => ['2026-09-16', '2026-09-17'].includes(x.lastUpdatedAt)));
 }
 
 test('Nuwairat follow-up adds five duplicate-safe current records', () => {
@@ -38,10 +38,12 @@ test('Rashaida follow-up adds current cross-checked education gaps', () => {
   assert.ok(rashaidaFollowupScan20260916.every((x) => x.village === 'الرشايدة'));
 });
 
-test('Shuhada follow-up adds the essential village services only', () => {
-  assert.equal(shuhadaFollowupScan20260916.length, 3);
+test('Shuhada follow-up adds five cross-checked essential village records', () => {
+  assert.equal(shuhadaFollowupScan20260916.length, 5);
   assertUnique(shuhadaFollowupScan20260916);
   assert.ok(shuhadaFollowupScan20260916.every((x) => x.village === 'الشهداء'));
+  assert.ok(shuhadaFollowupScan20260916.every((x) => x.sourceStatus === 'cross_checked'));
+  assert.ok(shuhadaFollowupScan20260916.some((x) => x.id === 'worship-كنيسة-السيدة-العذراء-مريم-والشهيد-ابانوب-الشهداء'));
 });
 
 test('Masaeed follow-up adds five verified or cross-checked gaps', () => {
