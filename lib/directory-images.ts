@@ -65,6 +65,7 @@ const curatedListingImages: Record<string, ListingImage> = {
   'education-مدرسة-الشهداء-الابتدائية': { src: '/images/activities/shuhada-primary-school.svg' },
   'education-مدرسة-الشهداء-الاعدادية': { src: '/images/activities/shuhada-preparatory-school.svg' },
   'government-الوحدة-الصحية-بقرية-الشهداء': { src: '/images/activities/shuhada-health-unit.svg' },
+  'government-مكتب-بريد-الشهداء-العسيرات': { src: '/images/activities/shuhada-post-office.svg' },
   'education-مدرسة-المساعيد-الاعدادية-الثانوية': { src: '/images/activities/masaeed-secondary-school.svg' },
   'government-الوحدة-الصحية-بالمساعيد': { src: '/images/activities/masaeed-health-unit.svg' },
   'community-نادي-الشباب-والرياضة-بالمساعيد': { src: '/images/activities/masaeed-youth-club.svg' },
