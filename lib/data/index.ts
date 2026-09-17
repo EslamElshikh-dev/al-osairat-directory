@@ -47,6 +47,7 @@ import { awladGabaraDeepScan20260918 } from './awlad-gabara-deep-scan-2026-09-18
 import { masaeedAzharInstitute20260918 } from './masaeed-azhar-institute-2026-09-18';
 import { awqafMosqueGaps20260918 } from './awqaf-mosque-gaps-2026-09-18';
 import { masaeedNagAlAbitMosque20260918 } from './masaeed-nag-al-abit-mosque-2026-09-18';
+import { nuwairatStGeorgeChurch20260918 } from './nuwairat-st-george-church-2026-09-18';
 
 export * from '../types';
 export { categories, villages };
@@ -98,6 +99,7 @@ const rawListings: DirectoryListing[] = [
   ...masaeedAzharInstitute20260918,
   ...awqafMosqueGaps20260918,
   ...masaeedNagAlAbitMosque20260918,
+  ...nuwairatStGeorgeChurch20260918,
 ];
 
 export const listings: DirectoryListing[] = rawListings.map(normalizeDirectoryListing);

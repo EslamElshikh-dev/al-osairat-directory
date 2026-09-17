@@ -31,6 +31,7 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-التوفيق-نجع-ابوزقالي': '/images/activities/masaeed-tawfiq-mosque.svg',
   'worship-مسجد-الانصار-المساعيد': '/images/activities/masaeed-ansar-mosque.svg',
   'worship-مسجد-نجع-العبيط-المساعيد': '/images/activities/masaeed-nag-al-abit-mosque.svg',
+  'worship-كنيسة-الشهيد-العظيم-مارجرجس-النويرات': '/images/activities/nuwairat-st-george-church.svg',
 };
 
 export function latestScanImageForListing(
