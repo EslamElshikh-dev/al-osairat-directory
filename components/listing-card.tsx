@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { categoryById, type DirectoryListing } from '@/lib/data';
 import { imageForListing } from '@/lib/directory-images';
+import { latestScanImageForListing } from '@/lib/latest-scan-images';
 import { googleMapsHref, phoneHref, sourceLabel } from '@/lib/site';
 import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
@@ -17,7 +18,7 @@ function compactReviewDate(value?: string) {
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
-  const image = imageForListing(listing);
+  const image = latestScanImageForListing(listing) || imageForListing(listing);
   const reviewDate = compactReviewDate(listing.lastUpdatedAt);
   const hasRating = typeof listing.rating === 'number' && listing.reviewCount > 0;
 
