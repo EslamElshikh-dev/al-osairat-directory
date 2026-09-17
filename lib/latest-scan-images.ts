@@ -19,6 +19,8 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-الرحمن-الشهداء': '/images/activities/shuhada-al-rahman-mosque.svg',
   'transport-خط-المنشاة-نجع-البايت': '/images/activities/shuhada-al-bait-transport.svg',
   'worship-مسجد-الحفايضة-عوامر-العسيرات': '/images/activities/awamer-hafayda-mosque.svg',
+  'education-مدرسة-الشهيد-محمد-عبدالحميد-الابتدائية-نجع-اسخات': '/images/activities/masaeed-shaheed-abdelhamid-school.svg',
+  'education-مدرسة-نجع-السوالم-الاعدادية-المشتركة': '/images/activities/masaeed-nag-sawalem-school.svg',
 };
 
 export function latestScanImageForListing(
