@@ -41,6 +41,7 @@ import { awladBahigSheikhYusufScan20260917 } from './awlad-bahig-sheikh-yusuf-sc
 import { awladBahigLiveServicesScan20260917 } from './awlad-bahig-live-services-scan-2026-09-17';
 import { awladBahigMosquesScan20260917 } from './awlad-bahig-mosques-scan-2026-09-17';
 import { shuhadaDeepScan20260917 } from './shuhada-deep-scan-2026-09-17';
+import { awamerHafaydaFollowup20260918 } from './awamer-hafayda-followup-2026-09-18';
 
 export * from '../types';
 export { categories, villages };
@@ -86,6 +87,7 @@ const rawListings: DirectoryListing[] = [
   ...awladBahigLiveServicesScan20260917,
   ...awladBahigMosquesScan20260917,
   ...shuhadaDeepScan20260917,
+  ...awamerHafaydaFollowup20260918,
 ];
 
 export const listings: DirectoryListing[] = rawListings.map(normalizeDirectoryListing);
