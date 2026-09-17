@@ -158,8 +158,8 @@ export default async function VillagePage({
   };
 
   return (
-    <main id="main-content" className="page-main interior-redesign">
-      <section className="village-hero village-hero--premium">
+    <main id="main-content" className="page-main interior-redesign village-discovery-v4">
+      <section className="village-hero village-hero--premium village-hero--search-first">
         <div className="shell village-hero__premium-grid">
           <div className="village-hero__content">
             <nav className="breadcrumbs" aria-label="مسار التنقل"><Link href="/villages">القرى</Link><span>/</span><span>{village.name}</span></nav>
@@ -172,6 +172,41 @@ export default async function VillagePage({
             </div>
             <h1>{fallbackScope ? 'سجلات غير محددة القرية' : `دليل ${village.name}`}</h1>
             <p>{village.description}</p>
+
+            {!fallbackScope && (
+              <form className="village-hero-search" action="/directory" method="get" role="search">
+                <input type="hidden" name="village" value={village.name} />
+                <label className="sr-only" htmlFor={`village-search-${village.slug}`}>ابحث داخل {village.name}</label>
+                <div className="village-hero-search__field">
+                  <span aria-hidden="true"><BrandMark compact /></span>
+                  <input
+                    id={`village-search-${village.slug}`}
+                    name="q"
+                    placeholder={`ابحث داخل ${village.name}: صيدلية، دكتور، مدرسة...`}
+                    inputMode="search"
+                    autoComplete="off"
+                  />
+                  <button type="submit" className="button button--light">ابحث هنا</button>
+                </div>
+              </form>
+            )}
+
+            {!fallbackScope && categorySummary.length > 0 && (
+              <nav className="village-hero-categories" aria-label={`أهم أقسام ${village.name}`}>
+                <span>الأكثر توفرًا:</span>
+                {categorySummary.slice(0, 5).map(({ category, qualified }) => (
+                  <Link
+                    key={category.id}
+                    href={qualified
+                      ? villageCategoryLandingPath(village, category)
+                      : `/directory/${category.id}?village=${encodeURIComponent(village.name)}`}
+                  >
+                    {category.shortLabel}
+                  </Link>
+                ))}
+              </nav>
+            )}
+
             <div className="catalog-hero__actions">
               <Link href="#village-listings" className="button button--light">عرض الأنشطة</Link>
               <Link href="/villages" className="button button--outline-light">كل القرى</Link>
@@ -185,13 +220,16 @@ export default async function VillagePage({
               {!fallbackScope && <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابعًا ونجعًا</small></span>}
               <span><b>{categorySummary.length.toLocaleString('ar-EG')}</b><small>أقسام متاحة</small></span>
             </div>
+            {!fallbackScope && (
+              <Link href={`/directory?village=${encodeURIComponent(village.name)}`} className="catalog-hero__summary-cta">افتح نتائج القرية فقط ←</Link>
+            )}
           </aside>
         </div>
       </section>
 
       <section className="shell page-section village-detail-content">
         {village.localities.length > 0 && (
-          <div id="localities" className="localities-panel localities-panel--premium">
+          <div id="localities" className="localities-panel localities-panel--premium localities-panel--discovery">
             <div className="localities-panel__heading">
               <span className="localities-panel__mark" aria-hidden="true"><BrandMark compact /></span>
               <div><span>نطاقات محلية</span><h2>التوابع والنجوع المسجلة بالاسم</h2></div>
@@ -210,7 +248,7 @@ export default async function VillagePage({
         )}
 
         {categorySummary.length > 0 && (
-          <section className="village-category-section village-category-section--premium" aria-labelledby="village-services-title">
+          <section className="village-category-section village-category-section--premium village-category-section--discovery" aria-labelledby="village-services-title">
             <div className="village-category-heading">
               <div>
                 <span className="eyebrow eyebrow--dark">{fallbackScope ? 'السجلات حسب القسم' : 'الخدمات داخل القرية'}</span>
@@ -248,7 +286,7 @@ export default async function VillagePage({
         </div>
         {result.items.length ? (
           <>
-            <div className="listing-grid">{result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
+            <div className="listing-grid listing-grid--discovery">{result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
             {result.totalPages > 1 && (
               <nav className="detail-actions detail-actions--pagination" aria-label={fallbackScope ? 'صفحات السجلات غير محددة القرية' : `صفحات دليل ${village.name}`}>
                 {result.page > 1 && <Link className="button button--ghost" rel="prev" href={createDirectoryHref(pathname, { page: result.page - 1 })}>السابق</Link>}

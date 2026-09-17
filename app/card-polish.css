@@ -73,6 +73,85 @@
   height: 5px;
 }
 
+/* V5 — make trust, freshness and rating scannable before the action row. */
+.listing-card__trust-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 31px;
+  margin: 13px 0 2px;
+}
+
+.listing-card__trust-chip,
+.listing-card__rating,
+.listing-card__trust-row time {
+  min-height: 27px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid rgba(20, 63, 51, .09);
+  border-radius: 999px;
+  background: #f6f8f6;
+  color: #52655e;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.listing-card__trust-chip--maps {
+  border-color: rgba(52, 112, 88, .15);
+  background: #edf6f1;
+  color: #27624f;
+}
+
+.listing-card__trust-chip--checked {
+  border-color: rgba(184, 137, 34, .17);
+  background: #fff7df;
+  color: #86631a;
+}
+
+.listing-card__rating {
+  direction: ltr;
+  background: #fffaf0;
+  color: #7e5a12;
+}
+
+.listing-card__rating b {
+  color: #c18b18;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.listing-card__rating strong {
+  color: #684c12;
+  font-size: 10.5px;
+}
+
+.listing-card__rating span {
+  color: #917a47;
+  font-size: 9.5px;
+}
+
+.listing-card__trust-row time {
+  background: transparent;
+  color: #75827d;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .listing-card {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+
+  .listing-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(215, 168, 60, .2);
+    box-shadow: 0 20px 46px rgba(16, 42, 36, .1);
+  }
+}
+
 @media (max-width: 760px) {
   .category-visual svg {
     width: 63%;
@@ -84,6 +163,19 @@
     height: 32px;
     flex-basis: 32px;
   }
+
+  .listing-card__trust-row {
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .listing-card__trust-chip,
+  .listing-card__rating,
+  .listing-card__trust-row time {
+    min-height: 26px;
+    padding: 5px 8px;
+    font-size: 9.5px;
+  }
 }
 
 @media (max-width: 380px) {
@@ -91,11 +183,16 @@
     width: 62%;
     height: 62%;
   }
+
+  .listing-card__trust-row time {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .category-visual,
-  .category-visual svg {
+  .category-visual svg,
+  .listing-card {
     transition: none !important;
   }
 }

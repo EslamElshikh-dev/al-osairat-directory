@@ -32,12 +32,76 @@ type ListingImage = {
 
 const listingImages = activityImageManifest as Record<string, ListingImage>;
 
+const curatedListingImages: Record<string, ListingImage> = {
+  'education-مدرسة-عوامر-العسيرات-الاعدادية': { src: '/images/activities/awamer-preparatory-school.svg' },
+  'education-معهد-عوامر-العسيرات': { src: '/images/activities/awamer-azhar-institute.svg' },
+  'worship-مسجد-ال-النميسي-عوامر-العسيرات': { src: '/images/activities/awamer-al-nemaisi-mosque.svg' },
+  'government-الوحدة-الصحية-بعوامر-العسيرات': { src: '/images/activities/awamer-health-unit.svg' },
+  'shops-معرض-النور-للادوات-الصحية-عوامر-العسيرات': { src: '/images/activities/awamer-sanitary-store.svg' },
+  'pharmacies-صيدلية-الدكتورة-ولاء-اولاد-جبارة': { src: '/images/activities/olad-gabara-walaa-pharmacy.svg' },
+  'government-مستشفى-العسيرات-العام': { src: '/images/activities/osairat-general-hospital.svg' },
+  'government-قسم-شرطة-العسيرات': { src: '/images/activities/osairat-police-station.svg' },
+  'doctors-معامل-الوسيط-للتحاليل-الطبية': { src: '/images/activities/al-waseet-lab.svg' },
+  'shops-الراعي-للتجارة-النويرات': { src: '/images/activities/al-raei-nuwairat-market.svg' },
+  'education-مدرسة-ثورة-25-يناير-اولاد-جبارة': { src: '/images/activities/awlad-gabara-25-jan-school.svg' },
+  'education-مدرسة-اولاد-جبارة-الابتدائية-القديمة': { src: '/images/activities/awlad-gabara-old-primary-school.svg' },
+  'education-مدرسة-النويرات-الاعدادية': { src: '/images/activities/nuwairat-preparatory-school.svg' },
+  'community-مركز-شباب-النويرات': { src: '/images/activities/nuwairat-youth-center.svg' },
+  'worship-مسجد-ابو-بكر-الصديق-النويرات': { src: '/images/activities/nuwairat-abu-bakr-mosque.svg' },
+  'restaurants-مقهى-النويرات': { src: '/images/activities/nuwairat-cafe.svg' },
+  'government-مكتب-صابر-حسين-البتيتي-النويرات': { src: '/images/activities/nuwairat-saber-office.svg' },
+  'education-مدرسة-اولاد-حمزة-الثانوية-المشتركة': { src: '/images/activities/awlad-hamza-secondary-school.svg' },
+  'education-مدرسة-اولاد-حمزة-للتعليم-الاساسي': { src: '/images/activities/awlad-hamza-basic-school.svg' },
+  'government-البنك-الزراعي-المصري-اولاد-حمزة': { src: '/images/activities/awlad-hamza-agricultural-bank.svg' },
+  'government-بنك-مصر-atm-العسيرات': { src: '/images/activities/awlad-hamza-bank-misr-atm.svg' },
+  'worship-مسجد-اولاد-حمزة': { src: '/images/activities/awlad-hamza-mosque.svg' },
+  'restaurants-الف-هنا-اولاد-حمزة': { src: '/images/activities/awlad-hamza-alf-hana.svg' },
+  'shops-جلاكسي-اولاد-حمزة': { src: '/images/activities/awlad-hamza-galaxy-mobile.svg' },
+  'restaurants-مخبز-وحلواني-احباب-الرسول-اولاد-حمزة': { src: '/images/activities/awlad-hamza-ahbab-bakery.svg' },
+  'shops-الحاج-عبدالناصر-محمد-جزيرة-اولاد-حمزة': { src: '/images/activities/gazirat-awlad-hamza-nursery.svg' },
+  'education-مدرسة-العجوبية-الاعدادية-المشتركة': { src: '/images/activities/rashaida-ajoubia-preparatory.svg' },
+  'education-مدرسة-نجع-جبرة-الاعدادية-المشتركة': { src: '/images/activities/rashaida-nag-jabra-preparatory.svg' },
+  'education-معهد-الرشايدة-غرب-الابتدائي': { src: '/images/activities/rashaida-west-azhar-institute.svg' },
+  'education-مدرسة-الشهداء-الابتدائية': { src: '/images/activities/shuhada-primary-school.svg' },
+  'education-مدرسة-الشهداء-الاعدادية': { src: '/images/activities/shuhada-preparatory-school.svg' },
+  'government-الوحدة-الصحية-بقرية-الشهداء': { src: '/images/activities/shuhada-health-unit.svg' },
+  'government-مكتب-بريد-الشهداء-العسيرات': { src: '/images/activities/shuhada-post-office.svg' },
+  'education-مدرسة-المساعيد-الاعدادية-الثانوية': { src: '/images/activities/masaeed-secondary-school.svg' },
+  'government-الوحدة-الصحية-بالمساعيد': { src: '/images/activities/masaeed-health-unit.svg' },
+  'community-نادي-الشباب-والرياضة-بالمساعيد': { src: '/images/activities/masaeed-youth-club.svg' },
+  'worship-مسجد-الانوار-المحمدية-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-anwar-mohammedia-mosque.svg' },
+  'worship-مسجد-الهادي-ابوزقالي-المساعيد': { src: '/images/activities/masaeed-al-hadi-mosque.svg' },
+  'government-مكتب-بريد-المساعيد': { src: '/images/activities/masaeed-post-office.svg' },
+  'education-مدرسة-اولاد-بهيج-تعليم-اساسي-الاعدادية': { src: '/images/activities/awlad-bahig-basic-school.svg' },
+  'education-المدرسة-الابتدائية-باولاد-بهيج': { src: '/images/activities/awlad-bahig-primary-school.svg' },
+  'education-مدرسة-نجع-رشوان-باولاد-بهيج-الابتدائية': { src: '/images/activities/awlad-bahig-nag-rashwan-school.svg' },
+  'government-الوحدة-الصحية-باولاد-بهيج': { src: '/images/activities/awlad-bahig-health-unit.svg' },
+  'doctors-مركز-الرحمة-للغسيل-الكلوي-اولاد-بهيج': { src: '/images/activities/awlad-bahig-rahma-dialysis.svg' },
+  'community-جمعية-اولاد-بهيج-الخيرية': { src: '/images/activities/awlad-bahig-charity.svg' },
+  'worship-مسجد-ومجمع-الرحمة-اولاد-بهيج': { src: '/images/activities/awlad-bahig-rahma-mosque.svg' },
+  'worship-مسجد-ال-شحات-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-shahat-mosque.svg' },
+  'worship-مسجد-ال-يونس-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-yunus-mosque.svg' },
+  'worship-مسجد-ال-عسير-التاريخي-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-asir-mosque.svg' },
+  'worship-مسجد-ال-عيسى-اولاد-بهيج': { src: '/images/activities/awlad-bahig-al-eissa-mosque.svg' },
+  'shops-تسالي-الشروق-اولاد-بهيج': { src: '/images/activities/awlad-bahig-tasali-al-shorouk.svg' },
+  'government-مكتب-بريد-اولاد-بهيج': { src: '/images/activities/awlad-bahig-post-office.svg' },
+  'community-مركز-شباب-الاحايوة-غرب': { src: '/images/activities/ahaywa-gharb-youth-center.svg' },
+  'pharmacies-صيدلية-الدكتور-السيد-الاحايوة-غرب': { src: '/images/activities/ahaywa-gharb-al-sayed-pharmacy.svg' },
+  'education-معهد-بنين-نجع-عباس-الاعدادي-الثانوي': { src: '/images/activities/nag-abbas-boys-azhar-institute.svg' },
+  'education-معهد-فتيات-نجع-عباس-الاعدادي-الثانوي': { src: '/images/activities/nag-abbas-girls-azhar-institute.svg' },
+  'government-مكتب-بريد-نجع-عباس': { src: '/images/activities/nag-abbas-post-office.svg' },
+  'shops-معرض-مكة-للادوات-المنزلية-نجع-عباس': { src: '/images/activities/nag-abbas-makka-homeware.svg' },
+  'education-معهد-بنين-اولاد-علي-الازهري': { src: '/images/activities/awlad-ali-boys-azhar-institute.svg' },
+  'education-معهد-فتيات-اولاد-علي-الازهري': { src: '/images/activities/awlad-ali-girls-azhar-institute.svg' },
+  'government-الوحدة-المحلية-لمركز-ومدينة-العسيرات': { src: '/images/activities/osairat-city-hall.svg' },
+};
+
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
   return directoryImages[category];
 }
 
 export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category' | 'title' | 'subCategory'>): DirectoryImage {
-  const customImage = listingImages[listing.id];
+  const customImage = curatedListingImages[listing.id] || listingImages[listing.id];
   if (customImage) {
     if (customImage.sourceKind === 'owner_photo') {
       return {
@@ -47,7 +111,6 @@ export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category
         label: 'صورة منشورة من ملف النشاط',
       };
     }
-
     return {
       src: customImage.src,
       alt: `صورة تعبيرية مخصصة عن ${listing.subCategory || 'النشاط'} - ${listing.title}`,
@@ -55,7 +118,6 @@ export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category
       label: 'صورة تعبيرية مخصصة',
     };
   }
-
   const image = imageForCategory(listing.category);
   return { ...image, alt: `صورة تعبيرية عن ${listing.subCategory || image.alt} - ${listing.title}` };
 }

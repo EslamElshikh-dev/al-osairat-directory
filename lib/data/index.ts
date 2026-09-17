@@ -24,6 +24,23 @@ import { rashaidaScan20260908 } from './rashaida-scan-2026-09-08';
 import { rashaidaScan20260913 } from './rashaida-scan-2026-09-13';
 import { ahaywaGharbScan20260913 } from './ahaywa-gharb-scan-2026-09-13';
 import { nuwairatScan20260913 } from './nuwairat-scan-2026-09-13';
+import { awamerAlOsairatScan20260916 } from './awamer-al-osairat-scan-2026-09-16';
+import { liveMapsScan20260916 } from './live-maps-scan-2026-09-16';
+import { awladGabaraEducationScan20260916 } from './awlad-gabara-education-scan-2026-09-16';
+import { nuwairatFollowupScan20260916 } from './nuwairat-followup-scan-2026-09-16';
+import { awladHamzaFollowupScan20260916 } from './awlad-hamza-followup-scan-2026-09-16';
+import { gaziratAwladHamzaFollowup20260916 } from './gazirat-awlad-hamza-followup-2026-09-16';
+import { rashaidaFollowupScan20260916 } from './rashaida-followup-scan-2026-09-16';
+import { shuhadaFollowupScan20260916 } from './shuhada-followup-scan-2026-09-16';
+import { masaeedFollowupScan20260916 } from './masaeed-followup-scan-2026-09-16';
+import { awladBahigFollowupScan20260916 } from './awlad-bahig-followup-scan-2026-09-16';
+import { ahaywaGharbFollowupScan20260917 } from './ahaywa-gharb-followup-scan-2026-09-17';
+import { nagAbbasFollowupScan20260917 } from './nag-abbas-followup-scan-2026-09-17';
+import { awladBahigLocalitiesScan20260917 } from './awlad-bahig-localities-scan-2026-09-17';
+import { awladBahigSheikhYusufScan20260917 } from './awlad-bahig-sheikh-yusuf-scan-2026-09-17';
+import { awladBahigLiveServicesScan20260917 } from './awlad-bahig-live-services-scan-2026-09-17';
+import { awladBahigMosquesScan20260917 } from './awlad-bahig-mosques-scan-2026-09-17';
+import { shuhadaDeepScan20260917 } from './shuhada-deep-scan-2026-09-17';
 
 export * from '../types';
 export { categories, villages };
@@ -52,10 +69,25 @@ const rawListings: DirectoryListing[] = [
   ...rashaidaScan20260913,
   ...ahaywaGharbScan20260913,
   ...nuwairatScan20260913,
+  ...awamerAlOsairatScan20260916,
+  ...liveMapsScan20260916,
+  ...awladGabaraEducationScan20260916,
+  ...nuwairatFollowupScan20260916,
+  ...awladHamzaFollowupScan20260916,
+  ...gaziratAwladHamzaFollowup20260916,
+  ...rashaidaFollowupScan20260916,
+  ...shuhadaFollowupScan20260916,
+  ...masaeedFollowupScan20260916,
+  ...awladBahigFollowupScan20260916,
+  ...ahaywaGharbFollowupScan20260917,
+  ...nagAbbasFollowupScan20260917,
+  ...awladBahigLocalitiesScan20260917,
+  ...awladBahigSheikhYusufScan20260917,
+  ...awladBahigLiveServicesScan20260917,
+  ...awladBahigMosquesScan20260917,
+  ...shuhadaDeepScan20260917,
 ];
 
-// Keep immutable IDs/slugs untouched while standardizing user-facing legacy data
-// in one place. This makes cards, detail pages, search and structured data agree.
 export const listings: DirectoryListing[] = rawListings.map(normalizeDirectoryListing);
 
 export const categoryById = Object.fromEntries(

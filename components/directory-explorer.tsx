@@ -38,9 +38,11 @@ export function DirectoryExplorer({
   const vehicle = transportFilters?.vehicle || 'all';
   const destination = transportFilters?.destination || 'all';
   const hasTransportFilter = category === 'transport' && (vehicle !== 'all' || destination !== 'all');
+  const hasActiveFilter = Boolean(query || village !== 'all' || category || hasTransportFilter);
+  const quickVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
 
   return (
-    <div className="explorer explorer--premium">
+    <div className="explorer explorer--premium explorer--discovery-v4">
       {category === 'transport' && (
         <div className="explorer__toolbar-shell">
           <div className="explorer__toolbar-heading">
@@ -89,11 +91,11 @@ export function DirectoryExplorer({
         </div>
       )}
 
-      <div className="explorer__toolbar-shell">
+      <div className="explorer__toolbar-shell explorer__toolbar-shell--discovery">
         <div className="explorer__toolbar-heading">
           <div>
             <span className="explorer__toolbar-kicker">بحث وتصفية</span>
-            <strong>وصّل للنتيجة الأقرب لاحتياجك</strong>
+            <strong>وصّل للنشاط أو الخدمة في أقل عدد من الخطوات</strong>
           </div>
           <span className="explorer__toolbar-mark" aria-hidden="true"><BrandMark compact /></span>
         </div>
@@ -106,13 +108,13 @@ export function DirectoryExplorer({
               id="directory-search"
               name="q"
               defaultValue={query}
-              placeholder="ابحث باسم النشاط، التخصص، الخدمة أو القرية..."
+              placeholder="مثال: صيدلية، أسنان، سباك، مدرسة، أولاد حمزة..."
               inputMode="search"
               autoComplete="off"
             />
             <span className="search-field__hint">بحث ذكي</span>
             <button type="submit" className="button button--primary">بحث</button>
-            {(query || village !== 'all' || hasTransportFilter) && <Link href={pathname} className="button button--ghost">مسح</Link>}
+            {hasActiveFilter && <Link href={pathname} className="button button--ghost">مسح</Link>}
           </div>
 
           <label className="select-field" htmlFor="directory-village">
@@ -127,66 +129,69 @@ export function DirectoryExplorer({
           {category === 'transport' && vehicle !== 'all' && <input type="hidden" name="vehicle" value={vehicle} />}
           {category === 'transport' && destination !== 'all' && <input type="hidden" name="destination" value={destination} />}
         </form>
+
+        <nav className="directory-village-rail" aria-label="اختيار سريع للقرية">
+          <Link
+            href={createDirectoryHref(pathname, { query, village: 'all', vehicle, destination })}
+            className={village === 'all' ? 'is-active' : undefined}
+            aria-current={village === 'all' ? 'page' : undefined}
+          >
+            كل العسيرات
+          </Link>
+          {quickVillages.map((item) => (
+            <Link
+              key={item.slug}
+              href={createDirectoryHref(pathname, { query, village: item.name, vehicle, destination })}
+              className={village === item.name ? 'is-active' : undefined}
+              aria-current={village === item.name ? 'page' : undefined}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
       </div>
 
-      <div className="results-bar results-bar--premium results-bar--ticker">
+      <div className="results-bar results-bar--premium results-bar--discovery">
         <div className="results-bar__identity">
           <span className="results-bar__mark" aria-hidden="true"><BrandMark compact /></span>
           <div><strong>{result.total.toLocaleString('ar-EG')}</strong><span>نتيجة مطابقة</span></div>
         </div>
 
-        <nav className="category-ticker" aria-label="التنقل بين تصنيفات الأنشطة">
-          <div className="category-ticker__track">
-            <div className="category-ticker__group">
-              <Link
-                href={createDirectoryHref('/directory', { query, village })}
-                className={`category-ticker__item is-all${!category ? ' is-active' : ''}`}
-                aria-current={!category ? 'page' : undefined}
-              >
-                كل الأقسام
-              </Link>
-              {categories.map((item) => (
-                <Link
-                  key={`ticker-primary-${item.id}`}
-                  href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
-                  className={`category-ticker__item category-ticker__item--${item.id}${category === item.id ? ' is-active' : ''}`}
-                  aria-current={category === item.id ? 'page' : undefined}
-                >
-                  <CategoryVisual category={item.id} size="sm" />
-                  <span>{item.shortLabel}</span>
-                </Link>
-              ))}
-            </div>
-
-            <div className="category-ticker__group" aria-hidden="true">
-              <Link href={createDirectoryHref('/directory', { query, village })} className="category-ticker__item is-all" tabIndex={-1}>كل الأقسام</Link>
-              {categories.map((item) => (
-                <Link
-                  key={`ticker-copy-${item.id}`}
-                  href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
-                  className={`category-ticker__item category-ticker__item--${item.id}`}
-                  tabIndex={-1}
-                >
-                  <CategoryVisual category={item.id} size="sm" />
-                  <span>{item.shortLabel}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+        <nav className="directory-category-rail" aria-label="التنقل بين تصنيفات الأنشطة">
+          <Link
+            href={createDirectoryHref('/directory', { query, village })}
+            className={`directory-category-chip is-all${!category ? ' is-active' : ''}`}
+            aria-current={!category ? 'page' : undefined}
+          >
+            كل الأقسام
+          </Link>
+          {categories.map((item) => (
+            <Link
+              key={item.id}
+              href={createDirectoryHref(`/directory/${item.id}`, { query, village })}
+              className={`directory-category-chip directory-category-chip--${item.id}${category === item.id ? ' is-active' : ''}`}
+              aria-current={category === item.id ? 'page' : undefined}
+            >
+              <CategoryVisual category={item.id} size="sm" />
+              <span>{item.shortLabel}</span>
+            </Link>
+          ))}
         </nav>
 
-        <div className="results-bar__context">
+        <div className="results-bar__context results-bar__context--discovery">
           {query && <span>بحث: <b>«{query}»</b></span>}
-          {village !== 'all' && <span>النطاق: <b>{village}</b></span>}
+          {village !== 'all' && <span>القرية: <b>{village}</b></span>}
+          {category && <span>القسم: <b>{categories.find((item) => item.id === category)?.shortLabel}</b></span>}
           {category === 'transport' && vehicle !== 'all' && <span>المركبة: <b>{getTransportVehicleLabel(vehicle)}</b></span>}
           {category === 'transport' && destination !== 'all' && <span>الوجهة: <b>{getTransportDestinationLabel(destination)}</b></span>}
           {result.total > result.pageSize && <span>عرض {result.from.toLocaleString('ar-EG')}–{result.to.toLocaleString('ar-EG')}</span>}
+          {hasActiveFilter && <Link href={pathname}>إلغاء كل الفلاتر</Link>}
         </div>
       </div>
 
       {result.items.length ? (
         <>
-          <div className="listing-grid">
+          <div className="listing-grid listing-grid--discovery">
             {result.items.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
           </div>
 
@@ -247,7 +252,7 @@ export function DirectoryExplorer({
         <div className="empty-state empty-state--premium">
           <span className="empty-state__mark" aria-hidden="true"><BrandMark /></span>
           <strong>لا توجد نتائج مطابقة</strong>
-          <p>جرّب نوع مركبة أو وجهة أخرى، كلمة أقصر، أو اختر قرية مختلفة.</p>
+          <p>جرّب كلمة أقصر أو قسمًا أو قرية مختلفة، أو امسح الفلاتر لعرض كل الدليل.</p>
           <Link href={pathname} className="button button--soft">عرض كل النتائج</Link>
         </div>
       )}
