@@ -16,6 +16,7 @@ import { ListingReport } from '@/components/listing-report';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { imageForListing } from '@/lib/directory-images';
+import { latestScanImageForListing } from '@/lib/latest-scan-images';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     : category.shortLabel;
   const location = listing.location.length <= 48 ? listing.location : listing.village;
   const description = `${listing.title}، ${service} في ${location}. بيانات التواصل والموقع ضمن دليل العسيرات.`;
-  const image = imageForListing(listing);
+  const image = latestScanImageForListing(listing) || imageForListing(listing);
 
   return buildPageMetadata({
     title,
@@ -95,7 +96,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const fallbackScope = isFallbackScope(listing.village);
   const villagePath = villagePathByName(listing.village);
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
-  const coverImage = imageForListing(listing);
+  const coverImage = latestScanImageForListing(listing) || imageForListing(listing);
 
   const [publishedNearby, overriddenStatic] = await Promise.all([
     getPublishedListings({ category: listing.category, village: listing.village }),
@@ -258,12 +259,12 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           <div className="detail-aside__list">
             {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
           </div>
-          <nav className="seo-context-links" aria-label="روابط مرتبطة بالنشاط">
-            {localLandingPath && <Link href={localLandingPath}>{category.shortLabel} في {listing.village}</Link>}
-            {villagePath && <Link href={villagePath}>دليل {listing.village}</Link>}
-            <Link href={`/directory/${listing.category}`}>كل {category.shortLabel} في العسيرات</Link>
-            <Link href="/directory">استكشف الدليل الكامل</Link>
-          </nav>
+
+          {localLandingPath && (
+            <Link className="button button--ghost detail-aside__landing" href={localLandingPath}>
+              عرض كل {category.shortLabel} في {listing.village}
+            </Link>
+          )}
         </aside>
       </section>
 
