@@ -30,6 +30,7 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-خاتم-المرسلين-نجع-ابوزقالي': '/images/activities/masaeed-khatam-mosque.svg',
   'worship-مسجد-التوفيق-نجع-ابوزقالي': '/images/activities/masaeed-tawfiq-mosque.svg',
   'worship-مسجد-الانصار-المساعيد': '/images/activities/masaeed-ansar-mosque.svg',
+  'worship-مسجد-نجع-العبيط-المساعيد': '/images/activities/masaeed-nag-al-abit-mosque.svg',
 };
 
 export function latestScanImageForListing(
