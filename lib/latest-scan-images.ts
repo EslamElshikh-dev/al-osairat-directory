@@ -18,6 +18,7 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-ال-البايت-الشهداء': '/images/activities/shuhada-al-bait-mosque.svg',
   'worship-مسجد-الرحمن-الشهداء': '/images/activities/shuhada-al-rahman-mosque.svg',
   'transport-خط-المنشاة-نجع-البايت': '/images/activities/shuhada-al-bait-transport.svg',
+  'worship-مسجد-الحفايضة-عوامر-العسيرات': '/images/activities/awamer-hafayda-mosque.svg',
 };
 
 export function latestScanImageForListing(
