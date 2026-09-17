@@ -88,6 +88,9 @@ const curatedListingImages: Record<string, ListingImage> = {
   'education-معهد-فتيات-نجع-عباس-الاعدادي-الثانوي': { src: '/images/activities/nag-abbas-girls-azhar-institute.svg' },
   'government-مكتب-بريد-نجع-عباس': { src: '/images/activities/nag-abbas-post-office.svg' },
   'shops-معرض-مكة-للادوات-المنزلية-نجع-عباس': { src: '/images/activities/nag-abbas-makka-homeware.svg' },
+  'education-معهد-بنين-اولاد-علي-الازهري': { src: '/images/activities/awlad-ali-boys-azhar-institute.svg' },
+  'education-معهد-فتيات-اولاد-علي-الازهري': { src: '/images/activities/awlad-ali-girls-azhar-institute.svg' },
+  'government-الوحدة-المحلية-لمركز-ومدينة-العسيرات': { src: '/images/activities/osairat-city-hall.svg' },
 };
 
 export function imageForCategory(category: DirectoryCategory): DirectoryImage {
