@@ -21,6 +21,8 @@ const latestScanImages: Record<string, string> = {
   'worship-مسجد-الحفايضة-عوامر-العسيرات': '/images/activities/awamer-hafayda-mosque.svg',
   'education-مدرسة-الشهيد-محمد-عبدالحميد-الابتدائية-نجع-اسخات': '/images/activities/masaeed-shaheed-abdelhamid-school.svg',
   'education-مدرسة-نجع-السوالم-الاعدادية-المشتركة': '/images/activities/masaeed-nag-sawalem-school.svg',
+  'education-معهد-اولاد-جبارة-الابتدائي': '/images/activities/awlad-gabara-azhar-institute.svg',
+  'worship-مسجد-التوحيد-نجع-ابو-رجل': '/images/activities/awlad-gabara-tawhid-mosque.svg',
 };
 
 export function latestScanImageForListing(
