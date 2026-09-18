@@ -117,3 +117,33 @@ test('Sand can cancel an active request and stops in-flight work when the panel 
   assert.match(component, /if \(event\.key === 'Escape'\) closePanel\(\)/);
   assert.match(css, /\.sand-composer \.sand-composer__cancel/);
 });
+
+
+test('Sand mobile UX restores launcher focus and locks background scrolling', async () => {
+  const [component, css] = await Promise.all([
+    readProjectFile('components/sand-assistant.tsx'),
+    readProjectFile('app/sand-assistant.css'),
+  ]);
+
+  assert.match(component, /restoreTriggerFocusRef/);
+  assert.match(component, /requestAnimationFrame/);
+  assert.match(component, /\[data-sand-trigger="true"\]/);
+  assert.match(component, /aria-describedby="sand-privacy"/);
+  assert.match(component, /enterKeyHint="send"/);
+  assert.match(css, /body:has\(\.sand-assistant\.is-open\)[\s\S]*?overflow:\s*hidden/);
+  assert.match(css, /overscroll-behavior:\s*none/);
+});
+
+test('Sand avatar avoids global image preload competition and result cards expose freshness', async () => {
+  const [component, css] = await Promise.all([
+    readProjectFile('components/sand-assistant.tsx'),
+    readProjectFile('app/sand-assistant.css'),
+  ]);
+
+  assert.doesNotMatch(component, /\bpriority\b/);
+  assert.match(component, /sizes="50px"/);
+  assert.match(component, /loading="eager"/);
+  assert.match(component, /formatSandDate/);
+  assert.match(component, /آخر تحديث:/);
+  assert.match(css, /\.sand-result__freshness/);
+});

@@ -416,11 +416,18 @@
   line-height: 1.65;
 }
 
-.sand-result__hours {
+.sand-result__hours,
+.sand-result__freshness {
   display: block;
   margin-top: 6px;
   color: #776d5d;
   font-size: 9.5px;
+}
+
+.sand-result__freshness {
+  margin-top: 3px;
+  color: #78857f;
+  font-size: 8.8px;
 }
 
 .sand-result__actions {
@@ -648,6 +655,11 @@
 }
 
 @media (max-width: 760px) {
+  body:has(.sand-assistant.is-open) {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   .sand-assistant {
     left: 14px;
     bottom: calc(94px + env(safe-area-inset-bottom));
