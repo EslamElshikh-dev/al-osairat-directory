@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { CommunityActivityItem } from '@/lib/community-activity';
 
-type Filter = 'all' | 'review' | 'reply';
+type Filter = 'all' | 'helpful' | 'review' | 'reply';
 
 function formatDate(value: string) {
   try {
@@ -29,22 +29,43 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-export function CommunityActivityFeed({ items }: { items: CommunityActivityItem[] }) {
+export function CommunityActivityFeed({
+  items,
+  followingMode = false,
+}: {
+  items: CommunityActivityItem[];
+  followingMode?: boolean;
+}) {
   const [filter, setFilter] = useState<Filter>('all');
 
-  const visible = useMemo(
-    () => filter === 'all' ? items : items.filter((item) => item.kind === filter),
-    [filter, items],
-  );
+  const visible = useMemo(() => {
+    if (filter === 'review' || filter === 'reply') {
+      return items.filter((item) => item.kind === filter);
+    }
+    if (filter === 'helpful') {
+      return items
+        .filter((item) => item.weeklyHelpfulCount > 0)
+        .sort((a, b) =>
+          b.weeklyHelpfulCount - a.weeklyHelpfulCount
+          || b.reactions.helpfulCount - a.reactions.helpfulCount
+          || Date.parse(b.createdAt) - Date.parse(a.createdAt),
+        );
+    }
+    return items;
+  }, [filter, items]);
 
   const reviewCount = items.filter((item) => item.kind === 'review').length;
   const replyCount = items.length - reviewCount;
+  const weeklyHelpfulItems = items.filter((item) => item.weeklyHelpfulCount > 0).length;
 
   return (
-    <div className="community-activity-explorer">
-      <div className="community-activity-tabs" role="tablist" aria-label="نوع مساهمات المجتمع">
+    <div className={'community-activity-explorer' + (followingMode ? ' is-following-feed' : '')}>
+      <div className="community-activity-tabs" role="tablist" aria-label="عرض مساهمات المجتمع">
         <button type="button" role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>
-          الكل <b>{items.length.toLocaleString('ar-EG')}</b>
+          {followingMode ? 'الأحدث ممن أتابعهم' : 'الأحدث'} <b>{items.length.toLocaleString('ar-EG')}</b>
+        </button>
+        <button type="button" role="tab" aria-selected={filter === 'helpful'} className={filter === 'helpful' ? 'is-active' : ''} onClick={() => setFilter('helpful')}>
+          الأكثر فائدة هذا الأسبوع <b>{weeklyHelpfulItems.toLocaleString('ar-EG')}</b>
         </button>
         <button type="button" role="tab" aria-selected={filter === 'review'} className={filter === 'review' ? 'is-active' : ''} onClick={() => setFilter('review')}>
           التقييمات <b>{reviewCount.toLocaleString('ar-EG')}</b>
@@ -53,6 +74,12 @@ export function CommunityActivityFeed({ items }: { items: CommunityActivityItem[
           الردود <b>{replyCount.toLocaleString('ar-EG')}</b>
         </button>
       </div>
+
+      {filter === 'helpful' ? (
+        <p className="community-activity-tabs-note">
+          الترتيب يعتمد على إشارات «مفيد» خلال آخر 7 أيام فقط، وليس على إجمالي التفاعل التاريخي.
+        </p>
+      ) : null}
 
       {visible.length ? (
         <div className="community-activity-list">
@@ -73,6 +100,11 @@ export function CommunityActivityFeed({ items }: { items: CommunityActivityItem[
                     </span>
                   </Link>
                   <div className="community-activity-meta">
+                    {item.weeklyHelpfulCount > 0 ? (
+                      <span className="community-activity-weekly-helpful">
+                        ✓ {item.weeklyHelpfulCount.toLocaleString('ar-EG')} مفيد هذا الأسبوع
+                      </span>
+                    ) : null}
                     <span>{item.kind === 'review' ? 'تقييم' : 'رد'}</span>
                     <time dateTime={item.createdAt}>{formatDate(item.createdAt)}</time>
                   </div>
@@ -99,9 +131,9 @@ export function CommunityActivityFeed({ items }: { items: CommunityActivityItem[
         </div>
       ) : (
         <div className="community-members-empty community-activity-empty">
-          <span aria-hidden="true">✦</span>
-          <strong>لا توجد مساهمات في هذا العرض</strong>
-          <p>غيّر نوع المساهمات أو عد لاحقًا بعد مشاركة أعضاء المجتمع.</p>
+          <span aria-hidden="true">{filter === 'helpful' ? '✓' : '✦'}</span>
+          <strong>{filter === 'helpful' ? 'لا توجد مساهمات حصلت على «مفيد» هذا الأسبوع' : 'لا توجد مساهمات في هذا العرض'}</strong>
+          <p>{filter === 'helpful' ? 'ستظهر هنا المساهمات عندما تبدأ إشارات «مفيد» الجديدة خلال آخر 7 أيام.' : 'غيّر نوع المساهمات أو عد لاحقًا بعد مشاركة أعضاء المجتمع.'}</p>
         </div>
       )}
     </div>
