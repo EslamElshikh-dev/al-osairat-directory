@@ -624,6 +624,19 @@
 .sand-composer button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 .sand-composer button svg { width: 19px; height: 19px; transform: scaleX(-1); }
 
+.sand-composer .sand-composer__cancel {
+  background: #6e3a34;
+  box-shadow: 0 7px 16px rgba(110, 58, 52, .2);
+}
+
+.sand-composer__cancel span {
+  width: 14px;
+  height: 14px;
+  display: block;
+  border-radius: 3px;
+  background: #fff;
+}
+
 .sand-privacy {
   margin: 0;
   padding: 0 13px 10px;
