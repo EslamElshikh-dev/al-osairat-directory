@@ -286,6 +286,19 @@
 }
 
 .sand-panel__header > button:hover { background: rgba(255, 255, 255, .14); }
+.sand-panel__header > button:disabled { opacity: .42; cursor: default; }
+
+.sand-panel__header > .sand-panel__reset {
+  width: auto;
+  min-width: 46px;
+  padding-inline: 10px;
+  color: #f7e7b7;
+  border-color: rgba(213, 174, 88, .22);
+  background: rgba(213, 174, 88, .09);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .01em;
+}
 
 .sand-emergency-bar {
   min-height: 38px;
@@ -542,7 +555,7 @@
   overflow: visible;
 }
 
- .sand-suggestions :is(button, a) {
+.sand-suggestions :is(button, a) {
   width: 100%;
   min-width: 0;
   min-height: 34px;
@@ -652,6 +665,7 @@
   .sand-panel__header { min-height: 68px; padding: 9px 11px; }
   .sand-avatar--header { width: 46px; height: 46px; }
   .sand-panel__header > button { width: 38px; height: 38px; }
+  .sand-panel__header > .sand-panel__reset { width: auto; min-width: 44px; padding-inline: 8px; font-size: 8.5px; }
   .sand-feed { padding: 13px 11px 8px; }
   .sand-message__bubble { max-width: 92%; padding: 10px 12px; font-size: 12.5px; }
   .sand-emergency-bar { min-height: 36px; gap: 6px; padding: 6px 8px; font-size: 9px; }
