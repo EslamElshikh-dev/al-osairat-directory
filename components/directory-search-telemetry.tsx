@@ -36,7 +36,7 @@ export function DirectorySearchTelemetry({
       };
       if (
         previous.signature === signature
-        && Number.isFinite(previous.at)
+        && Number.isFinite(Number(previous.at))
         && now - Number(previous.at) < DEDUPE_WINDOW_MS
       ) {
         return;
