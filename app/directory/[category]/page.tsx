@@ -88,7 +88,8 @@ export async function generateMetadata({
   });
 }
 
-export const dynamic = 'force-dynamic';
+// Keep remote public overlays fresh without forcing every visitor to open new upstream connections.
+export const revalidate = 60;
 
 export default async function CategoryPage({
   params,
