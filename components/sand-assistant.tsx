@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { isSandContextResetCommand, sandNavigationHref } from '@/lib/sand/navigation';
 import type { SandApiResponse, SandResult } from '@/lib/sand/types';
 
 type ChatEntry = {
@@ -25,16 +26,6 @@ const welcome: ChatEntry = {
   role: 'assistant',
   text: 'أهلًا يا طيب، أنا سَند؛ مساعدك الآلي في دليل العسيرات. أقدر أدلّك على طبيب، صيدلية، محل، حِرفي، مواصلات أو رقم طوارئ. قولّي الخدمة واسم القرية وأنا حاضر.',
 };
-
-const navigationSuggestions: Record<string, string> = {
-  'أخبار العسيرات': '/news',
-  'قرى العسيرات': '/villages',
-  'خدمات الدليل': '/directory',
-};
-
-function navigationSuggestionHref(value: string) {
-  return navigationSuggestions[value.trim()] || '';
-}
 
 const starterSuggestions = [
   'دكتور في أولاد حمزة',
@@ -114,6 +105,7 @@ export function SandAssistant() {
   const [lastFailedText, setLastFailedText] = useState('');
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const feedRef = useRef<HTMLDivElement | null>(null);
+  const requestRef = useRef<AbortController | null>(null);
   const previousPathnameRef = useRef(pathname);
 
   const latestPayload = useMemo(
@@ -127,8 +119,14 @@ export function SandAssistant() {
 
   useEffect(() => {
     if (previousPathnameRef.current !== pathname) {
+      requestRef.current?.abort();
+      requestRef.current = null;
       setOpen(false);
+      setMessages([welcome]);
+      setInput('');
+      setLoading(false);
       setError('');
+      setLastFailedText('');
       previousPathnameRef.current = pathname;
     }
   }, [pathname]);
@@ -151,12 +149,30 @@ export function SandAssistant() {
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: 'smooth' });
   }, [loading, messages, open]);
 
+  function resetConversation() {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    setMessages([welcome]);
+    setInput('');
+    setLoading(false);
+    setError('');
+    setLastFailedText('');
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
   async function send(raw: string, options: { appendUser?: boolean } = {}) {
     const text = raw.trim().slice(0, 500);
     if (text.length < 2 || loading) return;
 
-    const navigationHref = navigationSuggestionHref(text);
+    if (isSandContextResetCommand(text)) {
+      resetConversation();
+      return;
+    }
+
+    const navigationHref = sandNavigationHref(text);
     if (navigationHref) {
+      requestRef.current?.abort();
+      requestRef.current = null;
       setOpen(false);
       setError('');
       setLastFailedText('');
@@ -175,7 +191,9 @@ export function SandAssistant() {
     setLastFailedText('');
     setLoading(true);
 
+    requestRef.current?.abort();
     const controller = new AbortController();
+    requestRef.current = controller;
     const timer = window.setTimeout(() => controller.abort(), 18_000);
 
     try {
@@ -198,6 +216,7 @@ export function SandAssistant() {
       };
       setMessages((current) => [...current, assistantEntry].slice(-30));
     } catch (cause) {
+      if (controller.signal.aborted && requestRef.current !== controller) return;
       setLastFailedText(text);
       setError(
         cause instanceof DOMException && cause.name === 'AbortError'
@@ -208,7 +227,10 @@ export function SandAssistant() {
       );
     } finally {
       window.clearTimeout(timer);
-      setLoading(false);
+      if (requestRef.current === controller) {
+        requestRef.current = null;
+        setLoading(false);
+      }
     }
   }
 
@@ -234,6 +256,16 @@ export function SandAssistant() {
               <strong id="sand-title">سَند</strong>
               <small><i /> مساعدك المحلي من بيانات الدليل</small>
             </div>
+            <button
+              type="button"
+              className="sand-panel__reset"
+              onClick={resetConversation}
+              aria-label="بدء محادثة جديدة"
+              title="محادثة جديدة"
+              disabled={messages.length === 1 && !input && !error}
+            >
+              جديد
+            </button>
             <button type="button" onClick={() => setOpen(false)} aria-label="تصغير سَند">×</button>
           </header>
 
@@ -286,7 +318,7 @@ export function SandAssistant() {
             <span className="sand-suggestions__label">جرّب تسأل عن</span>
             <div className="sand-suggestions__list">
               {suggestions.map((suggestion) => {
-                const href = navigationSuggestionHref(suggestion);
+                const href = sandNavigationHref(suggestion);
                 return href ? (
                   <Link key={suggestion} href={href} onClick={() => setOpen(false)}>
                     {suggestion}

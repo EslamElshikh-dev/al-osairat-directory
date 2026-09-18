@@ -1,0 +1,77 @@
+const ARABIC_DIACRITICS = /[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g;
+
+function normalizeNavigationValue(value: string) {
+  return value
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(ARABIC_DIACRITICS, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .replace(/ـ/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export type SandNavigationAction = {
+  label: string;
+  href: string;
+  aliases: string[];
+};
+
+export const sandNavigationActions: SandNavigationAction[] = [
+  {
+    label: 'أخبار العسيرات',
+    href: '/news',
+    aliases: ['أخبار العسيرات', 'اخبار العسيرات', 'الأخبار', 'الاخبار', 'افتح الأخبار', 'افتح اخبار العسيرات'],
+  },
+  {
+    label: 'قرى العسيرات',
+    href: '/villages',
+    aliases: ['قرى العسيرات', 'القرى', 'افتح القرى', 'افتح قرى العسيرات'],
+  },
+  {
+    label: 'نجوع العسيرات',
+    href: '/localities',
+    aliases: ['نجوع العسيرات', 'النجوع', 'افتح النجوع', 'افتح نجوع العسيرات'],
+  },
+  {
+    label: 'خدمات الدليل',
+    href: '/directory',
+    aliases: ['خدمات الدليل', 'الدليل', 'افتح الدليل', 'استكشف الدليل'],
+  },
+  {
+    label: 'مدونة العسيرات',
+    href: '/blog',
+    aliases: ['مدونة العسيرات', 'المدونة', 'افتح المدونة', 'افتح مدونة العسيرات'],
+  },
+];
+
+const navigationAliasMap = new Map(
+  sandNavigationActions.flatMap((action) =>
+    action.aliases.map((alias) => [normalizeNavigationValue(alias), action.href] as const),
+  ),
+);
+
+const contextResetAliases = new Set(
+  [
+    'محادثة جديدة',
+    'ابدأ من جديد',
+    'ابدأ بحث جديد',
+    'بحث جديد',
+    'امسح المحادثة',
+    'امسح السياق',
+    'صفر المحادثة',
+  ].map(normalizeNavigationValue),
+);
+
+export function sandNavigationHref(value: string) {
+  return navigationAliasMap.get(normalizeNavigationValue(value)) || '';
+}
+
+export function isSandContextResetCommand(value: string) {
+  return contextResetAliases.has(normalizeNavigationValue(value));
+}
