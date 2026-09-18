@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/render-activity-images.mjs && node scripts/export-activity-image-baseline.mjs --public-preview",
+    "prebuild": "node scripts/render-activity-images.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
