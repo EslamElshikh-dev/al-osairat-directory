@@ -216,6 +216,7 @@ export function SandAssistant() {
       };
       setMessages((current) => [...current, assistantEntry].slice(-30));
     } catch (cause) {
+      if (controller.signal.aborted && requestRef.current !== controller) return;
       setLastFailedText(text);
       setError(
         cause instanceof DOMException && cause.name === 'AbortError'
@@ -226,8 +227,10 @@ export function SandAssistant() {
       );
     } finally {
       window.clearTimeout(timer);
-      if (requestRef.current === controller) requestRef.current = null;
-      setLoading(false);
+      if (requestRef.current === controller) {
+        requestRef.current = null;
+        setLoading(false);
+      }
     }
   }
 
