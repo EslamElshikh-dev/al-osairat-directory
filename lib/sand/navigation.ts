@@ -1,4 +1,20 @@
-import { normalizeSandIntent } from './intent';
+const ARABIC_DIACRITICS = /[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g;
+
+function normalizeNavigationValue(value: string) {
+  return value
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(ARABIC_DIACRITICS, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .replace(/ـ/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export type SandNavigationAction = {
   label: string;
@@ -36,7 +52,7 @@ export const sandNavigationActions: SandNavigationAction[] = [
 
 const navigationAliasMap = new Map(
   sandNavigationActions.flatMap((action) =>
-    action.aliases.map((alias) => [normalizeSandIntent(alias), action.href] as const),
+    action.aliases.map((alias) => [normalizeNavigationValue(alias), action.href] as const),
   ),
 );
 
@@ -49,13 +65,13 @@ const contextResetAliases = new Set(
     'امسح المحادثة',
     'امسح السياق',
     'صفر المحادثة',
-  ].map(normalizeSandIntent),
+  ].map(normalizeNavigationValue),
 );
 
 export function sandNavigationHref(value: string) {
-  return navigationAliasMap.get(normalizeSandIntent(value)) || '';
+  return navigationAliasMap.get(normalizeNavigationValue(value)) || '';
 }
 
 export function isSandContextResetCommand(value: string) {
-  return contextResetAliases.has(normalizeSandIntent(value));
+  return contextResetAliases.has(normalizeNavigationValue(value));
 }
