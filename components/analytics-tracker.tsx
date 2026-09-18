@@ -155,14 +155,6 @@ function listingSlugFromPath(pathname: string) {
   return decodeURIComponent(pathname.split('/')[2] || '').slice(0, 180);
 }
 
-function parseArabicNumber(value: string) {
-  const western = value
-    .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
-    .replace(/[٬,\s]/g, '');
-  const parsed = Number(western);
-  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
-}
-
 function trackMutation(path: string, body: Record<string, unknown>) {
   if (path === '/api/auth/register') {
     trackEvent('sign_up', { method: 'password' }, { immediate: true });
@@ -316,24 +308,28 @@ export function AnalyticsTracker() {
       });
     }
 
-    function handleSubmit(event: SubmitEvent) {
-      const form = event.target as HTMLFormElement | null;
-      if (!form?.classList.contains('explorer__tools')) return;
+    function handleDirectorySearchResult(event: Event) {
+      const detail = (event as CustomEvent<{
+        query?: string;
+        village?: string;
+        category?: string;
+        resultCount?: number;
+      }>).detail;
+      if (!detail) return;
 
-      const data = new FormData(form);
-      const query = String(data.get('q') || '').trim().slice(0, 120);
-      const village = String(data.get('village') || 'all').trim().slice(0, 100) || 'all';
-      const category = pathname.startsWith('/directory/') ? pathname.split('/')[2] || 'all' : 'all';
+      const query = String(detail.query || '').trim().slice(0, 120);
+      const village = String(detail.village || 'all').trim().slice(0, 100) || 'all';
+      const category = String(detail.category || 'all').trim().slice(0, 100) || 'all';
+      const resultCount = Number(detail.resultCount);
 
       if (!query && village === 'all') return;
 
-      const resultText = document.querySelector('.results-bar strong')?.textContent || '';
       sendOperationalEvent({
         eventType: 'directory_search',
         searchTerm: query,
         village,
         category,
-        ...(resultText ? { resultCount: parseArabicNumber(resultText) } : {}),
+        resultCount: Number.isFinite(resultCount) ? Math.max(0, Math.trunc(resultCount)) : 0,
       });
 
       trackEvent('directory_search', {
@@ -341,16 +337,17 @@ export function AnalyticsTracker() {
         query_length: Math.min(query.length, 200),
         village_filter: village === 'all' ? 'all' : village.slice(0, 80),
         category_scope: category,
+        result_count: Number.isFinite(resultCount) ? Math.max(0, Math.trunc(resultCount)) : 0,
         transport_type: 'beacon',
       }, { immediate: true });
     }
 
     document.addEventListener('click', handleClick, true);
-    document.addEventListener('submit', handleSubmit, true);
+    window.addEventListener('osayrat:directory-search-result', handleDirectorySearchResult);
     return () => {
       if (window.fetch === trackedFetch) window.fetch = originalFetch;
       document.removeEventListener('click', handleClick, true);
-      document.removeEventListener('submit', handleSubmit, true);
+      window.removeEventListener('osayrat:directory-search-result', handleDirectorySearchResult);
     };
   }, [pathname]);
 
