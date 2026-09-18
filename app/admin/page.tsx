@@ -7,6 +7,7 @@ import { AdminDataQuality } from '@/components/admin/admin-data-quality';
 import { AdminDirectoryIntelligence } from '@/components/admin/admin-directory-intelligence';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
 import { AdminListingReports } from '@/components/admin/admin-listing-reports';
+import { AdminCommunityReports } from '@/components/admin/admin-community-reports';
 import { resolveAdminSession } from '@/lib/auth/admin-server';
 
 export const metadata: Metadata = {
@@ -64,7 +65,8 @@ export default async function AdminPage() {
           <a href="#data-quality"><span>03</span>جودة البيانات</a>
           <a href="#authority-batch"><span>04</span>دفعة التوثيق</a>
           <a href="#admin-requests"><span>05</span>طلبات الأعضاء</a>
-          <a href="#listing-reports"><span>06</span>البلاغات</a>
+          <a href="#listing-reports"><span>06</span>بلاغات الأنشطة</a>
+          <a href="#community-reports"><span>07</span>بلاغات المجتمع</a>
         </nav>
         <AdminAnalyticsDashboard />
         <AdminDirectoryIntelligence />
@@ -72,6 +74,7 @@ export default async function AdminPage() {
         <AdminAuthorityBatch />
         <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
         <AdminListingReports />
+        <AdminCommunityReports />
       </div>
     </main>
   );
