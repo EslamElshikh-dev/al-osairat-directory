@@ -71,6 +71,7 @@ function clipped(value, maximum) {
 }
 
 const sourceBufferPromises = new Map();
+const sourceDigests = new Map();
 
 function sourceInput(source) {
   if (!sourceBufferPromises.has(source)) {
@@ -86,6 +87,11 @@ function sourceInput(source) {
   }
 
   return sourceBufferPromises.get(source);
+}
+
+function sourceDigest(source, sourceBuffer) {
+  if (!sourceDigests.has(source)) sourceDigests.set(source, digest(sourceBuffer));
+  return sourceDigests.get(source);
 }
 
 function overlayFor(listing, bytes) {
@@ -186,7 +192,7 @@ await runWithConcurrency(entries, concurrency, async ([listingId, listing]) => {
   const fingerprint = createActivityImageFingerprint({
     listingId,
     listing,
-    sourceDigest: digest(sourceBuffer),
+    sourceDigest: sourceDigest(listing.source, sourceBuffer),
     rendererDigest,
   });
 
