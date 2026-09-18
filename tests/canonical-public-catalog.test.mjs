@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import {
   canonicalCoverageHasReleaseParity,
   canonicalSnapshotHasReleaseParity,
+  getCanonicalCoverageSummary,
 } from '../lib/canonical-parity.ts';
 
 const listing = (overrides = {}) => ({
@@ -27,6 +28,33 @@ test('canonical coverage rejects a release with missing IDs before the full snap
   const staleCoverage = [{ id: 'shops-first', lastUpdatedAt: '2026-09-18' }];
 
   assert.equal(canonicalCoverageHasReleaseParity(staleCoverage, current), false);
+});
+
+test('canonical coverage summary exposes missing, extra and stale release gaps', () => {
+  const release = [
+    listing({ id: 'shops-current', lastUpdatedAt: '2026-09-18' }),
+    listing({ id: 'shops-missing', slug: 'missing', lastUpdatedAt: '2026-09-18' }),
+  ];
+  const canonical = [
+    { id: 'shops-current', lastUpdatedAt: '2026-09-17' },
+    { id: 'shops-extra', lastUpdatedAt: '2026-09-18' },
+  ];
+
+  assert.deepEqual(getCanonicalCoverageSummary(canonical, release), {
+    releaseCount: 2,
+    canonicalCount: 2,
+    missingCount: 1,
+    extraCount: 1,
+    staleCount: 1,
+    isCurrent: false,
+  });
+});
+
+test('canonical coverage summary marks exact coverage as current', () => {
+  const release = [listing({ id: 'shops-current', lastUpdatedAt: '2026-09-18' })];
+  const canonical = [{ id: 'shops-current', lastUpdatedAt: '2026-09-18' }];
+
+  assert.equal(getCanonicalCoverageSummary(canonical, release).isCurrent, true);
 });
 
 test('canonical parity rejects missing or extra active records', () => {
