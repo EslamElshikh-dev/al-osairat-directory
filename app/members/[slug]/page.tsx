@@ -51,7 +51,7 @@ export async function generateMetadata({
     title: `${profile.displayName} | عضو دليل العسيرات`,
     description: profile.bio || `الصفحة العامة للعضو ${profile.displayName} في مجتمع دليل العسيرات.`,
     path: `/members/${profile.slug}`,
-    image: profile.avatarUrl || undefined,
+    imageUrl: profile.avatarUrl || undefined,
     imageAlt: profile.avatarUrl ? `صورة ${profile.displayName}` : undefined,
   });
 }
