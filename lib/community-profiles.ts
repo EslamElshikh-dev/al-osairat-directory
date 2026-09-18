@@ -31,6 +31,18 @@ export type PublicMemberReview = {
   updatedAt: string;
 };
 
+export type PublicMemberReply = {
+  id: string;
+  reviewId: string;
+  body: string;
+  targetType: 'site' | 'article';
+  targetKey: string;
+  targetLabel: string;
+  href: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PublicMemberStats = {
   reviewCount: number;
   replyCount: number;
@@ -45,6 +57,7 @@ export type PublicMemberDirectoryEntry = PublicMemberProfile & PublicMemberStats
 
 export type PublicMemberContributionSummary = PublicMemberStats & {
   reviews: PublicMemberReview[];
+  replies: PublicMemberReply[];
   averageRating: number;
 };
 
@@ -68,6 +81,20 @@ type ReviewRow = {
   body: string;
   created_at: string;
   updated_at: string;
+};
+
+type ReplyRow = {
+  id: string;
+  review_id: string;
+  body: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type ParentReviewRow = {
+  id: string;
+  target_type: 'site' | 'article';
+  target_key: string;
 };
 
 type StatsRow = {
@@ -132,12 +159,15 @@ async function readPublicMemberStats(userIds: string[]) {
   const result = new Map<string, PublicMemberStats>(ids.map((id) => [id, emptyStats()]));
   if (!ids.length) return result;
 
-  const response = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_public_member_stats', {
-    method: 'POST',
-    headers: publicHeaders(true),
-    body: JSON.stringify({ p_user_ids: ids }),
-    cache: 'no-store',
+  const query = new URLSearchParams({
+    select: 'user_id,review_count,reply_count,like_received,helpful_received,helpful_people',
+    user_id: 'in.(' + ids.join(',') + ')',
+    limit: String(ids.length),
   });
+  const response = await fetch(
+    SUPABASE_URL + '/rest/v1/public_member_stats?' + query.toString(),
+    { headers: publicHeaders(), cache: 'no-store' },
+  );
   if (!response.ok) throw new Error('PUBLIC_MEMBER_STATS_READ_FAILED');
 
   const rows = await response.json() as StatsRow[];
@@ -230,9 +260,21 @@ export async function getPublicMemberContributions(userId: string): Promise<Publ
     limit: '30',
   });
 
-  const [reviewRows, stats] = await Promise.all([
+  const replyParams = new URLSearchParams({
+    select: 'id,review_id,body,created_at,updated_at',
+    user_id: 'eq.' + userId,
+    status: 'eq.published',
+    order: 'created_at.desc',
+    limit: '30',
+  });
+
+  const [reviewRows, replyRows, stats] = await Promise.all([
     fetchSupabasePublicJson<ReviewRow[]>(
       SUPABASE_URL + '/rest/v1/content_reviews?' + reviewParams.toString(),
+      { headers: publicHeaders(), cache: 'no-store' },
+    ),
+    fetchSupabasePublicJson<ReplyRow[]>(
+      SUPABASE_URL + '/rest/v1/content_review_replies?' + replyParams.toString(),
       { headers: publicHeaders(), cache: 'no-store' },
     ),
     readPublicMemberStats([userId]),
@@ -255,12 +297,47 @@ export async function getPublicMemberContributions(userId: string): Promise<Publ
     };
   });
 
+  const parentIds = [...new Set((replyRows || []).map((row) => row.review_id))];
+  const parentParams = new URLSearchParams({
+    select: 'id,target_type,target_key',
+    id: parentIds.length ? 'in.(' + parentIds.join(',') + ')' : 'in.()',
+    status: 'eq.published',
+    limit: String(Math.max(1, parentIds.length)),
+  });
+  const parentRows = parentIds.length
+    ? await fetchSupabasePublicJson<ParentReviewRow[]>(
+      SUPABASE_URL + '/rest/v1/content_reviews?' + parentParams.toString(),
+      { headers: publicHeaders(), cache: 'no-store' },
+    )
+    : [];
+  const parentIndex = new Map((parentRows || []).map((row) => [row.id, row]));
+
+  const replies = (replyRows || []).flatMap((row): PublicMemberReply[] => {
+    const parent = parentIndex.get(row.review_id);
+    if (!parent) return [];
+    const article = parent.target_type === 'article' ? blogBySlug[parent.target_key] : null;
+    return [{
+      id: row.id,
+      reviewId: row.review_id,
+      body: row.body,
+      targetType: parent.target_type,
+      targetKey: parent.target_key,
+      targetLabel: parent.target_type === 'site' ? 'دليل العسيرات' : (article?.title || 'مقال من مدونة العسيرات'),
+      href: parent.target_type === 'site'
+        ? '/#review-' + row.review_id
+        : '/blog/' + encodeURIComponent(parent.target_key) + '#review-' + row.review_id,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    }];
+  });
+
   const averageRating = reviews.length
     ? reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length
     : 0;
 
   return {
     reviews,
+    replies,
     ...(stats.get(userId) || emptyStats()),
     averageRating: Number(averageRating.toFixed(1)),
   };
