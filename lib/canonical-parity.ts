@@ -1,0 +1,45 @@
+import type { DirectoryListing } from './types';
+
+const comparableFields = [
+  'slug', 'title', 'category', 'subCategory', 'location', 'village', 'locality',
+  'phone', 'whatsapp', 'hours', 'description', 'rating', 'reviewCount', 'ratingSource',
+  'source', 'sourceStatus', 'deliveryAvailable', 'emergency', 'googlePlaceId',
+  'googleMapsPlusCode', 'googleMapsUrl',
+] as const;
+
+function timeValue(value?: string) {
+  if (!value) return null;
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function sameComparableData(left: DirectoryListing, right: DirectoryListing) {
+  return comparableFields.every((field) => (left[field] ?? null) === (right[field] ?? null));
+}
+
+export function canonicalSnapshotHasReleaseParity(
+  canonicalListings: DirectoryListing[],
+  releaseListings: DirectoryListing[],
+) {
+  if (!releaseListings.length || canonicalListings.length !== releaseListings.length) return false;
+
+  const canonicalById = new Map(canonicalListings.map((listing) => [listing.id, listing]));
+  if (canonicalById.size !== canonicalListings.length) return false;
+
+  return releaseListings.every((releaseListing) => {
+    const canonicalListing = canonicalById.get(releaseListing.id);
+    if (!canonicalListing) return false;
+
+    const releaseTime = timeValue(releaseListing.lastUpdatedAt);
+    const canonicalTime = timeValue(canonicalListing.lastUpdatedAt);
+
+    if (releaseTime !== null) {
+      if (canonicalTime === null || canonicalTime < releaseTime) return false;
+      if (canonicalTime === releaseTime && !sameComparableData(canonicalListing, releaseListing)) return false;
+      return true;
+    }
+
+    if (canonicalTime !== null) return true;
+    return sameComparableData(canonicalListing, releaseListing);
+  });
+}

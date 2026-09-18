@@ -25,3 +25,11 @@ This is phase 1 of the canonical cutover. Directory search and category browsing
 ## Auth setting still external
 
 Supabase Leaked Password Protection is a project Auth setting and is not exposed by the connected management actions available in this session. It must be enabled in the Supabase Dashboard if the project plan supports it.
+
+
+## September 18 public-catalog unification
+
+- Direct public canonical search remains disabled until release parity is proven.
+- Dynamic public surfaces use a shared public-catalog repository instead of assembling static, override and published records independently.
+- The shared loader rejects a canonical snapshot when it is missing a current ID, contains extra active IDs, is older than the deployed record, or conflicts at the same source timestamp.
+- On parity failure the site serves deployed static data + listing overrides + published submissions, so stale canonical data cannot hide a current release.
