@@ -108,20 +108,36 @@ export default async function MemberPublicProfilePage({
             ) : (
               <p className="community-profile-bio community-profile-bio--muted">عضو مشارك في مجتمع دليل العسيرات.</p>
             )}
+            {contributions.badges.length ? (
+              <>
+                <div className="community-profile-badge-row" aria-label="شارات العضو">
+                  {contributions.badges.map((badge) => (
+                    <span className={'community-badge is-' + badge.key} key={badge.key}>{badge.label}</span>
+                  ))}
+                </div>
+                {contributions.badges.some((badge) => badge.key === 'trusted') ? (
+                  <p className="community-profile-badge-note">شارة «مساهم موثوق» تقيس جودة المساهمة المجتمعية ولا تعني توثيق هوية الشخص.</p>
+                ) : null}
+              </>
+            ) : null}
           </div>
 
-          <aside className="community-profile-stats" aria-label="مساهمات العضو">
+          <aside className="community-profile-stats is-v2" aria-label="مساهمات العضو">
+            <span>
+              <b>{contributions.contributionCount.toLocaleString('ar-EG')}</b>
+              <small>إجمالي المساهمات</small>
+            </span>
             <span>
               <b>{contributions.reviewCount.toLocaleString('ar-EG')}</b>
               <small>تقييمات منشورة</small>
             </span>
             <span>
               <b>{contributions.replyCount.toLocaleString('ar-EG')}</b>
-              <small>ردود ومشاركات</small>
+              <small>ردود منشورة</small>
             </span>
             <span>
-              <b>{contributions.averageRating ? contributions.averageRating.toFixed(1) : '—'}</b>
-              <small>متوسط تقييماته</small>
+              <b>{contributions.helpfulReceived.toLocaleString('ar-EG')}</b>
+              <small>إشارات «مفيد»</small>
             </span>
           </aside>
         </div>
@@ -134,7 +150,7 @@ export default async function MemberPublicProfilePage({
             <h2>التقييمات المنشورة</h2>
             <p>هذه التقييمات كتبها العضو بنفسه من حسابه المسجل في دليل العسيرات.</p>
           </div>
-          <Link href="/directory">استكشف الدليل ←</Link>
+          <Link href="/members">كل الأعضاء ←</Link>
         </div>
 
         {contributions.reviews.length ? (
