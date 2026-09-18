@@ -80,3 +80,23 @@ test('Sand navigation suggestions open real routes and never become directory se
   assert.match(source, /router\.push\(navigationHref\)/);
   assert.match(source, /<Link key=\{suggestion\} href=\{href\}/);
 });
+
+
+test('Sand clears stale conversation state and aborts in-flight work on route changes or reset', async () => {
+  const source = await readProjectFile('components/sand-assistant.tsx');
+
+  assert.match(source, /const requestRef = useRef<AbortController \| null>\(null\)/);
+  assert.match(source, /requestRef\.current\?\.abort\(\)/);
+  assert.match(source, /setMessages\(\[welcome\]\)/);
+  assert.match(source, /function resetConversation\(\)/);
+  assert.match(source, /بدء محادثة جديدة/);
+  assert.match(source, /controller\.signal\.aborted && requestRef\.current !== controller/);
+});
+
+test('Sand uses the shared navigation intent helper rather than component-local magic mappings', async () => {
+  const source = await readProjectFile('components/sand-assistant.tsx');
+
+  assert.match(source, /sandNavigationHref/);
+  assert.match(source, /isSandContextResetCommand/);
+  assert.doesNotMatch(source, /const navigationSuggestions: Record/);
+});
