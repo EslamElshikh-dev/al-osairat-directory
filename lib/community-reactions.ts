@@ -58,12 +58,16 @@ export async function readCommunityReactionSummaries(
   );
   if (!ids.length) return result;
 
-  const countResponse = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_community_reaction_counts', {
-    method: 'POST',
-    headers: publicHeaders(true),
-    body: JSON.stringify({ p_target_type: targetType, p_target_ids: ids }),
-    cache: 'no-store',
+  const countQuery = new URLSearchParams({
+    select: 'target_id,like_count,helpful_count',
+    target_type: 'eq.' + targetType,
+    target_id: 'in.(' + ids.join(',') + ')',
+    limit: String(ids.length),
   });
+  const countResponse = await fetch(
+    SUPABASE_URL + '/rest/v1/community_reaction_totals?' + countQuery.toString(),
+    { headers: publicHeaders(), cache: 'no-store' },
+  );
   if (!countResponse.ok) throw new Error('REACTION_COUNTS_READ_FAILED');
 
   const counts = await countResponse.json() as CountRow[];
