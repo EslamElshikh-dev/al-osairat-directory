@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/render-activity-images.mjs",
+    "prebuild": "node scripts/render-activity-images.mjs && node scripts/export-activity-image-baseline.mjs --public-preview",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "node --test tests/*.test.mjs",
     "test:site": "node --test tests/site-contract.test.mjs",
-    "test:sand": "node --test tests/sand-*.test.mjs"
+    "test:sand": "node --test tests/sand-*.test.mjs",
+    "activity-images:baseline": "node scripts/render-activity-images.mjs && node scripts/export-activity-image-baseline.mjs"
   },
   "dependencies": {
     "ai": "^7.0.84",
