@@ -18,7 +18,7 @@ function fingerprint(overrides = {}) {
     listingId: 'test-listing',
     listing: { ...baseListing, ...(overrides.listing || {}) },
     sourceDigest: overrides.sourceDigest || 'source-a',
-    rendererDigest: overrides.rendererDigest || 'renderer-a',
+    visualRevision: overrides.visualRevision || 'renderer-a',
   });
 }
 
@@ -26,7 +26,7 @@ test('activity image fingerprints are stable for unchanged visual inputs', () =>
   assert.equal(fingerprint(), fingerprint());
 });
 
-test('activity image fingerprint changes when title, village, source bytes or renderer changes', () => {
+test('activity image fingerprint changes when title, village, source bytes or visual revision changes', () => {
   const original = fingerprint();
 
   assert.notEqual(fingerprint({ listing: { title: 'عيادة مختلفة' } }), original);
@@ -34,7 +34,7 @@ test('activity image fingerprint changes when title, village, source bytes or re
   assert.notEqual(fingerprint({ listing: { source: 'activity-seeds/dentist.webp' } }), original);
   assert.notEqual(fingerprint({ listing: { sourceKind: 'owner_photo' } }), original);
   assert.notEqual(fingerprint({ sourceDigest: 'source-b' }), original);
-  assert.notEqual(fingerprint({ rendererDigest: 'renderer-b' }), original);
+  assert.notEqual(fingerprint({ visualRevision: 'renderer-b' }), original);
 });
 
 test('cache hit requires the same fingerprint, output path and an existing cached file', () => {
