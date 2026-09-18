@@ -431,6 +431,23 @@
 .sand-message__meta span { font-size: 9px; font-weight: 800; }
 .sand-message__meta small { font-size: 8.5px; line-height: 1.55; }
 
+.sand-message__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sand-message__status b {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #46675b;
+  background: #edf3ef;
+  font-size: 8px;
+  font-weight: 900;
+}
+
 .sand-typing {
   min-width: 60px;
   display: flex;
@@ -459,6 +476,10 @@
 }
 
 .sand-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   padding: 10px 12px;
   border: 1px solid #ecd0cc;
   border-radius: 13px;
@@ -467,6 +488,24 @@
   font-size: 11px;
   line-height: 1.65;
 }
+
+.sand-error span { min-width: 0; }
+
+.sand-error button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid rgba(132, 58, 51, .2);
+  border-radius: 10px;
+  color: #71332e;
+  background: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sand-error button:disabled { opacity: .55; cursor: wait; }
 
 .sand-suggestions {
   min-width: 0;
@@ -610,6 +649,8 @@
   .sand-composer textarea { min-height: 44px; padding: 10px 12px; }
   .sand-composer button { width: 44px; height: 44px; }
   .sand-privacy { padding-bottom: 8px; font-size: 8px; }
+  .sand-error { align-items: stretch; flex-direction: column; }
+  .sand-error button { width: 100%; }
 }
 
 @media (max-width: 380px) {
