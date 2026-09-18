@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReviewThread } from '@/components/review-thread';
 
 type ReviewTargetType = 'site' | 'article';
 
@@ -11,6 +12,7 @@ type ReviewItem = {
   body: string;
   authorName: string;
   avatarUrl: string;
+  profileSlug: string;
   createdAt: string;
   updatedAt: string;
   own?: boolean;
@@ -440,9 +442,24 @@ export function MemberReviews({
                 {visibleReviews.map((review) => (
                   <article key={review.id} className={`member-review-card${review.own ? ' is-own' : ''}`}>
                     <header>
-                      <Avatar review={review} />
+                      {review.profileSlug ? (
+                        <Link
+                          href={`/members/${review.profileSlug}`}
+                          className="member-review-card__profile-avatar"
+                          aria-label={`الصفحة العامة للعضو ${review.authorName}`}
+                        >
+                          <Avatar review={review} />
+                        </Link>
+                      ) : (
+                        <Avatar review={review} />
+                      )}
                       <div className="member-review-card__identity">
-                        <div><strong>{review.authorName}</strong>{review.own ? <span>تقييمك</span> : <span>عضو مسجل</span>}</div>
+                        <div>
+                          <strong>
+                            {review.profileSlug ? <Link href={`/members/${review.profileSlug}`}>{review.authorName}</Link> : review.authorName}
+                          </strong>
+                          {review.own ? <span>تقييمك</span> : review.profileSlug ? <span>ملف عام</span> : <span>عضو مسجل</span>}
+                        </div>
                         <time dateTime={review.createdAt}>{formatDate(review.createdAt)}</time>
                       </div>
                       {review.own ? (
@@ -453,9 +470,16 @@ export function MemberReviews({
                     </header>
                     <div className="member-review-card__rating-row">
                       <RatingStars value={review.rating} label={`${review.rating} من 5 نجوم`} />
+                      <span className="member-review-card__rating-score">{review.rating.toFixed(1)} / 5</span>
                     </div>
+                    <div className="member-review-card__quote" aria-hidden="true">“</div>
                     <p>{review.body}</p>
                     {review.updatedAt !== review.createdAt ? <small>تم تعديل التقييم</small> : null}
+                    <ReviewThread
+                      reviewId={review.id}
+                      authenticated={payload.authenticated}
+                      emailVerified={payload.emailVerified}
+                    />
                   </article>
                 ))}
               </div>

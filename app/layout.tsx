@@ -29,6 +29,8 @@ import './visual-redesign-phase3.css';
 import './seo-growth.css';
 import './member-reviews.css';
 import './member-review-polish.css';
+import './review-replies.css';
+import './community-profiles.css';
 import './directory-scroll-fix.css';
 import './directory-ticker.css';
 import './navigation-scroll.css';

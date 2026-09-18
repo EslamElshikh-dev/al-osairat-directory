@@ -27,6 +27,14 @@ type ProfileRow = {
   updated_at: string;
 };
 
+type PublicProfileRow = {
+  slug: string;
+  bio: string | null;
+  show_location: boolean;
+  is_public: boolean;
+  updated_at: string;
+};
+
 type ResolvedSession = {
   accessToken: string;
   userId: string;
@@ -116,6 +124,21 @@ async function readProfile(accessToken: string, userId: string) {
   return rows[0] || null;
 }
 
+async function readPublicProfile(accessToken: string, userId: string) {
+  const query = new URLSearchParams({
+    user_id: `eq.${userId}`,
+    select: 'slug,bio,show_location,is_public,updated_at',
+    limit: '1',
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/member_public_profiles?${query}`, {
+    headers: restHeaders(accessToken),
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error('PUBLIC_PROFILE_READ_FAILED');
+  const rows = await response.json() as PublicProfileRow[];
+  return rows[0] || null;
+}
+
 function cleanText(value: unknown, maxLength: number) {
   if (typeof value !== 'string') return '';
   return value.trim().replace(/\s+/g, ' ').slice(0, maxLength);
@@ -132,7 +155,10 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'يلزم تسجيل الدخول أولًا.' }, { status: 401 });
 
   try {
-    const profile = await readProfile(session.accessToken, session.userId);
+    const [profile, publicProfile] = await Promise.all([
+      readProfile(session.accessToken, session.userId),
+      readPublicProfile(session.accessToken, session.userId),
+    ]);
     return respond({
       profile: {
         fullName: profile?.full_name?.trim() || session.displayName,
@@ -141,7 +167,12 @@ export async function GET() {
         village: profile?.village || '',
         locality: profile?.locality || '',
         email: session.email,
-        updatedAt: profile?.updated_at || null,
+        bio: publicProfile?.bio || '',
+        isPublic: Boolean(publicProfile?.is_public),
+        showLocation: Boolean(publicProfile?.show_location),
+        publicSlug: publicProfile?.slug || '',
+        publicUrl: publicProfile?.slug ? `/members/${publicProfile.slug}` : '',
+        updatedAt: profile?.updated_at || publicProfile?.updated_at || null,
       },
     }, session);
   } catch {
@@ -160,6 +191,9 @@ export async function POST(request: Request) {
   const phone = normalizePhone(body?.phone);
   const village = cleanText(body?.village, 80);
   const locality = cleanText(body?.locality, 100);
+  const bio = cleanText(body?.bio, 320);
+  const isPublic = body?.isPublic === true;
+  const showLocation = body?.showLocation === true;
 
   if (fullName.length < 2) {
     return respond({ error: 'اكتب الاسم الكامل بشكل صحيح.' }, session, 400);
@@ -178,11 +212,16 @@ export async function POST(request: Request) {
     return respond({ error: 'اختر القرية أولًا قبل كتابة التابع أو النجع.' }, session, 400);
   }
 
+  if (bio && bio.length < 2) {
+    return respond({ error: 'اكتب نبذة من حرفين على الأقل أو اتركها فارغة.' }, session, 400);
+  }
+
   let authUpdated = false;
   try {
     await updateUserMetadata(session.accessToken, { full_name: fullName });
     authUpdated = true;
 
+    const safeAvatarUrl = /^https:\/\//i.test(session.avatarUrl) ? session.avatarUrl.slice(0, 500) : null;
     const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?on_conflict=id`, {
       method: 'POST',
       headers: {
@@ -192,6 +231,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         id: session.userId,
         full_name: fullName,
+        avatar_url: safeAvatarUrl,
         phone: phone || null,
         village: village || null,
         locality: village ? (locality || null) : null,
@@ -203,6 +243,24 @@ export async function POST(request: Request) {
     const rows = await response.json() as ProfileRow[];
     const profile = rows[0];
 
+    const publicQuery = new URLSearchParams({ user_id: `eq.${session.userId}` });
+    const publicResponse = await fetch(`${SUPABASE_URL}/rest/v1/member_public_profiles?${publicQuery}`, {
+      method: 'PATCH',
+      headers: {
+        ...restHeaders(session.accessToken, true),
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify({
+        bio: bio || null,
+        is_public: isPublic,
+        show_location: showLocation && Boolean(village),
+      }),
+      cache: 'no-store',
+    });
+    if (!publicResponse.ok) throw new Error('PUBLIC_PROFILE_UPDATE_FAILED');
+    const publicRows = await publicResponse.json() as PublicProfileRow[];
+    const publicProfile = publicRows[0];
+
     return respond({
       saved: true,
       profile: {
@@ -212,7 +270,12 @@ export async function POST(request: Request) {
         village,
         locality: village ? locality : '',
         email: session.email,
-        updatedAt: profile?.updated_at || null,
+        bio,
+        isPublic,
+        showLocation: showLocation && Boolean(village),
+        publicSlug: publicProfile?.slug || '',
+        publicUrl: publicProfile?.slug ? `/members/${publicProfile.slug}` : '',
+        updatedAt: profile?.updated_at || publicProfile?.updated_at || null,
       },
     }, session);
   } catch {

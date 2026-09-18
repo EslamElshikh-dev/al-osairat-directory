@@ -10,6 +10,11 @@ export type EditableMemberProfile = {
   village: string;
   locality: string;
   email: string;
+  bio: string;
+  isPublic: boolean;
+  showLocation: boolean;
+  publicSlug: string;
+  publicUrl: string;
   updatedAt: string | null;
 };
 
@@ -69,6 +74,9 @@ export function MemberProfileForm({ onSaved }: { onSaved?: (profile: EditableMem
           phone: profile.phone,
           village: profile.village,
           locality: profile.locality,
+          bio: profile.bio,
+          isPublic: profile.isPublic,
+          showLocation: profile.showLocation,
         }),
       });
       const data = await response.json().catch(() => ({}));
@@ -177,6 +185,69 @@ export function MemberProfileForm({ onSaved }: { onSaved?: (profile: EditableMem
           <datalist id="member-localities">
             {(selectedVillage?.localities || []).map((locality) => <option value={locality} key={locality} />)}
           </datalist>
+        </div>
+
+        <div className="member-profile-public-card member-profile-field--wide">
+          <div className="member-profile-public-card__heading">
+            <div>
+              <span>الصفحة العامة</span>
+              <h3>بطاقتك داخل مجتمع دليل العسيرات</h3>
+              <p>لن يظهر بريدك الإلكتروني أو رقم جوالك في الصفحة العامة. المعروض فقط هو الاسم والصورة والنبذة، والموقع المحلي إذا اخترت إظهاره.</p>
+            </div>
+            <span className={profile.isPublic ? 'is-public' : 'is-private'}>
+              {profile.isPublic ? 'ظاهرة للأعضاء والزوار' : 'غير منشورة'}
+            </span>
+          </div>
+
+          <label className="member-profile-field member-profile-field--public-bio" htmlFor="member-public-bio">
+            <span>نبذة قصيرة <small>اختياري</small></span>
+            <textarea
+              id="member-public-bio"
+              value={profile.bio}
+              onChange={(event) => update('bio', event.target.value.slice(0, 320))}
+              placeholder="مثال: مهتم بخدمات وتاريخ العسيرات وأشارك تجاربي وملاحظاتي مع المجتمع."
+              maxLength={320}
+              rows={4}
+            />
+            <small>{profile.bio.trim().length}/320</small>
+          </label>
+
+          <div className="member-profile-public-options">
+            <label>
+              <input
+                type="checkbox"
+                checked={profile.isPublic}
+                onChange={(event) => update('isPublic', event.target.checked)}
+              />
+              <span>
+                <b>تفعيل صفحتي العامة</b>
+                <small>يسمح لباقي الأعضاء والزوار برؤية الملف العام ومساهماتك المنشورة.</small>
+              </span>
+            </label>
+
+            <label className={!profile.village || !profile.isPublic ? 'is-disabled' : ''}>
+              <input
+                type="checkbox"
+                checked={profile.showLocation}
+                onChange={(event) => update('showLocation', event.target.checked)}
+                disabled={!profile.village || !profile.isPublic}
+              />
+              <span>
+                <b>إظهار القرية والنجع</b>
+                <small>اختياري تمامًا، ويمكن إيقافه في أي وقت.</small>
+              </span>
+            </label>
+          </div>
+
+          {profile.publicUrl ? (
+            <div className="member-profile-public-link">
+              <div>
+                <span>رابط صفحتك</span>
+                <code>{profile.publicUrl}</code>
+              </div>
+              {profile.isPublic ? <a href={profile.publicUrl}>معاينة الصفحة العامة ←</a> : <span>فعّل الصفحة أولًا ليراها الآخرون</span>}
+            </div>
+          ) : null}
         </div>
 
         <div className="member-profile-form-footer">
