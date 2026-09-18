@@ -68,3 +68,15 @@ test('Sand launcher keeps the visible invitation inside the clickable hit target
   assert.match(component, /data-sand-trigger="true"/);
   assert.match(component, /aria-expanded=\{open\}/);
 });
+
+
+test('Sand navigation suggestions open real routes and never become directory searches', async () => {
+  const source = await readProjectFile('components/sand-assistant.tsx');
+
+  assert.match(source, /'أخبار العسيرات': '\/news'/);
+  assert.match(source, /'قرى العسيرات': '\/villages'/);
+  assert.match(source, /'خدمات الدليل': '\/directory'/);
+  assert.match(source, /navigationSuggestionHref\(text\)/);
+  assert.match(source, /router\.push\(navigationHref\)/);
+  assert.match(source, /<Link key=\{suggestion\} href=\{href\}/);
+});
