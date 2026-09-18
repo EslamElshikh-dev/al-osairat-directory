@@ -26,6 +26,7 @@ function formatDate(value: string) {
 }
 
 function iconFor(type: string) {
+  if (type.includes('helpful_received')) return '✓';
   if (type.includes('review_reply')) return '↩';
   if (
     type.includes('approved') ||
