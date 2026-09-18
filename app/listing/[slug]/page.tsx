@@ -2,11 +2,9 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categoryById, listingBySlug, listings, type DirectoryListing } from '@/lib/data';
-import { mergeDirectoryListings } from '@/lib/directory-query';
-import { applyListingOverrides } from '@/lib/listing-overrides';
+import { categoryById, listings, type DirectoryListing } from '@/lib/data';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListingBySlug, getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { isVillageCategoryLandingEligible, villageCategoryLandingPath, villageForListing } from '@/lib/programmatic-seo';
 import { isFallbackScope, isListingIndexable, villagePathByName } from '@/lib/seo-growth';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, verificationStatusLabel, whatsappHref } from '@/lib/site';
@@ -26,17 +24,16 @@ export function generateStaticParams() {
 
 async function resolveListing(rawSlug: string) {
   const slug = normalizeRouteSlug(rawSlug);
-  const staticListing = listingBySlug[slug];
-  if (staticListing) {
-    const [overridden] = await applyListingOverrides([staticListing]);
-    return overridden || staticListing;
-  }
-  return getPublishedListingBySlug(slug);
+  const allListings = await getPublicDirectoryListings();
+  return {
+    listing: allListings.find((item) => item.slug === slug) || null,
+    allListings,
+  };
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const listing = await resolveListing(slug);
+  const { listing } = await resolveListing(slug);
   if (!listing) return {};
   const category = categoryById[listing.category];
   const title = listing.title.includes(listing.village)
@@ -84,7 +81,7 @@ function formatListingDate(value?: string) {
 
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const listing = await resolveListing(slug);
+  const { listing, allListings } = await resolveListing(slug);
   if (!listing) notFound();
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
@@ -98,11 +95,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
   const coverImage = latestScanImageForListing(listing) || imageForListing(listing);
 
-  const [publishedNearby, overriddenStatic] = await Promise.all([
-    getPublishedListings({ category: listing.category, village: listing.village }),
-    applyListingOverrides(listings),
-  ]);
-  const comparableListings = mergeDirectoryListings(overriddenStatic, publishedNearby);
+  const comparableListings = allListings;
   const nearby = comparableListings
     .filter((item) => item.id !== listing.id && item.category === listing.category && item.village === listing.village)
     .slice(0, 3);

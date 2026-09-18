@@ -4,10 +4,9 @@ import { notFound } from 'next/navigation';
 import { ListingCard } from '@/components/listing-card';
 import { BrandMark } from '@/components/site-shell';
 import { listings, villages } from '@/lib/data';
-import { createDirectoryHref, DIRECTORY_PAGE_SIZE, mergeDirectoryListings } from '@/lib/directory-query';
-import { applyListingOverrides } from '@/lib/listing-overrides';
+import { createDirectoryHref, DIRECTORY_PAGE_SIZE } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import {
   getEligibleServiceIntents,
   getProgrammaticCollectionStats,
@@ -29,11 +28,7 @@ export function generateStaticParams() {
 }
 
 async function loadAllListings() {
-  const [publishedListings, baseListings] = await Promise.all([
-    getPublishedListings(),
-    applyListingOverrides(listings),
-  ]);
-  return mergeDirectoryListings(baseListings, publishedListings);
+  return getPublicDirectoryListings();
 }
 
 export async function generateMetadata({

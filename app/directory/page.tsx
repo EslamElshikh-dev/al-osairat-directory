@@ -3,12 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { BrandMark } from '@/components/site-shell';
-import { categories, listings, villages } from '@/lib/data';
-import { mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
-import { queryCanonicalDirectory } from '@/lib/directory-repository';
-import { applyListingOverrides } from '@/lib/listing-overrides';
+import { categories, villages } from '@/lib/data';
+import { queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { getEligibleServiceIntents } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 
@@ -29,12 +27,9 @@ export async function generateMetadata({
   const hasFilters = Boolean(searchQuery || (village && village !== 'all'));
   const purePagination = !hasFilters && page > 1;
   if (page > 1) {
-    const [publishedListings, baseListings] = await Promise.all([
-      getPublishedListings(),
-      applyListingOverrides(listings),
-    ]);
+    const allListings = await getPublicDirectoryListings();
     const paginationResult = queryDirectoryListings(
-      mergeDirectoryListings(baseListings, publishedListings),
+      allListings,
       { query: query.q, village: query.village, page },
     );
     if (page > paginationResult.totalPages) notFound();
@@ -70,14 +65,8 @@ export default async function DirectoryPage({
     page: Number(params.page || 1),
   };
 
-  const [canonicalResult, publishedListings, baseListings] = await Promise.all([
-    queryCanonicalDirectory(queryOptions),
-    getPublishedListings(),
-    applyListingOverrides(listings),
-  ]);
-
-  const allListings = mergeDirectoryListings(baseListings, publishedListings);
-  const result = canonicalResult || queryDirectoryListings(allListings, queryOptions);
+  const allListings = await getPublicDirectoryListings();
+  const result = queryDirectoryListings(allListings, queryOptions);
   const requestedPage = Math.max(1, Number(params.page || 1) || 1);
   if (requestedPage > result.totalPages) notFound();
   const coreVillages = villages.filter((item) => !isFallbackScope(item.name));

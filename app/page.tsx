@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { categories, directoryStats, listings, villages } from '@/lib/data';
+import { categories, directoryStats, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';
 import { BlogCard } from '@/components/blog-card';
 import { NewsCard } from '@/components/news-card';
@@ -14,6 +14,7 @@ import { blogArticles } from '@/lib/blog-published';
 import { getLocalNews, selectHomepageNews } from '@/lib/news';
 import { siteConfig } from '@/lib/site';
 import { imageForCategory } from '@/lib/directory-images';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import newsStyles from './home-news.module.css';
 
 export const metadata: Metadata = {
@@ -23,12 +24,16 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const newsFeed = await getLocalNews();
+  const [newsFeed, allListings] = await Promise.all([
+    getLocalNews(),
+    getPublicDirectoryListings(),
+  ]);
   const latestNews = selectHomepageNews(newsFeed.items, 4);
-  const featured = listings
+  const featured = allListings
     .filter((item) => item.sourceStatus === 'google_verified')
     .slice(0, 6);
-  const emergency = listings.filter((item) => item.category === 'emergency');
+  const emergency = allListings.filter((item) => item.category === 'emergency');
+  const googleVerifiedCount = allListings.filter((item) => item.sourceStatus === 'google_verified').length;
 
   const collectionSchema = {
     '@context': 'https://schema.org',
@@ -103,9 +108,9 @@ export default async function HomePage() {
             </div>
 
             <div className="hero__trust">
-              <span><b>{directoryStats.total}</b><small>سجل منظم</small></span>
+              <span><b>{allListings.length}</b><small>سجل منظم</small></span>
               <span><b>{directoryStats.villages}</b><small>قرى أساسية</small></span>
-              <span><b>{directoryStats.googleVerified}</b><small>مرجع خرائط مباشر</small></span>
+              <span><b>{googleVerifiedCount}</b><small>مرجع خرائط مباشر</small></span>
             </div>
           </div>
 
@@ -142,7 +147,7 @@ export default async function HomePage() {
         </div>
         <div className="category-grid category-grid--editorial">
           {categories.map((category) => {
-            const count = listings.filter((item) => item.category === category.id).length;
+            const count = allListings.filter((item) => item.category === category.id).length;
             const categoryImage = imageForCategory(category.id);
             return (
               <Link key={category.id} href={`/directory/${category.id}`} className={`category-card category-card--${category.id}`}>

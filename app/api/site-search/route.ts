@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import { blogArticles } from '@/lib/blog-published';
-import { categories, categoryById, listings, villages } from '@/lib/data';
+import { categories, categoryById, villages } from '@/lib/data';
 import {
   canonicalizeDirectoryQuery,
-  mergeDirectoryListings,
   queryDirectoryListings,
 } from '@/lib/directory-query';
-import { queryCanonicalDirectory } from '@/lib/directory-repository';
-import { applyListingOverrides } from '@/lib/listing-overrides';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { isFallbackScope } from '@/lib/seo-growth';
 
 export const dynamic = 'force-dynamic';
@@ -55,17 +52,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    const canonicalResult = await queryCanonicalDirectory({ query, page: 1 });
-    let listingItems = canonicalResult?.items;
-
-    if (!listingItems) {
-      const [publishedListings, baseListings] = await Promise.all([
-        getPublishedListings(),
-        applyListingOverrides(listings),
-      ]);
-      const allListings = mergeDirectoryListings(baseListings, publishedListings);
-      listingItems = queryDirectoryListings(allListings, { query, page: 1 }).items;
-    }
+    const allListings = await getPublicDirectoryListings();
+    const listingItems = queryDirectoryListings(allListings, { query, page: 1 }).items;
 
     const listingResults: SearchItem[] = listingItems.slice(0, 7).map((listing) => ({
       kind: 'listing',

@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '@/components/site-shell';
-import { listings } from '@/lib/data';
-import { mergeDirectoryListings } from '@/lib/directory-query';
-import { applyListingOverrides } from '@/lib/listing-overrides';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { getEligibleServiceIntents, getProgrammaticCollectionStats } from '@/lib/programmatic-seo';
 import { siteConfig } from '@/lib/site';
 
@@ -22,11 +19,7 @@ export const metadata: Metadata = buildPageMetadata({
 export const dynamic = 'force-dynamic';
 
 export default async function ServicesPage() {
-  const [publishedListings, baseListings] = await Promise.all([
-    getPublishedListings(),
-    applyListingOverrides(listings),
-  ]);
-  const allListings = mergeDirectoryListings(baseListings, publishedListings);
+  const allListings = await getPublicDirectoryListings();
   const eligible = getEligibleServiceIntents(allListings);
   const canonicalUrl = `${siteConfig.url}/services`;
 

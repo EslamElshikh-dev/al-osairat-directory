@@ -4,12 +4,10 @@ import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
-import { categories, categoryById, listings, villages, type DirectoryCategory } from '@/lib/data';
-import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
-import { queryCanonicalDirectory } from '@/lib/directory-repository';
-import { applyListingOverrides } from '@/lib/listing-overrides';
+import { categories, categoryById, villages, type DirectoryCategory } from '@/lib/data';
+import { createDirectoryHref, queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import {
   categorySearchProfiles,
   getEligibleServiceIntents,
@@ -58,11 +56,7 @@ export async function generateMetadata({
   const hasFilters = hasDirectoryFilters || transportFilterActive;
   const purePagination = !hasFilters && page > 1;
   if (page > 1) {
-    const [publishedListings, baseListings] = await Promise.all([
-      getPublishedListings({ category: info.id }),
-      applyListingOverrides(listings),
-    ]);
-    const allListings = mergeDirectoryListings(baseListings, publishedListings);
+    const allListings = await getPublicDirectoryListings();
     const searchableListings = transportFilterActive
       ? filterTransportListings(allListings, { vehicle: vehicleFilter, destination: destinationFilter })
       : allListings;
@@ -120,17 +114,11 @@ export default async function CategoryPage({
     page: Number(query.page || 1),
   };
 
-  const [canonicalResult, publishedListings, baseListings] = await Promise.all([
-    transportFilterActive ? Promise.resolve(null) : queryCanonicalDirectory(queryOptions),
-    getPublishedListings({ category: info.id }),
-    applyListingOverrides(listings),
-  ]);
-
-  const allListings = mergeDirectoryListings(baseListings, publishedListings);
+  const allListings = await getPublicDirectoryListings();
   const searchableListings = transportFilterActive
     ? filterTransportListings(allListings, { vehicle: vehicleFilter, destination: destinationFilter })
     : allListings;
-  const result = canonicalResult || queryDirectoryListings(searchableListings, queryOptions);
+  const result = queryDirectoryListings(searchableListings, queryOptions);
   const requestedPage = Math.max(1, Number(query.page || 1) || 1);
   if (requestedPage > result.totalPages) notFound();
   const pathname = `/directory/${info.id}`;
