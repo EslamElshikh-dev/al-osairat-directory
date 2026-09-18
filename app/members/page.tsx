@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CommunityMembersExplorer } from '@/components/community-members-explorer';
 import { getPublicMembers } from '@/lib/community-profiles';
 import { buildPageMetadata } from '@/lib/metadata';
 
@@ -59,45 +60,7 @@ export default async function MembersPage() {
         </div>
 
         {members.length ? (
-          <div className="community-members-grid">
-            {members.map((member) => {
-              const initial = member.displayName.trim().charAt(0) || 'ع';
-              const location = [member.locality, member.village].filter(Boolean).join(' · ');
-              return (
-                <Link href={'/members/' + member.slug} className="community-member-card" key={member.slug}>
-                  <header>
-                    <span className={'community-member-card__avatar' + (member.avatarUrl ? ' has-photo' : '')}>
-                      {member.avatarUrl ? (
-                        <img src={member.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
-                      ) : <span aria-hidden="true">{initial}</span>}
-                    </span>
-                    <div>
-                      <h3>{member.displayName}</h3>
-                      <small>عضو منذ {formatJoined(member.joinedAt) || 'فترة'}</small>
-                    </div>
-                    <b aria-hidden="true">←</b>
-                  </header>
-
-                  {member.badges.length ? (
-                    <div className="community-badges" aria-label="شارات العضو">
-                      {member.badges.map((badge) => (
-                        <span className={'community-badge is-' + badge.key} key={badge.key}>{badge.label}</span>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {member.bio ? <p>{member.bio}</p> : <p className="is-muted">عضو مشارك في مجتمع دليل العسيرات.</p>}
-                  {location ? <span className="community-member-card__location">⌖ {location}</span> : null}
-
-                  <footer>
-                    <span><b>{member.contributionCount.toLocaleString('ar-EG')}</b> مساهمة</span>
-                    <span><b>{member.helpfulReceived.toLocaleString('ar-EG')}</b> مفيد</span>
-                    <span><b>{member.likeReceived.toLocaleString('ar-EG')}</b> إعجاب</span>
-                  </footer>
-                </Link>
-              );
-            })}
-          </div>
+          <CommunityMembersExplorer members={members} />
         ) : (
           <div className="community-members-empty">
             <span aria-hidden="true">✦</span>
