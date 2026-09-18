@@ -414,8 +414,12 @@ export function planSandRequest(
     .reverse()
     .map((item) => singleMessagePlan(item.text, villages));
   const previous = previousPlans.find((plan) => plan.category || plan.village || plan.query);
-  const shortOrFollowUp = current.normalized.split(' ').length <= 8
-    || hasAnySignal(current.normalized, followUpSignals);
+  const explicitFollowUp = hasAnySignal(current.normalized, followUpSignals);
+  const slotContinuation = Boolean(
+    (current.category && !current.village)
+    || (current.village && !current.category && !current.query),
+  );
+  const canUseHistory = explicitFollowUp || slotContinuation;
 
   let category = current.category;
   let categoryLabel = current.categoryLabel;
@@ -423,7 +427,7 @@ export function planSandRequest(
   let query = current.query;
   let resolvedFromHistory = false;
 
-  if (previous && shortOrFollowUp) {
+  if (previous && canUseHistory) {
     if (!category && previous.category) {
       category = previous.category;
       categoryLabel = previous.categoryLabel;
