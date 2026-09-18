@@ -170,12 +170,13 @@ export function SandAssistant() {
       if (!response.ok || !data.message) throw new Error(data.error || 'تعذر الوصول إلى سَند الآن.');
 
       const payload = data as SandApiResponse;
-      setMessages((current) => [...current, {
+      const assistantEntry: ChatEntry = {
         id: crypto.randomUUID(),
         role: 'assistant',
         text: payload.message,
         payload,
-      }].slice(-30));
+      };
+      setMessages((current) => [...current, assistantEntry].slice(-30));
     } catch (cause) {
       setLastFailedText(text);
       setError(
