@@ -180,6 +180,41 @@ export default async function MemberPublicProfilePage({
             <p>عندما يشارك العضو تقييمًا عامًا سيظهر هنا.</p>
           </div>
         )}
+
+        <div className="community-profile-section-heading community-profile-section-heading--secondary">
+          <div>
+            <span>المناقشات</span>
+            <h2>الردود المنشورة</h2>
+            <p>آخر الردود العامة التي كتبها العضو على تقييمات المجتمع، مع رابط مباشر إلى سياق النقاش.</p>
+          </div>
+        </div>
+
+        {contributions.replies.length ? (
+          <div className="community-profile-replies">
+            {contributions.replies.map((reply) => (
+              <article className="community-profile-reply" key={reply.id}>
+                <header>
+                  <div>
+                    <span>{reply.targetType === 'site' ? 'رد على تقييم للدليل' : 'رد على تقييم لمقال'}</span>
+                    <Link href={reply.href}>{reply.targetLabel}</Link>
+                  </div>
+                  <time dateTime={reply.createdAt}>{formatFullDate(reply.createdAt)}</time>
+                </header>
+                <p>{reply.body}</p>
+                <footer>
+                  {reply.updatedAt !== reply.createdAt ? <span>تم تعديل الرد</span> : <span>رد منشور</span>}
+                  <Link href={reply.href}>عرض المناقشة ←</Link>
+                </footer>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="community-profile-empty community-profile-empty--compact">
+            <span aria-hidden="true">↩</span>
+            <strong>لا توجد ردود منشورة بعد</strong>
+            <p>عندما يشارك العضو في مناقشة عامة سيظهر الرد هنا.</p>
+          </div>
+        )}
       </section>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
