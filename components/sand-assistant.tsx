@@ -45,7 +45,6 @@ function SandAvatar({ variant }: { variant: 'header' | 'trigger' }) {
         fill
         sizes="50px"
         className="sand-avatar__image"
-        loading="eager"
       />
       <span className="sand-avatar__status" />
     </span>

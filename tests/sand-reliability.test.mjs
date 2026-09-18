@@ -134,7 +134,7 @@ test('Sand mobile UX restores launcher focus and locks background scrolling', as
   assert.match(css, /overscroll-behavior:\s*none/);
 });
 
-test('Sand avatar avoids global image preload competition and result cards expose freshness', async () => {
+test('Sand avatar avoids eager image preload competition and result cards expose freshness', async () => {
   const [component, css] = await Promise.all([
     readProjectFile('components/sand-assistant.tsx'),
     readProjectFile('app/sand-assistant.css'),
@@ -142,7 +142,7 @@ test('Sand avatar avoids global image preload competition and result cards expos
 
   assert.doesNotMatch(component, /\bpriority\b/);
   assert.match(component, /sizes="50px"/);
-  assert.match(component, /loading="eager"/);
+  assert.doesNotMatch(component, /loading="eager"/);
   assert.match(component, /formatSandDate/);
   assert.match(component, /آخر تحديث:/);
   assert.match(css, /\.sand-result__freshness/);
