@@ -267,3 +267,211 @@
   .community-profile-review header { flex-direction: column; gap: 7px; }
   .community-profile-review footer { align-items: flex-start; flex-direction: column; gap: 7px; }
 }
+
+
+.member-profile-public-card {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  margin-top: 4px;
+  border: 1px solid rgba(18,55,45,.1);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(217,170,63,.08), transparent 26%),
+    linear-gradient(145deg, #fff, #faf8f1);
+}
+
+.member-profile-public-card__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.member-profile-public-card__heading > div > span {
+  color: #9a7117;
+  font-size: .7rem;
+  font-weight: 900;
+}
+
+.member-profile-public-card__heading h3 {
+  margin: 4px 0 0;
+  color: #12372d;
+  font-size: 1.05rem;
+}
+
+.member-profile-public-card__heading p {
+  max-width: 680px;
+  margin: 6px 0 0;
+  color: #6d7873;
+  font-size: .76rem;
+  line-height: 1.75;
+}
+
+.member-profile-public-card__heading > span {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: .62rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.member-profile-public-card__heading > span.is-public {
+  color: #25704f;
+  background: #eaf6ef;
+}
+
+.member-profile-public-card__heading > span.is-private {
+  color: #7e7264;
+  background: #f0eeea;
+}
+
+.member-profile-field--public-bio {
+  display: grid !important;
+  gap: 7px;
+}
+
+.member-profile-field--public-bio > span {
+  color: #33433d;
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.member-profile-field--public-bio > span small {
+  color: #8b9590;
+  font-weight: 600;
+}
+
+.member-profile-field--public-bio textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 12px 13px;
+  border: 1px solid rgba(18,55,45,.14);
+  border-radius: 14px;
+  outline: 0;
+  color: #24362f;
+  background: #fff;
+  font: inherit;
+  line-height: 1.75;
+}
+
+.member-profile-field--public-bio textarea:focus {
+  border-color: rgba(31,85,69,.48);
+  box-shadow: 0 0 0 3px rgba(31,85,69,.07);
+}
+
+.member-profile-field--public-bio > small {
+  color: #909995;
+  text-align: left;
+  font-size: .64rem;
+}
+
+.member-profile-public-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+}
+
+.member-profile-public-options > label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid rgba(18,55,45,.09);
+  border-radius: 14px;
+  background: rgba(255,255,255,.88);
+  cursor: pointer;
+}
+
+.member-profile-public-options > label.is-disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.member-profile-public-options input {
+  margin-top: 2px;
+  accent-color: #245746;
+}
+
+.member-profile-public-options span {
+  display: grid;
+  gap: 3px;
+}
+
+.member-profile-public-options b {
+  color: #29483e;
+  font-size: .75rem;
+}
+
+.member-profile-public-options small {
+  color: #7b8782;
+  font-size: .66rem;
+  line-height: 1.55;
+}
+
+.member-profile-public-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(18,55,45,.07);
+}
+
+.member-profile-public-link > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.member-profile-public-link span {
+  color: #7f8985;
+  font-size: .65rem;
+}
+
+.member-profile-public-link code {
+  overflow: hidden;
+  color: #345d50;
+  font: inherit;
+  font-size: .7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.member-profile-public-link > a {
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: #fff;
+  background: #17483a;
+  font-size: .67rem;
+  font-weight: 900;
+}
+
+@media (max-width: 720px) {
+  .member-profile-public-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .member-profile-public-card__heading {
+    flex-direction: column;
+  }
+
+  .member-profile-public-options {
+    grid-template-columns: 1fr;
+  }
+
+  .member-profile-public-link {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .member-profile-public-link > a {
+    width: 100%;
+    text-align: center;
+  }
+}
