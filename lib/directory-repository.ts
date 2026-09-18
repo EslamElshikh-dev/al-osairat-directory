@@ -75,6 +75,11 @@ type DirectoryEntityRow = {
   last_updated_at: string | null;
 };
 
+type DirectoryCoverageRow = {
+  id: string;
+  last_updated_at: string | null;
+};
+
 const canonicalSelect = [
   'id', 'slug', 'title', 'category', 'sub_category', 'location', 'village', 'locality',
   'phone', 'whatsapp', 'hours', 'description', 'rating', 'review_count', 'rating_source',
@@ -136,6 +141,25 @@ function serializeDirectoryEntity(row: DirectoryEntityRow): DirectoryListing {
     googleMapsUrl: row.google_maps_url || undefined,
     lastUpdatedAt: row.last_updated_at || undefined,
   };
+}
+
+export async function getCanonicalDirectoryCoverage() {
+  const params = new URLSearchParams({
+    select: 'id,last_updated_at',
+    is_active: 'eq.true',
+    limit: '1000',
+  });
+
+  const rows = await fetchSupabasePublicJson<DirectoryCoverageRow[]>(
+    `${SUPABASE_URL}/rest/v1/directory_entities?${params.toString()}`,
+    { headers: publicReadHeaders() },
+  );
+
+  if (!rows || rows.length < MIN_CANONICAL_DIRECTORY_ROWS) return null;
+  return rows.map((row) => ({
+    id: row.id,
+    lastUpdatedAt: row.last_updated_at || undefined,
+  }));
 }
 
 export async function getCanonicalDirectoryListings(): Promise<DirectoryListing[] | null> {
