@@ -25,6 +25,7 @@ type GapRow = {
   priority: number;
   priorityLabel: 'عاجلة' | 'مرتفعة' | 'متوسطة' | 'مراقبة';
   recommendedAction: string;
+  recheckedTerm?: string;
 };
 type CollectionPlanRow = {
   key: string;
@@ -212,7 +213,7 @@ export function AdminDirectoryIntelligence() {
               <div className={styles.resolvedList}>
                 {data.resolvedGaps.slice(0, 10).map((item) => (
                   <div key={`resolved-${item.term}-${item.village}-${item.category}`}>
-                    <div><strong>{item.term}</strong><small>{item.targetVillage || 'كل العسيرات'} · {item.categoryLabel || 'كل الأقسام'}</small></div>
+                    <div><strong>{item.term}</strong><small>{item.recheckedTerm ? `أعيد الاختبار كـ «${item.recheckedTerm}» · ` : ''}{item.targetVillage || 'كل العسيرات'} · {item.categoryLabel || 'كل الأقسام'}</small></div>
                     <span><b>{n(item.currentResultCount)}</b> نتيجة الآن</span>
                   </div>
                 ))}
