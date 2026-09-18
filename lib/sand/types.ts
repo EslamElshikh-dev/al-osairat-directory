@@ -16,6 +16,7 @@ export type SandResult = {
   description?: string;
   phone?: string;
   whatsapp?: string;
+  googleMapsUrl?: string;
   hours?: string;
   href: string;
   sourceLabel: string;
