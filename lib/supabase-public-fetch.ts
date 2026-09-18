@@ -12,7 +12,9 @@ export async function fetchSupabasePublicJson<T>(
     const response = await fetch(url, {
       ...init,
       signal: controller.signal,
-      next: { revalidate: PUBLIC_REVALIDATE_SECONDS },
+      ...(init.cache === 'no-store'
+        ? {}
+        : { next: { revalidate: PUBLIC_REVALIDATE_SECONDS } }),
     });
 
     if (!response.ok) return null;

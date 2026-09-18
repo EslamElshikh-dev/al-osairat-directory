@@ -143,7 +143,7 @@ function serializeDirectoryEntity(row: DirectoryEntityRow): DirectoryListing {
   };
 }
 
-export async function getCanonicalDirectoryCoverage() {
+export async function getCanonicalDirectoryCoverage(options: { fresh?: boolean } = {}) {
   const params = new URLSearchParams({
     select: 'id,last_updated_at',
     is_active: 'eq.true',
@@ -152,7 +152,10 @@ export async function getCanonicalDirectoryCoverage() {
 
   const rows = await fetchSupabasePublicJson<DirectoryCoverageRow[]>(
     `${SUPABASE_URL}/rest/v1/directory_entities?${params.toString()}`,
-    { headers: publicReadHeaders() },
+    {
+      headers: publicReadHeaders(),
+      ...(options.fresh ? { cache: 'no-store' as const } : {}),
+    },
   );
 
   if (!rows || rows.length < MIN_CANONICAL_DIRECTORY_ROWS) return null;
