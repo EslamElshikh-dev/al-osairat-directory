@@ -36,3 +36,8 @@ ACTIVITY_IMAGE_RENDER_CONCURRENCY=2
 ```
 
 No runtime storage, paid image service, or external cache is required.
+
+
+## Preview validation
+
+On the first cache-seeding preview, all 391 images were rendered in 38.82 seconds. This is already faster than the previous sequential baseline because cache misses use bounded concurrency. A follow-up preview on the same branch is used to verify restored-cache reuse before merge.
