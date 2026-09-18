@@ -40,6 +40,7 @@ export function DirectoryExplorer({
   const hasTransportFilter = category === 'transport' && (vehicle !== 'all' || destination !== 'all');
   const hasActiveFilter = Boolean(query || village !== 'all' || category || hasTransportFilter);
   const quickVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
+  const activeVillage = village !== 'all' ? villages.find((item) => item.name === village) : undefined;
 
   return (
     <div className="explorer explorer--premium explorer--discovery-v4">
@@ -181,6 +182,7 @@ export function DirectoryExplorer({
         <div className="results-bar__context results-bar__context--discovery">
           {query && <span>بحث: <b>«{query}»</b></span>}
           {village !== 'all' && <span>القرية: <b>{village}</b></span>}
+          {activeVillage && <Link href={`/villages/${activeVillage.slug}`}>صفحة القرية ←</Link>}
           {category && <span>القسم: <b>{categories.find((item) => item.id === category)?.shortLabel}</b></span>}
           {category === 'transport' && vehicle !== 'all' && <span>المركبة: <b>{getTransportVehicleLabel(vehicle)}</b></span>}
           {category === 'transport' && destination !== 'all' && <span>الوجهة: <b>{getTransportDestinationLabel(destination)}</b></span>}
@@ -251,9 +253,29 @@ export function DirectoryExplorer({
       ) : (
         <div className="empty-state empty-state--premium">
           <span className="empty-state__mark" aria-hidden="true"><BrandMark /></span>
-          <strong>لا توجد نتائج مطابقة</strong>
-          <p>جرّب كلمة أقصر أو قسمًا أو قرية مختلفة، أو امسح الفلاتر لعرض كل الدليل.</p>
-          <Link href={pathname} className="button button--soft">عرض كل النتائج</Link>
+          <strong>لا توجد نتائج مطابقة بهذه الدقة</strong>
+          <p>بدل إنهاء المسار هنا، وسّع نطاق البحث أو افتح صفحة القرية والقسم لاستكشاف البدائل المنشورة.</p>
+          <div className="detail-actions empty-state__actions">
+            {query && village !== 'all' && (
+              <Link
+                href={createDirectoryHref(pathname, { query, village: 'all', vehicle, destination })}
+                className="button button--primary"
+              >
+                ابحث عن «{query}» في كل العسيرات
+              </Link>
+            )}
+            {activeVillage && (
+              <Link href={`/villages/${activeVillage.slug}`} className="button button--soft">
+                استكشف {activeVillage.name}
+              </Link>
+            )}
+            {category && (
+              <Link href={createDirectoryHref(pathname, { village, vehicle, destination })} className="button button--ghost">
+                عرض كل {categories.find((item) => item.id === category)?.shortLabel || 'القسم'}
+              </Link>
+            )}
+            <Link href="/directory" className="button button--ghost">كل الدليل</Link>
+          </div>
         </div>
       )}
     </div>
