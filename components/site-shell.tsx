@@ -36,6 +36,7 @@ export function SiteHeader() {
           <Link href="/villages">القرى</Link>
           <Link href="/localities">النجوع</Link>
           <Link href="/news">الأخبار</Link>
+          <Link href="/community" className="nav-optional">المجتمع</Link>
           <Link href="/members" className="nav-optional">الأعضاء</Link>
           <Link href="/blog" className="nav-optional">المدونة</Link>
         </nav>
@@ -117,6 +118,7 @@ export function Footer() {
             <Link href="/blog">مدونة العسيرات</Link>
             <Link href="/villages">قرى العسيرات</Link>
             <Link href="/localities">نجوع وتوابع العسيرات</Link>
+            <Link href="/community">نبض المجتمع</Link>
             <Link href="/members">أعضاء المجتمع</Link>
             {categories.slice(5, 8).map((category) => (
               <Link key={category.id} href={`/directory/${category.id}`}>{category.shortLabel}</Link>

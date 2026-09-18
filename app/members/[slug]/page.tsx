@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CommunityFollowButton } from '@/components/community-follow-button';
 import { getPublicMemberContributions, getPublicMemberProfileBySlug } from '@/lib/community-profiles';
+import { getPublicMemberFollowerCount } from '@/lib/community-follows';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const revalidate = 60;
@@ -65,7 +67,10 @@ export default async function MemberPublicProfilePage({
   const profile = await getPublicMemberProfileBySlug(slug);
   if (!profile) notFound();
 
-  const contributions = await getPublicMemberContributions(profile.userId);
+  const [contributions, followerCount] = await Promise.all([
+    getPublicMemberContributions(profile.userId),
+    getPublicMemberFollowerCount(profile.userId),
+  ]);
   const initial = profile.displayName.trim().charAt(0) || 'ع';
   const location = [profile.locality, profile.village].filter(Boolean).join(' · ');
   const joinedLabel = formatDate(profile.joinedAt);
@@ -108,6 +113,7 @@ export default async function MemberPublicProfilePage({
             ) : (
               <p className="community-profile-bio community-profile-bio--muted">عضو مشارك في مجتمع دليل العسيرات.</p>
             )}
+            <CommunityFollowButton slug={profile.slug} initialFollowerCount={followerCount} />
             {contributions.badges.length ? (
               <>
                 <div className="community-profile-badge-row" aria-label="شارات العضو">
