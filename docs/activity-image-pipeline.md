@@ -13,7 +13,7 @@ Vercel restores the Next.js build cache between normal deployments. The prebuild
 - title and village
 - source path and source kind
 - exact source image bytes
-- the renderer source itself
+- the explicit visual revision used by the renderer
 
 If all of those inputs are unchanged and the cached WebP exists, the build copies the cached image into `public/images/activities` instead of running Sharp again.
 
@@ -40,7 +40,10 @@ No runtime storage, paid image service, or external cache is required.
 
 ## Preview validation
 
-On the first cache-seeding preview, all 391 images were rendered in 38.82 seconds. This is already faster than the previous sequential baseline because cache misses use bounded concurrency. The first cache seed completed in 38.16 seconds for all 391 images. A subsequent sequential preview on the same branch is used to verify the zero-render cache-hit path before merge.
+Validation on Vercel confirmed both paths:
 
+- cache miss / full regeneration: 391 images rendered in 15.56 seconds on the optimized worker pool
+- stable cache hit: 391 images reused, 0 rendered, in 0.06 seconds
+- previous sequential baseline before this work was about 85 seconds
 
-The bounded-concurrency fallback was also measured after cache invalidation: 391 images rendered in 15.56 seconds. This keeps cache-miss builds substantially faster while preserving the same image settings.
+The image dimensions, crop logic, overlay, WebP quality and public URLs are unchanged.
