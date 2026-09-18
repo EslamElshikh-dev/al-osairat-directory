@@ -6,6 +6,23 @@ const ARABIC_DIACRITICS = /[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g;
 const NON_SEARCH_CHARS = /[^\p{L}\p{N}\s]/gu;
 const MIN_PARTIAL_TOKEN_LENGTH = 4;
 
+const categorySearchTerms: Record<DirectoryCategory, string> = {
+  doctors: 'اطباء دكاتره دكتور طبيب عيادات عياده طب رعايه صحيه',
+  pharmacies: 'صيدليات صيدليه دواء ادويه مستلزمات طبيه',
+  shops: 'محلات متاجر متجر سوق اسواق تسوق',
+  education: 'تعليم مدارس مدرسه معاهد معهد حضانات حضانه روضه',
+  crafts: 'حرفيين حرفي صنايعي خدمات فنيه صيانه سباك كهربائي نجار تشطيبات',
+  restaurants: 'مطاعم مطعم اكل طعام وجبات ضيافه',
+  lawyers: 'محامين محامي محاماه قانون استشارات قانونيه',
+  clerics: 'ماذون ماذونين مشايخ شيخ زواج',
+  government: 'خدمات حكوميه جهات حكوميه بريد مرافق خدمات عامه',
+  community: 'دواوين منادر مجالس عائلات مجتمع',
+  worship: 'مساجد مسجد جوامع جامع كنائس كنيسه دور عباده',
+  transport: 'مواصلات نقل سواقين سائقين سواق مواصلات عامه',
+  emergency: 'طوارئ اسعاف شرطه مطافي نجده',
+};
+
+
 const synonymGroups = [
   ['دكتور', 'دكتوره', 'طبيب', 'طبيبه', 'د'],
   ['صيدليه', 'صيدليات'],
@@ -149,6 +166,7 @@ export function directorySearchRelevance(listing: DirectoryListing, query: strin
   const locality = normalizedField(listing.locality);
   const location = normalizedField(listing.location);
   const phone = normalizedField(listing.phone);
+  const categoryTerms = normalizedField(categorySearchTerms[listing.category]);
 
   return (
     fieldRelevance(title, normalizedQuery, queryTokens, 120)
@@ -157,6 +175,7 @@ export function directorySearchRelevance(listing: DirectoryListing, query: strin
     + fieldRelevance(village, normalizedQuery, queryTokens, 22)
     + fieldRelevance(locality, normalizedQuery, queryTokens, 18)
     + fieldRelevance(location, normalizedQuery, queryTokens, 8)
+    + fieldRelevance(categoryTerms, normalizedQuery, queryTokens, 42)
     + fieldRelevance(phone, normalizedQuery, queryTokens, 3)
   );
 }
@@ -180,6 +199,7 @@ function matchesSearch(listing: DirectoryListing, query: string) {
       listing.locality,
       listing.location,
       listing.phone,
+      categorySearchTerms[listing.category],
     ]
       .map((value) => normalizedField(value))
       .filter(Boolean)

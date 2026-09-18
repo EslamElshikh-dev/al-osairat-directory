@@ -9,6 +9,7 @@ import { buildPageMetadata } from '@/lib/metadata';
 import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { getEligibleServiceIntents } from '@/lib/programmatic-seo';
 import { buildCollectionStructuredData, isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
+import { getUndercoveredVillages } from '@/lib/discovery';
 
 const directoryTitle = 'الدليل الشامل لخدمات وأنشطة العسيرات';
 const directoryDescription = 'ابحث في دليل مركز العسيرات عن الأطباء والصيدليات والمحلات والحرفيين والمطاعم والمحامين وسائر الخدمات المحلية.';
@@ -71,6 +72,7 @@ export default async function DirectoryPage({
   if (requestedPage > result.totalPages) notFound();
   const coreVillages = villages.filter((item) => !isFallbackScope(item.name));
   const serviceIntents = getEligibleServiceIntents(allListings);
+  const undercoveredVillages = getUndercoveredVillages(allListings, 4);
   const collectionSchema = buildCollectionStructuredData({
     title: directoryTitle,
     description: directoryDescription,
@@ -145,6 +147,26 @@ export default async function DirectoryPage({
           pathname="/directory"
         />
       </section>
+
+      {undercoveredVillages.length > 0 && (
+        <section className="shell discovery-balance-strip" aria-labelledby="directory-balance-title">
+          <div className="discovery-balance-strip__heading">
+            <span>تغطية متوازنة</span>
+            <h2 id="directory-balance-title">استكشف قرى لديها محتوى يستحق ظهورًا أكبر</h2>
+            <p>هذه ليست القرى الأعلى عددًا؛ نعرضها عمدًا لتوزيع الاكتشاف على نطاق العسيرات كاملًا بدل تركيز الزيارات في الصفحات الأكثر كثافة.</p>
+          </div>
+          <nav className="discovery-balance-strip__grid" aria-label="قرى أقل تغطية في دليل العسيرات">
+            {undercoveredVillages.map(({ village, listingCount, categoryCount }) => (
+              <Link key={village.slug} href={`/villages/${village.slug}`}>
+                <strong>{village.name}</strong>
+                <span>{listingCount.toLocaleString('ar-EG')} سجل منشور</span>
+                <small>{categoryCount.toLocaleString('ar-EG')} أقسام متاحة</small>
+                <b aria-hidden="true">←</b>
+              </Link>
+            ))}
+          </nav>
+        </section>
+      )}
 
       {serviceIntents.length > 0 && (
         <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="directory-service-intents-title">

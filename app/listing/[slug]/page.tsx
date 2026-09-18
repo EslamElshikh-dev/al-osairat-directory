@@ -14,6 +14,7 @@ import { ListingReport } from '@/components/listing-report';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { imageForListing } from '@/lib/directory-images';
+import { getRelatedListings, villageCategoryDirectoryHref } from '@/lib/discovery';
 import { latestScanImageForListing } from '@/lib/latest-scan-images';
 
 export const dynamic = 'force-dynamic';
@@ -96,9 +97,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const coverImage = latestScanImageForListing(listing) || imageForListing(listing);
 
   const comparableListings = allListings;
-  const nearby = comparableListings
-    .filter((item) => item.id !== listing.id && item.category === listing.category && item.village === listing.village)
-    .slice(0, 3);
+  const nearby = getRelatedListings(listing, comparableListings, 4);
   const listingVillage = villageForListing(listing);
   const localLandingPath = listingVillage
     && isVillageCategoryLandingEligible(comparableListings, listing.village, listing.category)
@@ -245,19 +244,30 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
 
         <aside className="detail-aside detail-aside--premium">
           <div className="detail-aside__heading">
-            <span className="eyebrow eyebrow--dark">في النطاق نفسه</span>
-            <h2>{fallbackScope ? 'خدمات قريبة ضمن مركز العسيرات' : `خدمات قريبة في ${listing.village}`}</h2>
-            <p>{fallbackScope ? 'نتائج من القسم نفسه ضمن النطاق العام لمركز العسيرات.' : 'نتائج من القسم والقرية نفسيهما لمساعدتك على المقارنة والوصول بسرعة.'}</p>
+            <span className="eyebrow eyebrow--dark">اكتشاف ذكي</span>
+            <h2>أنشطة مشابهة ومفيدة</h2>
+            <p>{fallbackScope ? 'نرتب البدائل بحسب القسم والتشابه وجودة البيانات داخل مركز العسيرات.' : `نبدأ بالأقرب إلى ${listing.village} والتخصص نفسه، ثم نوسّع الاختيارات عند الحاجة بدل ترك المسار بلا بدائل.`}</p>
           </div>
           <div className="detail-aside__list">
             {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
           </div>
 
-          {localLandingPath && (
-            <Link className="button button--ghost detail-aside__landing" href={localLandingPath}>
-              عرض كل {category.shortLabel} في {listing.village}
+          <div className="detail-aside__discovery-actions">
+            {villagePath && (
+              <Link className="button button--soft" href={villagePath}>
+                استكشف كل أنشطة {listing.village}
+              </Link>
+            )}
+            <Link
+              className="button button--ghost"
+              href={localLandingPath || villageCategoryDirectoryHref(listing.village, listing.category)}
+            >
+              كل {category.shortLabel} في {listing.village}
             </Link>
-          )}
+            <Link className="button button--ghost" href={`/directory/${listing.category}`}>
+              كل {category.shortLabel} في العسيرات
+            </Link>
+          </div>
         </aside>
       </section>
 
