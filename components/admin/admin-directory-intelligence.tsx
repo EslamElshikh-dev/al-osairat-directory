@@ -5,6 +5,39 @@ import styles from './admin-directory-intelligence.module.css';
 
 type TermRow = { term: string; count: number; zeroResults?: number; village?: string; category?: string };
 type RankedRow = { name: string; label?: string; count: number };
+type GapRow = {
+  term: string;
+  village: string;
+  category: string;
+  searches7d: number;
+  searches30d: number;
+  zeroResults7d: number;
+  zeroResults30d: number;
+  uniqueSessions30d: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  targetVillage: string;
+  targetCategory: string;
+  categoryLabel: string;
+  currentResultCount: number;
+  scopeListingCount: number;
+  zeroRate30d: number;
+  priority: number;
+  priorityLabel: 'عاجلة' | 'مرتفعة' | 'متوسطة' | 'مراقبة';
+  recommendedAction: string;
+};
+type CollectionPlanRow = {
+  key: string;
+  village: string;
+  category: string;
+  categoryLabel: string;
+  terms: string[];
+  zeroDemand30d: number;
+  uniqueDemand30d: number;
+  gapCount: number;
+  coverageCount: number;
+  priority: number;
+};
 type ListingRow = {
   listingId: string;
   slug: string;
@@ -28,6 +61,9 @@ type Payload = {
   topSearchVillages: RankedRow[];
   topSearchCategories: RankedRow[];
   topListings: ListingRow[];
+  gapQueue: GapRow[];
+  resolvedGaps: GapRow[];
+  collectionPlan: CollectionPlanRow[];
   generatedAt: string;
 };
 
@@ -111,6 +147,80 @@ export function AdminDirectoryIntelligence() {
         <RankedList eyebrow="طلب البحث" title="أعلى القرى في البحث" rows={(data.topSearchVillages || []).map((item) => ({ label: item.name, count: item.count }))} />
         <RankedList eyebrow="طلب البحث" title="أعلى الأقسام في البحث" rows={(data.topSearchCategories || []).map((item) => ({ label: item.label || item.name, count: item.count }))} />
       </div>
+
+      <section className={styles.demandOps} aria-labelledby="demand-ops-title">
+        <div className={styles.demandHead}>
+          <div>
+            <span>Discovery VNext.1</span>
+            <h3 id="demand-ops-title">خطة جمع البيانات من الطلب الحقيقي</h3>
+            <p>كل استعلام صفري يُعاد اختباره الآن مقابل الدليل الحالي. ما زال صفرًا يدخل قائمة الجمع، وما أصبح له نتائج ينتقل تلقائيًا إلى «تم الحل» بدل إهدار وقت المسح.</p>
+          </div>
+          <div className={styles.demandSummary}>
+            <span><b>{n(data.gapQueue?.length)}</b><small>فجوات نشطة</small></span>
+            <span><b>{n(data.collectionPlan?.length)}</b><small>دفعات جمع</small></span>
+            <span><b>{n(data.resolvedGaps?.length)}</b><small>فجوات حُلّت</small></span>
+          </div>
+        </div>
+
+        {data.collectionPlan?.length ? (
+          <div className={styles.planGrid}>
+            {data.collectionPlan.map((item, index) => (
+              <article className={styles.planCard} key={item.key}>
+                <div className={styles.planRank}>{String(index + 1).padStart(2, '0')}</div>
+                <div className={styles.planMain}>
+                  <span>{item.village} · {item.categoryLabel}</span>
+                  <h4>{item.terms.join(' · ')}</h4>
+                  <p>{n(item.zeroDemand30d)} طلب صفري خلال 30 يومًا · {n(item.uniqueDemand30d)} جلسات طلب · التغطية الحالية {n(item.coverageCount)} سجل</p>
+                </div>
+                <div className={styles.planScore}><b>{n(item.priority)}</b><small>أولوية</small></div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.empty}>لا توجد دفعات جمع نشطة الآن؛ الاستعلامات الصفرية التاريخية إما حُلّت أو لا تكفي لتكوين أولوية تشغيلية.</div>
+        )}
+
+        <div className={styles.gapColumns}>
+          <section className={styles.gapCard}>
+            <div className={styles.sectionTitle}><span>Queue تشغيلية</span><h3>الفجوات التي ما زالت بلا نتائج</h3></div>
+            {data.gapQueue?.length ? (
+              <div className={styles.gapList}>
+                {data.gapQueue.slice(0, 12).map((item) => (
+                  <article className={styles.gapRow} key={`${item.term}-${item.village}-${item.category}`}>
+                    <div className={styles.gapIdentity}>
+                      <strong>{item.term}</strong>
+                      <span>{item.targetVillage || 'كل العسيرات'} · {item.categoryLabel || 'قسم غير محدد'}</span>
+                      <small>{item.recommendedAction}</small>
+                    </div>
+                    <div className={styles.gapDemand}>
+                      <b>{n(item.zeroResults30d)}</b><span>صفر / 30 يوم</span>
+                      <small>{n(item.uniqueSessions30d)} جلسات مختلفة</small>
+                    </div>
+                    <div className={styles.gapPriority}>
+                      <b>{n(item.priority)}</b>
+                      <span>{item.priorityLabel}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : <div className={styles.empty}>لا توجد فجوات بحث حقيقية غير محلولة حاليًا.</div>}
+          </section>
+
+          <section className={styles.gapCard}>
+            <div className={styles.sectionTitle}><span>تنظيف تلقائي</span><h3>فجوات تاريخية أصبحت محلولة</h3></div>
+            {data.resolvedGaps?.length ? (
+              <div className={styles.resolvedList}>
+                {data.resolvedGaps.slice(0, 10).map((item) => (
+                  <div key={`resolved-${item.term}-${item.village}-${item.category}`}>
+                    <div><strong>{item.term}</strong><small>{item.targetVillage || 'كل العسيرات'} · {item.categoryLabel || 'كل الأقسام'}</small></div>
+                    <span><b>{n(item.currentResultCount)}</b> نتيجة الآن</span>
+                  </div>
+                ))}
+              </div>
+            ) : <div className={styles.empty}>لم تُرصد فجوات تاريخية محلولة في نافذة الـ30 يومًا.</div>}
+          </section>
+        </div>
+      </section>
 
       <section className={styles.card} style={{ marginTop: 18 }}>
         <div className={styles.sectionTitle}><span>الأداء حسب النشاط</span><h3>أداء الأنشطة — آخر 30 يومًا</h3></div>
