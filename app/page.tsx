@@ -34,6 +34,14 @@ export default async function HomePage() {
     .slice(0, 6);
   const emergency = allListings.filter((item) => item.category === 'emergency');
   const googleVerifiedCount = allListings.filter((item) => item.sourceStatus === 'google_verified').length;
+  const villageDiscovery = villages
+    .filter((village) => village.name !== 'مركز العسيرات')
+    .map((village) => ({
+      ...village,
+      count: allListings.filter((item) => item.village === village.name).length,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6);
 
   const collectionSchema = {
     '@context': 'https://schema.org',
@@ -169,6 +177,36 @@ export default async function HomePage() {
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      <section className="section section--muted home-village-discovery">
+        <div className="shell">
+          <div className="section-heading section-heading--editorial">
+            <div>
+              <span className="eyebrow eyebrow--dark">اكتشف حسب القرية</span>
+              <h2>ابدأ من المكان الأقرب لك</h2>
+              <p>قرى العسيرات الأعلى تغطية في الدليل حاليًا، مرتبة تلقائيًا حسب عدد السجلات المنشورة.</p>
+            </div>
+            <Link href="/villages" className="text-link text-link--arrow">كل قرى العسيرات <b aria-hidden="true">←</b></Link>
+          </div>
+
+          <div className="home-village-grid">
+            {villageDiscovery.map((village, index) => (
+              <Link key={village.slug} href={`/villages/${village.slug}`} className="home-village-card">
+                <span className="home-village-card__index">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>{village.name}</h3>
+                  <p>{village.description}</p>
+                </div>
+                <div className="home-village-card__meta">
+                  <span><b>{village.count}</b> سجل منشور</span>
+                  <span><b>{village.localities.length}</b> تابع ونجع</span>
+                </div>
+                <span className="home-village-card__cta">استكشف القرية <b aria-hidden="true">←</b></span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
