@@ -155,3 +155,28 @@ test('medical safety outranks a generic clarification route', () => {
   const reply = directSandReply(classifySandMessage(message), undefined, 'provider_unavailable', plan);
   assert.match(reply, /ما أقدرش أشخّص أو أوصف علاج/);
 });
+
+
+test('standalone topic changes do not inherit a previous village just because the message is short', () => {
+  const plan = planSandRequest(
+    'اخبار العسيرات',
+    [{ role: 'user', text: 'عايز دكتور في النويرات' }],
+    villages,
+  );
+
+  assert.equal(plan.query, 'اخبار');
+  assert.equal(plan.village, undefined);
+  assert.equal(plan.resolvedFromHistory, false);
+});
+
+test('explicit follow-up language can still inherit the previous village', () => {
+  const plan = planSandRequest(
+    'طب والمطاعم هناك؟',
+    [{ role: 'user', text: 'عايز دكتور في النويرات' }],
+    villages,
+  );
+
+  assert.equal(plan.category, 'restaurants');
+  assert.equal(plan.village, 'النويرات');
+  assert.equal(plan.resolvedFromHistory, true);
+});
