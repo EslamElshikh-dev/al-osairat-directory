@@ -7,7 +7,6 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import {
   ACTIVITY_IMAGE_CACHE_VERSION,
@@ -21,9 +20,7 @@ const outputDirectory = path.join(root, 'public/images/activities');
 const cacheDirectory = path.join(root, '.next/cache/activity-images');
 const cacheManifestPath = path.join(cacheDirectory, 'manifest.json');
 const manifest = JSON.parse(await readFile(path.join(root, 'lib/data/activity-image-manifest.json'), 'utf8'));
-const rendererDigest = createHash('sha256')
-  .update(await readFile(fileURLToPath(import.meta.url)))
-  .digest('hex');
+const visualRevision = 'activity-card-v1';
 
 const seedImages = new Map();
 for (const shard of [1, 2, 3, 4]) {
@@ -193,7 +190,7 @@ await runWithConcurrency(entries, concurrency, async ([listingId, listing]) => {
     listingId,
     listing,
     sourceDigest: sourceDigest(listing.source, sourceBuffer),
-    rendererDigest,
+    visualRevision,
   });
 
   const outputPath = path.join(root, 'public', listing.src.replace(/^\/+/, ''));
@@ -228,7 +225,7 @@ await runWithConcurrency(entries, concurrency, async ([listingId, listing]) => {
 
 await writeFile(cacheManifestPath, JSON.stringify({
   version: ACTIVITY_IMAGE_CACHE_VERSION,
-  rendererDigest,
+  visualRevision,
   generatedAt: new Date().toISOString(),
   entries: nextCacheEntries,
 }));
