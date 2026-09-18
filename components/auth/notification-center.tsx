@@ -12,6 +12,8 @@ type NotificationItem = {
   entityType: string;
   entityId: string;
   readAt: string | null;
+  eventCount: number;
+  lastEventAt: string;
   createdAt: string;
 };
 
@@ -129,7 +131,7 @@ export function NotificationCenter() {
         <div>
           <span>مركز المتابعة</span>
           <h2 id="notifications-title">الإشعارات</h2>
-          <p>نتائج مراجعة طلباتك وملكياتك وتعديلات أنشطتك وبلاغات البيانات والردود على تقييماتك تظهر هنا تلقائيًا.</p>
+          <p>نتائج مراجعة طلباتك وردود المجتمع وتفاعلات «مفيد» تظهر هنا، مع تجميع التفاعلات المتكررة بدل إزعاجك بإشعار منفصل لكل حدث.</p>
         </div>
         <div className="notification-center__actions">
           <span>{loading ? '...' : unreadCount ? `${unreadCount} غير مقروء` : 'كلها مقروءة'}</span>
@@ -152,10 +154,11 @@ export function NotificationCenter() {
                 <span className="notification-item__copy">
                   <span className="notification-item__topline">
                     <strong>{item.title}</strong>
+                    {item.eventCount > 1 ? <em className="notification-item__group-count">×{item.eventCount}</em> : null}
                     {!item.readAt && <i>جديد</i>}
                   </span>
                   <span className="notification-item__message">{item.message}</span>
-                  <small>{formatDate(item.createdAt)}</small>
+                  <small>{formatDate(item.lastEventAt || item.createdAt)}</small>
                 </span>
                 <span className="notification-item__arrow" aria-hidden="true">←</span>
               </button>
