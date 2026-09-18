@@ -78,7 +78,7 @@ export async function getPublicMemberProfileBySlug(slug: string): Promise<(Publi
   });
   const rows = await fetchSupabasePublicJson<ProfileRow[]>(
     `${SUPABASE_URL}/rest/v1/member_public_profiles?${params.toString()}`,
-    { headers: publicHeaders() },
+    { headers: publicHeaders(), cache: 'no-store' },
   );
   const row = rows?.[0];
   if (!row) return null;
@@ -113,11 +113,11 @@ export async function getPublicMemberContributions(userId: string): Promise<Publ
   const [reviewRows, replyRows] = await Promise.all([
     fetchSupabasePublicJson<ReviewRow[]>(
       `${SUPABASE_URL}/rest/v1/content_reviews?${reviewParams.toString()}`,
-      { headers: publicHeaders() },
+      { headers: publicHeaders(), cache: 'no-store' },
     ),
     fetchSupabasePublicJson<ReplyRow[]>(
       `${SUPABASE_URL}/rest/v1/content_review_replies?${replyParams.toString()}`,
-      { headers: publicHeaders() },
+      { headers: publicHeaders(), cache: 'no-store' },
     ),
   ]);
 
