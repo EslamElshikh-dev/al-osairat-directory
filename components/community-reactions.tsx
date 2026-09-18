@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { CommunityReportButton } from '@/components/community-report-button';
 import type {
   CommunityReactionSummary,
   CommunityReactionTarget,
@@ -92,6 +93,13 @@ export function CommunityReactions({
           <small>{state.helpfulCount.toLocaleString('ar-EG')}</small>
         </button>
       </div>
+      <CommunityReportButton
+        targetType={targetType}
+        targetId={targetId}
+        authenticated={authenticated}
+        emailVerified={emailVerified}
+        own={own}
+      />
       {error ? <small className="community-reactions__error" role="status">{error}</small> : null}
     </div>
   );
