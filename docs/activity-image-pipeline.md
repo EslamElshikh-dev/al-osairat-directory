@@ -41,3 +41,6 @@ No runtime storage, paid image service, or external cache is required.
 ## Preview validation
 
 On the first cache-seeding preview, all 391 images were rendered in 38.82 seconds. This is already faster than the previous sequential baseline because cache misses use bounded concurrency. The first cache seed completed in 38.16 seconds for all 391 images. A subsequent sequential preview on the same branch is used to verify the zero-render cache-hit path before merge.
+
+
+The bounded-concurrency fallback was also measured after cache invalidation: 391 images rendered in 15.56 seconds. This keeps cache-miss builds substantially faster while preserving the same image settings.
