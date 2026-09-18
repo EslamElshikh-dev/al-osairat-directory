@@ -25,6 +25,7 @@ export type DemandGapRow = SearchGapCandidate & {
   priority: number;
   priorityLabel: 'عاجلة' | 'مرتفعة' | 'متوسطة' | 'مراقبة';
   recommendedAction: string;
+  recheckedTerm: string;
 };
 
 export type CollectionPlanRow = {
@@ -83,6 +84,14 @@ function inferVillage(term: string, explicit: string) {
     }
   }
   return '';
+}
+
+function repairObviousRepeatedLeadingCharacters(term: string) {
+  return term
+    .split(/\s+/)
+    .map((token) => token.length >= 4 && token[0] === token[1] ? token.slice(1) : token)
+    .join(' ')
+    .trim();
 }
 
 function isNoiseTerm(term: string) {
@@ -145,12 +154,23 @@ export function buildDirectoryDemandIntelligence(
       const categoryLabel = targetCategory
         ? categories.find((item) => item.id === targetCategory)?.shortLabel || targetCategory
         : '';
-      const currentResultCount = queryDirectoryListings(allListings, {
-        query: candidate.term,
+      const originalQueryOptions = {
         category: validCategory(candidate.category) || undefined,
         village: candidate.village && candidate.village !== 'all' ? candidate.village : undefined,
         page: 1,
+      };
+      const directResultCount = queryDirectoryListings(allListings, {
+        ...originalQueryOptions,
+        query: candidate.term,
       }).total;
+      const repairedTerm = repairObviousRepeatedLeadingCharacters(candidate.term);
+      const repairedResultCount = directResultCount === 0 && repairedTerm !== candidate.term
+        ? queryDirectoryListings(allListings, {
+            ...originalQueryOptions,
+            query: repairedTerm,
+          }).total
+        : 0;
+      const currentResultCount = Math.max(directResultCount, repairedResultCount);
       const coverage = scopeCount(allListings, targetVillage, targetCategory);
       const searches = Math.max(1, Number(candidate.searches30d || 0));
       const zero = Math.max(0, Number(candidate.zeroResults30d || 0));
@@ -176,6 +196,7 @@ export function buildDirectoryDemandIntelligence(
         priority,
         priorityLabel: priorityLabel(priority),
         recommendedAction: actionLabel(targetVillage, categoryLabel, candidate.term),
+        recheckedTerm: repairedResultCount > 0 ? repairedTerm : '',
       };
     });
 
