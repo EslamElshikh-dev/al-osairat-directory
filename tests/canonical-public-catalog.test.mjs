@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { canonicalSnapshotHasReleaseParity } from '../lib/canonical-parity.ts';
+import {
+  canonicalCoverageHasReleaseParity,
+  canonicalSnapshotHasReleaseParity,
+} from '../lib/canonical-parity.ts';
 
 const listing = (overrides = {}) => ({
   id: 'shops-example',
@@ -14,6 +17,16 @@ const listing = (overrides = {}) => ({
   source: 'legacy_directory',
   sourceStatus: 'source_only',
   ...overrides,
+});
+
+test('canonical coverage rejects a release with missing IDs before the full snapshot is fetched', () => {
+  const current = [
+    listing({ id: 'shops-first', lastUpdatedAt: '2026-09-18' }),
+    listing({ id: 'shops-second', slug: 'second', lastUpdatedAt: '2026-09-18' }),
+  ];
+  const staleCoverage = [{ id: 'shops-first', lastUpdatedAt: '2026-09-18' }];
+
+  assert.equal(canonicalCoverageHasReleaseParity(staleCoverage, current), false);
 });
 
 test('canonical parity rejects missing or extra active records', () => {
