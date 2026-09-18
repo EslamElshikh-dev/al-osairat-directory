@@ -13,6 +13,7 @@ export type CommunityActivityItem = {
   href: string;
   contextLabel: string;
   reactions: CommunityReactionSummary;
+  weeklyHelpfulCount: number;
   author: {
     slug: string;
     displayName: string;
@@ -53,6 +54,11 @@ type ReplyRow = {
   updated_at: string;
 };
 
+type DailyReactionRow = {
+  target_id: string;
+  helpful_count: number | string;
+};
+
 function publicHeaders() {
   return {
     apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -77,36 +83,89 @@ function reviewContext(review: Pick<ReviewRow, 'target_type' | 'target_key'>) {
   return blogBySlug[review.target_key]?.title || 'مقال من مدونة العسيرات';
 }
 
-export async function getPublicCommunityActivity(limit = 36): Promise<CommunityActivityItem[]> {
-  const profileParams = new URLSearchParams({
+function sevenDayStartUtc() {
+  const value = new Date();
+  value.setUTCHours(0, 0, 0, 0);
+  value.setUTCDate(value.getUTCDate() - 6);
+  return value.toISOString().slice(0, 10);
+}
+
+async function readWeeklyHelpfulCounts(
+  targetType: 'review' | 'reply',
+  targetIds: string[],
+) {
+  const ids = [...new Set(targetIds.filter(Boolean))].slice(0, 100);
+  const result = new Map<string, number>(ids.map((id) => [id, 0]));
+  if (!ids.length) return result;
+
+  const query = new URLSearchParams({
+    select: 'target_id,helpful_count',
+    target_type: 'eq.' + targetType,
+    target_id: 'in.(' + ids.join(',') + ')',
+    activity_date: 'gte.' + sevenDayStartUtc(),
+    limit: String(Math.max(20, ids.length * 7)),
+  });
+
+  const response = await fetch(
+    SUPABASE_URL + '/rest/v1/community_reaction_daily_totals?' + query.toString(),
+    { headers: publicHeaders(), cache: 'no-store' },
+  );
+  if (!response.ok) return result;
+
+  const rows = await response.json() as DailyReactionRow[];
+  for (const row of rows) {
+    result.set(
+      row.target_id,
+      (result.get(row.target_id) || 0) + Number(row.helpful_count || 0),
+    );
+  }
+  return result;
+}
+
+async function readVisibleProfiles(userIds?: string[]) {
+  const params = new URLSearchParams({
     select: 'user_id,slug,display_name,avatar_url,village,locality,show_location',
     is_public: 'eq.true',
     limit: '100',
   });
+  if (userIds?.length) {
+    const ids = [...new Set(userIds.filter(Boolean))].slice(0, 100);
+    if (!ids.length) return [];
+    params.set('user_id', 'in.(' + ids.join(',') + ')');
+  }
+
   const profiles = await fetchSupabasePublicJson<ProfileRow[]>(
-    SUPABASE_URL + '/rest/v1/member_public_profiles?' + profileParams.toString(),
+    SUPABASE_URL + '/rest/v1/member_public_profiles?' + params.toString(),
     { headers: publicHeaders(), cache: 'no-store' },
   );
-  const visibleProfiles = profiles || [];
+  return profiles || [];
+}
+
+export async function getPublicCommunityActivityForUserIds(
+  userIds: string[],
+  limit = 36,
+): Promise<CommunityActivityItem[]> {
+  const visibleProfiles = await readVisibleProfiles(userIds);
   if (!visibleProfiles.length) return [];
 
   const profileIndex = new Map(visibleProfiles.map((profile) => [profile.user_id, profile]));
-  const userIds = visibleProfiles.map((profile) => profile.user_id);
-  const inUsers = 'in.(' + userIds.join(',') + ')';
+  const visibleUserIds = visibleProfiles.map((profile) => profile.user_id);
+  const inUsers = 'in.(' + visibleUserIds.join(',') + ')';
+  const fetchLimit = String(Math.max(limit, 40));
 
   const reviewParams = new URLSearchParams({
     select: 'id,user_id,target_type,target_key,rating,body,status,created_at,updated_at',
     user_id: inUsers,
     status: 'eq.published',
     order: 'created_at.desc',
-    limit: String(Math.max(limit, 40)),
+    limit: fetchLimit,
   });
   const replyParams = new URLSearchParams({
     select: 'id,review_id,user_id,body,status,created_at,updated_at',
     user_id: inUsers,
     status: 'eq.published',
     order: 'created_at.desc',
-    limit: String(Math.max(limit, 40)),
+    limit: fetchLimit,
   });
 
   const [reviews, replies] = await Promise.all([
@@ -141,9 +200,11 @@ export async function getPublicCommunityActivity(limit = 36): Promise<CommunityA
     [...reviewRows, ...(parentRows || [])].map((review) => [review.id, review]),
   );
 
-  const [reviewReactions, replyReactions] = await Promise.all([
+  const [reviewReactions, replyReactions, weeklyReviewHelpful, weeklyReplyHelpful] = await Promise.all([
     readCommunityReactionSummaries('review', reviewRows.map((review) => review.id)),
     readCommunityReactionSummaries('reply', replyRows.map((reply) => reply.id)),
+    readWeeklyHelpfulCounts('review', reviewRows.map((review) => review.id)),
+    readWeeklyHelpfulCounts('reply', replyRows.map((reply) => reply.id)),
   ]);
 
   const reviewItems = reviewRows.flatMap((review): CommunityActivityItem[] => {
@@ -164,6 +225,7 @@ export async function getPublicCommunityActivity(limit = 36): Promise<CommunityA
         liked: false,
         helpful: false,
       },
+      weeklyHelpfulCount: weeklyReviewHelpful.get(review.id) || 0,
       author: {
         slug: profile.slug,
         displayName: profile.display_name,
@@ -192,6 +254,7 @@ export async function getPublicCommunityActivity(limit = 36): Promise<CommunityA
         liked: false,
         helpful: false,
       },
+      weeklyHelpfulCount: weeklyReplyHelpful.get(reply.id) || 0,
       author: {
         slug: profile.slug,
         displayName: profile.display_name,
@@ -204,4 +267,13 @@ export async function getPublicCommunityActivity(limit = 36): Promise<CommunityA
   return [...reviewItems, ...replyItems]
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, Math.max(1, Math.min(limit, 60)));
+}
+
+export async function getPublicCommunityActivity(limit = 36): Promise<CommunityActivityItem[]> {
+  const visibleProfiles = await readVisibleProfiles();
+  if (!visibleProfiles.length) return [];
+  return getPublicCommunityActivityForUserIds(
+    visibleProfiles.map((profile) => profile.user_id),
+    limit,
+  );
 }

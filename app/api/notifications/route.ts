@@ -30,6 +30,8 @@ type NotificationRow = {
   entity_type: string;
   entity_id: string;
   read_at: string | null;
+  event_count: number | null;
+  last_event_at: string | null;
   created_at: string;
 };
 
@@ -97,6 +99,8 @@ function serialize(row: NotificationRow) {
     entityType: row.entity_type,
     entityId: row.entity_id,
     readAt: row.read_at,
+    eventCount: Number(row.event_count || 1),
+    lastEventAt: row.last_event_at || row.created_at,
     createdAt: row.created_at,
   };
 }
@@ -110,7 +114,7 @@ export async function GET(request: Request) {
 
   try {
     const [itemsResponse, unreadResponse] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id,type,title,message,href,entity_type,entity_id,read_at,created_at&order=created_at.desc&limit=${limit}`, {
+      fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id,type,title,message,href,entity_type,entity_id,read_at,event_count,last_event_at,created_at&order=created_at.desc&limit=${limit}`, {
         headers: restHeaders(session.accessToken), cache: 'no-store',
       }),
       fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id&read_at=is.null`, {
