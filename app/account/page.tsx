@@ -18,6 +18,8 @@ export default function AccountPage() {
             <p>حدّث بياناتك، تابع طلباتك، أدر الأنشطة التي تملكها وراقب أداءها من مساحة واحدة منظمة وواضحة.</p>
             <nav className="workspace-hero__links" aria-label="اختصارات حساب العضو">
               <a href="#account-profile">الملف الشخصي</a>
+              <a href="#following-feed">أتابعهم</a>
+              <a href="#community-progress">مساهماتي</a>
               <a href="#business-submissions">إضافة نشاط</a>
               <a href="#ownership-claims">مطالبات الملكية</a>
               <a href="#my-businesses">أنشطتي</a>
@@ -34,6 +36,7 @@ export default function AccountPage() {
               <span><b>01</b><small>ملف شخصي</small></span>
               <span><b>02</b><small>إدارة الأنشطة</small></span>
               <span><b>03</b><small>متابعة الأداء</small></span>
+              <span><b>04</b><small>مجتمعك</small></span>
             </div>
           </aside>
         </div>
