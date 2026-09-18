@@ -22,6 +22,63 @@ export type CanonicalCoverageRow = {
   lastUpdatedAt?: string;
 };
 
+export type CanonicalCoverageSummary = {
+  releaseCount: number;
+  canonicalCount: number;
+  missingCount: number;
+  extraCount: number;
+  staleCount: number;
+  isCurrent: boolean;
+};
+
+export function getCanonicalCoverageSummary(
+  canonicalRows: CanonicalCoverageRow[],
+  releaseListings: DirectoryListing[],
+): CanonicalCoverageSummary {
+  const canonicalById = new Map(canonicalRows.map((row) => [row.id, row]));
+  const releaseIds = new Set(releaseListings.map((listing) => listing.id));
+
+  let missingCount = 0;
+  let staleCount = 0;
+
+  for (const releaseListing of releaseListings) {
+    const canonical = canonicalById.get(releaseListing.id);
+    if (!canonical) {
+      missingCount += 1;
+      continue;
+    }
+
+    const releaseTime = timeValue(releaseListing.lastUpdatedAt);
+    if (releaseTime === null) continue;
+
+    const canonicalTime = timeValue(canonical.lastUpdatedAt);
+    if (canonicalTime === null || canonicalTime < releaseTime) staleCount += 1;
+  }
+
+  const extraCount = canonicalRows.reduce(
+    (count, row) => count + (releaseIds.has(row.id) ? 0 : 1),
+    0,
+  );
+
+  const releaseCount = releaseListings.length;
+  const canonicalCount = canonicalRows.length;
+
+  return {
+    releaseCount,
+    canonicalCount,
+    missingCount,
+    extraCount,
+    staleCount,
+    isCurrent:
+      releaseCount > 0
+      && canonicalCount === releaseCount
+      && canonicalById.size === canonicalCount
+      && missingCount === 0
+      && extraCount === 0
+      && staleCount === 0,
+  };
+}
+
 export function canonicalCoverageHasReleaseParity(
   canonicalRows: CanonicalCoverageRow[],
   releaseListings: DirectoryListing[],
