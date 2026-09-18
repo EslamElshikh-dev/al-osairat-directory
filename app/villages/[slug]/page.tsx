@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categories, listings, villageBySlug, villages } from '@/lib/data';
-import { createDirectoryHref, mergeDirectoryListings, queryDirectoryListings } from '@/lib/directory-query';
-import { applyListingOverrides } from '@/lib/listing-overrides';
+import { categories, villageBySlug, villages } from '@/lib/data';
+import { createDirectoryHref, queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
@@ -15,12 +14,8 @@ import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 
 type VillageSearchParams = { page?: string };
 
-async function loadVillageCatalog(villageName: string) {
-  const [publishedListings, overriddenListings] = await Promise.all([
-    getPublishedListings({ village: villageName }),
-    applyListingOverrides(listings),
-  ]);
-  return mergeDirectoryListings(overriddenListings, publishedListings);
+async function loadVillageCatalog(_villageName: string) {
+  return getPublicDirectoryListings();
 }
 
 export function generateStaticParams() {

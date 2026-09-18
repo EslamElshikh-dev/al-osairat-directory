@@ -5,10 +5,9 @@ import { CategoryVisual } from '@/components/category-visual';
 import { ListingCard } from '@/components/listing-card';
 import { BrandMark } from '@/components/site-shell';
 import { categories, listings } from '@/lib/data';
-import { createDirectoryHref, DIRECTORY_PAGE_SIZE, mergeDirectoryListings } from '@/lib/directory-query';
-import { applyListingOverrides } from '@/lib/listing-overrides';
+import { createDirectoryHref, DIRECTORY_PAGE_SIZE } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import {
   categorySearchProfiles,
   getEligibleVillageCategoryLandings,
@@ -38,11 +37,7 @@ export function generateStaticParams() {
 }
 
 async function loadAllListings() {
-  const [publishedListings, baseListings] = await Promise.all([
-    getPublishedListings(),
-    applyListingOverrides(listings),
-  ]);
-  return mergeDirectoryListings(baseListings, publishedListings);
+  return getPublicDirectoryListings();
 }
 
 function localQueryLabel(category: DirectoryCategory, villageName: string, fallback: string) {

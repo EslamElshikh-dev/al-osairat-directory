@@ -1,9 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
 import { blogArticles } from '@/lib/blog-published';
-import { mergeDirectoryListings } from '@/lib/directory-query';
-import { applyListingOverrides } from '@/lib/listing-overrides';
-import { getPublishedListings } from '@/lib/published-listings';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { getEligibleServiceIntents, getEligibleVillageCategoryLandings, isVillageHubIndexable, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isListingIndexable, listingSitemapPriority } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
@@ -19,12 +17,9 @@ function latestListingUpdate(items: typeof listings) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [publishedListings, baseListings] = await Promise.all([
-    getPublishedListings(),
-    applyListingOverrides(listings),
-  ]);
-  const allListings = mergeDirectoryListings(baseListings, publishedListings);
-  const staticDetailListings = baseListings.filter((listing) => listing.category !== 'emergency' && isListingIndexable(listing));
+  const allListings = await getPublicDirectoryListings();
+  const staticIds = new Set(listings.map((listing) => listing.id));
+  const staticDetailListings = allListings.filter((listing) => staticIds.has(listing.id) && listing.category !== 'emergency' && isListingIndexable(listing));
   const eligibleServiceIntents = getEligibleServiceIntents(allListings);
   const eligibleLocalLandings = getEligibleVillageCategoryLandings(allListings);
   const directoryLastModified = latestListingUpdate(allListings);
@@ -97,7 +92,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: listingSitemapPriority(listing),
   }));
 
-  const publishedListingPages: SitemapEntry[] = publishedListings
+  const publishedListingPages: SitemapEntry[] = allListings
+    .filter((listing) => !staticIds.has(listing.id))
     .filter(isListingIndexable)
     .map((listing) => ({
       url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
