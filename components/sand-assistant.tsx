@@ -43,9 +43,9 @@ function SandAvatar({ variant }: { variant: 'header' | 'trigger' }) {
         src="/images/sand-avatar-v3.webp"
         alt=""
         fill
-        sizes={variant === 'trigger' ? '68px' : '58px'}
+        sizes="50px"
         className="sand-avatar__image"
-        priority
+        loading="eager"
       />
       <span className="sand-avatar__status" />
     </span>
@@ -82,11 +82,23 @@ function safeGoogleMapsHref(value?: string) {
   }
 }
 
+function formatSandDate(value?: string) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('ar-EG', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
 function ResultCard({ result, onNavigate }: { result: SandResult; onNavigate: () => void }) {
   const href = result.href.startsWith('/listing/') ? result.href : '/directory';
   const phone = safePhoneHref(result.phone);
   const whatsapp = safeWhatsAppHref(result.whatsapp);
   const maps = safeGoogleMapsHref(result.googleMapsUrl);
+  const lastUpdated = formatSandDate(result.lastUpdatedAt);
 
   return (
     <article className="sand-result">
@@ -97,6 +109,7 @@ function ResultCard({ result, onNavigate }: { result: SandResult; onNavigate: ()
       <strong>{result.title}</strong>
       <p>{[result.village, result.location].filter(Boolean).join(' · ')}</p>
       {result.hours ? <small className="sand-result__hours">المواعيد: {result.hours}</small> : null}
+      {lastUpdated ? <small className="sand-result__freshness">آخر تحديث: {lastUpdated}</small> : null}
       <div className="sand-result__actions">
         <Link href={href} onClick={onNavigate}>التفاصيل</Link>
         {phone ? <a href={phone}>اتصال</a> : null}
@@ -134,6 +147,7 @@ export function SandAssistant() {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const feedRef = useRef<HTMLDivElement | null>(null);
   const requestRef = useRef<AbortController | null>(null);
+  const restoreTriggerFocusRef = useRef(false);
   const previousPathnameRef = useRef(pathname);
 
   const latestPayload = useMemo(
@@ -158,6 +172,15 @@ export function SandAssistant() {
       previousPathnameRef.current = pathname;
     }
   }, [pathname]);
+
+  useEffect(() => {
+    if (open || !restoreTriggerFocusRef.current) return;
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector<HTMLButtonElement>('[data-sand-trigger="true"]')?.focus();
+      restoreTriggerFocusRef.current = false;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -190,6 +213,7 @@ export function SandAssistant() {
 
   function closePanel() {
     cancelActiveRequest();
+    restoreTriggerFocusRef.current = true;
     setOpen(false);
   }
 
@@ -291,7 +315,14 @@ export function SandAssistant() {
   return (
     <div className={`sand-assistant${open ? ' is-open' : ''}`}>
       {open ? (
-        <section id="sand-panel" className="sand-panel" role="dialog" aria-modal="false" aria-labelledby="sand-title">
+        <section
+          id="sand-panel"
+          className="sand-panel"
+          role="dialog"
+          aria-modal="false"
+          aria-labelledby="sand-title"
+          aria-describedby="sand-privacy"
+        >
           <header className="sand-panel__header">
             <SandAvatar variant="header" />
             <div className="sand-panel__identity">
@@ -385,6 +416,7 @@ export function SandAssistant() {
               onChange={(event) => setInput(event.target.value)}
               onKeyDown={handleInputKeyDown}
               placeholder="مثال: عايز صيدلية في أولاد حمزة"
+              enterKeyHint="send"
               disabled={loading}
             />
             {loading ? (
@@ -405,7 +437,7 @@ export function SandAssistant() {
               </button>
             )}
           </form>
-          <p className="sand-privacy">لا تُرسل كلمات مرور أو بيانات شخصية حساسة. المحادثة لا تُحفظ في حسابك.</p>
+          <p id="sand-privacy" className="sand-privacy">لا تُرسل كلمات مرور أو بيانات شخصية حساسة. المحادثة لا تُحفظ في حسابك.</p>
         </section>
       ) : null}
 
