@@ -60,7 +60,7 @@ export default async function AdminPage() {
       <div className="shell admin-workspace-shell">
         <nav className="admin-section-nav admin-section-nav--premium" aria-label="أقسام لوحة الإدارة">
           <a href="#analytics-overview"><span>01</span>ملخص الأداء</a>
-          <a href="#directory-intelligence"><span>02</span>ذكاء البحث</a>
+          <a href="#directory-intelligence"><span>02</span>الطلب والفجوات</a>
           <a href="#data-quality"><span>03</span>جودة البيانات</a>
           <a href="#authority-batch"><span>04</span>دفعة التوثيق</a>
           <a href="#admin-requests"><span>05</span>طلبات الأعضاء</a>
