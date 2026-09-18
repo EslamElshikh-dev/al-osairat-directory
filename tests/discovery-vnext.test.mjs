@@ -1,67 +1,47 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { queryDirectoryListings } from '../lib/directory-query.ts';
-import { getRelatedListings, getUndercoveredVillages } from '../lib/discovery.ts';
+import { readFile } from 'node:fs/promises';
 
-function listing(overrides = {}) {
-  return {
-    id: 'base',
-    slug: 'base',
-    title: 'نشاط محلي',
-    category: 'shops',
-    location: 'العسيرات',
-    village: 'أولاد حمزة',
-    reviewCount: 0,
-    source: 'user_collected',
-    sourceStatus: 'cross_checked',
-    ...overrides,
-  };
-}
+const readProjectFile = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
-test('general category intent can find listings even when the word is not in the title', () => {
-  const transport = listing({
-    id: 'transport-1',
-    slug: 'transport-1',
-    title: 'الحاج أحمد',
-    category: 'transport',
-    subCategory: 'سائق',
-  });
+test('search includes broad category intent terms without creating a separate search index', async () => {
+  const source = await readProjectFile('lib/directory-query.ts');
 
-  const result = queryDirectoryListings([transport], { query: 'مواصلات' });
-  assert.equal(result.total, 1);
-  assert.equal(result.items[0].id, 'transport-1');
+  assert.match(source, /transport:\s*'مواصلات نقل سواقين سائقين سواق مواصلات عامه'/);
+  assert.match(source, /education:\s*'تعليم مدارس مدرسه معاهد معهد حضانات حضانه روضه'/);
+  assert.match(source, /fieldRelevance\(categoryTerms, normalizedQuery, queryTokens, 42\)/);
+  assert.match(source, /categorySearchTerms\[listing\.category\]/);
 });
 
-test('related discovery prefers same-category and same-village options, then useful fallbacks', () => {
-  const source = listing({ id: 'source', slug: 'source', category: 'doctors', subCategory: 'أسنان' });
-  const sameVillageCategory = listing({
-    id: 'best',
-    slug: 'best',
-    category: 'doctors',
-    subCategory: 'أسنان',
-    village: 'أولاد حمزة',
-  });
-  const sameCategoryOtherVillage = listing({
-    id: 'fallback',
-    slug: 'fallback',
-    category: 'doctors',
-    subCategory: 'أسنان',
-    village: 'الرشايدة',
-  });
-  const unrelated = listing({ id: 'other', slug: 'other', category: 'shops', village: 'الرشايدة' });
+test('listing detail uses ranked related discovery and keeps return paths to village and category', async () => {
+  const source = await readProjectFile('app/listing/[slug]/page.tsx');
 
-  const related = getRelatedListings(source, [source, unrelated, sameCategoryOtherVillage, sameVillageCategory], 3);
-  assert.deepEqual(related.map((item) => item.id), ['best', 'fallback']);
+  assert.match(source, /getRelatedListings\(listing, comparableListings, 4\)/);
+  assert.match(source, /استكشف كل أنشطة/);
+  assert.match(source, /villageCategoryDirectoryHref\(listing\.village, listing\.category\)/);
+  assert.match(source, /كل .* في العسيرات/);
 });
 
-test('balanced village discovery prioritizes published villages with lower coverage', () => {
-  const rows = [
-    listing({ id: 'a1', slug: 'a1', village: 'أولاد حمزة', category: 'shops' }),
-    listing({ id: 'a2', slug: 'a2', village: 'أولاد حمزة', category: 'doctors' }),
-    listing({ id: 'r1', slug: 'r1', village: 'الرشايدة', category: 'shops' }),
-  ];
+test('directory and village pages deliberately surface lower-coverage discovery paths', async () => {
+  const [directory, village, discovery] = await Promise.all([
+    readProjectFile('app/directory/page.tsx'),
+    readProjectFile('app/villages/[slug]/page.tsx'),
+    readProjectFile('lib/discovery.ts'),
+  ]);
 
-  const [first] = getUndercoveredVillages(rows, 1);
-  assert.equal(first.village.name, 'الرشايدة');
-  assert.equal(first.listingCount, 1);
+  assert.match(directory, /getUndercoveredVillages\(allListings, 4\)/);
+  assert.match(directory, /تغطية متوازنة/);
+  assert.match(village, /getLowCoverageCategories\(allListings, village\.name, 4\)/);
+  assert.match(village, /قرى نوسّع حضورها داخل الدليل/);
+  assert.match(discovery, /a\.categoryCount - b\.categoryCount/);
+  assert.match(discovery, /a\.listingCount - b\.listingCount/);
+});
+
+test('zero-result search states offer recovery instead of a dead end', async () => {
+  const source = await readProjectFile('components/directory-explorer.tsx');
+
+  assert.match(source, /لا توجد نتائج مطابقة بهذه الدقة/);
+  assert.match(source, /ابحث عن «\{query\}» في كل العسيرات/);
+  assert.match(source, /صفحة القرية ←/);
+  assert.match(source, /استكشف \{activeVillage\.name\}/);
 });
