@@ -97,7 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter(isListingIndexable)
     .map((listing) => ({
       url: absoluteUrl(`/listing/${encodedSegment(listing.slug)}`),
-      lastModified: listing.lastUpdatedAt || listing.publishedAt,
+      ...(listing.lastUpdatedAt ? { lastModified: listing.lastUpdatedAt } : {}),
       changeFrequency: 'monthly',
       priority: listingSitemapPriority(listing),
     }));
