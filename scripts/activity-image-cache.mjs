@@ -7,11 +7,11 @@ export function createActivityImageFingerprint({
   listingId,
   listing,
   sourceDigest,
-  rendererDigest,
+  visualRevision,
 }) {
   const payload = JSON.stringify({
     cacheVersion: ACTIVITY_IMAGE_CACHE_VERSION,
-    rendererDigest,
+    visualRevision,
     listingId,
     src: listing.src,
     source: listing.source,
