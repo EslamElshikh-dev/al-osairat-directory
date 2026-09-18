@@ -49,3 +49,16 @@ test('Supabase migration extends the existing admin-only RPC with grouped gap ca
   assert.match(source, /is_directory_admin/);
   assert.match(source, /SECURITY DEFINER/i);
 });
+
+
+test('obvious repeated-leading-character typos are rechecked before creating a collection task', async () => {
+  const [logic, ui] = await Promise.all([
+    readProjectFile('lib/directory-demand-intelligence.ts'),
+    readProjectFile('components/admin/admin-directory-intelligence.tsx'),
+  ]);
+
+  assert.match(logic, /repairObviousRepeatedLeadingCharacters/);
+  assert.match(logic, /repairedResultCount/);
+  assert.match(logic, /recheckedTerm/);
+  assert.match(ui, /أعيد الاختبار كـ/);
+});
