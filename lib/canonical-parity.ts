@@ -17,6 +17,32 @@ function sameComparableData(left: DirectoryListing, right: DirectoryListing) {
   return comparableFields.every((field) => (left[field] ?? null) === (right[field] ?? null));
 }
 
+export type CanonicalCoverageRow = {
+  id: string;
+  lastUpdatedAt?: string;
+};
+
+export function canonicalCoverageHasReleaseParity(
+  canonicalRows: CanonicalCoverageRow[],
+  releaseListings: DirectoryListing[],
+) {
+  if (!releaseListings.length || canonicalRows.length !== releaseListings.length) return false;
+
+  const canonicalById = new Map(canonicalRows.map((row) => [row.id, row]));
+  if (canonicalById.size !== canonicalRows.length) return false;
+
+  return releaseListings.every((releaseListing) => {
+    const canonical = canonicalById.get(releaseListing.id);
+    if (!canonical) return false;
+
+    const releaseTime = timeValue(releaseListing.lastUpdatedAt);
+    if (releaseTime === null) return true;
+
+    const canonicalTime = timeValue(canonical.lastUpdatedAt);
+    return canonicalTime !== null && canonicalTime >= releaseTime;
+  });
+}
+
 export function canonicalSnapshotHasReleaseParity(
   canonicalListings: DirectoryListing[],
   releaseListings: DirectoryListing[],
