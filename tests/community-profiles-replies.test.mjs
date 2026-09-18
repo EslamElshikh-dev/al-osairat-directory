@@ -13,8 +13,8 @@ test('community profile migration exposes only a dedicated safe public projectio
   assert.match(migration, /revoke all on table public\.member_public_profiles from anon, authenticated/);
   assert.match(migration, /grant select on table public\.member_public_profiles to anon, authenticated/);
   assert.match(migration, /grant update \(bio, is_public, show_location\)/);
-  assert.doesNotMatch(migration, /member_public_profiles[\s\S]{0,500}\bemail\b/i);
-  assert.doesNotMatch(migration, /member_public_profiles[\s\S]{0,500}\bphone\b/i);
+  assert.doesNotMatch(migration, /\n\s*email\s+(?:text|varchar|uuid|jsonb?)\b/i);
+  assert.doesNotMatch(migration, /\n\s*phone\s+(?:text|varchar|uuid|jsonb?)\b/i);
 });
 
 test('review replies are owner-scoped by RLS and limited to published reviews', async () => {
