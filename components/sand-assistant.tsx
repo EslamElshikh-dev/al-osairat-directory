@@ -303,7 +303,8 @@ export function SandAssistant() {
           aria-label="افتح مساعد سَند"
           aria-controls="sand-panel"
           aria-haspopup="dialog"
-          aria-expanded={false}
+          aria-expanded={open}
+          data-sand-trigger="true"
           onClick={() => setOpen(true)}
         >
           <span className="sand-invite" aria-hidden="true">

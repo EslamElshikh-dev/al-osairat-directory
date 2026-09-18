@@ -29,6 +29,8 @@
   box-shadow: none;
   cursor: pointer;
   isolation: isolate;
+  touch-action: manipulation;
+  user-select: none;
   animation: sand-trigger-float 4s ease-in-out infinite;
   transition: transform .2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -39,6 +41,13 @@
 }
 
 .sand-trigger:active { transform: translateY(0) scale(.96); }
+
+.sand-trigger::after {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  content: '';
+}
 
 .sand-trigger::before {
   position: absolute;
@@ -69,7 +78,9 @@
   font-size: 11px;
   font-weight: 800;
   line-height: 1.25;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
   will-change: transform, background-position, box-shadow;
   animation:
     sand-invite-pop .55s cubic-bezier(.2, .85, .3, 1.18) .7s both,

@@ -54,3 +54,17 @@ test('Sand UI distinguishes direct search from smart wording and uses accurate p
   assert.match(source, /صياغة ذكية/);
   assert.match(source, /بيانات الدليل المنشورة/);
 });
+
+
+test('Sand launcher keeps the visible invitation inside the clickable hit target', async () => {
+  const [css, component] = await Promise.all([
+    readProjectFile('app/sand-assistant.css'),
+    readProjectFile('components/sand-assistant.tsx'),
+  ]);
+
+  assert.match(css, /\.sand-invite\s*\{[\s\S]*?pointer-events:\s*auto/);
+  assert.match(css, /\.sand-trigger::after\s*\{[\s\S]*?inset:\s*-8px/);
+  assert.match(css, /touch-action:\s*manipulation/);
+  assert.match(component, /data-sand-trigger="true"/);
+  assert.match(component, /aria-expanded=\{open\}/);
+});
