@@ -129,7 +129,11 @@ as $$
 declare
   v_row public.community_reactions%rowtype;
 begin
-  v_row := coalesce(new, old);
+  if tg_op = 'DELETE' then
+    v_row := old;
+  else
+    v_row := new;
+  end if;
 
   if v_row.review_id is not null then
     perform private.refresh_community_reaction_total('review', v_row.review_id);
@@ -137,7 +141,10 @@ begin
     perform private.refresh_community_reaction_total('reply', v_row.reply_id);
   end if;
 
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
 end;
 $$;
 
@@ -309,7 +316,11 @@ declare
   v_row public.community_reactions%rowtype;
   v_author_id uuid;
 begin
-  v_row := coalesce(new, old);
+  if tg_op = 'DELETE' then
+    v_row := old;
+  else
+    v_row := new;
+  end if;
 
   if v_row.review_id is not null then
     select r.user_id
