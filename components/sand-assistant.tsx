@@ -58,9 +58,35 @@ function safePhoneHref(phone?: string) {
   return /^\+?\d{3,15}$/.test(value) ? `tel:${value}` : '';
 }
 
+function safeWhatsAppHref(phone?: string) {
+  if (!phone) return '';
+  let value = phone.replace(/\D/g, '');
+  if (/^01\d{9}$/.test(value)) value = `20${value.slice(1)}`;
+  if (!/^\d{8,15}$/.test(value)) return '';
+  return `https://wa.me/${value}`;
+}
+
+function safeGoogleMapsHref(value?: string) {
+  if (!value) return '';
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    const allowed = host === 'maps.google.com'
+      || host === 'www.google.com'
+      || host === 'google.com'
+      || host === 'maps.app.goo.gl'
+      || host.endsWith('.google.com');
+    return url.protocol === 'https:' && allowed ? url.toString() : '';
+  } catch {
+    return '';
+  }
+}
+
 function ResultCard({ result, onNavigate }: { result: SandResult; onNavigate: () => void }) {
   const href = result.href.startsWith('/listing/') ? result.href : '/directory';
   const phone = safePhoneHref(result.phone);
+  const whatsapp = safeWhatsAppHref(result.whatsapp);
+  const maps = safeGoogleMapsHref(result.googleMapsUrl);
 
   return (
     <article className="sand-result">
@@ -74,6 +100,8 @@ function ResultCard({ result, onNavigate }: { result: SandResult; onNavigate: ()
       <div className="sand-result__actions">
         <Link href={href} onClick={onNavigate}>التفاصيل</Link>
         {phone ? <a href={phone}>اتصال</a> : null}
+        {whatsapp ? <a href={whatsapp} target="_blank" rel="noopener noreferrer">واتساب</a> : null}
+        {maps ? <a href={maps} target="_blank" rel="noopener noreferrer">الخريطة</a> : null}
       </div>
     </article>
   );

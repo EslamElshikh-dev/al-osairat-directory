@@ -92,7 +92,7 @@ const canonicalSelect = [
 // A row-count threshold alone cannot detect a stale-but-large snapshot and was
 // hiding newly deployed village scans. Keep canonical reporting available, but
 // prefer the deployed static + published fallback for public reads for now.
-const PUBLIC_CANONICAL_READS_ENABLED = false;
+export const PUBLIC_CANONICAL_READS_ENABLED = false;
 
 // The synchronized table currently mirrors the full public catalog. If a future
 // sync partially fails, refuse the canonical cutover and let callers use their

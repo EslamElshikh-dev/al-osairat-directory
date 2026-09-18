@@ -33,6 +33,7 @@ function toSandResult(listing: DirectoryListing): SandResult {
     description: cleanGroundingValue(listing.description, 220) || undefined,
     phone: cleanGroundingValue(listing.phone, 30) || undefined,
     whatsapp: cleanGroundingValue(listing.whatsapp, 30) || undefined,
+    googleMapsUrl: cleanGroundingValue(listing.googleMapsUrl, 300) || undefined,
     hours: cleanGroundingValue(listing.hours, 100) || undefined,
     href: `/listing/${encodeURIComponent(listing.slug)}`,
     sourceLabel: sourceLabel(listing),

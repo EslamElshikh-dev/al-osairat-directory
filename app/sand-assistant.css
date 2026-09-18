@@ -425,12 +425,14 @@
 
 .sand-result__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 7px;
   margin-top: 10px;
 }
 
 .sand-result__actions a {
   min-height: 34px;
+  flex: 1 1 72px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
