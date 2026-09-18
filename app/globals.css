@@ -93,6 +93,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .category-card--emergency .category-card__arrow { color: #ffd8d8; }
 .category-card--emergency::after { background: #772d2d; }
 
+.home-village-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.home-village-card { min-height: 250px; padding: 24px; background: #fff; border: 1px solid var(--line); border-radius: 24px; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.home-village-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: #c6d2cc; }
+.home-village-card::after { content: ""; position: absolute; width: 120px; height: 120px; border-radius: 50%; left: -48px; bottom: -54px; background: var(--green-100); opacity: .72; }
+.home-village-card__index { color: #9aa6a1; font-size: 11px; letter-spacing: .16em; font-weight: 800; }
+.home-village-card h3 { margin: 24px 0 8px; font-size: 23px; }
+.home-village-card p { margin: 0; color: var(--muted); line-height: 1.75; font-size: 12px; }
+.home-village-card__meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 22px; }
+.home-village-card__meta span { background: #f3f5f2; color: #64716c; border-radius: 9px; padding: 7px 9px; font-size: 10px; }
+.home-village-card__meta b { color: var(--green-900); font-size: 12px; }
+.home-village-card__cta { margin-top: 16px; color: var(--green-800); font-size: 12px; font-weight: 800; position: relative; z-index: 1; }
+
 .listing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .listing-grid--featured .listing-card { min-height: 250px; }
 .listing-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; min-height: 310px; box-shadow: 0 8px 30px rgba(16,42,36,.025); transition: transform .2s ease, box-shadow .2s ease; }
@@ -216,7 +228,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 980px) {
   .hero__grid, .data-note, .detail-layout { grid-template-columns: 1fr; }
   .hero__panel { max-width: 700px; }
-  .category-grid, .listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .category-grid, .listing-grid, .home-village-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .emergency-strip { grid-template-columns: 1fr; }
   .data-note__grid { grid-template-columns: 1fr; }
   .footer__grid { grid-template-columns: 1.3fr 1fr 1fr; gap: 25px; }
@@ -238,7 +250,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .section { padding-block: 50px; }
   .section-heading { align-items: start; }
   .section-heading .text-link { display: none; }
-  .category-grid, .listing-grid, .village-grid, .emergency-grid { grid-template-columns: 1fr; }
+  .category-grid, .listing-grid, .home-village-grid, .village-grid, .emergency-grid { grid-template-columns: 1fr; }
   .category-card { min-height: 210px; }
   .explorer__tools { grid-template-columns: 1fr; top: 75px; }
   .select-field { min-height: 50px; }
