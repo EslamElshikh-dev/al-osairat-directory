@@ -43,6 +43,8 @@ function jsonResponse(payload: SandApiResponse, status = 200) {
 }
 
 export async function POST(request: NextRequest) {
+  const startedAt = Date.now();
+
   if (!sameOrigin(request)) {
     return NextResponse.json({ error: 'طلب غير مسموح.' }, { status: 403 });
   }
@@ -63,6 +65,7 @@ export async function POST(request: NextRequest) {
   const plan = planSandRequest(message, history, villages);
   const greetingOnly = classification.greeting && plan.intent !== 'directory';
   let grounding: SandGrounding | undefined;
+  let groundingUnavailable = false;
 
   if (classification.emergency) {
     grounding = getSandEmergencyGrounding();
@@ -74,14 +77,26 @@ export async function POST(request: NextRequest) {
     && plan.intent === 'directory'
     && !plan.clarification
   ) {
-    grounding = await getSandDirectoryGrounding(plan);
+    try {
+      grounding = await getSandDirectoryGrounding(plan);
+    } catch (error) {
+      groundingUnavailable = true;
+      console.warn('[sand] grounding fallback', {
+        errorName: error instanceof Error ? error.name : 'unknown',
+        intent: plan.intent,
+        category: plan.category || null,
+        hasVillage: Boolean(plan.village),
+      });
+    }
   }
 
   const secret = process.env.SAND_RATE_LIMIT_SECRET?.trim();
   let usage = readSandUsage(request.cookies.get(SAND_USAGE_COOKIE)?.value, secret);
   let mode: SandApiResponse['mode'] = classification.emergency ? 'emergency' : 'direct';
   let reply = directSandReply(classification, grounding, 'provider_unavailable', plan);
-  let directReason: 'daily_limit' | 'burst_limit' | 'provider_unavailable' = 'provider_unavailable';
+  let directReason: 'daily_limit' | 'burst_limit' | 'provider_unavailable' | 'search_unavailable' = groundingUnavailable
+    ? 'search_unavailable'
+    : 'provider_unavailable';
 
   const canConsiderAi = Boolean(
     grounding?.results.length
@@ -106,15 +121,37 @@ export async function POST(request: NextRequest) {
   )) {
     directReason = 'burst_limit';
   } else if (canConsiderAi) {
-    const aiReply = await generateSandAiReply(message, history, grounding!, plan);
-    if (aiReply) {
-      reply = aiReply.text;
-      mode = aiReply.mode;
-      usage = consumeSandAiTurn(usage);
+    const aiController = new AbortController();
+    const aiBudgetMs = 7_500;
+    const aiTimer = setTimeout(() => aiController.abort(), aiBudgetMs);
+    try {
+      const aiReply = await generateSandAiReply(message, history, grounding!, plan, {
+        abortSignal: aiController.signal,
+      });
+      if (aiReply) {
+        reply = aiReply.text;
+        mode = aiReply.mode;
+        usage = consumeSandAiTurn(usage);
+      }
+    } finally {
+      clearTimeout(aiTimer);
     }
   }
 
   if (mode === 'direct') reply = directSandReply(classification, grounding, directReason, plan);
+
+  console.info('[sand] response', {
+    intent: plan.intent,
+    category: plan.category || null,
+    hasVillage: Boolean(plan.village),
+    resultCount: grounding?.total ?? 0,
+    dataSource: grounding?.source || 'none',
+    mode,
+    directReason: mode === 'direct' ? directReason : null,
+    durationMs: Date.now() - startedAt,
+    aiConfigured: hasConfiguredSandProvider(),
+    usageConfigured: usage.configured,
+  });
 
   const response = jsonResponse({
     message: reply,
