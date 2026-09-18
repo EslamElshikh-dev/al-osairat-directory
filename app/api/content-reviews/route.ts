@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { blogBySlug } from '@/lib/blog-published';
+import { emptyReactionSummary, readCommunityReactionSummaries, type CommunityReactionSummary } from '@/lib/community-reactions';
 import {
   AUTH_ACCESS_COOKIE,
   AUTH_REFRESH_COOKIE,
@@ -149,7 +150,7 @@ function parseBodyTarget(body: Record<string, unknown>) {
   return null;
 }
 
-function mapReview(row: ReviewRow, own = false, profileSlug = '') {
+function mapReview(row: ReviewRow, own = false, profileSlug = '', reactions: CommunityReactionSummary = emptyReactionSummary()) {
   return {
     id: row.id,
     rating: Number(row.rating),
@@ -157,6 +158,7 @@ function mapReview(row: ReviewRow, own = false, profileSlug = '') {
     authorName: row.author_name,
     avatarUrl: row.avatar_url || '',
     profileSlug,
+    reactions,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     own,
@@ -263,17 +265,34 @@ export async function GET(request: Request) {
       session ? readOwnReview(session, target.targetType, target.targetKey) : Promise.resolve(null),
     ]);
 
-    const profileSlugs = await readPublicProfileSlugs([
-      ...reviews.map((row) => row.user_id),
-      ...(ownReview ? [ownReview.user_id] : []),
+    const reviewIds = [
+      ...reviews.map((row) => row.id),
+      ...(ownReview ? [ownReview.id] : []),
+    ];
+    const [profileSlugs, reactionSummaries] = await Promise.all([
+      readPublicProfileSlugs([
+        ...reviews.map((row) => row.user_id),
+        ...(ownReview ? [ownReview.user_id] : []),
+      ]),
+      readCommunityReactionSummaries('review', reviewIds, session?.accessToken),
     ]);
 
     return respond({
       authenticated: Boolean(session),
       emailVerified: Boolean(session?.emailVerified),
       summary,
-      reviews: reviews.map((row) => mapReview(row, row.id === ownReview?.id, profileSlugs.get(row.user_id) || '')),
-      myReview: ownReview ? mapReview(ownReview, true, profileSlugs.get(ownReview.user_id) || '') : null,
+      reviews: reviews.map((row) => mapReview(
+        row,
+        row.id === ownReview?.id,
+        profileSlugs.get(row.user_id) || '',
+        reactionSummaries.get(row.id) || emptyReactionSummary(),
+      )),
+      myReview: ownReview ? mapReview(
+        ownReview,
+        true,
+        profileSlugs.get(ownReview.user_id) || '',
+        reactionSummaries.get(ownReview.id) || emptyReactionSummary(),
+      ) : null,
       nextOffset: offset + reviews.length < summary.count ? offset + reviews.length : null,
       pageSize: PAGE_SIZE,
     }, session);

@@ -11,6 +11,7 @@ import {
   refreshSession,
   sameOrigin,
 } from '@/lib/auth/supabase-rest';
+import { emptyReactionSummary, readCommunityReactionSummaries, type CommunityReactionSummary } from '@/lib/community-reactions';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -169,13 +170,14 @@ async function readOwnReply(session: ResolvedSession, reviewId: string) {
   return rows[0] || null;
 }
 
-function mapReply(row: ReplyRow, session: ResolvedSession | null, slug = '') {
+function mapReply(row: ReplyRow, session: ResolvedSession | null, slug = '', reactions: CommunityReactionSummary = emptyReactionSummary()) {
   return {
     id: row.id,
     body: row.body,
     authorName: row.author_name,
     avatarUrl: row.avatar_url || '',
     profileSlug: slug,
+    reactions,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     own: row.user_id === session?.userId,
@@ -193,16 +195,29 @@ export async function GET(request: Request) {
 
   try {
     const replies = await readReplies(reviewId, session);
-    const slugs = await readPublicProfileSlugs(replies.map((reply) => reply.user_id));
+    const [slugs, reactionSummaries] = await Promise.all([
+      readPublicProfileSlugs(replies.map((reply) => reply.user_id)),
+      readCommunityReactionSummaries('reply', replies.map((reply) => reply.id), session?.accessToken),
+    ]);
     return respond({
       authenticated: Boolean(session),
       emailVerified: Boolean(session?.emailVerified),
       count: replies.length,
-      replies: replies.map((reply) => mapReply(reply, session, slugs.get(reply.user_id) || '')),
+      replies: replies.map((reply) => mapReply(
+        reply,
+        session,
+        slugs.get(reply.user_id) || '',
+        reactionSummaries.get(reply.id) || emptyReactionSummary(),
+      )),
       myReply: session
         ? (() => {
           const row = replies.find((reply) => reply.user_id === session.userId);
-          return row ? mapReply(row, session, slugs.get(row.user_id) || '') : null;
+          return row ? mapReply(
+            row,
+            session,
+            slugs.get(row.user_id) || '',
+            reactionSummaries.get(row.id) || emptyReactionSummary(),
+          ) : null;
         })()
         : null,
     }, session);

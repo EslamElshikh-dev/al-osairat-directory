@@ -42,6 +42,7 @@ function formatDate(value: string) {
 }
 
 function iconFor(type: string) {
+  if (type.includes('review_reply')) return '↩';
   if (
     type.includes('approved') ||
     type.includes('published') ||
@@ -274,7 +275,7 @@ export function NotificationBell() {
               <div className="notification-popover__state">
                 <span aria-hidden="true">✓</span>
                 <strong>لا توجد إشعارات جديدة</strong>
-                <small>ستظهر هنا تحديثات طلباتك ومراجعاتك فورًا.</small>
+                <small>ستظهر هنا تحديثات طلباتك والردود الجديدة على تقييماتك.</small>
               </div>
             )}
           </div>

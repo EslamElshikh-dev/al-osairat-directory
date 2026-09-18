@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { CommunityReactions } from '@/components/community-reactions';
+import type { CommunityReactionSummary } from '@/lib/community-reactions';
 
 type ReplyItem = {
   id: string;
@@ -9,6 +11,7 @@ type ReplyItem = {
   authorName: string;
   avatarUrl: string;
   profileSlug: string;
+  reactions: CommunityReactionSummary;
   createdAt: string;
   updatedAt: string;
   own?: boolean;
@@ -193,6 +196,14 @@ export function ReviewThread({
                         </header>
                         <p>{reply.body}</p>
                         {reply.updatedAt !== reply.createdAt ? <small>تم تعديل الرد</small> : null}
+                        <CommunityReactions
+                          targetType="reply"
+                          targetId={reply.id}
+                          initial={reply.reactions}
+                          authenticated={actualAuthenticated}
+                          emailVerified={actualVerified}
+                          own={reply.own}
+                        />
                       </div>
                     </article>
                   ))}

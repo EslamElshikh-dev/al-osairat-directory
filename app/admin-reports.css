@@ -38,7 +38,8 @@
 #data-quality,
 #authority-batch,
 #admin-requests,
-#listing-reports { scroll-margin-top: 160px; }
+#listing-reports,
+#community-reports { scroll-margin-top: 160px; }
 
 .admin-reports {
   margin: 28px 0 48px;
@@ -276,3 +277,6 @@
   .admin-report-card__head { padding-left: 14px; padding-right: 14px; }
   .admin-report-actions button { flex: 1 1 145px; }
 }
+
+
+.admin-reports--community{background:linear-gradient(180deg,#fff 0%,#faf8f7 100%)}.admin-reports--community .admin-report-card__head>div>span{color:#8b5148}.admin-reports--community .admin-report-listing{background:#fcfaf9}.admin-reports--community .admin-report-details:first-of-type{border-inline-start:3px solid rgba(139,81,72,.22)}

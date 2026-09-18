@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ReviewThread } from '@/components/review-thread';
+import { CommunityReactions } from '@/components/community-reactions';
+import type { CommunityReactionSummary } from '@/lib/community-reactions';
 
 type ReviewTargetType = 'site' | 'article';
 
@@ -13,6 +15,7 @@ type ReviewItem = {
   authorName: string;
   avatarUrl: string;
   profileSlug: string;
+  reactions: CommunityReactionSummary;
   createdAt: string;
   updatedAt: string;
   own?: boolean;
@@ -166,6 +169,10 @@ export function MemberReviews({
   useEffect(() => {
     const node = sectionRef.current;
     if (!node || activated) return;
+    if (window.location.hash.startsWith('#review-')) {
+      setActivated(true);
+      return;
+    }
     if (!('IntersectionObserver' in window)) {
       setActivated(true);
       return;
@@ -183,6 +190,14 @@ export function MemberReviews({
   useEffect(() => {
     if (activated) void loadInitial();
   }, [activated, loadInitial]);
+
+  useEffect(() => {
+    if (!payload || !window.location.hash.startsWith('#review-')) return;
+    const anchorId = decodeURIComponent(window.location.hash.slice(1));
+    window.requestAnimationFrame(() => {
+      document.getElementById(anchorId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }, [payload]);
 
   async function loadMore() {
     if (!payload?.nextOffset || loadingMore) return;
@@ -440,7 +455,7 @@ export function MemberReviews({
             {visibleReviews.length ? (
               <div className="member-review-list">
                 {visibleReviews.map((review) => (
-                  <article key={review.id} className={`member-review-card${review.own ? ' is-own' : ''}`}>
+                  <article id={`review-${review.id}`} key={review.id} className={`member-review-card${review.own ? ' is-own' : ''}`}>
                     <header>
                       {review.profileSlug ? (
                         <Link
@@ -475,6 +490,14 @@ export function MemberReviews({
                     <div className="member-review-card__quote" aria-hidden="true">“</div>
                     <p>{review.body}</p>
                     {review.updatedAt !== review.createdAt ? <small>تم تعديل التقييم</small> : null}
+                    <CommunityReactions
+                      targetType="review"
+                      targetId={review.id}
+                      initial={review.reactions}
+                      authenticated={payload.authenticated}
+                      emailVerified={payload.emailVerified}
+                      own={review.own}
+                    />
                     <ReviewThread
                       reviewId={review.id}
                       authenticated={payload.authenticated}
