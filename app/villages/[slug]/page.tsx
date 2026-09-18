@@ -11,6 +11,7 @@ import { BrandMark } from '@/components/site-shell';
 import { isVillageCategoryLandingEligible, isVillageHubIndexable, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
+import { getLowCoverageCategories, getUndercoveredVillages, villageCategoryDirectoryHref } from '@/lib/discovery';
 
 type VillageSearchParams = { page?: string };
 
@@ -96,6 +97,13 @@ export default async function VillagePage({
     }))
     .filter((item) => item.count > 0)
     .sort((a, b) => Number(b.qualified) - Number(a.qualified) || b.count - a.count);
+
+  const lowCoverageCategories = fallbackScope ? [] : getLowCoverageCategories(allListings, village.name, 4);
+  const undercoveredVillages = fallbackScope
+    ? []
+    : getUndercoveredVillages(allListings, 6)
+        .filter((item) => item.village.name !== village.name)
+        .slice(0, 3);
 
   const result = queryDirectoryListings(allListings, {
     village: village.name,
@@ -242,6 +250,25 @@ export default async function VillagePage({
           </div>
         )}
 
+        {!fallbackScope && lowCoverageCategories.length > 0 && (
+          <section className="village-balance-panel" aria-labelledby="village-balance-title">
+            <div className="village-balance-panel__copy">
+              <span className="eyebrow eyebrow--dark">اكتشاف متوازن</span>
+              <h2 id="village-balance-title">أقسام موجودة وتستحق استكشافًا أكبر</h2>
+              <p>بدل عرض الأقسام الأكثر كثافة فقط، نبرز هنا الخدمات ذات الحضور الأقل داخل {village.name} حتى يكون الوصول للمحتوى المحلي أكثر توازنًا.</p>
+            </div>
+            <nav className="village-balance-panel__links" aria-label={`أقسام أقل تغطية في ${village.name}`}>
+              {lowCoverageCategories.map(({ category, count }) => (
+                <Link key={category.id} href={villageCategoryDirectoryHref(village.name, category.id)}>
+                  <CategoryVisual category={category.id} size="sm" />
+                  <span>{category.shortLabel}</span>
+                  <small>{count.toLocaleString('ar-EG')} سجل</small>
+                </Link>
+              ))}
+            </nav>
+          </section>
+        )}
+
         {categorySummary.length > 0 && (
           <section className="village-category-section village-category-section--premium village-category-section--discovery" aria-labelledby="village-services-title">
             <div className="village-category-heading">
@@ -295,6 +322,24 @@ export default async function VillagePage({
             <strong>{fallbackScope ? 'لا توجد سجلات غير محددة القرية حاليًا' : 'لم تُنشر بيانات مؤكدة لهذه القرية بعد'}</strong>
             <p>{fallbackScope ? 'عندما تُحدَّد القرية الفعلية لسجل، يُنقل إلى نطاقه الصحيح داخل الدليل.' : 'القرية موجودة في هيكل الموسوعة، وستُربط الأنشطة بها عند اكتمال المراجعة.'}</p>
           </div>
+        )}
+        {!fallbackScope && undercoveredVillages.length > 0 && (
+          <section className="village-neighbor-discovery" aria-labelledby="village-neighbor-discovery-title">
+            <div>
+              <span className="eyebrow eyebrow--dark">استكشف قرى أخرى</span>
+              <h2 id="village-neighbor-discovery-title">قرى نوسّع حضورها داخل الدليل</h2>
+              <p>روابط مباشرة لقرى لديها محتوى منشور لكن تغطيتها الحالية أقل من غيرها، حتى لا تتركز الحركة في الصفحات الأقوى فقط.</p>
+            </div>
+            <nav>
+              {undercoveredVillages.map(({ village: candidate, listingCount, categoryCount }) => (
+                <Link key={candidate.slug} href={`/villages/${candidate.slug}`}>
+                  <strong>{candidate.name}</strong>
+                  <span>{listingCount.toLocaleString('ar-EG')} سجل · {categoryCount.toLocaleString('ar-EG')} أقسام</span>
+                  <b aria-hidden="true">←</b>
+                </Link>
+              ))}
+            </nav>
+          </section>
         )}
       </section>
       {!paginated && !fallbackScope && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />}
