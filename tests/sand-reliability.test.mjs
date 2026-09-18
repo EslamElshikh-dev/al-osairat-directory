@@ -100,3 +100,20 @@ test('Sand uses the shared navigation intent helper rather than component-local 
   assert.match(source, /isSandContextResetCommand/);
   assert.doesNotMatch(source, /const navigationSuggestions: Record/);
 });
+
+
+test('Sand can cancel an active request and stops in-flight work when the panel closes', async () => {
+  const [component, css] = await Promise.all([
+    readProjectFile('components/sand-assistant.tsx'),
+    readProjectFile('app/sand-assistant.css'),
+  ]);
+
+  assert.match(component, /function cancelActiveRequest\(\)/);
+  assert.match(component, /activeRequest\.abort\(\)/);
+  assert.match(component, /function closePanel\(\)/);
+  assert.match(component, /cancelActiveRequest\(\);\s*setOpen\(false\)/);
+  assert.match(component, /aria-label="إيقاف الطلب الجاري"/);
+  assert.match(component, /className="sand-composer__cancel"/);
+  assert.match(component, /if \(event\.key === 'Escape'\) closePanel\(\)/);
+  assert.match(css, /\.sand-composer \.sand-composer__cancel/);
+});

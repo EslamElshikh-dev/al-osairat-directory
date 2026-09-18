@@ -163,7 +163,7 @@ export function SandAssistant() {
     if (!open) return;
     const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 80);
     const handleEscape = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
+      if (event.key === 'Escape') closePanel();
     };
     document.addEventListener('keydown', handleEscape);
     return () => {
@@ -177,12 +177,26 @@ export function SandAssistant() {
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: 'smooth' });
   }, [loading, messages, open]);
 
-  function resetConversation() {
-    requestRef.current?.abort();
+  function cancelActiveRequest() {
+    const activeRequest = requestRef.current;
+    if (!activeRequest) return false;
     requestRef.current = null;
+    activeRequest.abort();
+    setLoading(false);
+    setError('');
+    setLastFailedText('');
+    return true;
+  }
+
+  function closePanel() {
+    cancelActiveRequest();
+    setOpen(false);
+  }
+
+  function resetConversation() {
+    cancelActiveRequest();
     setMessages([welcome]);
     setInput('');
-    setLoading(false);
     setError('');
     setLastFailedText('');
     window.setTimeout(() => inputRef.current?.focus(), 0);
@@ -294,7 +308,7 @@ export function SandAssistant() {
             >
               جديد
             </button>
-            <button type="button" onClick={() => setOpen(false)} aria-label="تصغير سَند">×</button>
+            <button type="button" onClick={closePanel} aria-label="تصغير سَند">×</button>
           </header>
 
           <div className="sand-emergency-bar" aria-label="أرقام الطوارئ الأساسية">
@@ -373,11 +387,23 @@ export function SandAssistant() {
               placeholder="مثال: عايز صيدلية في أولاد حمزة"
               disabled={loading}
             />
-            <button type="submit" disabled={loading || input.trim().length < 2} aria-label="إرسال الرسالة">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="m4 12 16-8-6.5 16-2.2-6.1L4 12Z" strokeLinejoin="round" />
-              </svg>
-            </button>
+            {loading ? (
+              <button
+                type="button"
+                className="sand-composer__cancel"
+                onClick={cancelActiveRequest}
+                aria-label="إيقاف الطلب الجاري"
+                title="إيقاف الطلب"
+              >
+                <span aria-hidden="true" />
+              </button>
+            ) : (
+              <button type="submit" disabled={input.trim().length < 2} aria-label="إرسال الرسالة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="m4 12 16-8-6.5 16-2.2-6.1L4 12Z" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
           </form>
           <p className="sand-privacy">لا تُرسل كلمات مرور أو بيانات شخصية حساسة. المحادثة لا تُحفظ في حسابك.</p>
         </section>
