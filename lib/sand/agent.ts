@@ -132,6 +132,7 @@ export async function generateSandAiReply(
   history: SandChatMessage[],
   grounding: SandGrounding,
   plan: SandRoutePlan,
+  options: { abortSignal?: AbortSignal } = {},
 ): Promise<SandAiReply | null> {
   if (process.env.SAND_AI_ENABLED === 'false') return null;
 
@@ -143,10 +144,12 @@ export async function generateSandAiReply(
     try {
       const result = await createAgent(provider, grounding, plan).generate({
         prompt: buildPrompt(message, history, plan),
+        ...(options.abortSignal ? { abortSignal: options.abortSignal } : {}),
       });
       const validated = validateSandGeneratedText(result.text, allowedNumbers);
       if (validated.ok) return { text: validated.text, mode: provider.mode };
     } catch (error) {
+      if (options.abortSignal?.aborted) return null;
       const status = typeof error === 'object' && error && 'status' in error
         ? Number((error as { status?: unknown }).status || 0)
         : 0;
