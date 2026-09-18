@@ -24,7 +24,7 @@ type ReviewTargetType = 'site' | 'article';
 
 type ReviewRow = {
   id: string;
-  user_id?: string;
+  user_id: string;
   rating: number;
   body: string;
   author_name: string;
@@ -149,17 +149,36 @@ function parseBodyTarget(body: Record<string, unknown>) {
   return null;
 }
 
-function mapReview(row: ReviewRow, own = false) {
+function mapReview(row: ReviewRow, own = false, profileSlug = '') {
   return {
     id: row.id,
     rating: Number(row.rating),
     body: row.body,
     authorName: row.author_name,
     avatarUrl: row.avatar_url || '',
+    profileSlug,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     own,
   };
+}
+
+async function readPublicProfileSlugs(userIds: string[]) {
+  const ids = [...new Set(userIds.filter(Boolean))];
+  if (!ids.length) return new Map<string, string>();
+  const query = new URLSearchParams({
+    select: 'user_id,slug',
+    user_id: `in.(${ids.join(',')})`,
+    is_public: 'eq.true',
+    limit: String(Math.min(100, ids.length)),
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/member_public_profiles?${query}`, {
+    headers: publicHeaders(),
+    cache: 'no-store',
+  });
+  if (!response.ok) return new Map<string, string>();
+  const rows = await response.json() as Array<{ user_id: string; slug: string }>;
+  return new Map(rows.map((row) => [row.user_id, row.slug]));
 }
 
 async function readSummary(targetType: ReviewTargetType, targetKey: string) {
@@ -195,7 +214,7 @@ async function readSummary(targetType: ReviewTargetType, targetKey: string) {
 
 async function readPublishedReviews(targetType: ReviewTargetType, targetKey: string, offset: number) {
   const query = new URLSearchParams({
-    select: 'id,rating,body,author_name,avatar_url,created_at,updated_at',
+    select: 'id,user_id,rating,body,author_name,avatar_url,created_at,updated_at',
     target_type: `eq.${targetType}`,
     target_key: `eq.${targetKey}`,
     status: 'eq.published',
@@ -244,12 +263,17 @@ export async function GET(request: Request) {
       session ? readOwnReview(session, target.targetType, target.targetKey) : Promise.resolve(null),
     ]);
 
+    const profileSlugs = await readPublicProfileSlugs([
+      ...reviews.map((row) => row.user_id),
+      ...(ownReview ? [ownReview.user_id] : []),
+    ]);
+
     return respond({
       authenticated: Boolean(session),
       emailVerified: Boolean(session?.emailVerified),
       summary,
-      reviews: reviews.map((row) => mapReview(row, row.id === ownReview?.id)),
-      myReview: ownReview ? mapReview(ownReview, true) : null,
+      reviews: reviews.map((row) => mapReview(row, row.id === ownReview?.id, profileSlugs.get(row.user_id) || '')),
+      myReview: ownReview ? mapReview(ownReview, true, profileSlugs.get(ownReview.user_id) || '') : null,
       nextOffset: offset + reviews.length < summary.count ? offset + reviews.length : null,
       pageSize: PAGE_SIZE,
     }, session);
