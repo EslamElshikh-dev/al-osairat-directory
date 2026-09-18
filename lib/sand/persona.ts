@@ -54,7 +54,7 @@ function understoodTarget(plan?: SandRoutePlan) {
 export function directSandReply(
   classification: SandMessageClassification,
   grounding?: SandGrounding,
-  reason?: 'daily_limit' | 'burst_limit' | 'provider_unavailable',
+  reason?: 'daily_limit' | 'burst_limit' | 'provider_unavailable' | 'search_unavailable',
   plan?: SandRoutePlan,
 ) {
   if (classification.promptInjection) {
@@ -95,6 +95,10 @@ export function directSandReply(
 
   if (plan?.clarification === 'request') {
     return `${friendlyLead(classification.normalized)}، قولّي الخدمة اللي محتاجها واسم القرية لو تعرفها؛ حتى لو كتبتها بكلمتين أو بلهجتك، هفهم المقصود وأدوّر لك.`;
+  }
+
+  if (reason === 'search_unavailable') {
+    return 'يا طيب، حصل تأخير مؤقت وأنا بقرأ بيانات الدليل. جرّب نفس الطلب تاني بعد لحظة، والبحث المباشر هيشتغل من البيانات المنشورة من غير ما تحتاج تغيّر سؤالك.';
   }
 
   if (!grounding?.results.length) {
