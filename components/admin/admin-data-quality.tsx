@@ -133,7 +133,7 @@ function CoverageRow({ label, detail, value }: { label: string; detail: string; 
 export async function AdminDataQuality() {
   const [canonicalReport, canonicalCoverage, releaseListings] = await Promise.all([
     getDirectoryAuthorityReport(12),
-    getCanonicalDirectoryCoverage(),
+    getCanonicalDirectoryCoverage({ fresh: true }),
     getReleaseListings(),
   ]);
 
