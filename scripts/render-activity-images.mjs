@@ -1,11 +1,30 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile } from 'node:fs/promises';
+import {
+  access,
+  copyFile,
+  mkdir,
+  readFile,
+  writeFile,
+} from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import {
+  ACTIVITY_IMAGE_CACHE_VERSION,
+  createActivityImageFingerprint,
+  isActivityImageCacheHit,
+  readActivityImageCacheManifest,
+} from './activity-image-cache.mjs';
 
 const root = process.cwd();
 const outputDirectory = path.join(root, 'public/images/activities');
+const cacheDirectory = path.join(root, '.next/cache/activity-images');
+const cacheManifestPath = path.join(cacheDirectory, 'manifest.json');
 const manifest = JSON.parse(await readFile(path.join(root, 'lib/data/activity-image-manifest.json'), 'utf8'));
+const rendererDigest = createHash('sha256')
+  .update(await readFile(fileURLToPath(import.meta.url)))
+  .digest('hex');
+
 const seedImages = new Map();
 for (const shard of [1, 2, 3, 4]) {
   const packedSeeds = await readFile(path.join(root, `assets/activity-seeds-${shard}.pack`));
@@ -33,6 +52,10 @@ function hashBytes(value) {
   return createHash('sha256').update(value).digest();
 }
 
+function digest(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
 function escapeXml(value) {
   return value.replace(/[<>&'"]/g, (character) => ({
     '<': '&lt;',
@@ -47,11 +70,22 @@ function clipped(value, maximum) {
   return value.length <= maximum ? value : `${value.slice(0, maximum - 1).trim()}…`;
 }
 
+const sourceBufferPromises = new Map();
+
 function sourceInput(source) {
-  if (!source.startsWith('activity-seeds/')) return path.join(root, 'public/images', source);
-  const image = seedImages.get(path.basename(source));
-  if (!image) throw new Error(`Missing packed activity seed: ${source}`);
-  return image;
+  if (!sourceBufferPromises.has(source)) {
+    sourceBufferPromises.set(source, (async () => {
+      if (source.startsWith('activity-seeds/')) {
+        const image = seedImages.get(path.basename(source));
+        if (!image) throw new Error(`Missing packed activity seed: ${source}`);
+        return image;
+      }
+
+      return readFile(path.join(root, 'public/images', source));
+    })());
+  }
+
+  return sourceBufferPromises.get(source);
 }
 
 function overlayFor(listing, bytes) {
@@ -82,11 +116,17 @@ function overlayFor(listing, bytes) {
   `);
 }
 
-await mkdir(outputDirectory, { recursive: true });
+async function fileExists(filePath) {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
-for (const [listingId, listing] of Object.entries(manifest)) {
+async function renderActivityImage(listingId, listing, sourceBuffer) {
   const bytes = hashBytes(listingId);
-  const outputPath = path.join(root, 'public', listing.src);
   const canvasWidth = 860;
   const canvasHeight = 573;
   const left = bytes[0] % (canvasWidth - 800 + 1);
@@ -95,7 +135,7 @@ for (const [listingId, listing] of Object.entries(manifest)) {
   const saturation = 0.94 + (bytes[3] % 18) / 100;
   const hue = (bytes[4] % 13) - 6;
 
-  let pipeline = sharp(sourceInput(listing.source)).resize(canvasWidth, canvasHeight, { fit: 'cover' });
+  let pipeline = sharp(sourceBuffer).resize(canvasWidth, canvasHeight, { fit: 'cover' });
   if (listing.sourceKind !== 'owner_photo' && bytes[8] % 2 === 1) pipeline = pipeline.flop();
 
   pipeline = pipeline.extract({ left, top, width: 800, height: 533 });
@@ -103,10 +143,91 @@ for (const [listingId, listing] of Object.entries(manifest)) {
     pipeline = pipeline.modulate({ brightness, saturation, hue });
   }
 
-  await pipeline
+  return pipeline
     .composite([{ input: overlayFor(listing, bytes), top: 0, left: 0 }])
     .webp({ quality: 70, effort: 5, smartSubsample: true })
-    .toFile(outputPath);
+    .toBuffer();
 }
 
-console.log(`Rendered ${Object.keys(manifest).length} individual activity images.`);
+async function runWithConcurrency(items, concurrency, worker) {
+  let cursor = 0;
+  const runners = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor;
+      cursor += 1;
+      await worker(items[index]);
+    }
+  });
+  await Promise.all(runners);
+}
+
+await Promise.all([
+  mkdir(outputDirectory, { recursive: true }),
+  mkdir(cacheDirectory, { recursive: true }),
+]);
+
+const previousCache = await readActivityImageCacheManifest(cacheManifestPath);
+const nextCacheEntries = {};
+const entries = Object.entries(manifest);
+const stats = {
+  total: entries.length,
+  reused: 0,
+  rendered: 0,
+};
+const startedAt = performance.now();
+
+const concurrency = Math.max(
+  1,
+  Math.min(4, Number(process.env.ACTIVITY_IMAGE_RENDER_CONCURRENCY || 4) || 4),
+);
+
+await runWithConcurrency(entries, concurrency, async ([listingId, listing]) => {
+  const sourceBuffer = await sourceInput(listing.source);
+  const fingerprint = createActivityImageFingerprint({
+    listingId,
+    listing,
+    sourceDigest: digest(sourceBuffer),
+    rendererDigest,
+  });
+
+  const outputPath = path.join(root, 'public', listing.src.replace(/^\/+/, ''));
+  const cachePath = path.join(cacheDirectory, path.basename(listing.src));
+  const previousEntry = previousCache.entries[listingId];
+  const cacheHit = isActivityImageCacheHit({
+    previousEntry,
+    fingerprint,
+    src: listing.src,
+    cachedFileExists: await fileExists(cachePath),
+  });
+
+  await mkdir(path.dirname(outputPath), { recursive: true });
+
+  if (cacheHit) {
+    await copyFile(cachePath, outputPath);
+    stats.reused += 1;
+  } else {
+    const rendered = await renderActivityImage(listingId, listing, sourceBuffer);
+    await Promise.all([
+      writeFile(outputPath, rendered),
+      writeFile(cachePath, rendered),
+    ]);
+    stats.rendered += 1;
+  }
+
+  nextCacheEntries[listingId] = {
+    fingerprint,
+    src: listing.src,
+  };
+});
+
+await writeFile(cacheManifestPath, JSON.stringify({
+  version: ACTIVITY_IMAGE_CACHE_VERSION,
+  rendererDigest,
+  generatedAt: new Date().toISOString(),
+  entries: nextCacheEntries,
+}));
+
+const elapsedSeconds = ((performance.now() - startedAt) / 1000).toFixed(2);
+console.log(
+  `Activity images: ${stats.total} total · ${stats.reused} reused · ${stats.rendered} rendered · ${elapsedSeconds}s`,
+);
