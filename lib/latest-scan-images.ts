@@ -35,6 +35,9 @@ const latestScanImages: Record<string, string> = {
   'education-مدرسة-اولاد-غازي-التجريبية-للغات': '/images/activities/awlad-ghazi-language-school.svg',
   'education-مدرسة-اولاد-غازي-الاعدادية-المشتركة': '/images/activities/awlad-ghazi-preparatory-school.svg',
   'worship-مسجد-ابو-بكر-الصديق-القصالي-اولاد-جبارة': '/images/activities/awlad-gabara-al-siddiq-mosque.svg',
+  'education-معهد-بنين-اولاد-علي-الازهري': '/images/activities/awlad-ali-boys-azhar-institute.svg',
+  'education-معهد-فتيات-اولاد-علي-الازهري': '/images/activities/awlad-ali-girls-azhar-institute.svg',
+  'government-الوحدة-المحلية-لمركز-ومدينة-العسيرات': '/images/activities/al-usayrat-city-council.svg',
 };
 
 export function latestScanImageForListing(
