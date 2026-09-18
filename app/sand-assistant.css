@@ -542,7 +542,7 @@
   overflow: visible;
 }
 
-.sand-suggestions button {
+ .sand-suggestions :is(button, a) {
   width: 100%;
   min-width: 0;
   min-height: 34px;
@@ -558,6 +558,7 @@
   text-align: center;
   white-space: normal;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .sand-suggestions button:disabled { opacity: .55; cursor: wait; }
@@ -655,7 +656,7 @@
   .sand-message__bubble { max-width: 92%; padding: 10px 12px; font-size: 12.5px; }
   .sand-emergency-bar { min-height: 36px; gap: 6px; padding: 6px 8px; font-size: 9px; }
   .sand-suggestions { padding: 7px 10px 8px; }
-  .sand-suggestions button { min-height: 36px; font-size: 9.5px; }
+  .sand-suggestions :is(button, a) { min-height: 36px; font-size: 9.5px; }
   .sand-composer { padding: 9px 10px 7px; }
   .sand-composer textarea { min-height: 44px; padding: 10px 12px; }
   .sand-composer button { width: 44px; height: 44px; }
