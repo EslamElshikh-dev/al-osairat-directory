@@ -10,6 +10,7 @@ import {
 import { ListingCard } from './listing-card';
 import { BrandMark } from './site-shell';
 import { CategoryVisual } from './category-visual';
+import { DirectorySearchTelemetry } from './directory-search-telemetry';
 
 function pageNumbers(current: number, total: number) {
   if (total <= 5) return Array.from({ length: total }, (_, index) => index + 1);
@@ -44,6 +45,13 @@ export function DirectoryExplorer({
 
   return (
     <div className="explorer explorer--premium explorer--discovery-v4">
+      <DirectorySearchTelemetry
+        query={query}
+        village={village}
+        category={category || 'all'}
+        resultCount={result.total}
+        pathname={pathname}
+      />
       {category === 'transport' && (
         <div className="explorer__toolbar-shell">
           <div className="explorer__toolbar-heading">
