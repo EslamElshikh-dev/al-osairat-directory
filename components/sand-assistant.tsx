@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   FormEvent,
   KeyboardEvent,
@@ -56,7 +57,7 @@ function safePhoneHref(phone?: string) {
   return /^\+?\d{3,15}$/.test(value) ? `tel:${value}` : '';
 }
 
-function ResultCard({ result }: { result: SandResult }) {
+function ResultCard({ result, onNavigate }: { result: SandResult; onNavigate: () => void }) {
   const href = result.href.startsWith('/listing/') ? result.href : '/directory';
   const phone = safePhoneHref(result.phone);
 
@@ -70,7 +71,7 @@ function ResultCard({ result }: { result: SandResult }) {
       <p>{[result.village, result.location].filter(Boolean).join(' · ')}</p>
       {result.hours ? <small className="sand-result__hours">المواعيد: {result.hours}</small> : null}
       <div className="sand-result__actions">
-        <Link href={href}>التفاصيل</Link>
+        <Link href={href} onClick={onNavigate}>التفاصيل</Link>
         {phone ? <a href={phone}>اتصال</a> : null}
       </div>
     </article>
@@ -80,19 +81,29 @@ function ResultCard({ result }: { result: SandResult }) {
 function sourceLabel(payload?: SandApiResponse) {
   if (!payload) return '';
   if (payload.dataSource === 'supabase') return 'بيانات الدليل الحية';
-  if (payload.dataSource === 'local_snapshot') return 'نسخة الدليل المحلية';
+  if (payload.dataSource === 'local_snapshot') return 'بيانات الدليل المنشورة';
   if (payload.dataSource === 'static_emergency') return 'أرقام طوارئ ثابتة';
   return '';
 }
 
+function modeLabel(payload?: SandApiResponse) {
+  if (!payload) return '';
+  if (payload.mode === 'groq' || payload.mode === 'cloudflare') return 'صياغة ذكية';
+  if (payload.mode === 'emergency') return 'وضع الطوارئ';
+  return 'بحث مباشر';
+}
+
 export function SandAssistant() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatEntry[]>([welcome]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [lastFailedText, setLastFailedText] = useState('');
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const feedRef = useRef<HTMLDivElement | null>(null);
+  const previousPathnameRef = useRef(pathname);
 
   const latestPayload = useMemo(
     () => [...messages].reverse().find((message) => message.payload)?.payload,
@@ -102,6 +113,14 @@ export function SandAssistant() {
     () => [...new Set([...(latestPayload?.suggestions || []), ...starterSuggestions])].slice(0, 6),
     [latestPayload],
   );
+
+  useEffect(() => {
+    if (previousPathnameRef.current !== pathname) {
+      setOpen(false);
+      setError('');
+      previousPathnameRef.current = pathname;
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -121,16 +140,23 @@ export function SandAssistant() {
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: 'smooth' });
   }, [loading, messages, open]);
 
-  async function send(raw: string) {
+  async function send(raw: string, options: { appendUser?: boolean } = {}) {
     const text = raw.trim().slice(0, 500);
     if (text.length < 2 || loading) return;
 
+    const appendUser = options.appendUser !== false;
     const userEntry: ChatEntry = { id: crypto.randomUUID(), role: 'user', text };
     const history = messages.slice(-6).map((message) => ({ role: message.role, text: message.text }));
-    setMessages((current) => [...current, userEntry]);
+    if (appendUser) {
+      setMessages((current) => [...current, userEntry].slice(-30));
+    }
     setInput('');
     setError('');
+    setLastFailedText('');
     setLoading(true);
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 18_000);
 
     try {
       const response = await fetch('/api/sand', {
@@ -138,20 +164,30 @@ export function SandAssistant() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({ message: text, history }),
+        signal: controller.signal,
       });
       const data = await response.json().catch(() => ({})) as Partial<SandApiResponse> & { error?: string };
       if (!response.ok || !data.message) throw new Error(data.error || 'تعذر الوصول إلى سَند الآن.');
 
       const payload = data as SandApiResponse;
-      setMessages((current) => [...current, {
+      const assistantEntry: ChatEntry = {
         id: crypto.randomUUID(),
         role: 'assistant',
         text: payload.message,
         payload,
-      }]);
+      };
+      setMessages((current) => [...current, assistantEntry].slice(-30));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'تعذر الوصول إلى سَند الآن.');
+      setLastFailedText(text);
+      setError(
+        cause instanceof DOMException && cause.name === 'AbortError'
+          ? 'سَند اتأخر في الرد، فوقفنا الطلب بدل ما يفضل معلّق. تقدر تعيد المحاولة الآن.'
+          : cause instanceof Error
+            ? cause.message
+            : 'تعذر الوصول إلى سَند الآن.',
+      );
     } finally {
+      window.clearTimeout(timer);
       setLoading(false);
     }
   }
@@ -194,12 +230,15 @@ export function SandAssistant() {
                 <div className="sand-message__bubble">{message.text}</div>
                 {message.payload?.results?.length ? (
                   <div className="sand-results">
-                    {message.payload.results.map((result) => <ResultCard key={result.id} result={result} />)}
+                    {message.payload.results.map((result) => <ResultCard key={result.id} result={result} onNavigate={() => setOpen(false)} />)}
                   </div>
                 ) : null}
                 {message.payload ? (
                   <div className="sand-message__meta">
-                    <span>{sourceLabel(message.payload)}</span>
+                    <div className="sand-message__status">
+                      <span>{sourceLabel(message.payload)}</span>
+                      <b>{modeLabel(message.payload)}</b>
+                    </div>
                     <small>{message.payload.disclosure}</small>
                   </div>
                 ) : null}
@@ -211,7 +250,16 @@ export function SandAssistant() {
                 <div className="sand-typing" aria-label="سَند يبحث في الدليل"><span /><span /><span /></div>
               </div>
             ) : null}
-            {error ? <div className="sand-error" role="alert">{error}</div> : null}
+            {error ? (
+              <div className="sand-error" role="alert">
+                <span>{error}</span>
+                {lastFailedText ? (
+                  <button type="button" disabled={loading} onClick={() => void send(lastFailedText, { appendUser: false })}>
+                    إعادة المحاولة
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div className="sand-suggestions" aria-label="اقتراحات سريعة">
