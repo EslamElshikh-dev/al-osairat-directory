@@ -2,6 +2,7 @@ import { adminJson, adminRestHeaders, resolveAdminSession } from '@/lib/auth/adm
 import { SUPABASE_URL } from '@/lib/auth/supabase-rest';
 import { categoryById, listings, type DirectoryListing } from '@/lib/data';
 import { applyListingOverrides } from '@/lib/listing-overrides';
+import { buildDirectoryDemandIntelligence, type SearchGapCandidate } from '@/lib/directory-demand-intelligence';
 import { getPublishedListings } from '@/lib/published-listings';
 
 export const runtime = 'nodejs';
@@ -27,6 +28,7 @@ type Intelligence = {
   topSearchVillages: RankedCount[];
   topSearchCategories: RankedCount[];
   topListings: ListingMetric[];
+  gapCandidates?: SearchGapCandidate[];
   generatedAt: string;
 };
 
@@ -60,8 +62,15 @@ export async function GET() {
     getLiveListings(),
   ]);
 
+  const liveListings = Array.from(listingIndex.values());
+  const demand = buildDirectoryDemandIntelligence(stats.gapCandidates || [], liveListings);
+
   return adminJson({
     ...stats,
+    gapCandidates: undefined,
+    gapQueue: demand.activeGaps,
+    resolvedGaps: demand.resolvedGaps,
+    collectionPlan: demand.collectionPlan,
     topSearchCategories: (stats.topSearchCategories || []).map((item) => ({
       ...item,
       label: categoryById[item.name as keyof typeof categoryById]?.shortLabel || item.name,
