@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   FormEvent,
   KeyboardEvent,
@@ -25,6 +25,16 @@ const welcome: ChatEntry = {
   role: 'assistant',
   text: 'أهلًا يا طيب، أنا سَند؛ مساعدك الآلي في دليل العسيرات. أقدر أدلّك على طبيب، صيدلية، محل، حِرفي، مواصلات أو رقم طوارئ. قولّي الخدمة واسم القرية وأنا حاضر.',
 };
+
+const navigationSuggestions: Record<string, string> = {
+  'أخبار العسيرات': '/news',
+  'قرى العسيرات': '/villages',
+  'خدمات الدليل': '/directory',
+};
+
+function navigationSuggestionHref(value: string) {
+  return navigationSuggestions[value.trim()] || '';
+}
 
 const starterSuggestions = [
   'دكتور في أولاد حمزة',
@@ -95,6 +105,7 @@ function modeLabel(payload?: SandApiResponse) {
 
 export function SandAssistant() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatEntry[]>([welcome]);
   const [input, setInput] = useState('');
@@ -143,6 +154,15 @@ export function SandAssistant() {
   async function send(raw: string, options: { appendUser?: boolean } = {}) {
     const text = raw.trim().slice(0, 500);
     if (text.length < 2 || loading) return;
+
+    const navigationHref = navigationSuggestionHref(text);
+    if (navigationHref) {
+      setOpen(false);
+      setError('');
+      setLastFailedText('');
+      router.push(navigationHref);
+      return;
+    }
 
     const appendUser = options.appendUser !== false;
     const userEntry: ChatEntry = { id: crypto.randomUUID(), role: 'user', text };
@@ -265,11 +285,18 @@ export function SandAssistant() {
           <div className="sand-suggestions" aria-label="اقتراحات سريعة">
             <span className="sand-suggestions__label">جرّب تسأل عن</span>
             <div className="sand-suggestions__list">
-              {suggestions.map((suggestion) => (
-                <button key={suggestion} type="button" disabled={loading} onClick={() => void send(suggestion)}>
-                  {suggestion}
-                </button>
-              ))}
+              {suggestions.map((suggestion) => {
+                const href = navigationSuggestionHref(suggestion);
+                return href ? (
+                  <Link key={suggestion} href={href} onClick={() => setOpen(false)}>
+                    {suggestion}
+                  </Link>
+                ) : (
+                  <button key={suggestion} type="button" disabled={loading} onClick={() => void send(suggestion)}>
+                    {suggestion}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
