@@ -8,6 +8,8 @@ import { BusinessSubmissionPanel } from './business-submission-panel';
 import { OwnershipClaimPanel } from './ownership-claim-panel';
 import { MyBusinessesPanel } from './my-businesses-panel';
 import { NotificationCenter } from './notification-center';
+import { FollowingFeedPanel } from './following-feed-panel';
+import { CommunityProgressPanel } from './community-progress-panel';
 import { AdminAccessCard } from './admin-access-card';
 
 type User = {
@@ -134,6 +136,8 @@ export function AccountPanel() {
       <nav className="account-section-nav" aria-label="أقسام حساب العضو">
         <a href="#account-profile">بياناتي</a>
         <a href="#account-notifications">الإشعارات</a>
+        <a href="#following-feed">أتابعهم</a>
+        <a href="#community-progress">مساهماتي</a>
         <a href="#business-submissions">إضافة نشاط</a>
         <a href="#ownership-claims">الملكية</a>
         <a href="#my-businesses">أنشطتي</a>
@@ -169,6 +173,10 @@ export function AccountPanel() {
       )}
 
       <div id="account-notifications" className="account-anchor-section"><NotificationCenter /></div>
+
+      <div id="following-feed" className="account-anchor-section"><FollowingFeedPanel /></div>
+
+      <div id="community-progress" className="account-anchor-section"><CommunityProgressPanel /></div>
 
       <div id="account-profile" className="account-anchor-section">
         <MemberProfileForm
@@ -236,6 +244,7 @@ export function AccountPanel() {
           <Link href="/directory">استكشف الدليل <b aria-hidden="true">←</b></Link>
           <Link href="/villages">دليل القرى <b aria-hidden="true">←</b></Link>
           <Link href="/blog">مدونة العسيرات <b aria-hidden="true">←</b></Link>
+          <Link href="/community">نبض المجتمع <b aria-hidden="true">←</b></Link>
         </div>
       </section>
 
