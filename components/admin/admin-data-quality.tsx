@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { AdminDataSync } from '@/components/admin/admin-data-sync';
 import styles from '@/components/admin/admin-data-quality.module.css';
+import { getCanonicalCoverageSummary } from '@/lib/canonical-parity';
 import { listings } from '@/lib/data';
 import { mergeDirectoryListings } from '@/lib/directory-query';
 import {
+  getCanonicalDirectoryCoverage,
   getDirectoryAuthorityReport,
   type DirectoryAuthorityQueueItem,
   type DirectoryAuthorityReport,
@@ -34,13 +36,16 @@ function pct(complete: number, total: number) {
   return total ? Math.round((complete / total) * 1000) / 10 : 0;
 }
 
-async function buildLegacyFallback(): Promise<DirectoryAuthorityReport> {
+async function getReleaseListings() {
   const [publishedListings, overriddenListings] = await Promise.all([
     getPublishedListings(),
     applyListingOverrides(listings),
   ]);
-  const allListings = mergeDirectoryListings(overriddenListings, publishedListings)
-    .filter((listing) => listing.category !== 'emergency');
+  return mergeDirectoryListings(overriddenListings, publishedListings);
+}
+
+function buildLegacyFallback(releaseListings: DirectoryListing[]): DirectoryAuthorityReport {
+  const allListings = releaseListings.filter((listing) => listing.category !== 'emergency');
   const scored = allListings.map((listing) => ({ listing, score: listingDataQualityScore(listing) }));
   const total = scored.length;
   const missingPhone = scored.filter(({ listing }) => !listing.phone || listing.phone === '0').length;
@@ -126,8 +131,16 @@ function CoverageRow({ label, detail, value }: { label: string; detail: string; 
 }
 
 export async function AdminDataQuality() {
-  const canonicalReport = await getDirectoryAuthorityReport(12);
-  const report = canonicalReport || await buildLegacyFallback();
+  const [canonicalReport, canonicalCoverage, releaseListings] = await Promise.all([
+    getDirectoryAuthorityReport(12),
+    getCanonicalDirectoryCoverage(),
+    getReleaseListings(),
+  ]);
+
+  const canonicalHealth = getCanonicalCoverageSummary(canonicalCoverage || [], releaseListings);
+  const report = canonicalReport && canonicalHealth.isCurrent
+    ? canonicalReport
+    : buildLegacyFallback(releaseListings);
   const { summary, coverage, queue } = report;
 
   return (
@@ -143,8 +156,26 @@ export async function AdminDataQuality() {
         </div>
       </div>
 
-      <div className={styles.sync}><AdminDataSync expectedCount={summary.total} /></div>
+      <div className={[styles.canonicalHealth, canonicalHealth.isCurrent ? styles.canonicalHealthOk : styles.canonicalHealthWarn].join(' ')}>
+        <div className={styles.canonicalHealthHead}>
+          <div>
+            <span>سلامة الطبقة المركزية</span>
+            <strong>{canonicalHealth.isCurrent ? 'Canonical متزامن مع الإصدار المنشور' : 'Canonical يحتاج مزامنة مع الإصدار المنشور'}</strong>
+          </div>
+          <b>{canonicalHealth.isCurrent ? 'متزامن' : 'مزامنة مطلوبة'}</b>
+        </div>
+        <div className={styles.canonicalHealthMetrics}>
+          <span><small>الإصدار المنشور</small><strong>{canonicalHealth.releaseCount.toLocaleString('ar-EG')}</strong></span>
+          <span><small>Canonical نشط</small><strong>{canonicalHealth.canonicalCount.toLocaleString('ar-EG')}</strong></span>
+          <span><small>سجلات ناقصة</small><strong>{canonicalHealth.missingCount.toLocaleString('ar-EG')}</strong></span>
+          <span><small>سجلات أقدم</small><strong>{canonicalHealth.staleCount.toLocaleString('ar-EG')}</strong></span>
+        </div>
+        {canonicalHealth.extraCount > 0 ? <p>يوجد أيضًا {canonicalHealth.extraCount.toLocaleString('ar-EG')} سجلًا نشطًا في Canonical غير موجود في الإصدار الحالي ويجب مراجعته أثناء المزامنة.</p> : null}
+      </div>
+
+      <div className={styles.sync}><AdminDataSync expectedCount={canonicalHealth.releaseCount} /></div>
       {!canonicalReport ? <p className={styles.fallback}>تعذر قراءة تقرير الطبقة المركزية الآن، لذلك تعرض اللوحة حسابًا احتياطيًا من بيانات التطبيق الحالية.</p> : null}
+      {canonicalReport && !canonicalHealth.isCurrent ? <p className={styles.fallback}>تقرير Canonical الحالي متأخر عن الإصدار المنشور، لذلك تعرض مؤشرات الجودة الآن من بيانات الإصدار الفعلية بدل أرقام قديمة. بعد المزامنة ستعود اللوحة تلقائيًا إلى التقرير المركزي.</p> : null}
 
       <div className={styles.metrics}>
         <article className={styles.metric}><span>سجلات قوية</span><strong>{summary.strong.toLocaleString('ar-EG')}</strong><small>75+ نقطة</small></article>
