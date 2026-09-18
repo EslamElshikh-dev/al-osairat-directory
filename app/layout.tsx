@@ -31,6 +31,7 @@ import './member-reviews.css';
 import './member-review-polish.css';
 import './review-replies.css';
 import './community-profiles.css';
+import './community-v2.css';
 import './directory-scroll-fix.css';
 import './directory-ticker.css';
 import './navigation-scroll.css';
