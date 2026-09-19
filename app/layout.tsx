@@ -103,17 +103,6 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-const scrollRestorationScript = `
-  if ('scrollRestoration' in window.history) {
-    window.history.scrollRestoration = 'manual';
-  }
-  window.addEventListener('pageshow', function () {
-    if (!window.location.hash) {
-      window.scrollTo(0, 0);
-    }
-  });
-`;
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const siteSchema = {
     '@context': 'https://schema.org',
@@ -171,9 +160,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="ar" dir="rtl">
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: scrollRestorationScript }} />
-      </head>
       <body>
         <Suspense fallback={null}>
           <NavigationScrollManager />
