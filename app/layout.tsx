@@ -35,6 +35,7 @@ import './community-v2.css';
 import './community-v23.css';
 import './community-v24.css';
 import './community-v25.css';
+import './community-v26.css';
 import './directory-scroll-fix.css';
 import './directory-ticker.css';
 import './navigation-scroll.css';
