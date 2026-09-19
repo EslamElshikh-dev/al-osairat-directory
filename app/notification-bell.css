@@ -1,0 +1,8 @@
+.notification-bell{position:relative;width:40px;height:40px;display:inline-grid;place-items:center;border-radius:13px;border:1px solid rgba(16,42,36,.1);background:rgba(255,255,255,.72);color:#173a31;text-decoration:none;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.notification-bell:hover{transform:translateY(-1px);background:#fff;border-color:rgba(36,81,68,.22)}
+.notification-bell svg{width:18px;height:18px}
+.notification-bell>span{position:absolute;top:-5px;left:-5px;min-width:18px;height:18px;padding:0 4px;display:grid;place-items:center;border-radius:999px;background:#b13d36;color:#fff;border:2px solid #f6f3eb;font-size:7px;font-weight:1000;line-height:1}
+.notification-bell.has-unread svg{animation:notification-ring 4s ease-in-out infinite}
+@keyframes notification-ring{0%,90%,100%{transform:rotate(0)}92%{transform:rotate(-10deg)}94%{transform:rotate(8deg)}96%{transform:rotate(-5deg)}98%{transform:rotate(3deg)}}
+@media(max-width:780px){.notification-bell{width:38px;height:38px;border-radius:12px}}
+@media(prefers-reduced-motion:reduce){.notification-bell,.notification-bell.has-unread svg{transition:none;animation:none}}
