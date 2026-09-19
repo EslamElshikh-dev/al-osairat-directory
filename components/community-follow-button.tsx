@@ -74,10 +74,19 @@ export function CommunityFollowButton({
       if (!response.ok || typeof payload.following !== 'boolean') {
         throw new Error(payload.error || 'تعذر تحديث المتابعة.');
       }
+      const nextFollowing = Boolean(payload.following);
+      const nextFollowerCount = Number(payload.followerCount ?? state.followerCount);
       setState((current) => ({
         ...current,
-        following: Boolean(payload.following),
-        followerCount: Number(payload.followerCount ?? current.followerCount),
+        following: nextFollowing,
+        followerCount: nextFollowerCount,
+      }));
+      window.dispatchEvent(new CustomEvent('community:follow-changed', {
+        detail: {
+          slug,
+          following: nextFollowing,
+          followerCount: nextFollowerCount,
+        },
       }));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر تحديث المتابعة.');
