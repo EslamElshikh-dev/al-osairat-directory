@@ -25,8 +25,15 @@ type WatchedThread = {
   rating: number;
   contextLabel: string;
   href: string;
+  continueHref: string;
   contributionCreatedAt: string;
   watchedAt: string;
+  lastSeenAt: string;
+  lastSeenReplyId: string | null;
+  latestReplyAt: string | null;
+  replyCount: number;
+  helpfulCount: number;
+  newReplyCount: number;
 };
 
 type Payload = {
@@ -34,10 +41,12 @@ type Payload = {
   emailVerified: boolean;
   savedItems: SavedItem[];
   watchedThreads: WatchedThread[];
+  watchedNewReplyCount: number;
   error?: string;
 };
 
 type Tab = 'saved' | 'watched';
+type DiscussionSort = 'latest' | 'replies' | 'helpful';
 
 function formatDate(value: string) {
   try {
@@ -64,6 +73,7 @@ function Stars({ value }: { value: number }) {
 export function CommunityLibraryPanel() {
   const [payload, setPayload] = useState<Payload | null>(null);
   const [tab, setTab] = useState<Tab>('saved');
+  const [discussionSort, setDiscussionSort] = useState<DiscussionSort>('latest');
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState('');
   const [error, setError] = useState('');
@@ -125,16 +135,33 @@ export function CommunityLibraryPanel() {
 
   const savedCount = payload?.savedItems.length || 0;
   const watchedCount = payload?.watchedThreads.length || 0;
-  const activeItems = useMemo(
-    () => tab === 'saved' ? (payload?.savedItems || []) : (payload?.watchedThreads || []),
-    [payload, tab],
-  );
+  const watchedNewReplyCount = payload?.watchedNewReplyCount
+    ?? (payload?.watchedThreads || []).reduce((sum, item) => sum + item.newReplyCount, 0);
+  const sortedWatched = useMemo(() => {
+    const items = [...(payload?.watchedThreads || [])];
+    return items.sort((a, b) => {
+      if (discussionSort === 'replies') {
+        return b.replyCount - a.replyCount
+          || Date.parse(b.latestReplyAt || b.contributionCreatedAt)
+          - Date.parse(a.latestReplyAt || a.contributionCreatedAt);
+      }
+      if (discussionSort === 'helpful') {
+        return b.helpfulCount - a.helpfulCount
+          || b.replyCount - a.replyCount
+          || Date.parse(b.latestReplyAt || b.contributionCreatedAt)
+          - Date.parse(a.latestReplyAt || a.contributionCreatedAt);
+      }
+      return Date.parse(b.latestReplyAt || b.contributionCreatedAt)
+        - Date.parse(a.latestReplyAt || a.contributionCreatedAt);
+    });
+  }, [discussionSort, payload]);
+  const activeItems = tab === 'saved' ? (payload?.savedItems || []) : sortedWatched;
 
   return (
     <section className="account-community-library" aria-labelledby="community-library-title">
       <div className="account-community-section-heading">
         <div>
-          <span>Community V2.6</span>
+          <span>Community V2.7</span>
           <h2 id="community-library-title">محفوظات المجتمع</h2>
           <p>احتفظ بالتقييمات والردود المهمة، وتابع النقاشات التي تريد الرجوع لها. كل هذه الاختيارات خاصة بحسابك فقط.</p>
         </div>
@@ -164,8 +191,38 @@ export function CommunityLibraryPanel() {
           onClick={() => setTab('watched')}
         >
           نقاشات أتابعها <b>{watchedCount.toLocaleString('ar-EG')}</b>
+          {watchedNewReplyCount > 0 ? (
+            <em>{watchedNewReplyCount.toLocaleString('ar-EG')} جديد</em>
+          ) : null}
         </button>
       </div>
+
+      {tab === 'watched' && watchedCount > 0 ? (
+        <div className="community-thread-sort" aria-label="ترتيب النقاشات المتابعة">
+          <span>رتّب حسب</span>
+          <button
+            type="button"
+            className={discussionSort === 'latest' ? 'is-active' : ''}
+            onClick={() => setDiscussionSort('latest')}
+          >
+            الأحدث
+          </button>
+          <button
+            type="button"
+            className={discussionSort === 'replies' ? 'is-active' : ''}
+            onClick={() => setDiscussionSort('replies')}
+          >
+            الأكثر ردودًا
+          </button>
+          <button
+            type="button"
+            className={discussionSort === 'helpful' ? 'is-active' : ''}
+            onClick={() => setDiscussionSort('helpful')}
+          >
+            الأكثر فائدة
+          </button>
+        </div>
+      ) : null}
 
       {error ? <div className="account-community-error" role="alert">{error}</div> : null}
 
@@ -200,22 +257,40 @@ export function CommunityLibraryPanel() {
                 </footer>
               </article>
             ))
-            : (payload?.watchedThreads || []).map((item) => (
-              <article key={item.id} className="community-library-card is-watched">
+            : sortedWatched.map((item) => (
+              <article key={item.id} className={'community-library-card is-watched' + (item.newReplyCount ? ' has-new' : '')}>
                 <header>
                   <div>
                     <span>نقاش تتابعه</span>
                     <Link href={item.href}>{item.contextLabel}</Link>
                   </div>
-                  <time dateTime={item.watchedAt}>منذ {formatDate(item.watchedAt)}</time>
+                  <div className="community-thread-card__status">
+                    {item.newReplyCount > 0 ? (
+                      <b>{item.newReplyCount.toLocaleString('ar-EG')} رد جديد</b>
+                    ) : null}
+                    <time dateTime={item.latestReplyAt || item.watchedAt}>
+                      {item.latestReplyAt ? 'آخر رد ' + formatDate(item.latestReplyAt) : 'منذ ' + formatDate(item.watchedAt)}
+                    </time>
+                  </div>
                 </header>
                 <div className="community-library-card__author">
                   <strong>{item.authorName}</strong>
                   <Stars value={item.rating} />
                 </div>
                 <p>{item.body}</p>
+                <div className="community-thread-stats" aria-label="إحصاءات النقاش">
+                  <span><b>{item.replyCount.toLocaleString('ar-EG')}</b> رد</span>
+                  <span><b>{item.helpfulCount.toLocaleString('ar-EG')}</b> مفيد</span>
+                  {item.newReplyCount > 0 ? (
+                    <span className="is-new"><b>{item.newReplyCount.toLocaleString('ar-EG')}</b> غير مقروء</span>
+                  ) : (
+                    <span className="is-read">✓ محدث حتى آخر قراءة</span>
+                  )}
+                </div>
                 <footer>
-                  <Link href={item.href}>فتح النقاش ←</Link>
+                  <Link href={item.continueHref}>
+                    {item.lastSeenReplyId ? 'أكمل من آخر رد شفته ←' : 'فتح النقاش ←'}
+                  </Link>
                   <button
                     type="button"
                     onClick={() => void mutate('unwatch', 'review', item.reviewId)}
