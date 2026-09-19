@@ -192,7 +192,7 @@ export function CommunityLibraryPanel() {
         <div>
           <span>Community V2.8</span>
           <h2 id="community-library-title">محفوظات المجتمع</h2>
-          <p>احتفظ بالتقييمات والردود المهمة، وتابع النقاشات التي تريد الرجوع لها. كل هذه الاختيارات خاصة بحسابك فقط.</p>
+          <p>احتفظ بالمساهمات المهمة، وتابع النقاشات كصندوق وارد ذكي: الجديد فقط، موضع القراءة، والتحكم في الإشعارات — وكل ده خاص بحسابك.</p>
         </div>
         <div className="account-community-section-heading__actions">
           <span>{loading ? '…' : (savedCount + watchedCount).toLocaleString('ar-EG') + ' عنصر'}</span>
