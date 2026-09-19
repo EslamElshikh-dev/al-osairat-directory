@@ -34,6 +34,34 @@ grant update (last_seen_at, last_seen_reply_id)
 on table public.community_thread_watches
 to authenticated;
 
+drop policy if exists community_thread_watches_insert_own
+on public.community_thread_watches;
+
+create policy community_thread_watches_insert_own
+on public.community_thread_watches
+for insert
+to authenticated
+with check (
+  user_id = (select auth.uid())
+  and exists (
+    select 1
+    from public.content_reviews r
+    where r.id = community_thread_watches.review_id
+      and r.status = 'published'
+      and r.user_id <> (select auth.uid())
+  )
+  and (
+    last_seen_reply_id is null
+    or exists (
+      select 1
+      from public.content_review_replies rr
+      where rr.id = community_thread_watches.last_seen_reply_id
+        and rr.review_id = community_thread_watches.review_id
+        and rr.status = 'published'
+    )
+  )
+);
+
 drop policy if exists community_thread_watches_update_read_state
 on public.community_thread_watches;
 
