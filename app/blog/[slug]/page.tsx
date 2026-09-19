@@ -198,6 +198,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                       alt={section.media.alt}
                       fill
                       sizes="(max-width: 760px) 100vw, 760px"
+                      unoptimized={section.media.image.endsWith('.svg')}
                     />
                   </div>
                   <figcaption>
