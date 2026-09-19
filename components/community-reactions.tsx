@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { CommunityReportButton } from '@/components/community-report-button';
+import { CommunityLibraryActions } from '@/components/community-library-actions';
 import type {
   CommunityReactionSummary,
   CommunityReactionTarget,
@@ -94,6 +95,13 @@ export function CommunityReactions({
         </button>
       </div>
       <CommunityReportButton
+        targetType={targetType}
+        targetId={targetId}
+        authenticated={authenticated}
+        emailVerified={emailVerified}
+        own={own}
+      />
+      <CommunityLibraryActions
         targetType={targetType}
         targetId={targetId}
         authenticated={authenticated}

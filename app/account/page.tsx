@@ -19,6 +19,7 @@ export default function AccountPage() {
             <nav className="workspace-hero__links" aria-label="اختصارات حساب العضو">
               <a href="#account-profile">الملف الشخصي</a>
               <a href="#following-feed">أتابعهم</a>
+              <a href="#community-library">محفوظات المجتمع</a>
               <a href="#community-progress">مساهماتي</a>
               <a href="#business-submissions">إضافة نشاط</a>
               <a href="#ownership-claims">مطالبات الملكية</a>
