@@ -62,6 +62,20 @@ type ReplyRow = {
   updated_at: string;
 };
 
+type LibrarySavedItem = {
+  id: string;
+  targetType: 'review' | 'reply';
+  targetId: string;
+  reviewId: string;
+  authorName: string;
+  body: string;
+  rating: number | null;
+  contextLabel: string;
+  href: string;
+  contributionCreatedAt: string;
+  savedAt: string;
+};
+
 function headers(accessToken: string, json = false) {
   return {
     apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -276,7 +290,7 @@ export async function GET(request: Request) {
     const reviewIndex = new Map(reviews.map((row) => [row.id, row]));
     const replyIndex = new Map(savedReplies.map((row) => [row.id, row]));
 
-    const savedItems = savedRows.flatMap((saved) => {
+    const savedItems = savedRows.flatMap<LibrarySavedItem>((saved) => {
       if (saved.review_id) {
         const review = reviewIndex.get(saved.review_id);
         if (!review) return [];
