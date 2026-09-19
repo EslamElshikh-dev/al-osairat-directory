@@ -9,6 +9,7 @@ import { MemberReviews } from '@/components/member-reviews';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles, blogBySlug } from '@/lib/blog-published';
 import { getArticleJourney } from '@/lib/blog-navigation';
+import { blogSourceKindLabels, classifyBlogSource, summarizeBlogSources } from '@/lib/blog-source-trust';
 import { buildArticleMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
@@ -70,6 +71,8 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     ...(section.media?.sourceUrl ? [section.media.sourceUrl] : []),
   ]);
   const citations = [...new Set([...article.sources.map((source) => source.url), ...sectionSources])];
+  const sourceSummary = summarizeBlogSources(citations);
+  const sourceKinds = Object.entries(sourceSummary.counts).filter(([, count]) => count > 0).map(([kind]) => kind);
   const articleBody = [
     article.lead,
     article.highlight,
@@ -177,6 +180,24 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           </figure>
         </div>
       </header>
+
+      <section className="article-evidence shell" aria-label="بيانات مراجعة المقال">
+        <div className="article-evidence__item">
+          <span>آخر مراجعة</span>
+          <strong><time dateTime={article.updatedAt}>{formatDate(article.updatedAt)}</time></strong>
+        </div>
+        <div className="article-evidence__item">
+          <span>المراجع والروابط</span>
+          <strong>{sourceSummary.total.toLocaleString('ar-EG')} مرجعًا</strong>
+        </div>
+        <div className="article-evidence__item article-evidence__item--wide">
+          <span>أنواع المصادر</span>
+          <div className="article-evidence__chips">
+            {sourceKinds.map((kind) => <b key={kind}>{blogSourceKindLabels[kind as keyof typeof blogSourceKindLabels]}</b>)}
+          </div>
+        </div>
+        <p className="article-evidence__note">التصنيف يصف نوع المصدر فقط، ولا يعني أن كل معلومة فيه صحيحة تلقائيًا؛ لذلك تُقارن الروايات المحلية بالمصادر الأقوى متى توافرت.</p>
+      </section>
 
       <div className="shell article-layout">
         <aside className="article-toc" aria-label="محتويات المقال">
