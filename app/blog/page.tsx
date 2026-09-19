@@ -108,6 +108,34 @@ export default function BlogPage() {
         </div>
       </section>
 
+      <section className="section shell blog-start-here" aria-labelledby="blog-start-here-title">
+        <div className="blog-start-here__heading">
+          <span className="eyebrow eyebrow--dark">ابدأ من هنا</span>
+          <h2 id="blog-start-here-title">اختار الحكاية اللي تناسبك بدل ما تلف بين المقالات</h2>
+          <p>ثلاث مسارات قراءة بسيطة: افهم المكان، ارجع للتاريخ، أو ادخل مباشرة في الناس والعائلات.</p>
+        </div>
+        <div className="blog-start-here__grid">
+          <Link href="/blog/markaz-al-osairat" className="blog-start-card">
+            <span>01</span>
+            <small>لو أول مرة تقرأ عن المركز</small>
+            <strong>ابدأ بمركز العسيرات: القرى والسكان والخدمات</strong>
+            <p>يعطيك الصورة العامة أولًا، وبعدها أي مقال ثاني هيبقى أوضح.</p>
+          </Link>
+          <Link href="/blog/origin-name-al-osairat" className="blog-start-card">
+            <span>02</span>
+            <small>لو بتحب أصل الحكاية</small>
+            <strong>ابدأ باسم العسيرات وطوخ الجبل والروايات التاريخية</strong>
+            <p>مسار مناسب لو سؤالك الأول دائمًا: «طيب الاسم ده جه منين؟»</p>
+          </Link>
+          <Link href="/blog/famous-families-al-osairat" className="blog-start-card">
+            <span>03</span>
+            <small>لو داخل على الناس والذاكرة المحلية</small>
+            <strong>ابدأ بالعائلات ثم انتقل إلى الأعلام والشخصيات</strong>
+            <p>مع فرق واضح بين وجود الاسم في المصدر وبين إثبات النسب أو الأقدمية.</p>
+          </Link>
+        </div>
+      </section>
+
       <section className="shell seo-growth-hub seo-growth-hub--compact" aria-labelledby="blog-discovery-title">
         <div className="seo-growth-hub__heading">
           <span>استكشف مركز العسيرات</span>
