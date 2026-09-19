@@ -2,7 +2,13 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'إكمال تسجيل الدخول',
-  robots: { index: false, follow: false },
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nocache: true,
+    nosnippet: true,
+  },
 };
 
 export default function OAuthCallbackLayout({ children }: Readonly<{ children: React.ReactNode }>) {
