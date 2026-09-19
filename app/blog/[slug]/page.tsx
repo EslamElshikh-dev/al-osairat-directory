@@ -53,9 +53,10 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   const related = blogArticles.filter((item) => item.slug !== article.slug).slice(0, 3);
   const articleUrl = `${siteConfig.url}/blog/${article.slug}`;
   const faqGroup = `article-faq-${article.slug}`;
-  const sectionSources = article.sections.flatMap((section) => (
-    section.entries?.flatMap((entry) => entry.sourceUrl ? [entry.sourceUrl] : []) ?? []
-  ));
+  const sectionSources = article.sections.flatMap((section) => [
+    ...(section.entries?.flatMap((entry) => entry.sourceUrl ? [entry.sourceUrl] : []) ?? []),
+    ...(section.media?.sourceUrl ? [section.media.sourceUrl] : []),
+  ]);
   const citations = [...new Set([...article.sources.map((source) => source.url), ...sectionSources])];
   const articleBody = [
     article.lead,
@@ -189,6 +190,26 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             <section key={section.id} id={section.id} className="article-section">
               <h2>{section.heading}</h2>
               {section.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+              {section.media ? (
+                <figure className="article-section-media">
+                  <div className="article-section-media__image">
+                    <Image
+                      src={section.media.image}
+                      alt={section.media.alt}
+                      fill
+                      sizes="(max-width: 760px) 100vw, 760px"
+                    />
+                  </div>
+                  <figcaption>
+                    <span>{section.media.caption}</span>
+                    {section.media.sourceUrl && section.media.sourceLabel ? (
+                      <a href={section.media.sourceUrl} target="_blank" rel="noreferrer">
+                        {section.media.sourceLabel}<span aria-hidden="true">↗</span>
+                      </a>
+                    ) : null}
+                  </figcaption>
+                </figure>
+              ) : null}
               {section.bullets?.length ? (
                 <ul className="article-list">
                   {section.bullets.map((item) => <li key={item}>{item}</li>)}
