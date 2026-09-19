@@ -277,6 +277,93 @@ export async function getPublicCommunityActivityForUserIds(
     .slice(0, Math.max(1, Math.min(limit, 60)));
 }
 
+
+export type CommunityWeeklyPulse = {
+  contributionCount: number;
+  activeMemberCount: number;
+  helpfulCount: number;
+  topHelpful: CommunityActivityItem[];
+};
+
+function cairoDate(value: string | Date) {
+  const date = typeof value === 'string' ? new Date(value) : value;
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Africa/Cairo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+export async function getCommunityWeeklyPulse(): Promise<CommunityWeeklyPulse> {
+  const start = sevenDayStartLocal();
+  const visibleProfiles = await readVisibleProfiles();
+  if (!visibleProfiles.length) {
+    return { contributionCount: 0, activeMemberCount: 0, helpfulCount: 0, topHelpful: [] };
+  }
+
+  const userIds = visibleProfiles.map((profile) => profile.user_id);
+  const inUsers = 'in.(' + userIds.join(',') + ')';
+  const reviewQuery = new URLSearchParams({
+    select: 'id,user_id,created_at',
+    user_id: inUsers,
+    status: 'eq.published',
+    order: 'created_at.desc',
+    limit: '1000',
+  });
+  const replyQuery = new URLSearchParams({
+    select: 'id,user_id,created_at',
+    user_id: inUsers,
+    status: 'eq.published',
+    order: 'created_at.desc',
+    limit: '1000',
+  });
+  const dailyQuery = new URLSearchParams({
+    select: 'helpful_count',
+    activity_date: 'gte.' + start,
+    limit: '2000',
+  });
+
+  const [items, reviews, replies, dailyRows] = await Promise.all([
+    getPublicCommunityActivity(60),
+    fetchSupabasePublicJson<Array<{ id: string; user_id: string; created_at: string }>>(
+      SUPABASE_URL + '/rest/v1/content_reviews?' + reviewQuery.toString(),
+      { headers: publicHeaders(), cache: 'no-store' },
+    ),
+    fetchSupabasePublicJson<Array<{ id: string; user_id: string; created_at: string }>>(
+      SUPABASE_URL + '/rest/v1/content_review_replies?' + replyQuery.toString(),
+      { headers: publicHeaders(), cache: 'no-store' },
+    ),
+    fetchSupabasePublicJson<Array<{ helpful_count: number | string }>>(
+      SUPABASE_URL + '/rest/v1/community_reaction_daily_totals?' + dailyQuery.toString(),
+      { headers: publicHeaders(), cache: 'no-store' },
+    ),
+  ]);
+
+  const recentRows = [...(reviews || []), ...(replies || [])]
+    .filter((row) => cairoDate(row.created_at) >= start);
+  const authors = new Set(recentRows.map((row) => row.user_id));
+  const helpfulCount = (dailyRows || []).reduce(
+    (sum, row) => sum + Math.max(0, Number(row.helpful_count || 0)),
+    0,
+  );
+  const topHelpful = items
+    .filter((item) => item.weeklyHelpfulCount > 0)
+    .sort((a, b) =>
+      b.weeklyHelpfulCount - a.weeklyHelpfulCount
+      || b.reactions.helpfulCount - a.reactions.helpfulCount
+      || Date.parse(b.createdAt) - Date.parse(a.createdAt),
+    )
+    .slice(0, 3);
+
+  return {
+    contributionCount: recentRows.length,
+    activeMemberCount: authors.size,
+    helpfulCount,
+    topHelpful,
+  };
+}
+
 export async function getPublicCommunityActivity(limit = 36): Promise<CommunityActivityItem[]> {
   const visibleProfiles = await readVisibleProfiles();
   if (!visibleProfiles.length) return [];

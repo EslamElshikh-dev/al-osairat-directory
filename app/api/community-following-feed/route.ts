@@ -9,8 +9,10 @@ import {
   getUser,
   mapMember,
   refreshSession,
+  sameOrigin,
 } from '@/lib/auth/supabase-rest';
 import { getPublicCommunityActivityForUserIds } from '@/lib/community-activity';
+import { getSuggestedPublicMembers } from '@/lib/community-profiles';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -25,11 +27,16 @@ type FollowRow = {
   followed_user_id: string;
 };
 
-function restHeaders(accessToken: string) {
+type FeedStateRow = {
+  last_seen_at: string | null;
+};
+
+function restHeaders(accessToken: string, json = false) {
   return {
     apikey: SUPABASE_PUBLISHABLE_KEY,
     Authorization: 'Bearer ' + accessToken,
     Accept: 'application/json',
+    ...(json ? { 'Content-Type': 'application/json' } : {}),
   };
 }
 
@@ -83,7 +90,14 @@ function respond(payload: unknown, session: ResolvedSession | null, status = 200
 export async function GET(request: Request) {
   const session = await resolveSession();
   if (!session) {
-    return NextResponse.json({ authenticated: false, items: [], followingCount: 0 }, { status: 401 });
+    return NextResponse.json({
+      authenticated: false,
+      items: [],
+      followingCount: 0,
+      newCount: 0,
+      lastSeenAt: null,
+      suggestions: [],
+    }, { status: 401 });
   }
 
   const requestedLimit = Number(new URL(request.url).searchParams.get('limit') || 30);
@@ -92,30 +106,96 @@ export async function GET(request: Request) {
     : 30;
 
   try {
-    const query = new URLSearchParams({
+    const followQuery = new URLSearchParams({
       select: 'followed_user_id',
       follower_id: 'eq.' + session.userId,
       order: 'created_at.desc',
       limit: '100',
     });
-    const response = await fetch(
-      SUPABASE_URL + '/rest/v1/community_member_follows?' + query.toString(),
-      { headers: restHeaders(session.accessToken), cache: 'no-store' },
-    );
-    if (!response.ok) throw new Error('FOLLOWING_READ_FAILED');
+    const stateQuery = new URLSearchParams({
+      select: 'last_seen_at',
+      user_id: 'eq.' + session.userId,
+      limit: '1',
+    });
 
-    const rows = await response.json() as FollowRow[];
+    const [followResponse, stateResponse] = await Promise.all([
+      fetch(
+        SUPABASE_URL + '/rest/v1/community_member_follows?' + followQuery.toString(),
+        { headers: restHeaders(session.accessToken), cache: 'no-store' },
+      ),
+      fetch(
+        SUPABASE_URL + '/rest/v1/community_feed_state?' + stateQuery.toString(),
+        { headers: restHeaders(session.accessToken), cache: 'no-store' },
+      ),
+    ]);
+    if (!followResponse.ok || !stateResponse.ok) throw new Error('FOLLOWING_READ_FAILED');
+
+    const rows = await followResponse.json() as FollowRow[];
+    const states = await stateResponse.json() as FeedStateRow[];
     const followedUserIds = [...new Set(rows.map((row) => row.followed_user_id).filter(Boolean))];
-    const items = followedUserIds.length
-      ? await getPublicCommunityActivityForUserIds(followedUserIds, limit)
-      : [];
+    const lastSeenAt = states[0]?.last_seen_at || null;
+
+    const [items, suggestions] = await Promise.all([
+      followedUserIds.length
+        ? getPublicCommunityActivityForUserIds(followedUserIds, limit)
+        : Promise.resolve([]),
+      getSuggestedPublicMembers([session.userId, ...followedUserIds], 4),
+    ]);
+
+    const newCount = lastSeenAt
+      ? items.filter((item) => Date.parse(item.createdAt) > Date.parse(lastSeenAt)).length
+      : items.length;
 
     return respond({
       authenticated: true,
       followingCount: followedUserIds.length,
+      newCount,
+      lastSeenAt,
       items,
+      suggestions,
     }, session);
   } catch {
     return respond({ error: 'تعذر تحميل نشاط الأعضاء الذين تتابعهم الآن.' }, session, 500);
+  }
+}
+
+export async function POST(request: Request) {
+  if (!sameOrigin(request)) {
+    return NextResponse.json({ error: 'طلب غير مسموح.' }, { status: 403 });
+  }
+
+  const session = await resolveSession();
+  if (!session) {
+    return NextResponse.json({ error: 'يلزم تسجيل الدخول أولًا.' }, { status: 401 });
+  }
+
+  const body = await request.json().catch(() => ({})) as { action?: unknown };
+  if (body.action !== 'mark_seen') {
+    return respond({ error: 'إجراء غير صحيح.' }, session, 400);
+  }
+
+  const now = new Date().toISOString();
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + '/rest/v1/community_feed_state?on_conflict=user_id',
+      {
+        method: 'POST',
+        headers: {
+          ...restHeaders(session.accessToken, true),
+          Prefer: 'resolution=merge-duplicates,return=representation',
+        },
+        body: JSON.stringify({
+          user_id: session.userId,
+          last_seen_at: now,
+        }),
+        cache: 'no-store',
+      },
+    );
+    if (!response.ok) throw new Error('FOLLOWING_MARK_SEEN_FAILED');
+
+    return respond({ saved: true, lastSeenAt: now, newCount: 0 }, session);
+  } catch {
+    return respond({ error: 'تعذر تحديث حالة Feed الآن.' }, session, 500);
   }
 }
