@@ -35,7 +35,21 @@ type SavedRow = {
 type WatchRow = {
   id: string;
   review_id: string;
+  last_seen_at: string | null;
+  last_seen_reply_id: string | null;
   created_at: string;
+};
+
+type ThreadReplyRow = {
+  id: string;
+  review_id: string;
+  created_at: string;
+};
+
+type ReactionTotalRow = {
+  target_type: 'review' | 'reply';
+  target_id: string;
+  helpful_count: number | string;
 };
 
 type ReviewRow = {
@@ -158,6 +172,19 @@ function contributionHref(review: Pick<ReviewRow, 'id' | 'target_type' | 'target
     : '/blog/' + encodeURIComponent(review.target_key) + '#review-' + review.id;
 }
 
+function discussionHref(
+  review: Pick<ReviewRow, 'id' | 'target_type' | 'target_key'>,
+  continueReplyId?: string | null,
+) {
+  const href = contributionHref(review);
+  const hashIndex = href.indexOf('#');
+  const path = hashIndex >= 0 ? href.slice(0, hashIndex) : href;
+  const hash = hashIndex >= 0 ? href.slice(hashIndex) : '';
+  const params = new URLSearchParams({ discussion: review.id });
+  if (continueReplyId) params.set('continueReply', continueReplyId);
+  return path + '?' + params.toString() + hash;
+}
+
 async function readPublishedReview(reviewId: string, accessToken: string) {
   const rows = await readRows<ReviewRow>(
     'content_reviews?select=id,user_id,target_type,target_key,rating,body,author_name,status,created_at,updated_at'
@@ -196,7 +223,7 @@ async function targetState(
     ),
     targetType === 'review'
       ? readRows<WatchRow>(
-        'community_thread_watches?select=id,review_id,created_at'
+        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,created_at'
         + '&user_id=eq.' + encodeURIComponent(session.userId)
         + '&review_id=eq.' + encodeURIComponent(targetId)
         + '&limit=1',
@@ -254,7 +281,7 @@ export async function GET(request: Request) {
         session.accessToken,
       ),
       readRows<WatchRow>(
-        'community_thread_watches?select=id,review_id,created_at'
+        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,created_at'
         + '&user_id=eq.' + encodeURIComponent(session.userId)
         + '&order=created_at.desc&limit=60',
         session.accessToken,
@@ -289,6 +316,42 @@ export async function GET(request: Request) {
 
     const reviewIndex = new Map(reviews.map((row) => [row.id, row]));
     const replyIndex = new Map(savedReplies.map((row) => [row.id, row]));
+
+    const threadReplies = watchReviewIds.length
+      ? await readRows<ThreadReplyRow>(
+        'content_review_replies?select=id,review_id,created_at'
+        + '&review_id=in.(' + watchReviewIds.join(',') + ')'
+        + '&status=eq.published&order=created_at.asc&limit=1000',
+        session.accessToken,
+      )
+      : [];
+
+    const reactionIds = [...new Set([
+      ...watchReviewIds,
+      ...threadReplies.map((row) => row.id),
+    ])];
+    const reactionTotals = reactionIds.length
+      ? await readRows<ReactionTotalRow>(
+        'community_reaction_totals?select=target_type,target_id,helpful_count'
+        + '&target_id=in.(' + reactionIds.join(',') + ')'
+        + '&limit=' + Math.min(2000, reactionIds.length * 2),
+        session.accessToken,
+      )
+      : [];
+
+    const repliesByReview = new Map<string, ThreadReplyRow[]>();
+    for (const reply of threadReplies) {
+      const current = repliesByReview.get(reply.review_id) || [];
+      current.push(reply);
+      repliesByReview.set(reply.review_id, current);
+    }
+
+    const helpfulByTarget = new Map(
+      reactionTotals.map((row) => [
+        row.target_type + ':' + row.target_id,
+        Math.max(0, Number(row.helpful_count || 0)),
+      ]),
+    );
 
     const savedItems = savedRows.flatMap<LibrarySavedItem>((saved) => {
       if (saved.review_id) {
@@ -334,6 +397,21 @@ export async function GET(request: Request) {
     const watchedThreads = watchRows.flatMap((watch) => {
       const review = reviewIndex.get(watch.review_id);
       if (!review) return [];
+
+      const replies = repliesByReview.get(review.id) || [];
+      const lastSeenAt = watch.last_seen_at || watch.created_at;
+      const replyCount = replies.length;
+      const latestReplyAt = replies.length ? replies[replies.length - 1].created_at : null;
+      const newReplyCount = replies.filter(
+        (reply) => Date.parse(reply.created_at) > Date.parse(lastSeenAt),
+      ).length;
+      const helpfulCount = (
+        helpfulByTarget.get('review:' + review.id) || 0
+      ) + replies.reduce(
+        (sum, reply) => sum + (helpfulByTarget.get('reply:' + reply.id) || 0),
+        0,
+      );
+
       return [{
         id: watch.id,
         reviewId: review.id,
@@ -342,8 +420,15 @@ export async function GET(request: Request) {
         rating: Number(review.rating),
         contextLabel: contextLabel(review),
         href: contributionHref(review),
+        continueHref: discussionHref(review, watch.last_seen_reply_id),
         contributionCreatedAt: review.created_at,
         watchedAt: watch.created_at,
+        lastSeenAt,
+        lastSeenReplyId: watch.last_seen_reply_id,
+        latestReplyAt,
+        replyCount,
+        helpfulCount,
+        newReplyCount,
       }];
     });
 
@@ -352,6 +437,10 @@ export async function GET(request: Request) {
       emailVerified: session.emailVerified,
       savedItems,
       watchedThreads,
+      watchedNewReplyCount: watchedThreads.reduce(
+        (sum, thread) => sum + thread.newReplyCount,
+        0,
+      ),
     }, session);
   } catch {
     return respond({ error: 'تعذر تحميل محفوظات المجتمع الآن.' }, session, 500);
@@ -375,6 +464,7 @@ export async function POST(request: Request) {
     action?: unknown;
     targetType?: unknown;
     targetId?: unknown;
+    lastSeenReplyId?: unknown;
   };
   const action = typeof body.action === 'string' ? body.action : '';
   const targetType = body.targetType === 'review' || body.targetType === 'reply'
@@ -382,12 +472,12 @@ export async function POST(request: Request) {
     : '';
   const targetId = typeof body.targetId === 'string' ? body.targetId.trim() : '';
 
-  if (!['save', 'unsave', 'watch', 'unwatch'].includes(action)
+  if (!['save', 'unsave', 'watch', 'unwatch', 'mark_seen'].includes(action)
       || !targetType
       || !UUID_PATTERN.test(targetId)) {
     return respond({ error: 'بيانات الإجراء غير صحيحة.' }, session, 400);
   }
-  if ((action === 'watch' || action === 'unwatch') && targetType !== 'review') {
+  if ((action === 'watch' || action === 'unwatch' || action === 'mark_seen') && targetType !== 'review') {
     return respond({ error: 'متابعة النقاش متاحة للتقييمات فقط.' }, session, 400);
   }
 
@@ -438,6 +528,14 @@ export async function POST(request: Request) {
         return respond({ error: 'أنت صاحب التقييم وستصلك الردود تلقائيًا.' }, session, 400);
       }
 
+      const latestReplies = await readRows<ThreadReplyRow>(
+        'content_review_replies?select=id,review_id,created_at'
+        + '&review_id=eq.' + encodeURIComponent(targetId)
+        + '&status=eq.published&order=created_at.desc&limit=1',
+        session.accessToken,
+      );
+      const latestReply = latestReplies[0] || null;
+
       const response = await fetch(SUPABASE_URL + '/rest/v1/community_thread_watches', {
         method: 'POST',
         headers: {
@@ -447,6 +545,8 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           user_id: session.userId,
           review_id: targetId,
+          last_seen_at: latestReply?.created_at || new Date().toISOString(),
+          last_seen_reply_id: latestReply?.id || null,
         }),
         cache: 'no-store',
       });
@@ -468,6 +568,44 @@ export async function POST(request: Request) {
         },
       );
       if (!response.ok) throw new Error('UNWATCH_FAILED');
+    }
+
+    if (action === 'mark_seen') {
+      const requestedReplyId = typeof body.lastSeenReplyId === 'string'
+        ? body.lastSeenReplyId.trim()
+        : '';
+      let seenReply: ReplyRow | null = null;
+
+      if (requestedReplyId) {
+        if (!UUID_PATTERN.test(requestedReplyId)) {
+          return respond({ error: 'موضع القراءة غير صالح.' }, session, 400);
+        }
+        seenReply = await readPublishedReply(requestedReplyId, session.accessToken);
+        if (!seenReply || seenReply.review_id !== targetId) {
+          return respond({ error: 'موضع القراءة لا ينتمي لهذا النقاش.' }, session, 400);
+        }
+      }
+
+      const query = new URLSearchParams({
+        user_id: 'eq.' + session.userId,
+        review_id: 'eq.' + targetId,
+      });
+      const response = await fetch(
+        SUPABASE_URL + '/rest/v1/community_thread_watches?' + query.toString(),
+        {
+          method: 'PATCH',
+          headers: {
+            ...headers(session.accessToken, true),
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({
+            last_seen_at: seenReply?.created_at || new Date().toISOString(),
+            last_seen_reply_id: seenReply?.id || null,
+          }),
+          cache: 'no-store',
+        },
+      );
+      if (!response.ok) throw new Error('WATCH_MARK_SEEN_FAILED');
     }
 
     const state = await targetState(session, targetType, targetId);
