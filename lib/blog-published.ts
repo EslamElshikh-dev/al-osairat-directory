@@ -1,5 +1,6 @@
 import { blogArticles as baseBlogArticles, type BlogArticle } from './blog';
 import { expandedFamilyArticle } from './family-article';
+import { refreshBlogArticle } from './blog-refresh';
 
 const famousPeopleArticle = (article: BlogArticle): BlogArticle => ({
   ...article,
@@ -28,9 +29,13 @@ const famousPeopleArticle = (article: BlogArticle): BlogArticle => ({
 });
 
 export const blogArticles: BlogArticle[] = baseBlogArticles.map((article) => {
-  if (article.slug === 'famous-families-al-osairat') return expandedFamilyArticle(article);
-  if (article.slug === 'al-osairat-famous-people') return famousPeopleArticle(article);
-  return article;
+  const expanded = article.slug === 'famous-families-al-osairat'
+    ? expandedFamilyArticle(article)
+    : article.slug === 'al-osairat-famous-people'
+      ? famousPeopleArticle(article)
+      : article;
+
+  return refreshBlogArticle(expanded);
 });
 
 export const blogBySlug = Object.fromEntries(

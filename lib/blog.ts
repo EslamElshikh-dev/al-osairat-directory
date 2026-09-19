@@ -16,12 +16,21 @@ export type BlogEntry = {
   sourceUrl?: string;
 };
 
+export type BlogSectionMedia = {
+  image: string;
+  alt: string;
+  caption: string;
+  sourceLabel?: string;
+  sourceUrl?: string;
+};
+
 export type BlogSection = {
   id: string;
   heading: string;
   paragraphs: string[];
   bullets?: string[];
   entries?: BlogEntry[];
+  media?: BlogSectionMedia;
 };
 
 export type BlogArticle = {
