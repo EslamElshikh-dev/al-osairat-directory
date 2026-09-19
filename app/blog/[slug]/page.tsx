@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import { Fragment } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArticleReadingProgress } from '@/components/article-reading-progress';
 import { BlogCard } from '@/components/blog-card';
 import { MemberReviews } from '@/components/member-reviews';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles, blogBySlug } from '@/lib/blog-published';
+import { getArticleJourney } from '@/lib/blog-navigation';
 import { buildArticleMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
@@ -50,7 +53,16 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   const article = blogBySlug[slug];
   if (!article) notFound();
 
-  const related = blogArticles.filter((item) => item.slug !== article.slug).slice(0, 3);
+  const journey = getArticleJourney(article.slug);
+  const related = journey.relatedSlugs
+    .map((relatedSlug) => blogBySlug[relatedSlug])
+    .filter((item): item is (typeof blogArticles)[number] => Boolean(item))
+    .slice(0, 3);
+  const articleIndex = blogArticles.findIndex((item) => item.slug === article.slug);
+  const previousArticle = articleIndex > 0 ? blogArticles[articleIndex - 1] : null;
+  const nextArticle = articleIndex >= 0 && articleIndex < blogArticles.length - 1
+    ? blogArticles[articleIndex + 1]
+    : null;
   const articleUrl = `${siteConfig.url}/blog/${article.slug}`;
   const faqGroup = `article-faq-${article.slug}`;
   const sectionSources = article.sections.flatMap((section) => [
@@ -134,6 +146,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
   return (
     <main id="main-content" className="article-page">
+      <ArticleReadingProgress />
       <header className="article-hero">
         <div className="shell article-hero__shell article-hero__shell--visual">
           <div className="article-hero__copy">
@@ -186,53 +199,70 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             <div><strong>الخلاصة السريعة</strong><p>{article.highlight}</p></div>
           </div>
 
-          {article.sections.map((section) => (
-            <section key={section.id} id={section.id} className="article-section">
-              <h2>{section.heading}</h2>
-              {section.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-              {section.media ? (
-                <figure className="article-section-media">
-                  <div className="article-section-media__image">
-                    <Image
-                      src={section.media.image}
-                      alt={section.media.alt}
-                      fill
-                      sizes="(max-width: 760px) 100vw, 760px"
-                      unoptimized={section.media.image.endsWith('.svg')}
-                    />
-                  </div>
-                  <figcaption>
-                    <span>{section.media.caption}</span>
-                    {section.media.sourceUrl && section.media.sourceLabel ? (
-                      <a href={section.media.sourceUrl} target="_blank" rel="noreferrer">
-                        {section.media.sourceLabel}<span aria-hidden="true">↗</span>
-                      </a>
-                    ) : null}
-                  </figcaption>
-                </figure>
-              ) : null}
-              {section.bullets?.length ? (
-                <ul className="article-list">
-                  {section.bullets.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-              ) : null}
-              {section.entries?.length ? (
-                <div className="article-entry-grid">
-                  {section.entries.map((entry) => (
-                    <div key={entry.name} className="article-entry">
-                      <h3>{entry.name}</h3>
-                      <p>{entry.description}</p>
-                      {entry.sourceUrl && entry.sourceLabel ? (
-                        <a href={entry.sourceUrl} target="_blank" rel="noreferrer">
-                          {entry.sourceLabel}<span aria-hidden="true">↗</span>
-                        </a>
-                      ) : null}
+          {article.sections.map((section) => {
+            const journeyLink = journey.links.find((item) => item.afterSectionId === section.id);
+
+            return (
+              <Fragment key={section.id}>
+                <section id={section.id} className="article-section">
+                  <h2>{section.heading}</h2>
+                  {section.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+                  {section.media ? (
+                    <figure className="article-section-media">
+                      <div className="article-section-media__image">
+                        <Image
+                          src={section.media.image}
+                          alt={section.media.alt}
+                          fill
+                          sizes="(max-width: 760px) 100vw, 760px"
+                          unoptimized={section.media.image.endsWith('.svg')}
+                        />
+                      </div>
+                      <figcaption>
+                        <span>{section.media.caption}</span>
+                        {section.media.sourceUrl && section.media.sourceLabel ? (
+                          <a href={section.media.sourceUrl} target="_blank" rel="noreferrer">
+                            {section.media.sourceLabel}<span aria-hidden="true">↗</span>
+                          </a>
+                        ) : null}
+                      </figcaption>
+                    </figure>
+                  ) : null}
+                  {section.bullets?.length ? (
+                    <ul className="article-list">
+                      {section.bullets.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  ) : null}
+                  {section.entries?.length ? (
+                    <div className="article-entry-grid">
+                      {section.entries.map((entry) => (
+                        <div key={entry.name} className="article-entry">
+                          <h3>{entry.name}</h3>
+                          <p>{entry.description}</p>
+                          {entry.sourceUrl && entry.sourceLabel ? (
+                            <a href={entry.sourceUrl} target="_blank" rel="noreferrer">
+                              {entry.sourceLabel}<span aria-hidden="true">↗</span>
+                            </a>
+                          ) : null}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              ) : null}
-            </section>
-          ))}
+                  ) : null}
+                </section>
+
+                {journeyLink ? (
+                  <aside className="article-journey" aria-label="قراءة مرتبطة">
+                    <div>
+                      <span>{journeyLink.eyebrow}</span>
+                      <strong>{journeyLink.title}</strong>
+                      <p>{journeyLink.description}</p>
+                    </div>
+                    <Link href={journeyLink.href}>{journeyLink.label}<span aria-hidden="true">←</span></Link>
+                  </aside>
+                ) : null}
+              </Fragment>
+            );
+          })}
 
           <section id="faq" className="article-section article-faq" aria-labelledby="article-faq-title">
             <span className="eyebrow eyebrow--dark">أسئلة شائعة</span>
@@ -288,6 +318,23 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
               <Link href="/villages" className="button button--outline-light">قرى العسيرات</Link>
             </div>
           </div>
+
+          {(previousArticle || nextArticle) ? (
+            <nav className="article-sequence" aria-label="التنقل بين مقالات الموسوعة">
+              {previousArticle ? (
+                <Link href={`/blog/${previousArticle.slug}`} className="article-sequence__item">
+                  <span>المقال السابق</span>
+                  <strong>{previousArticle.title}</strong>
+                </Link>
+              ) : <span />}
+              {nextArticle ? (
+                <Link href={`/blog/${nextArticle.slug}`} className="article-sequence__item article-sequence__item--next">
+                  <span>المقال التالي</span>
+                  <strong>{nextArticle.title}</strong>
+                </Link>
+              ) : null}
+            </nav>
+          ) : null}
         </article>
       </div>
 
