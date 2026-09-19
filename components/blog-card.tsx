@@ -4,6 +4,12 @@ import type { BlogArticle } from '@/lib/blog';
 import { blogBySlug } from '@/lib/blog-published';
 import { BrandMark } from './site-shell';
 
+const formatUpdatedDate = (value: string) => new Intl.DateTimeFormat('ar-EG', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+}).format(new Date(`${value}T00:00:00Z`));
+
 export function BlogCard({ article, featured = false }: { article: BlogArticle; featured?: boolean }) {
   const publishedArticle = blogBySlug[article.slug] ?? article;
 
@@ -21,6 +27,14 @@ export function BlogCard({ article, featured = false }: { article: BlogArticle; 
           <span>{publishedArticle.eyebrow}</span>
           <span aria-hidden="true">•</span>
           <span>{publishedArticle.readingTime}</span>
+          {publishedArticle.updatedAt !== publishedArticle.publishedAt ? (
+            <>
+              <span aria-hidden="true">•</span>
+              <time className="blog-card__updated" dateTime={publishedArticle.updatedAt}>
+                محدّث {formatUpdatedDate(publishedArticle.updatedAt)}
+              </time>
+            </>
+          ) : null}
         </div>
         <h3><Link href={`/blog/${publishedArticle.slug}`}>{publishedArticle.title}</Link></h3>
         <p>{publishedArticle.description}</p>
