@@ -200,6 +200,26 @@ function mapProfile(row: ProfileRow): PublicMemberProfile {
   };
 }
 
+export async function getPublicMemberSlugsForSitemap(): Promise<string[]> {
+  const params = new URLSearchParams({
+    select: 'slug',
+    is_public: 'eq.true',
+    order: 'joined_at.asc',
+    limit: '500',
+  });
+  const rows = await fetchSupabasePublicJson<Array<{ slug: string }>>(
+    SUPABASE_URL + '/rest/v1/member_public_profiles?' + params.toString(),
+    {
+      headers: publicHeaders(),
+      next: { revalidate: 300 },
+    },
+  );
+
+  return (rows || [])
+    .map((row) => row.slug)
+    .filter(validSlug);
+}
+
 export async function getPublicMembers(): Promise<PublicMemberDirectoryEntry[]> {
   const params = new URLSearchParams({
     select: 'user_id,slug,display_name,avatar_url,bio,village,locality,show_location,joined_at',

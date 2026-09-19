@@ -74,6 +74,8 @@ export function DirectoryExplorer({
                   destination,
                 })}
                 aria-current={vehicle === item.value ? 'true' : undefined}
+                prefetch={false}
+                rel="nofollow"
               >
                 {item.label}
               </Link>
@@ -92,6 +94,8 @@ export function DirectoryExplorer({
                   destination: item.value,
                 })}
                 aria-current={destination === item.value ? 'true' : undefined}
+                prefetch={false}
+                rel="nofollow"
               >
                 {item.label}
               </Link>

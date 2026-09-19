@@ -79,13 +79,24 @@ export async function generateMetadata({
     : baseDescription;
   const pathname = `/directory/${info.id}`;
 
-  return buildPageMetadata({
+  const metadata = buildPageMetadata({
     title,
     description,
     path: pathname,
     noIndex: hasFilters || page > 1,
     imageAlt: `${info.shortLabel} في دليل العسيرات`,
   });
+
+  if (transportFilterActive) {
+    metadata.robots = {
+      index: false,
+      follow: false,
+      noarchive: true,
+      nocache: true,
+    };
+  }
+
+  return metadata;
 }
 
 // Keep remote public overlays fresh without forcing every visitor to open new upstream connections.

@@ -1,0 +1,8 @@
+.account-trigger{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:5px 11px 5px 13px;border:1px solid rgba(16,42,36,.1);border-radius:14px;color:var(--green-900);background:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.92);font-size:12px;font-weight:900;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.account-trigger:hover{transform:translateY(-1px);border-color:rgba(215,168,60,.42);box-shadow:0 8px 22px rgba(16,42,36,.08)}
+.account-trigger__icon{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;color:#fff;background:linear-gradient(145deg,var(--green-900),var(--green-800));box-shadow:0 5px 14px rgba(16,42,36,.16)}
+.account-trigger__icon svg{width:18px;height:18px}
+.account-trigger__icon b{font-size:14px}
+.account-trigger.is-signed-in .account-trigger__icon{background:linear-gradient(145deg,#d7a83c,#b9851d);color:#173a31}
+.account-trigger__icon.has-photo{overflow:hidden;padding:0;background:#fff!important;box-shadow:0 5px 14px rgba(16,42,36,.14)}
+.account-trigger__icon.has-photo img{width:100%;height:100%;display:block;object-fit:cover}

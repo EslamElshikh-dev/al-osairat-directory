@@ -1,4 +1,9 @@
 import type { Metadata } from 'next';
+import '../auth.css';
+import '../account-upgrade.css';
+import '../notifications.css';
+import '../community-profiles.css';
+import '../community-v28.css';
 import '../password-strength.css';
 import '../auth-security-ux.css';
 import '../auth-google.css';
