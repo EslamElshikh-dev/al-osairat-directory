@@ -26,10 +26,12 @@ type WatchedThread = {
   contextLabel: string;
   href: string;
   continueHref: string;
+  firstUnreadHref: string;
   contributionCreatedAt: string;
   watchedAt: string;
   lastSeenAt: string;
   lastSeenReplyId: string | null;
+  notificationsMuted: boolean;
   latestReplyAt: string | null;
   replyCount: number;
   helpfulCount: number;
@@ -74,7 +76,9 @@ export function CommunityLibraryPanel() {
   const [payload, setPayload] = useState<Payload | null>(null);
   const [tab, setTab] = useState<Tab>('saved');
   const [discussionSort, setDiscussionSort] = useState<DiscussionSort>('latest');
+  const [onlyUnread, setOnlyUnread] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [bulkSaving, setBulkSaving] = useState(false);
   const [savingKey, setSavingKey] = useState('');
   const [error, setError] = useState('');
 
@@ -105,7 +109,7 @@ export function CommunityLibraryPanel() {
   }, [load]);
 
   async function mutate(
-    action: 'unsave' | 'unwatch',
+    action: 'unsave' | 'unwatch' | 'mute' | 'unmute',
     targetType: 'review' | 'reply',
     targetId: string,
   ) {
@@ -133,12 +137,37 @@ export function CommunityLibraryPanel() {
     }
   }
 
+  async function markAllSeen() {
+    if (bulkSaving || !watchedNewReplyCount) return;
+    setBulkSaving(true);
+    setError('');
+    try {
+      const response = await fetch('/api/community-library', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'mark_all_seen' }),
+      });
+      const data = await response.json().catch(() => ({})) as { error?: string };
+      if (!response.ok) throw new Error(data.error || 'تعذر تحديث حالة النقاشات.');
+      await load(true);
+      window.dispatchEvent(new CustomEvent('community:library-changed', {
+        detail: { readStateChanged: true, allSeen: true },
+      }));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'تعذر تحديث حالة النقاشات.');
+    } finally {
+      setBulkSaving(false);
+    }
+  }
+
   const savedCount = payload?.savedItems.length || 0;
   const watchedCount = payload?.watchedThreads.length || 0;
   const watchedNewReplyCount = payload?.watchedNewReplyCount
     ?? (payload?.watchedThreads || []).reduce((sum, item) => sum + item.newReplyCount, 0);
   const sortedWatched = useMemo(() => {
-    const items = [...(payload?.watchedThreads || [])];
+    const items = [...(payload?.watchedThreads || [])]
+      .filter((item) => !onlyUnread || item.newReplyCount > 0);
     return items.sort((a, b) => {
       if (discussionSort === 'replies') {
         return b.replyCount - a.replyCount
@@ -154,19 +183,24 @@ export function CommunityLibraryPanel() {
       return Date.parse(b.latestReplyAt || b.contributionCreatedAt)
         - Date.parse(a.latestReplyAt || a.contributionCreatedAt);
     });
-  }, [discussionSort, payload]);
+  }, [discussionSort, onlyUnread, payload]);
   const activeItems = tab === 'saved' ? (payload?.savedItems || []) : sortedWatched;
 
   return (
     <section className="account-community-library" aria-labelledby="community-library-title">
       <div className="account-community-section-heading">
         <div>
-          <span>Community V2.7</span>
+          <span>Community V2.8</span>
           <h2 id="community-library-title">محفوظات المجتمع</h2>
           <p>احتفظ بالتقييمات والردود المهمة، وتابع النقاشات التي تريد الرجوع لها. كل هذه الاختيارات خاصة بحسابك فقط.</p>
         </div>
         <div className="account-community-section-heading__actions">
           <span>{loading ? '…' : (savedCount + watchedCount).toLocaleString('ar-EG') + ' عنصر'}</span>
+          {watchedNewReplyCount > 0 ? (
+            <span className="community-inbox-unread-total">
+              {watchedNewReplyCount.toLocaleString('ar-EG')} رد جديد
+            </span>
+          ) : null}
           <button type="button" onClick={() => void load()} disabled={loading}>
             {loading ? 'جارٍ التحديث…' : 'تحديث'}
           </button>
@@ -221,6 +255,25 @@ export function CommunityLibraryPanel() {
           >
             الأكثر فائدة
           </button>
+          <span className="community-thread-sort__divider" aria-hidden="true" />
+          <button
+            type="button"
+            className={onlyUnread ? 'is-active is-unread' : ''}
+            onClick={() => setOnlyUnread((value) => !value)}
+            aria-pressed={onlyUnread}
+          >
+            غير المقروء فقط
+          </button>
+          {watchedNewReplyCount > 0 ? (
+            <button
+              type="button"
+              className="community-thread-sort__mark-all"
+              onClick={() => void markAllSeen()}
+              disabled={bulkSaving}
+            >
+              {bulkSaving ? 'جارٍ التحديث…' : 'اعتبار الكل مقروء'}
+            </button>
+          ) : null}
         </div>
       ) : null}
 
@@ -287,17 +340,38 @@ export function CommunityLibraryPanel() {
                     <span className="is-read">✓ محدث حتى آخر قراءة</span>
                   )}
                 </div>
-                <footer>
-                  <Link href={item.continueHref}>
-                    {item.lastSeenReplyId ? 'أكمل من آخر رد شفته ←' : 'فتح النقاش ←'}
+                <footer className="community-thread-card__footer">
+                  <Link href={item.newReplyCount > 0 ? item.firstUnreadHref : item.continueHref}>
+                    {item.newReplyCount > 0
+                      ? 'اذهب لأول رد جديد ←'
+                      : item.lastSeenReplyId
+                        ? 'أكمل من آخر رد شفته ←'
+                        : 'فتح النقاش ←'}
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => void mutate('unwatch', 'review', item.reviewId)}
-                    disabled={Boolean(savingKey)}
-                  >
-                    {savingKey === 'unwatch:' + item.reviewId ? 'جارٍ الإلغاء…' : 'إيقاف المتابعة'}
-                  </button>
+                  <div>
+                    <button
+                      type="button"
+                      className={item.notificationsMuted ? 'is-muted' : ''}
+                      onClick={() => void mutate(
+                        item.notificationsMuted ? 'unmute' : 'mute',
+                        'review',
+                        item.reviewId,
+                      )}
+                      disabled={Boolean(savingKey)}
+                      title={item.notificationsMuted ? 'إعادة إشعارات هذا النقاش' : 'كتم إشعارات هذا النقاش'}
+                    >
+                      {savingKey === (item.notificationsMuted ? 'unmute:' : 'mute:') + item.reviewId
+                        ? 'جارٍ التحديث…'
+                        : item.notificationsMuted ? '🔕 مكتوم' : '🔔 الإشعارات'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void mutate('unwatch', 'review', item.reviewId)}
+                      disabled={Boolean(savingKey)}
+                    >
+                      {savingKey === 'unwatch:' + item.reviewId ? 'جارٍ الإلغاء…' : 'إيقاف المتابعة'}
+                    </button>
+                  </div>
                 </footer>
               </article>
             ))}
@@ -305,11 +379,19 @@ export function CommunityLibraryPanel() {
       ) : (
         <div className="account-community-empty">
           <span aria-hidden="true">{tab === 'saved' ? '☆' : '◎'}</span>
-          <strong>{tab === 'saved' ? 'لا توجد مساهمات محفوظة بعد' : 'لا تتابع أي نقاش حتى الآن'}</strong>
+          <strong>
+            {tab === 'saved'
+              ? 'لا توجد مساهمات محفوظة بعد'
+              : onlyUnread && watchedCount > 0
+                ? 'ممتاز — مفيش ردود جديدة غير مقروءة'
+                : 'لا تتابع أي نقاش حتى الآن'}
+          </strong>
           <p>
             {tab === 'saved'
               ? 'اضغط «حفظ» بجوار أي تقييم أو رد مهم، وهتلاقيه هنا فورًا.'
-              : 'اضغط «متابعة النقاش» على أي تقييم تريد معرفة الردود الجديدة عليه.'}
+              : onlyUnread && watchedCount > 0
+                ? 'كل النقاشات التي تتابعها وصلت عندك لآخر موضع قراءة.'
+                : 'اضغط «متابعة النقاش» على أي تقييم تريد معرفة الردود الجديدة عليه.'}
           </p>
           <Link href="/community">استكشف نبض المجتمع ←</Link>
         </div>
