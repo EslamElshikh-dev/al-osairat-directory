@@ -10,6 +10,7 @@ import { MyBusinessesPanel } from './my-businesses-panel';
 import { NotificationCenter } from './notification-center';
 import { FollowingFeedPanel } from './following-feed-panel';
 import { CommunityProgressPanel } from './community-progress-panel';
+import { CommunityLibraryPanel } from './community-library-panel';
 import { AdminAccessCard } from './admin-access-card';
 
 type User = {
@@ -137,6 +138,7 @@ export function AccountPanel() {
         <a href="#account-profile">بياناتي</a>
         <a href="#account-notifications">الإشعارات</a>
         <a href="#following-feed">أتابعهم</a>
+        <a href="#community-library">محفوظات المجتمع</a>
         <a href="#community-progress">مساهماتي</a>
         <a href="#business-submissions">إضافة نشاط</a>
         <a href="#ownership-claims">الملكية</a>
@@ -175,6 +177,8 @@ export function AccountPanel() {
       <div id="account-notifications" className="account-anchor-section"><NotificationCenter /></div>
 
       <div id="following-feed" className="account-anchor-section"><FollowingFeedPanel /></div>
+
+      <div id="community-library" className="account-anchor-section"><CommunityLibraryPanel /></div>
 
       <div id="community-progress" className="account-anchor-section"><CommunityProgressPanel /></div>
 
