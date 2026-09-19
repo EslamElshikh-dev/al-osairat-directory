@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -81,7 +82,14 @@ export function AccountButton() {
     >
       <span className={`account-trigger__icon${user?.avatarUrl ? ' has-photo' : ''}`} aria-hidden="true">
         {user?.avatarUrl ? (
-          <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" />
+          <Image
+            src={user.avatarUrl}
+            alt=""
+            width={31}
+            height={31}
+            sizes="31px"
+            referrerPolicy="no-referrer"
+          />
         ) : initial ? (
           <b>{initial}</b>
         ) : (
