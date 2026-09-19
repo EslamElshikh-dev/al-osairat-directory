@@ -32,6 +32,12 @@ type ReplyRow = {
   updated_at: string;
 };
 
+type WatchStateRow = {
+  id: string;
+  last_seen_at: string | null;
+  last_seen_reply_id: string | null;
+};
+
 type ResolvedSession = {
   accessToken: string;
   userId: string;
@@ -170,6 +176,22 @@ async function readOwnReply(session: ResolvedSession, reviewId: string) {
   return rows[0] || null;
 }
 
+async function readWatchState(session: ResolvedSession, reviewId: string) {
+  const query = new URLSearchParams({
+    select: 'id,last_seen_at,last_seen_reply_id',
+    user_id: `eq.${session.userId}`,
+    review_id: `eq.${reviewId}`,
+    limit: '1',
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/community_thread_watches?${query}`, {
+    headers: memberHeaders(session.accessToken),
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error('WATCH_STATE_READ_FAILED');
+  const rows = await response.json() as WatchStateRow[];
+  return rows[0] || null;
+}
+
 function mapReply(row: ReplyRow, session: ResolvedSession | null, slug = '', reactions: CommunityReactionSummary = emptyReactionSummary()) {
   return {
     id: row.id,
@@ -195,13 +217,17 @@ export async function GET(request: Request) {
 
   try {
     const replies = await readReplies(reviewId, session);
-    const [slugs, reactionSummaries] = await Promise.all([
+    const [slugs, reactionSummaries, watchState] = await Promise.all([
       readPublicProfileSlugs(replies.map((reply) => reply.user_id)),
       readCommunityReactionSummaries('reply', replies.map((reply) => reply.id), session?.accessToken),
+      session ? readWatchState(session, reviewId) : Promise.resolve(null),
     ]);
     return respond({
       authenticated: Boolean(session),
       emailVerified: Boolean(session?.emailVerified),
+      watching: Boolean(watchState),
+      lastSeenAt: watchState?.last_seen_at || null,
+      lastSeenReplyId: watchState?.last_seen_reply_id || null,
       count: replies.length,
       replies: replies.map((reply) => mapReply(
         reply,
