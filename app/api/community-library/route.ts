@@ -37,6 +37,7 @@ type WatchRow = {
   review_id: string;
   last_seen_at: string | null;
   last_seen_reply_id: string | null;
+  notifications_muted: boolean;
   created_at: string;
 };
 
@@ -223,7 +224,7 @@ async function targetState(
     ),
     targetType === 'review'
       ? readRows<WatchRow>(
-        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,created_at'
+        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,notifications_muted,created_at'
         + '&user_id=eq.' + encodeURIComponent(session.userId)
         + '&review_id=eq.' + encodeURIComponent(targetId)
         + '&limit=1',
@@ -235,6 +236,7 @@ async function targetState(
   return {
     saved: Boolean(savedRows[0]),
     watching: Boolean(watchRows[0]),
+    notificationsMuted: Boolean(watchRows[0]?.notifications_muted),
   };
 }
 
@@ -281,7 +283,7 @@ export async function GET(request: Request) {
         session.accessToken,
       ),
       readRows<WatchRow>(
-        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,created_at'
+        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,notifications_muted,created_at'
         + '&user_id=eq.' + encodeURIComponent(session.userId)
         + '&order=created_at.desc&limit=60',
         session.accessToken,
@@ -402,9 +404,11 @@ export async function GET(request: Request) {
       const lastSeenAt = watch.last_seen_at || watch.created_at;
       const replyCount = replies.length;
       const latestReplyAt = replies.length ? replies[replies.length - 1].created_at : null;
-      const newReplyCount = replies.filter(
+      const newReplies = replies.filter(
         (reply) => Date.parse(reply.created_at) > Date.parse(lastSeenAt),
-      ).length;
+      );
+      const newReplyCount = newReplies.length;
+      const firstUnreadReplyId = newReplies[0]?.id || null;
       const helpfulCount = (
         helpfulByTarget.get('review:' + review.id) || 0
       ) + replies.reduce(
@@ -421,10 +425,14 @@ export async function GET(request: Request) {
         contextLabel: contextLabel(review),
         href: contributionHref(review),
         continueHref: discussionHref(review, watch.last_seen_reply_id),
+        firstUnreadHref: firstUnreadReplyId
+          ? discussionHref(review, firstUnreadReplyId)
+          : discussionHref(review, watch.last_seen_reply_id),
         contributionCreatedAt: review.created_at,
         watchedAt: watch.created_at,
         lastSeenAt,
         lastSeenReplyId: watch.last_seen_reply_id,
+        notificationsMuted: Boolean(watch.notifications_muted),
         latestReplyAt,
         replyCount,
         helpfulCount,
@@ -472,12 +480,17 @@ export async function POST(request: Request) {
     : '';
   const targetId = typeof body.targetId === 'string' ? body.targetId.trim() : '';
 
-  if (!['save', 'unsave', 'watch', 'unwatch', 'mark_seen'].includes(action)
+  const targetActions = ['save', 'unsave', 'watch', 'unwatch', 'mark_seen', 'mute', 'unmute'];
+  if (action === 'mark_all_seen') {
+    // No individual target is required.
+  } else if (!targetActions.includes(action)
       || !targetType
       || !UUID_PATTERN.test(targetId)) {
     return respond({ error: 'بيانات الإجراء غير صحيحة.' }, session, 400);
   }
-  if ((action === 'watch' || action === 'unwatch' || action === 'mark_seen') && targetType !== 'review') {
+  if (action !== 'mark_all_seen'
+      && ['watch', 'unwatch', 'mark_seen', 'mute', 'unmute'].includes(action)
+      && targetType !== 'review') {
     return respond({ error: 'متابعة النقاش متاحة للتقييمات فقط.' }, session, 400);
   }
 
@@ -608,8 +621,87 @@ export async function POST(request: Request) {
       if (!response.ok) throw new Error('WATCH_MARK_SEEN_FAILED');
     }
 
-    const state = await targetState(session, targetType, targetId);
-    return respond({ saved: state.saved, watching: state.watching }, session);
+    if (action === 'mute' || action === 'unmute') {
+      const query = new URLSearchParams({
+        user_id: 'eq.' + session.userId,
+        review_id: 'eq.' + targetId,
+      });
+      const response = await fetch(
+        SUPABASE_URL + '/rest/v1/community_thread_watches?' + query.toString(),
+        {
+          method: 'PATCH',
+          headers: {
+            ...headers(session.accessToken, true),
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({
+            notifications_muted: action === 'mute',
+          }),
+          cache: 'no-store',
+        },
+      );
+      if (!response.ok) throw new Error('WATCH_MUTE_FAILED');
+    }
+
+    if (action === 'mark_all_seen') {
+      const watches = await readRows<WatchRow>(
+        'community_thread_watches?select=id,review_id,last_seen_at,last_seen_reply_id,notifications_muted,created_at'
+        + '&user_id=eq.' + encodeURIComponent(session.userId)
+        + '&limit=100',
+        session.accessToken,
+      );
+
+      const reviewIds = [...new Set(watches.map((watch) => watch.review_id))];
+      const replies = reviewIds.length
+        ? await readRows<ThreadReplyRow>(
+          'content_review_replies?select=id,review_id,created_at'
+          + '&review_id=in.(' + reviewIds.join(',') + ')'
+          + '&status=eq.published&order=created_at.asc&limit=2000',
+          session.accessToken,
+        )
+        : [];
+
+      const latestByReview = new Map<string, ThreadReplyRow>();
+      for (const reply of replies) latestByReview.set(reply.review_id, reply);
+
+      await Promise.all(watches.map(async (watch) => {
+        const latest = latestByReview.get(watch.review_id) || null;
+        const query = new URLSearchParams({
+          user_id: 'eq.' + session.userId,
+          review_id: 'eq.' + watch.review_id,
+        });
+        const response = await fetch(
+          SUPABASE_URL + '/rest/v1/community_thread_watches?' + query.toString(),
+          {
+            method: 'PATCH',
+            headers: {
+              ...headers(session.accessToken, true),
+              Prefer: 'return=minimal',
+            },
+            body: JSON.stringify({
+              last_seen_at: latest?.created_at || new Date().toISOString(),
+              last_seen_reply_id: latest?.id || null,
+            }),
+            cache: 'no-store',
+          },
+        );
+        if (!response.ok) throw new Error('WATCH_MARK_ALL_SEEN_FAILED');
+      }));
+
+      return respond({
+        saved: false,
+        watching: false,
+        notificationsMuted: false,
+        markedAllSeen: true,
+      }, session);
+    }
+
+    const state = await targetState(session, targetType as 'review' | 'reply', targetId);
+    return respond({
+      saved: state.saved,
+      watching: state.watching,
+      notificationsMuted: state.notificationsMuted,
+    }, session);
   } catch {
     return respond({ error: 'تعذر تحديث محفوظات المجتمع الآن. حاول مرة أخرى.' }, session, 500);
   }
