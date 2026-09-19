@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { categories, listings, villages } from '@/lib/data';
 import { blogArticles } from '@/lib/blog-published';
 import { getPublicDirectoryListings } from '@/lib/public-directory';
-import { getPublicMembers } from '@/lib/community-profiles';
+import { getPublicMemberSlugsForSitemap } from '@/lib/community-profiles';
 import { getEligibleServiceIntents, getEligibleVillageCategoryLandings, isVillageHubIndexable, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isListingIndexable, listingSitemapPriority } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
@@ -18,9 +18,9 @@ function latestListingUpdate(items: typeof listings) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [allListings, publicMembers] = await Promise.all([
+  const [allListings, publicMemberSlugs] = await Promise.all([
     getPublicDirectoryListings(),
-    getPublicMembers(),
+    getPublicMemberSlugsForSitemap(),
   ]);
   const staticIds = new Set(listings.map((listing) => listing.id));
   const staticDetailListings = allListings.filter((listing) => staticIds.has(listing.id) && listing.category !== 'emergency' && isListingIndexable(listing));
@@ -108,8 +108,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: listingSitemapPriority(listing),
     }));
 
-  const memberPages: SitemapEntry[] = publicMembers.map((member) => ({
-    url: absoluteUrl('/members/' + encodedSegment(member.slug)),
+  const memberPages: SitemapEntry[] = publicMemberSlugs.map((slug) => ({
+    url: absoluteUrl('/members/' + encodedSegment(slug)),
     changeFrequency: 'weekly',
     priority: 0.62,
   }));
