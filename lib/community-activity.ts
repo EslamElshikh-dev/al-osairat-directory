@@ -83,9 +83,17 @@ function reviewContext(review: Pick<ReviewRow, 'target_type' | 'target_key'>) {
   return blogBySlug[review.target_key]?.title || 'مقال من مدونة العسيرات';
 }
 
-function sevenDayStartUtc() {
-  const value = new Date();
-  value.setUTCHours(0, 0, 0, 0);
+function sevenDayStartLocal() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Africa/Cairo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const year = Number(parts.find((part) => part.type === 'year')?.value || '1970');
+  const month = Number(parts.find((part) => part.type === 'month')?.value || '1');
+  const day = Number(parts.find((part) => part.type === 'day')?.value || '1');
+  const value = new Date(Date.UTC(year, month - 1, day));
   value.setUTCDate(value.getUTCDate() - 6);
   return value.toISOString().slice(0, 10);
 }
@@ -102,7 +110,7 @@ async function readWeeklyHelpfulCounts(
     select: 'target_id,helpful_count',
     target_type: 'eq.' + targetType,
     target_id: 'in.(' + ids.join(',') + ')',
-    activity_date: 'gte.' + sevenDayStartUtc(),
+    activity_date: 'gte.' + sevenDayStartLocal(),
     limit: String(Math.max(20, ids.length * 7)),
   });
 
