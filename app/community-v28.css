@@ -1,0 +1,108 @@
+/* Community V2.8 — conversation inbox */
+
+.community-inbox-unread-total{
+  color:#765313!important;
+  background:#fff0c3!important;
+  box-shadow:inset 0 0 0 1px rgba(217,170,63,.16);
+}
+
+.community-thread-sort__divider{
+  width:1px;
+  height:22px;
+  margin-inline:2px;
+  background:rgba(18,55,45,.10);
+}
+
+.community-thread-sort>button.is-unread{
+  color:#765313;
+  border-color:rgba(217,170,63,.28);
+  background:#fff1c9;
+}
+
+.community-thread-sort>button.community-thread-sort__mark-all{
+  margin-inline-start:auto;
+  color:#315f50;
+  border-style:dashed;
+  background:#edf5f0;
+}
+
+.community-thread-sort>button.community-thread-sort__mark-all:hover:not(:disabled),
+.community-thread-sort>button.community-thread-sort__mark-all:focus-visible:not(:disabled){
+  color:#fff;
+  border-style:solid;
+  border-color:#315f50;
+  background:#315f50;
+}
+
+.community-thread-card__footer{
+  align-items:center!important;
+}
+
+.community-thread-card__footer>div{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.community-thread-card__footer>div>button{
+  padding:5px 7px;
+  border:0;
+  border-radius:8px;
+  color:#6a746f;
+  background:#f3f6f4;
+  font:inherit;
+  font-size:.52rem;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.community-thread-card__footer>div>button.is-muted{
+  color:#775c25;
+  background:#fff1ce;
+}
+
+.community-thread-card__footer>div>button:last-child{
+  color:#8b4c43;
+  background:#fff0ee;
+}
+
+.community-thread-card__footer>div>button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.community-library-card.is-watched.has-new .community-thread-card__footer>a{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:5px 9px;
+  border-radius:9px;
+  color:#fff;
+  background:#17483a;
+}
+
+@media(max-width:720px){
+  .community-thread-sort__divider{
+    display:none;
+  }
+
+  .community-thread-sort>button.community-thread-sort__mark-all{
+    width:100%;
+    margin-inline-start:0;
+  }
+}
+
+@media(max-width:620px){
+  .community-thread-card__footer{
+    align-items:stretch!important;
+  }
+
+  .community-thread-card__footer>div{
+    width:100%;
+  }
+
+  .community-thread-card__footer>div>button{
+    flex:1 1 120px;
+  }
+}
