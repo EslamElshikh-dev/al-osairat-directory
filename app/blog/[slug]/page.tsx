@@ -309,12 +309,20 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
               مادة مرجعية تحتاج إلى المقارنة، وليست بديلًا عن الوثيقة الرسمية.
             </p>
             <ol>
-              {article.sources.map((source) => (
-                <li key={source.url}>
-                  <a href={source.url} target="_blank" rel="noreferrer">{source.label}<span aria-hidden="true">↗</span></a>
-                  {source.note ? <small>{source.note}</small> : null}
-                </li>
-              ))}
+              {article.sources.map((source) => {
+                const sourceKind = classifyBlogSource(source.url);
+                return (
+                  <li key={source.url}>
+                    <div className="article-source-row">
+                      <span className={"article-source-kind article-source-kind--" + sourceKind}>
+                        {blogSourceKindLabels[sourceKind]}
+                      </span>
+                      <a href={source.url} target="_blank" rel="noreferrer">{source.label}<span aria-hidden="true">↗</span></a>
+                    </div>
+                    {source.note ? <small>{source.note}</small> : null}
+                  </li>
+                );
+              })}
             </ol>
           </section>
 
