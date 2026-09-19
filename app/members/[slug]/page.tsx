@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CommunityFollowButton } from '@/components/community-follow-button';
@@ -94,7 +95,14 @@ export default async function MemberPublicProfilePage({
         <div className="shell community-profile-hero__inner">
           <div className={`community-profile-avatar${profile.avatarUrl ? ' has-photo' : ''}`}>
             {profile.avatarUrl ? (
-              <img src={profile.avatarUrl} alt={`صورة ${profile.displayName}`} referrerPolicy="no-referrer" />
+              <Image
+                src={profile.avatarUrl}
+                alt={`صورة ${profile.displayName}`}
+                width={118}
+                height={118}
+                sizes="(max-width: 620px) 94px, 118px"
+                referrerPolicy="no-referrer"
+              />
             ) : (
               <span aria-hidden="true">{initial}</span>
             )}
