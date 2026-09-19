@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CommunityReactions } from '@/components/community-reactions';
 import type { CommunityReactionSummary } from '@/lib/community-reactions';
 
@@ -20,6 +20,9 @@ type ReplyItem = {
 type RepliesPayload = {
   authenticated: boolean;
   emailVerified: boolean;
+  watching: boolean;
+  lastSeenAt: string | null;
+  lastSeenReplyId: string | null;
   count: number;
   replies: ReplyItem[];
   myReply: ReplyItem | null;
@@ -76,6 +79,8 @@ export function ReviewThread({
   const [replyText, setReplyText] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const autoOpenedRef = useRef(false);
+  const markedReplyRef = useRef('');
 
   const endpoint = `/api/review-replies?reviewId=${encodeURIComponent(reviewId)}`;
 
@@ -101,6 +106,94 @@ export function ReviewThread({
     setOpen(next);
     if (next) await loadReplies();
   }
+
+  useEffect(() => {
+    if (autoOpenedRef.current || typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('discussion') !== reviewId) return;
+
+    autoOpenedRef.current = true;
+    setOpen(true);
+    void loadReplies();
+  // The deep-link intent is resolved once for this review instance.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reviewId]);
+
+  useEffect(() => {
+    if (!open || !payload?.replies.length || typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('discussion') !== reviewId) return;
+    const continueReplyId = params.get('continueReply');
+    if (!continueReplyId) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById('reply-' + continueReplyId)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, payload, reviewId]);
+
+  useEffect(() => {
+    if (!open || !payload?.watching || !payload.replies.length) return;
+    const panel = document.getElementById(`review-thread-${reviewId}`);
+    if (!panel) return;
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    async function markSeen(replyId: string) {
+      if (!replyId || markedReplyRef.current === replyId) return;
+      markedReplyRef.current = replyId;
+
+      try {
+        const response = await fetch('/api/community-library', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            action: 'mark_seen',
+            targetType: 'review',
+            targetId: reviewId,
+            lastSeenReplyId: replyId,
+          }),
+        });
+        if (!response.ok) throw new Error('MARK_SEEN_FAILED');
+
+        window.dispatchEvent(new CustomEvent('community:library-changed', {
+          detail: { targetType: 'review', targetId: reviewId, readStateChanged: true },
+        }));
+      } catch {
+        markedReplyRef.current = '';
+      }
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.55)
+        .map((entry) => entry.target as HTMLElement)
+        .sort((a, b) => Date.parse(a.dataset.communityReplyCreatedAt || '')
+          - Date.parse(b.dataset.communityReplyCreatedAt || ''));
+
+      const newestVisible = visible[visible.length - 1];
+      const replyId = newestVisible?.dataset.communityReplyId || '';
+      if (!replyId) return;
+
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { void markSeen(replyId); }, 650);
+    }, {
+      root: null,
+      threshold: [0.55, 0.8],
+    });
+
+    const nodes = panel.querySelectorAll<HTMLElement>('[data-community-reply-id]');
+    nodes.forEach((node) => observer.observe(node));
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [open, payload, reviewId]);
 
   async function submitReply(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -180,7 +273,13 @@ export function ReviewThread({
               {payload?.replies.length ? (
                 <div className="review-thread__list">
                   {payload.replies.map((reply) => (
-                    <article className={`review-reply${reply.own ? ' is-own' : ''}`} key={reply.id}>
+                    <article
+                      id={`reply-${reply.id}`}
+                      className={`review-reply${reply.own ? ' is-own' : ''}`}
+                      data-community-reply-id={reply.id}
+                      data-community-reply-created-at={reply.createdAt}
+                      key={reply.id}
+                    >
                       <ReplyAvatar reply={reply} />
                       <div className="review-reply__content">
                         <header>
