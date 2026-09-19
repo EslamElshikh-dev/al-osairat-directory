@@ -231,6 +231,44 @@ export async function getPublicMembers(): Promise<PublicMemberDirectoryEntry[]> 
     });
 }
 
+
+export async function getSuggestedPublicMembers(
+  excludeUserIds: string[],
+  limit = 4,
+): Promise<PublicMemberDirectoryEntry[]> {
+  const excluded = new Set(excludeUserIds.filter(Boolean));
+  const params = new URLSearchParams({
+    select: 'user_id,slug,display_name,avatar_url,bio,village,locality,show_location,joined_at',
+    is_public: 'eq.true',
+    order: 'joined_at.asc',
+    limit: '100',
+  });
+  const rows = await fetchSupabasePublicJson<ProfileRow[]>(
+    SUPABASE_URL + '/rest/v1/member_public_profiles?' + params.toString(),
+    { headers: publicHeaders(), cache: 'no-store' },
+  );
+  const eligibleRows = (rows || []).filter((row) => !excluded.has(row.user_id));
+  const stats = await readPublicMemberStats(eligibleRows.map((row) => row.user_id));
+
+  return eligibleRows
+    .map((row) => ({
+      ...mapProfile(row),
+      ...(stats.get(row.user_id) || emptyStats()),
+    }))
+    .sort((a, b) => {
+      const trustedDelta = Number(b.badges.some((badge) => badge.key === 'trusted'))
+        - Number(a.badges.some((badge) => badge.key === 'trusted'));
+      if (trustedDelta) return trustedDelta;
+      const activeDelta = Number(b.badges.some((badge) => badge.key === 'active'))
+        - Number(a.badges.some((badge) => badge.key === 'active'));
+      if (activeDelta) return activeDelta;
+      if (b.helpfulReceived !== a.helpfulReceived) return b.helpfulReceived - a.helpfulReceived;
+      if (b.contributionCount !== a.contributionCount) return b.contributionCount - a.contributionCount;
+      return a.displayName.localeCompare(b.displayName, 'ar');
+    })
+    .slice(0, Math.max(1, Math.min(limit, 8)));
+}
+
 export async function getPublicMemberProfileBySlug(slug: string): Promise<(PublicMemberProfile & { userId: string }) | null> {
   if (!validSlug(slug)) return null;
   const params = new URLSearchParams({
