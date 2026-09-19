@@ -277,6 +277,50 @@ export async function getPublicCommunityActivityForUserIds(
     .slice(0, Math.max(1, Math.min(limit, 60)));
 }
 
+
+export type CommunityWeeklyPulse = {
+  contributionCount: number;
+  activeMemberCount: number;
+  helpfulCount: number;
+  topHelpful: CommunityActivityItem[];
+};
+
+function cairoDate(value: string | Date) {
+  const date = typeof value === 'string' ? new Date(value) : value;
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Africa/Cairo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+export async function getCommunityWeeklyPulse(): Promise<CommunityWeeklyPulse> {
+  const items = await getPublicCommunityActivity(60);
+  const start = sevenDayStartLocal();
+  const recent = items.filter((item) => cairoDate(item.createdAt) >= start);
+  const authors = new Set(recent.map((item) => item.author.slug));
+  const helpfulCount = items.reduce(
+    (sum, item) => sum + Math.max(0, Number(item.weeklyHelpfulCount || 0)),
+    0,
+  );
+  const topHelpful = items
+    .filter((item) => item.weeklyHelpfulCount > 0)
+    .sort((a, b) =>
+      b.weeklyHelpfulCount - a.weeklyHelpfulCount
+      || b.reactions.helpfulCount - a.reactions.helpfulCount
+      || Date.parse(b.createdAt) - Date.parse(a.createdAt),
+    )
+    .slice(0, 3);
+
+  return {
+    contributionCount: recent.length,
+    activeMemberCount: authors.size,
+    helpfulCount,
+    topHelpful,
+  };
+}
+
 export async function getPublicCommunityActivity(limit = 36): Promise<CommunityActivityItem[]> {
   const visibleProfiles = await readVisibleProfiles();
   if (!visibleProfiles.length) return [];
