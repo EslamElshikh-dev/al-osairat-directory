@@ -1,4 +1,5 @@
 import { blogBySlug } from '@/lib/blog-published';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
 import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
 
@@ -23,7 +24,7 @@ export type PublicMemberReview = {
   id: string;
   rating: number;
   body: string;
-  targetType: 'site' | 'article';
+  targetType: 'site' | 'article' | 'listing';
   targetKey: string;
   targetLabel: string;
   href: string;
@@ -35,7 +36,7 @@ export type PublicMemberReply = {
   id: string;
   reviewId: string;
   body: string;
-  targetType: 'site' | 'article';
+  targetType: 'site' | 'article' | 'listing';
   targetKey: string;
   targetLabel: string;
   href: string;
@@ -75,7 +76,7 @@ type ProfileRow = {
 
 type ReviewRow = {
   id: string;
-  target_type: 'site' | 'article';
+  target_type: 'site' | 'article' | 'listing';
   target_key: string;
   rating: number;
   body: string;
@@ -93,7 +94,7 @@ type ReplyRow = {
 
 type ParentReviewRow = {
   id: string;
-  target_type: 'site' | 'article';
+  target_type: 'site' | 'article' | 'listing';
   target_key: string;
 };
 
@@ -118,6 +119,27 @@ function publicHeaders(json = false) {
 function validSlug(slug: string) {
   return /^[a-z0-9][a-z0-9-]{7,48}$/.test(slug);
 }
+function targetMeta(
+  targetType: 'site' | 'article' | 'listing',
+  targetKey: string,
+  reviewId: string,
+  listingIndex: Map<string, string>,
+) {
+  if (targetType === 'site') {
+    return { label: 'دليل العسيرات', href: '/#review-' + reviewId };
+  }
+  if (targetType === 'listing') {
+    return {
+      label: listingIndex.get(targetKey) || 'نشاط في دليل العسيرات',
+      href: '/listing/' + encodeURIComponent(targetKey) + '#review-' + reviewId,
+    };
+  }
+  return {
+    label: blogBySlug[targetKey]?.title || 'مقال من مدونة العسيرات',
+    href: '/blog/' + encodeURIComponent(targetKey) + '#review-' + reviewId,
+  };
+}
+
 
 function badgesFor(stats: Omit<PublicMemberStats, 'badges'>): PublicMemberBadge[] {
   const badges: PublicMemberBadge[] = [];
@@ -338,18 +360,21 @@ export async function getPublicMemberContributions(userId: string): Promise<Publ
     readPublicMemberStats([userId]),
   ]);
 
+  const directoryListings = (reviewRows || []).some((row) => row.target_type === 'listing')
+    ? await getPublicDirectoryListings()
+    : [];
+  let listingIndex = new Map(directoryListings.map((listing) => [listing.slug, listing.title]));
+
   const reviews = (reviewRows || []).map((row): PublicMemberReview => {
-    const article = row.target_type === 'article' ? blogBySlug[row.target_key] : null;
+    const target = targetMeta(row.target_type, row.target_key, row.id, listingIndex);
     return {
       id: row.id,
       rating: Number(row.rating),
       body: row.body,
       targetType: row.target_type,
       targetKey: row.target_key,
-      targetLabel: row.target_type === 'site' ? 'دليل العسيرات' : (article?.title || 'مقال من مدونة العسيرات'),
-      href: row.target_type === 'site'
-        ? '/#review-' + row.id
-        : '/blog/' + encodeURIComponent(row.target_key) + '#review-' + row.id,
+      targetLabel: target.label,
+      href: target.href,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
@@ -369,21 +394,23 @@ export async function getPublicMemberContributions(userId: string): Promise<Publ
     )
     : [];
   const parentIndex = new Map((parentRows || []).map((row) => [row.id, row]));
+  if ((parentRows || []).some((row) => row.target_type === 'listing') && listingIndex.size === 0) {
+    const allListings = await getPublicDirectoryListings();
+    listingIndex = new Map(allListings.map((listing) => [listing.slug, listing.title]));
+  }
 
   const replies = (replyRows || []).flatMap((row): PublicMemberReply[] => {
     const parent = parentIndex.get(row.review_id);
     if (!parent) return [];
-    const article = parent.target_type === 'article' ? blogBySlug[parent.target_key] : null;
+    const target = targetMeta(parent.target_type, parent.target_key, row.review_id, listingIndex);
     return [{
       id: row.id,
       reviewId: row.review_id,
       body: row.body,
       targetType: parent.target_type,
       targetKey: parent.target_key,
-      targetLabel: parent.target_type === 'site' ? 'دليل العسيرات' : (article?.title || 'مقال من مدونة العسيرات'),
-      href: parent.target_type === 'site'
-        ? '/#review-' + row.review_id
-        : '/blog/' + encodeURIComponent(parent.target_key) + '#review-' + row.review_id,
+      targetLabel: target.label,
+      href: target.href,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }];
