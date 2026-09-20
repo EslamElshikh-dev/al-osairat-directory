@@ -738,3 +738,122 @@
   .sand-invite__spark { animation: none !important; }
   .sand-trigger { transition: none; }
 }
+
+
+/* Sand VNext.2 — calmer motion, stronger local identity */
+.sand-trigger { animation-duration: 8s; }
+.sand-trigger::before { animation-duration: 5.4s; }
+.sand-invite { animation-duration: .55s, 8s; }
+
+.sand-panel {
+  width: min(420px, calc(100vw - 30px));
+  border-color: rgba(213,174,88,.22);
+  box-shadow: 0 36px 100px rgba(7,29,23,.34), 0 8px 28px rgba(7,29,23,.13);
+}
+
+.sand-panel__header {
+  position: relative;
+  overflow: hidden;
+}
+
+.sand-panel__header::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  inset-inline-end: -58px;
+  top: -64px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 50%;
+  box-shadow: 0 0 0 22px rgba(213,174,88,.025);
+  pointer-events: none;
+}
+
+.sand-panel__eyebrow {
+  display: block;
+  overflow: hidden;
+  color: #e8c96f;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sand-panel__identity strong { margin-top: -1px; }
+
+.sand-feed {
+  background:
+    radial-gradient(circle at 100% 0,rgba(213,174,88,.07),transparent 27%),
+    radial-gradient(circle at 0 62%,rgba(16,45,37,.035) 0 1px,transparent 1.5px) 0 0 / 22px 22px,
+    #f7f8f5;
+}
+
+.sand-result {
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+
+.sand-result::after {
+  content: "";
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  inset-inline-end: -32px;
+  top: -32px;
+  border-radius: 50%;
+  background: rgba(213,174,88,.06);
+  pointer-events: none;
+}
+
+.sand-suggestions :is(button,a),
+.sand-composer button,
+.sand-panel__header > button {
+  transition: transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+
+.sand-composer {
+  box-shadow: 0 -10px 28px rgba(16,45,37,.035);
+}
+
+.sand-composer textarea:focus {
+  border-color: rgba(213,174,88,.55);
+  box-shadow: 0 0 0 4px rgba(213,174,88,.09);
+  background: #fff;
+}
+
+.sand-composer button:not(:disabled) {
+  position: relative;
+  overflow: hidden;
+}
+
+.sand-composer button:not(:disabled)::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 80px;
+  top: -18px;
+  left: -32px;
+  background: rgba(255,255,255,.16);
+  transform: rotate(24deg);
+  transition: left .28s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .sand-result:hover { transform: translateY(-2px); border-color: rgba(213,174,88,.24); box-shadow: 0 12px 28px rgba(18,50,40,.08); }
+  .sand-suggestions :is(button,a):hover { transform: translateY(-1px); border-color: rgba(213,174,88,.32); background: #fffaf0; }
+  .sand-composer button:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(16,45,37,.22); }
+  .sand-composer button:not(:disabled):hover::after { left: 58px; }
+  .sand-panel__header > button:hover { transform: translateY(-1px); }
+}
+
+@media (max-width:760px) {
+  .sand-panel__eyebrow { font-size: 7.5px; }
+  .sand-panel { border-color: rgba(16,45,37,.15); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .sand-result,.sand-suggestions :is(button,a),.sand-composer button,.sand-panel__header > button,
+  .sand-composer button::after { transition:none!important; transform:none!important; }
+}

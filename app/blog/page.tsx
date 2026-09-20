@@ -25,6 +25,12 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  const blogEditorialMetrics = {
+    articles: blogArticles.length,
+    sections: blogArticles.reduce((sum, article) => sum + article.sections.length, 0),
+    questions: blogArticles.reduce((sum, article) => sum + article.faq.length, 0),
+  };
+
   const itemList = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -91,6 +97,19 @@ export default function BlogPage() {
             <small>تاريخ · مكان · ناس</small>
           </aside>
         </div>
+      </section>
+
+      <section className="shell blog-compass" aria-label="بوصلة محتوى مدونة العسيرات">
+        <div className="blog-compass__intro">
+          <span>بوصلة القراءة</span>
+          <strong>اقرأ حسب فضولك… مش حسب ترتيب النشر.</strong>
+        </div>
+        <div className="blog-compass__metrics">
+          <span><b>{blogEditorialMetrics.articles.toLocaleString('ar-EG')}</b><small>ملفًا ومقالًا</small></span>
+          <span><b>{blogEditorialMetrics.sections.toLocaleString('ar-EG')}</b><small>محورًا بحثيًا</small></span>
+          <span><b>{blogEditorialMetrics.questions.toLocaleString('ar-EG')}</b><small>سؤالًا مباشرًا</small></span>
+        </div>
+        <Link href="#articles" className="blog-compass__cta">اختار موضوعك <b aria-hidden="true">↓</b></Link>
       </section>
 
       <section className="section shell blog-intro">

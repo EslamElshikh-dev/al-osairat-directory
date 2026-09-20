@@ -238,3 +238,55 @@
 @media (prefers-reduced-motion: reduce) {
   .card { transition: none; }
 }
+
+
+/* VNext.2 card depth */
+.card {
+  position: relative;
+  isolation: isolate;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  inset-inline: 24px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,transparent,rgba(215,168,60,.58),transparent);
+  opacity: 0;
+  transform: scaleX(.45);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.visual::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: 1;
+  border: 1px solid rgba(255,255,255,.085);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.icon {
+  transition: transform .22s ease, background .22s ease, border-color .22s ease;
+}
+
+.details,
+.read,
+.read b {
+  transition: color .18s ease, transform .18s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .card:hover::before { opacity: 1; transform: scaleX(1); }
+  .card:hover .icon { transform: rotate(-4deg) scale(1.06); background: rgba(255,255,255,.15); }
+  .details:hover { color: #163f33; }
+  .read:hover b { transform: translate(2px,-2px); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .card::before,.icon,.details,.read,.read b { transition:none; transform:none!important; }
+}

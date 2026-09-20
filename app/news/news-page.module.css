@@ -331,3 +331,115 @@
     justify-content: center;
   }
 }
+
+
+/* VNext.2 newsroom polish */
+.monitor::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  inset-inline-end: -82px;
+  bottom: -82px;
+  border: 1px solid rgba(240,206,121,.12);
+  border-radius: 50%;
+  box-shadow: 0 0 0 26px rgba(240,206,121,.02);
+  pointer-events: none;
+}
+
+.monitorBrand {
+  transition: transform .22s ease, box-shadow .22s ease;
+  box-shadow: 0 10px 26px rgba(0,0,0,.12);
+}
+
+.liveLabel i,
+.monitorStatus i,
+.refreshBadge i {
+  animation: newsroomPulse 3.8s ease-in-out infinite;
+}
+
+@keyframes newsroomPulse {
+  0%, 72%, 100% { box-shadow: 0 0 0 5px rgba(116,212,157,.1); }
+  84% { box-shadow: 0 0 0 9px rgba(116,212,157,.025); }
+}
+
+.topicList span {
+  border: 1px solid transparent;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.emptyState {
+  min-height: 250px;
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 22px;
+  padding: 28px;
+  border: 1px dashed rgba(16,42,36,.16);
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at 100% 0,rgba(215,168,60,.09),transparent 28%),
+    #fff;
+}
+
+.emptyState > span {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(215,168,60,.2);
+  border-radius: 20px;
+  background: #fff4d8;
+}
+
+.emptyState strong {
+  display: block;
+  color: #173a31;
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.emptyState p {
+  max-width: 650px;
+  margin: 7px 0 0;
+  color: #6b7973;
+  font-size: 12px;
+  line-height: 1.85;
+}
+
+.emptyActions {
+  display: grid;
+  gap: 7px;
+}
+
+.emptyActions a {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 11px;
+  border: 1px solid rgba(16,42,36,.09);
+  border-radius: 12px;
+  color: #2d5d4e;
+  background: #f4f7f4;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .monitor:hover .monitorBrand { transform: rotate(-4deg) scale(1.04); box-shadow: 0 15px 34px rgba(0,0,0,.16); }
+  .topicList span:hover { transform: translateY(-2px); border-color: rgba(215,168,60,.2); background: #fff9e9; }
+  .emptyActions a:hover { transform: translateY(-2px); border-color: rgba(215,168,60,.26); background: #fff; }
+}
+
+@media (max-width:700px) {
+  .emptyState { grid-template-columns: 1fr; justify-items: start; padding: 20px; }
+  .emptyActions { width: 100%; grid-template-columns: 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .liveLabel i,.monitorStatus i,.refreshBadge i { animation: none; }
+  .monitorBrand,.topicList span,.emptyActions a { transition: none; transform: none; }
+}
