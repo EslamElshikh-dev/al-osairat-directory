@@ -24,16 +24,16 @@ type ChatEntry = {
 const welcome: ChatEntry = {
   id: 'sand-welcome',
   role: 'assistant',
-  text: 'أهلًا يا طيب، أنا سَند؛ مساعدك الآلي في دليل العسيرات. أقدر أدلّك على طبيب، صيدلية، محل، حِرفي، مواصلات أو رقم طوارئ. قولّي الخدمة واسم القرية وأنا حاضر.',
+  text: 'أهلًا بيك يا طيب، أنا سَند؛ مساعدك المحلي في دليل العسيرات. قولّي بتدور على خدمة إيه وفي أي قرية، وأنا أرتّب لك أقرب النتائج من بيانات الدليل.',
 };
 
 const starterSuggestions = [
-  'دكتور في أولاد حمزة',
-  'صيدلية قريبة',
-  'محامي في العسيرات',
+  'دكتور أسنان في أولاد حمزة',
+  'صيدلية في الرشايدة',
   'مواصلات العسيرات',
+  'خدمات النويرات',
   'أرقام الطوارئ',
-  'مين صمم الموقع؟',
+  'أحدث أخبار العسيرات',
 ];
 
 function SandAvatar({ variant }: { variant: 'header' | 'trigger' }) {
@@ -325,8 +325,9 @@ export function SandAssistant() {
           <header className="sand-panel__header">
             <SandAvatar variant="header" />
             <div className="sand-panel__identity">
+              <span className="sand-panel__eyebrow">دليل العسيرات · مساعد بحث محلي</span>
               <strong id="sand-title">سَند</strong>
-              <small><i /> مساعدك المحلي من بيانات الدليل</small>
+              <small><i /> يبحث في بيانات الدليل المنشورة ويرتبها لك</small>
             </div>
             <button
               type="button"
@@ -414,7 +415,7 @@ export function SandAssistant() {
               value={input}
               onChange={(event) => setInput(event.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="مثال: عايز صيدلية في أولاد حمزة"
+              placeholder="قولّي الخدمة والقرية… مثال: صيدلية في أولاد حمزة"
               enterKeyHint="send"
               disabled={loading}
             />
@@ -453,7 +454,7 @@ export function SandAssistant() {
         >
           <span className="sand-invite" aria-hidden="true">
             <span className="sand-invite__spark">✦</span>
-            <span className="sand-invite__text">هلا أباشا أومرني</span>
+            <span className="sand-invite__text">أنا سَند… بتدور على إيه؟</span>
           </span>
           <SandAvatar variant="trigger" />
         </button>
