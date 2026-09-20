@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { blogBySlug } from '@/lib/blog-published';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { emptyReactionSummary, readCommunityReactionSummaries, type CommunityReactionSummary } from '@/lib/community-reactions';
 import {
   AUTH_ACCESS_COOKIE,
@@ -21,7 +22,7 @@ const PAGE_SIZE = 6;
 const REVIEW_MIN_LENGTH = 20;
 const REVIEW_MAX_LENGTH = 1200;
 
-type ReviewTargetType = 'site' | 'article';
+type ReviewTargetType = 'site' | 'article' | 'listing';
 
 type ReviewRow = {
   id: string;
@@ -133,20 +134,30 @@ function respond(payload: unknown, session: ResolvedSession | null, status = 200
   return response;
 }
 
-function parseTarget(url: URL) {
+async function listingTargetExists(targetKey: string) {
+  if (!targetKey || targetKey.length > 180) return false;
+  const allListings = await getPublicDirectoryListings();
+  return allListings.some((listing) => listing.category !== 'emergency' && listing.slug === targetKey);
+}
+
+async function parseTarget(url: URL) {
   const targetType = url.searchParams.get('targetType')?.trim() as ReviewTargetType | undefined;
   const targetKey = url.searchParams.get('targetKey')?.trim() || '';
 
   if (targetType === 'site' && targetKey === 'site') return { targetType, targetKey };
   if (targetType === 'article' && targetKey && blogBySlug[targetKey]) return { targetType, targetKey };
+  if (targetType === 'listing' && await listingTargetExists(targetKey)) return { targetType, targetKey };
   return null;
 }
 
-function parseBodyTarget(body: Record<string, unknown>) {
-  const targetType = body.targetType === 'site' || body.targetType === 'article' ? body.targetType : null;
+async function parseBodyTarget(body: Record<string, unknown>) {
+  const targetType = body.targetType === 'site' || body.targetType === 'article' || body.targetType === 'listing'
+    ? body.targetType
+    : null;
   const targetKey = typeof body.targetKey === 'string' ? body.targetKey.trim() : '';
   if (targetType === 'site' && targetKey === 'site') return { targetType, targetKey } as const;
   if (targetType === 'article' && targetKey && blogBySlug[targetKey]) return { targetType, targetKey } as const;
+  if (targetType === 'listing' && await listingTargetExists(targetKey)) return { targetType, targetKey } as const;
   return null;
 }
 
@@ -251,7 +262,7 @@ async function readOwnReview(session: ResolvedSession, targetType: ReviewTargetT
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const target = parseTarget(url);
+  const target = await parseTarget(url);
   if (!target) return NextResponse.json({ error: 'هدف التقييم غير صالح.' }, { status: 400 });
 
   const offsetRaw = Number(url.searchParams.get('offset') || 0);
@@ -309,7 +320,7 @@ export async function POST(request: Request) {
   if (!session.emailVerified) return respond({ error: 'أكد بريدك الإلكتروني أولًا قبل نشر التقييم.' }, session, 403);
 
   const body = await request.json().catch(() => ({})) as Record<string, unknown>;
-  const target = parseBodyTarget(body);
+  const target = await parseBodyTarget(body);
   const rating = Number(body.rating);
   const reviewText = typeof body.review === 'string' ? body.review.trim() : '';
 
@@ -371,7 +382,7 @@ export async function DELETE(request: Request) {
   if (!sameOrigin(request)) return NextResponse.json({ error: 'طلب غير مسموح.' }, { status: 403 });
 
   const url = new URL(request.url);
-  const target = parseTarget(url);
+  const target = await parseTarget(url);
   if (!target) return NextResponse.json({ error: 'هدف التقييم غير صالح.' }, { status: 400 });
 
   const session = await resolveSession();
