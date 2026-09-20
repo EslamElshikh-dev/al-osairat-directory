@@ -159,6 +159,21 @@ export function SandAssistant() {
   );
 
   useEffect(() => {
+    const handleContext = (event: Event) => {
+      const customEvent = event as CustomEvent<{ prompt?: string }>;
+      const prompt = customEvent.detail?.prompt?.trim().slice(0, 500) || '';
+      setOpen(true);
+      setError('');
+      setLastFailedText('');
+      if (prompt) setInput(prompt);
+      window.setTimeout(() => inputRef.current?.focus(), 0);
+    };
+
+    window.addEventListener('sand:context', handleContext);
+    return () => window.removeEventListener('sand:context', handleContext);
+  }, []);
+
+  useEffect(() => {
     if (previousPathnameRef.current !== pathname) {
       requestRef.current?.abort();
       requestRef.current = null;
