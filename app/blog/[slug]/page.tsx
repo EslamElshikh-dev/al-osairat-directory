@@ -4,11 +4,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArticleReadingProgress } from '@/components/article-reading-progress';
+import { ArticleUtilityController } from '@/components/article-utility-controller';
 import { BlogCard } from '@/components/blog-card';
 import { MemberReviews } from '@/components/member-reviews';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles, blogBySlug } from '@/lib/blog-published';
 import { getArticleJourney } from '@/lib/blog-navigation';
+import { getBlogSectionSourceUrls } from '@/lib/blog-section-sources';
 import { blogSourceKindLabels, classifyBlogSource, summarizeBlogSources } from '@/lib/blog-source-trust';
 import { buildArticleMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
@@ -197,6 +199,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           </div>
         </div>
         <p className="article-evidence__note">التصنيف يصف نوع المصدر فقط، ولا يعني أن كل معلومة فيه صحيحة تلقائيًا؛ لذلك تُقارن الروايات المحلية بالمصادر الأقوى متى توافرت.</p>
+        <ArticleUtilityController articleUrl={articleUrl} />
       </section>
 
       <div className="shell article-layout">
@@ -222,11 +225,20 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
           {article.sections.map((section) => {
             const journeyLink = journey.links.find((item) => item.afterSectionId === section.id);
+            const mappedSourceUrls = getBlogSectionSourceUrls(article.slug, section.id);
+            const entrySourceUrls = section.entries?.flatMap((entry) => entry.sourceUrl ? [entry.sourceUrl] : []) ?? [];
+            const mediaSourceUrls = section.media?.sourceUrl ? [section.media.sourceUrl] : [];
+            const sectionReferenceUrls = [...new Set([...mappedSourceUrls, ...entrySourceUrls, ...mediaSourceUrls])];
 
             return (
               <Fragment key={section.id}>
                 <section id={section.id} className="article-section">
-                  <h2>{section.heading}</h2>
+                  <div className="article-section__heading">
+                    <h2>{section.heading}</h2>
+                    <button type="button" className="article-section-link" data-copy-section={section.id}>
+                      نسخ رابط القسم
+                    </button>
+                  </div>
                   {section.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
                   {section.media ? (
                     <figure className="article-section-media">
@@ -268,6 +280,29 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
                         </div>
                       ))}
                     </div>
+                  ) : null}
+                  {sectionReferenceUrls.length ? (
+                    <aside className="article-section-evidence" aria-label={`مراجع قسم ${section.heading}`}>
+                      <span>مراجع مرتبطة بهذا القسم</span>
+                      <div>
+                        {sectionReferenceUrls.map((url) => {
+                          const articleSource = article.sources.find((source) => source.url === url);
+                          const entrySource = section.entries?.find((entry) => entry.sourceUrl === url);
+                          const mediaSource = section.media?.sourceUrl === url ? section.media : null;
+                          const label = articleSource?.label || entrySource?.sourceLabel || mediaSource?.sourceLabel || 'فتح المرجع';
+                          const sourceKind = classifyBlogSource(url);
+                          return (
+                            <a key={url} href={url} target="_blank" rel="noreferrer">
+                              <b className={"article-source-kind article-source-kind--" + sourceKind}>
+                                {blogSourceKindLabels[sourceKind]}
+                              </b>
+                              <span>{label}</span>
+                              <i aria-hidden="true">↗</i>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </aside>
                   ) : null}
                 </section>
 
