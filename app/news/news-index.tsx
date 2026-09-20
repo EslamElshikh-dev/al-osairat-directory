@@ -155,9 +155,23 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
           عرض الأخبار من {pagination.startItem} إلى {pagination.endItem} من إجمالي {pagination.totalItems}
         </p>
 
-        <div className={styles.grid}>
-          {pagination.pageItems.map((item) => <NewsCard key={item.id} item={item} />)}
-        </div>
+        {pagination.pageItems.length ? (
+          <div className={styles.grid}>
+            {pagination.pageItems.map((item) => <NewsCard key={item.id} item={item} />)}
+          </div>
+        ) : (
+          <div className={styles.emptyState} role="status">
+            <span aria-hidden="true"><BrandMark /></span>
+            <div>
+              <strong>المرصد شغال… بس مفيش تغطية جديدة معروضة الآن.</strong>
+              <p>جرّب الرجوع للرئيسية أو استكشف أخبار القرى والمحتوى المحلي، وسيظهر أي خبر موثّق هنا تلقائيًا عند التقاطه.</p>
+            </div>
+            <div className={styles.emptyActions}>
+              <Link href="/villages">استكشف القرى</Link>
+              <Link href="/blog">اقرأ مدونة العسيرات</Link>
+            </div>
+          </div>
+        )}
 
         {pagination.totalPages > 1 ? (
           <nav className={styles.pagination} aria-label="صفحات أخبار العسيرات">
