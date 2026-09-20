@@ -135,12 +135,55 @@ export default async function HomePage() {
               <span className="hero__place-brand" aria-hidden="true"><BrandMark /></span>
               <span className="directory-media__label">صورة تعبيرية أصلية</span>
             </div>
+            <div className="hero__place-orbit" aria-label="ملامح الدليل">
+              <span><b>محلي</b><small>مخصص للعسيرات</small></span>
+              <span><b>مرتب</b><small>قرية ثم خدمة</small></span>
+              <span><b>متجدد</b><small>بيانات ومحتوى</small></span>
+            </div>
             <div className="hero__place-caption">
               <span>مركز العسيرات · محافظة سوهاج</span>
               <strong>الأرض والقرى والخدمات في دليل واحد</strong>
               <Link href="/villages">استكشف قرى العسيرات <b aria-hidden="true">←</b></Link>
             </div>
           </aside>
+        </div>
+      </section>
+
+      <section className="home-route-rail shell" aria-labelledby="home-route-title">
+        <div className="home-route-rail__intro">
+          <span className="eyebrow eyebrow--dark">من هنا تبدأ</span>
+          <h2 id="home-route-title">اختار أقصر طريق للمعلومة</h2>
+          <p>بدل ما تلف في صفحات كثيرة، ادخل من الباب المناسب لاحتياجك مباشرة.</p>
+        </div>
+        <div className="home-route-rail__grid">
+          <Link href="/directory" className="home-route-card home-route-card--primary">
+            <span className="home-route-card__index" aria-hidden="true">01</span>
+            <span className="home-route-card__kicker">بحث مباشر</span>
+            <strong>عايز خدمة دلوقتي؟</strong>
+            <small>ابحث بالاسم أو التخصص أو القرية، ووصل للنتيجة في أقل خطوات.</small>
+            <span className="home-route-card__cta">افتح الدليل <b aria-hidden="true">←</b></span>
+          </Link>
+          <Link href="/villages" className="home-route-card">
+            <span className="home-route-card__index" aria-hidden="true">02</span>
+            <span className="home-route-card__kicker">حسب المكان</span>
+            <strong>ابدأ من قريتك</strong>
+            <small>استكشف كل قرية وما نُشر فيها من خدمات ونجوع وتوابع.</small>
+            <span className="home-route-card__cta">استكشف القرى <b aria-hidden="true">←</b></span>
+          </Link>
+          <Link href="/community" className="home-route-card">
+            <span className="home-route-card__index" aria-hidden="true">03</span>
+            <span className="home-route-card__kicker">نبض الناس</span>
+            <strong>شوف المجتمع بيقول إيه</strong>
+            <small>نقاشات وتجارب وردود أعضاء الدليل في مساحة محلية واحدة.</small>
+            <span className="home-route-card__cta">ادخل المجتمع <b aria-hidden="true">←</b></span>
+          </Link>
+          <Link href="/news" className="home-route-card">
+            <span className="home-route-card__index" aria-hidden="true">04</span>
+            <span className="home-route-card__kicker">آخر المستجدات</span>
+            <strong>اعرف الجديد في العسيرات</strong>
+            <small>موجز أخبار محلي مرتب مع الرجوع للمصدر الأصلي عند القراءة.</small>
+            <span className="home-route-card__cta">تابع الأخبار <b aria-hidden="true">←</b></span>
+          </Link>
         </div>
       </section>
 
