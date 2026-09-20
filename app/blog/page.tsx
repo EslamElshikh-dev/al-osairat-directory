@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogCard } from '@/components/blog-card';
+import { BlogDiscoveryControls } from '@/components/blog-discovery-controls';
 import { BrandMark } from '@/components/site-shell';
 import { blogArticles } from '@/lib/blog-published';
+import { getBlogDiscoveryTopic, normalizeBlogSearchText } from '@/lib/blog-discovery';
 import { buildPageMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
@@ -161,10 +163,30 @@ export default function BlogPage() {
             </div>
             <span className="blog-count">{blogArticles.length.toLocaleString('ar-EG')} مقالات</span>
           </div>
-          <div className="blog-grid">
-            {blogArticles.map((article, index) => (
-              <BlogCard key={article.slug} article={article} featured={index === 0} />
-            ))}
+          <BlogDiscoveryControls total={blogArticles.length} />
+          <div className="blog-grid blog-grid--discoverable">
+            {blogArticles.map((article, index) => {
+              const searchableText = normalizeBlogSearchText([
+                article.title,
+                article.description,
+                article.category,
+                article.eyebrow,
+                ...article.sections.map((section) => section.heading),
+                ...article.faq.map((item) => item.question),
+              ].join(' '));
+
+              return (
+                <div
+                  key={article.slug}
+                  className="blog-discovery-card-shell"
+                  data-blog-discovery-card
+                  data-blog-topic={getBlogDiscoveryTopic(article.slug)}
+                  data-blog-search={searchableText}
+                >
+                  <BlogCard article={article} featured={index === 0} />
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
