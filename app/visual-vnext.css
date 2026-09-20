@@ -518,3 +518,297 @@
   .home-route-card { border-color: currentColor; }
   .hero__place-orbit span { border-color: rgba(255,255,255,.7); }
 }
+
+
+/* Core-route VNext polish */
+/* One visual signature for directory, villages, listing details, members and community. */
+.interior-redesign .catalog-hero,
+.interior-redesign .geo-hero,
+.interior-redesign .detail-hero--premium,
+.community-activity-hero,
+.community-members-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.interior-redesign .catalog-hero::before,
+.interior-redesign .geo-hero::before,
+.interior-redesign .detail-hero--premium::before,
+.community-activity-hero::before,
+.community-members-hero::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 82% 14%, rgba(240,206,117,.15), transparent 24%),
+    radial-gradient(circle at 10% 70%, rgba(255,255,255,.055) 0 1px, transparent 1.5px) 0 0 / 24px 24px;
+  opacity: .72;
+}
+
+.interior-redesign .catalog-hero::after,
+.interior-redesign .geo-hero::after,
+.interior-redesign .detail-hero--premium::after,
+.community-activity-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 360px;
+  height: 360px;
+  inset-inline-end: -190px;
+  bottom: -230px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 38px rgba(255,255,255,.016),
+    0 0 0 76px rgba(215,168,60,.018);
+  pointer-events: none;
+}
+
+.interior-redesign .catalog-hero > .shell,
+.interior-redesign .geo-hero > .shell,
+.interior-redesign .detail-hero--premium > .shell,
+.community-activity-hero > .shell,
+.community-members-hero > .shell {
+  position: relative;
+  z-index: 1;
+}
+
+/* Search and filter surfaces should feel like one system. */
+.directory-discovery-v4 .catalog-hero-search__field,
+.directory-discovery-v4 .explorer__toolbar-shell--discovery,
+.community-members-toolbar {
+  box-shadow:
+    0 18px 48px rgba(13,42,34,.075),
+    inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+.directory-discovery-v4 .catalog-hero-search__field:focus-within {
+  border-color: rgba(240,206,117,.55);
+  box-shadow:
+    0 22px 58px rgba(0,0,0,.18),
+    0 0 0 4px rgba(215,168,60,.09);
+}
+
+.directory-discovery-v4 .directory-category-chip,
+.directory-discovery-v4 .directory-village-rail a {
+  position: relative;
+  overflow: hidden;
+}
+
+.directory-discovery-v4 .directory-category-chip::after,
+.directory-discovery-v4 .directory-village-rail a::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--discovery-gold);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .18s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .directory-discovery-v4 .directory-category-chip:hover::after,
+  .directory-discovery-v4 .directory-village-rail a:hover::after,
+  .directory-discovery-v4 .directory-category-chip.is-active::after,
+  .directory-discovery-v4 .directory-village-rail a.is-active::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Village cards: subtle geographic depth, no extra image weight. */
+.village-grid--premium .village-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.village-grid--premium .village-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 130px;
+  height: 130px;
+  inset-inline-end: -62px;
+  top: -62px;
+  border: 1px solid rgba(23,58,49,.06);
+  border-radius: 50%;
+  box-shadow: 0 0 0 24px rgba(215,168,60,.025);
+}
+
+.village-grid--premium .village-card__visual {
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .village-grid--premium .village-card:hover .village-card__visual {
+    transform: rotate(-5deg) scale(1.06);
+    box-shadow: 0 10px 24px rgba(16,42,36,.10);
+  }
+}
+
+/* Listing detail: turn the image and source panel into a clear trust focal point. */
+.detail-hero--premium .detail-hero__summary,
+.detail-card--premium,
+.detail-aside--premium {
+  border-color: rgba(215,168,60,.12);
+  box-shadow:
+    0 20px 58px rgba(9,34,27,.075),
+    inset 0 1px 0 rgba(255,255,255,.72);
+}
+
+.detail-hero--premium .detail-hero__media {
+  position: relative;
+  isolation: isolate;
+}
+
+.detail-hero--premium .detail-hero__media::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 10px;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 16px;
+}
+
+.detail-card--premium .detail-grid > div {
+  position: relative;
+  overflow: hidden;
+}
+
+.detail-card--premium .detail-grid > div::after {
+  content: "";
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  inset-inline-end: -22px;
+  top: -24px;
+  border-radius: 50%;
+  background: rgba(215,168,60,.055);
+}
+
+.source-panel--premium {
+  background:
+    radial-gradient(circle at 100% 0,rgba(215,168,60,.075),transparent 32%),
+    linear-gradient(145deg,#fff,#f8faf8);
+}
+
+/* Community: bring the social layer visually into the same local brand system. */
+.community-activity-page,
+.community-members-page {
+  background:
+    radial-gradient(circle at 90% 18%,rgba(215,168,60,.055),transparent 21%),
+    #f7f5ef;
+}
+
+.community-weekly-pulse {
+  position: relative;
+  margin-top: -24px;
+  padding: 23px;
+  border: 1px solid rgba(18,55,45,.085);
+  border-radius: 27px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 24px 66px rgba(13,42,34,.09);
+  backdrop-filter: blur(16px);
+}
+
+.community-weekly-pulse__metrics article,
+.community-weekly-pulse__top-grid article,
+.community-member-card {
+  border-color: rgba(18,55,45,.085);
+  box-shadow:
+    0 13px 34px rgba(13,42,34,.05),
+    inset 0 1px 0 rgba(255,255,255,.84);
+}
+
+.community-weekly-pulse__metrics article {
+  position: relative;
+  overflow: hidden;
+}
+
+.community-weekly-pulse__metrics article::before {
+  content: "";
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  inset-inline-end: -36px;
+  top: -38px;
+  border-radius: 50%;
+  background: rgba(217,170,63,.07);
+}
+
+.community-weekly-pulse__rank {
+  box-shadow:
+    inset 0 0 0 1px rgba(217,170,63,.14),
+    0 7px 18px rgba(13,42,34,.06);
+}
+
+.community-member-card__avatar {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .community-member-card:hover .community-member-card__avatar {
+    transform: translateY(-2px) rotate(-2deg);
+    box-shadow: 0 12px 24px rgba(18,55,45,.16);
+  }
+}
+
+/* Consistent premium section titles across non-home routes. */
+.interior-section-heading > div,
+.community-members-heading > div,
+.community-weekly-pulse__heading > div {
+  position: relative;
+  padding-inline-start: 15px;
+}
+
+.interior-section-heading > div::before,
+.community-members-heading > div::before,
+.community-weekly-pulse__heading > div::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(#d7a83c,rgba(215,168,60,.08));
+}
+
+@media (max-width:760px) {
+  .community-weekly-pulse {
+    width: min(100% - 18px,1180px);
+    margin-top: -14px;
+    padding: 15px;
+    border-radius: 21px;
+  }
+
+  .interior-section-heading > div,
+  .community-members-heading > div,
+  .community-weekly-pulse__heading > div {
+    padding-inline-start: 12px;
+  }
+
+  .interior-section-heading > div::before,
+  .community-members-heading > div::before,
+  .community-weekly-pulse__heading > div::before {
+    width: 2px;
+  }
+
+  .detail-hero--premium .detail-hero__media::after { inset: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .directory-discovery-v4 .directory-category-chip::after,
+  .directory-discovery-v4 .directory-village-rail a::after,
+  .village-grid--premium .village-card__visual,
+  .community-member-card__avatar {
+    transition: none !important;
+    transform: none !important;
+  }
+}
