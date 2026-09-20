@@ -178,7 +178,7 @@ export default function BlogPage() {
               return (
                 <div
                   key={article.slug}
-                  className="blog-discovery-card-shell"
+                  className={`blog-discovery-card-shell${index === 0 ? ' blog-discovery-card-shell--featured' : ''}`}
                   data-blog-discovery-card
                   data-blog-topic={getBlogDiscoveryTopic(article.slug)}
                   data-blog-search={searchableText}
