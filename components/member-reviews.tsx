@@ -6,7 +6,7 @@ import { ReviewThread } from '@/components/review-thread';
 import { CommunityReactions } from '@/components/community-reactions';
 import type { CommunityReactionSummary } from '@/lib/community-reactions';
 
-type ReviewTargetType = 'site' | 'article';
+type ReviewTargetType = 'site' | 'article' | 'listing';
 
 type ReviewItem = {
   id: string;

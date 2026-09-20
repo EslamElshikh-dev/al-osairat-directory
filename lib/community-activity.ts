@@ -1,4 +1,5 @@
 import { blogBySlug } from '@/lib/blog-published';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { readCommunityReactionSummaries, type CommunityReactionSummary } from '@/lib/community-reactions';
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
 import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
@@ -35,7 +36,7 @@ type ProfileRow = {
 type ReviewRow = {
   id: string;
   user_id: string;
-  target_type: 'site' | 'article';
+  target_type: 'site' | 'article' | 'listing';
   target_key: string;
   rating: number;
   body: string;
@@ -72,14 +73,24 @@ function profileLocation(profile: ProfileRow) {
   return [profile.locality || '', profile.village || ''].filter(Boolean).join(' · ');
 }
 
-function reviewHref(review: Pick<ReviewRow, 'id' | 'target_type' | 'target_key'>) {
-  return review.target_type === 'site'
-    ? '/#review-' + review.id
-    : '/blog/' + encodeURIComponent(review.target_key) + '#review-' + review.id;
+function reviewHref(
+  review: Pick<ReviewRow, 'id' | 'target_type' | 'target_key'>,
+) {
+  if (review.target_type === 'site') return '/#review-' + review.id;
+  if (review.target_type === 'listing') {
+    return '/listing/' + encodeURIComponent(review.target_key) + '#review-' + review.id;
+  }
+  return '/blog/' + encodeURIComponent(review.target_key) + '#review-' + review.id;
 }
 
-function reviewContext(review: Pick<ReviewRow, 'target_type' | 'target_key'>) {
+function reviewContext(
+  review: Pick<ReviewRow, 'target_type' | 'target_key'>,
+  listingIndex: Map<string, string>,
+) {
   if (review.target_type === 'site') return 'دليل العسيرات';
+  if (review.target_type === 'listing') {
+    return listingIndex.get(review.target_key) || 'نشاط في دليل العسيرات';
+  }
   return blogBySlug[review.target_key]?.title || 'مقال من مدونة العسيرات';
 }
 
@@ -204,9 +215,14 @@ export async function getPublicCommunityActivityForUserIds(
     )
     : [];
 
+  const contextRows = [...reviewRows, ...(parentRows || [])];
   const parentIndex = new Map(
-    [...reviewRows, ...(parentRows || [])].map((review) => [review.id, review]),
+    contextRows.map((review) => [review.id, review]),
   );
+  const listingRowsPresent = contextRows.some((review) => review.target_type === 'listing');
+  const listingIndex = listingRowsPresent
+    ? new Map((await getPublicDirectoryListings()).map((listing) => [listing.slug, listing.title]))
+    : new Map<string, string>();
 
   const [reviewReactions, replyReactions, weeklyReviewHelpful, weeklyReplyHelpful] = await Promise.all([
     readCommunityReactionSummaries('review', reviewRows.map((review) => review.id)),
@@ -226,7 +242,7 @@ export async function getPublicCommunityActivityForUserIds(
       createdAt: review.created_at,
       updatedAt: review.updated_at,
       href: reviewHref(review),
-      contextLabel: reviewContext(review),
+      contextLabel: reviewContext(review, listingIndex),
       reactions: reviewReactions.get(review.id) || {
         likeCount: 0,
         helpfulCount: 0,
@@ -255,7 +271,7 @@ export async function getPublicCommunityActivityForUserIds(
       createdAt: reply.created_at,
       updatedAt: reply.updated_at,
       href: reviewHref(parent),
-      contextLabel: reviewContext(parent),
+      contextLabel: reviewContext(parent, listingIndex),
       reactions: replyReactions.get(reply.id) || {
         likeCount: 0,
         helpfulCount: 0,

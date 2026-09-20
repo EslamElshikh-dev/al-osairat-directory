@@ -173,7 +173,7 @@ export default async function MemberPublicProfilePage({
               <article className="community-profile-review" key={review.id}>
                 <header>
                   <div>
-                    <span>{review.targetType === 'site' ? 'تقييم للدليل' : 'تقييم لمقال'}</span>
+                    <span>{review.targetType === 'site' ? 'تقييم للدليل' : review.targetType === 'listing' ? 'تقييم لنشاط' : 'تقييم لمقال'}</span>
                     <Link href={review.href}>{review.targetLabel}</Link>
                   </div>
                   <time dateTime={review.createdAt}>{formatFullDate(review.createdAt)}</time>
@@ -209,7 +209,7 @@ export default async function MemberPublicProfilePage({
               <article className="community-profile-reply" key={reply.id}>
                 <header>
                   <div>
-                    <span>{reply.targetType === 'site' ? 'رد على تقييم للدليل' : 'رد على تقييم لمقال'}</span>
+                    <span>{reply.targetType === 'site' ? 'رد على تقييم للدليل' : reply.targetType === 'listing' ? 'رد على تقييم لنشاط' : 'رد على تقييم لمقال'}</span>
                     <Link href={reply.href}>{reply.targetLabel}</Link>
                   </div>
                   <time dateTime={reply.createdAt}>{formatFullDate(reply.createdAt)}</time>
