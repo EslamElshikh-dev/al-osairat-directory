@@ -12,6 +12,8 @@ import { isVillageCategoryLandingEligible, isVillageHubIndexable, villageCategor
 import { isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 import { getLowCoverageCategories, getUndercoveredVillages, villageCategoryDirectoryHref } from '@/lib/discovery';
+import { SandContextLink } from '@/components/sand-context-link';
+import { formatLivingDate, listingFreshness, sortListingsByFreshness } from '@/lib/living-directory';
 
 type VillageSearchParams = { page?: string };
 
@@ -89,6 +91,11 @@ export default async function VillagePage({
 
   const allListings = await loadVillageCatalog(village.name);
   const villageListings = allListings.filter((item) => item.village === village.name && item.category !== 'emergency');
+  const recentListings = sortListingsByFreshness(villageListings, 4);
+  const freshListingCount = villageListings.filter((item) => listingFreshness(item).key === 'fresh').length;
+  const trustedListingCount = villageListings.filter(
+    (item) => item.sourceStatus === 'google_verified' || item.sourceStatus === 'cross_checked',
+  ).length;
   const categorySummary = categories
     .map((category) => ({
       category,
@@ -230,6 +237,21 @@ export default async function VillagePage({
         </div>
       </section>
 
+      {!fallbackScope && (
+        <section className="shell village-living-pulse" aria-label={`نبض البيانات في ${village.name}`}>
+          <div className="village-living-pulse__intro">
+            <span>نبض القرية</span>
+            <strong>صورة سريعة عن حالة البيانات الآن</strong>
+          </div>
+          <div className="village-living-pulse__metrics">
+            <article><b>{villageListings.length.toLocaleString('ar-EG')}</b><span>سجل منشور</span><small>داخل نطاق {village.name}</small></article>
+            <article><b>{trustedListingCount.toLocaleString('ar-EG')}</b><span>بيانات موثوقة المصدر</span><small>خرائط أو مطابقة بيانات</small></article>
+            <article><b>{freshListingCount.toLocaleString('ar-EG')}</b><span>مراجَع خلال 30 يومًا</span><small>مؤشر حداثة، وليس ضمانًا لدوام البيانات</small></article>
+            <article><b>{village.localities.length.toLocaleString('ar-EG')}</b><span>نجعًا وتابعًا</span><small>مسجلين في هيكل القرية</small></article>
+          </div>
+        </section>
+      )}
+
       <section className="shell page-section village-detail-content">
         {village.localities.length > 0 && (
           <div id="localities" className="localities-panel localities-panel--premium localities-panel--discovery">
@@ -298,6 +320,54 @@ export default async function VillagePage({
             </div>
           </section>
         )}
+
+        {!fallbackScope && recentListings.length > 0 && (
+          <section className="village-recent-activity" aria-labelledby="village-recent-activity-title">
+            <div className="village-recent-activity__heading">
+              <div>
+                <span className="eyebrow eyebrow--dark">آخر حركة موثقة</span>
+                <h2 id="village-recent-activity-title">سجلات راجعناها مؤخرًا في {village.name}</h2>
+                <p>نعرض هنا أحدث تواريخ المراجعة المسجلة فعلًا داخل الدليل؛ لا تعني أن النشاط نفسه قام بتحديث بياناته في ذلك اليوم.</p>
+              </div>
+              <Link href={`/directory?village=${encodeURIComponent(village.name)}`}>كل أنشطة القرية ←</Link>
+            </div>
+            <ol className="village-recent-activity__timeline">
+              {recentListings.map((item, index) => {
+                const category = categories.find((entry) => entry.id === item.category);
+                return (
+                  <li key={item.id}>
+                    <span className="village-recent-activity__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                    <div>
+                      <small>{formatLivingDate(item.lastUpdatedAt)} · {category?.shortLabel || 'نشاط محلي'}</small>
+                      <Link href={`/listing/${item.slug}`}>{item.title}</Link>
+                      <p>{item.locality ? `${item.locality} · ${village.name}` : item.location}</p>
+                    </div>
+                    <b className={`is-${listingFreshness(item).key}`}>{listingFreshness(item).label}</b>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        )}
+
+        <section className="village-living-journey" aria-labelledby="village-living-journey-title">
+          <div>
+            <span className="eyebrow eyebrow--dark">رحلة القرية</span>
+            <h2 id="village-living-journey-title">ابدأ بالمكان، اختار الخدمة، ثم اسأل الناس أو سَند</h2>
+          </div>
+          <nav aria-label={`مسار الاستكشاف داخل ${village.name}`}>
+            <a className="is-current" href="#main-content"><span>01</span><small>أنت هنا</small><strong>{village.name}</strong></a>
+            <a href="#village-services-title"><span>02</span><small>اختار مجالًا</small><strong>الأقسام</strong></a>
+            <a href="#village-listings"><span>03</span><small>شوف الموجود</small><strong>الأنشطة</strong></a>
+            <Link href="/community"><span>04</span><small>اسأل الناس</small><strong>المجتمع</strong></Link>
+            <SandContextLink
+              className="village-living-journey__sand"
+              prompt={`عايز أفضل الخدمات المتاحة حاليًا في ${village.name} وابدأ بالأحدث مراجعة والأوضح بيانات`}
+            >
+              <span>05</span><small>رتّبها لي</small><strong>سَند</strong>
+            </SandContextLink>
+          </nav>
+        </section>
 
         <div id="village-listings" className="section-heading section-heading--compact interior-section-heading">
           <div>
