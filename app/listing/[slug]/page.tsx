@@ -14,8 +14,11 @@ import { ListingReport } from '@/components/listing-report';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { imageForListing } from '@/lib/directory-images';
-import { getRelatedListings, villageCategoryDirectoryHref } from '@/lib/discovery';
+import { villageCategoryDirectoryHref } from '@/lib/discovery';
 import { latestScanImageForListing } from '@/lib/latest-scan-images';
+import { MemberReviews } from '@/components/member-reviews';
+import { SandContextLink } from '@/components/sand-context-link';
+import { formatLivingDate, getLivingRelatedListings, listingFreshness, listingTrust } from '@/lib/living-directory';
 
 export const dynamic = 'force-dynamic';
 
@@ -95,9 +98,12 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const villagePath = villagePathByName(listing.village);
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
   const coverImage = latestScanImageForListing(listing) || imageForListing(listing);
+  const freshness = listingFreshness(listing);
+  const trust = listingTrust(listing);
+  const livingUpdatedLabel = formatLivingDate(listing.lastUpdatedAt);
 
   const comparableListings = allListings;
-  const nearby = getRelatedListings(listing, comparableListings, 4);
+  const nearby = getLivingRelatedListings(listing, comparableListings, 4);
   const listingVillage = villageForListing(listing);
   const localLandingPath = listingVillage
     && isVillageCategoryLandingEligible(comparableListings, listing.village, listing.category)
@@ -207,6 +213,34 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
+      <section className="shell living-status-strip" aria-label="حالة النشاط داخل الدليل">
+        <article className={`living-status-card is-${trust.key}`}>
+          <span className="living-status-card__icon" aria-hidden="true">✓</span>
+          <div><small>الثقة في المصدر</small><strong>{trust.label}</strong><p>{trust.detail}</p></div>
+        </article>
+        <article className={`living-status-card is-${freshness.key}`}>
+          <span className="living-status-card__icon" aria-hidden="true">↻</span>
+          <div><small>حداثة البيانات</small><strong>{freshness.label}</strong><p>{freshness.days !== null ? `منذ ${freshness.days.toLocaleString('ar-EG')} يومًا` : freshness.detail}</p></div>
+        </article>
+        {typeof listing.rating === 'number' && listing.reviewCount > 0 ? (
+          <article className="living-status-card is-rating">
+            <span className="living-status-card__icon" aria-hidden="true">★</span>
+            <div><small>تقييم المصدر الخارجي</small><strong>{listing.rating.toFixed(1)} / 5</strong><p>{listing.reviewCount.toLocaleString('ar-EG')} مراجعة بحسب المصدر المرتبط بالسجل</p></div>
+          </article>
+        ) : (
+          <article className="living-status-card is-community">
+            <span className="living-status-card__icon" aria-hidden="true">✦</span>
+            <div><small>تجربة المجتمع</small><strong>مفتوح لآراء الأعضاء</strong><p>تقييمات أعضاء الدليل تظهر بشكل مستقل عن تقييمات المصادر الخارجية.</p></div>
+          </article>
+        )}
+        {villagePath ? (
+          <Link href={villagePath} className="living-status-card living-status-card--link">
+            <span className="living-status-card__icon" aria-hidden="true">⌖</span>
+            <div><small>المكان</small><strong>{listing.village}</strong><p>استكشف القرية وكل الخدمات المنشورة فيها ←</p></div>
+          </Link>
+        ) : null}
+      </section>
+
       <section className="shell detail-layout detail-layout--premium">
         <article className="detail-card detail-card--premium">
           <div className="detail-card__heading">
@@ -240,6 +274,36 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             </div>
             <ListingReport listingId={listing.id} listingTitle={listing.title} />
           </div>
+
+          <section className="living-timeline" aria-labelledby="living-timeline-title">
+            <div className="living-timeline__heading">
+              <span>نبض السجل</span>
+              <h2 id="living-timeline-title">رحلة البيانات والمجتمع</h2>
+              <p>خط زمني مختصر لما نعرفه عن السجل بدون اختراع أحداث أو تواريخ غير متاحة.</p>
+            </div>
+            <ol>
+              <li className="is-source">
+                <span aria-hidden="true">01</span>
+                <div><small>المصدر الحالي</small><strong>{trust.label}</strong><p>{trust.detail}</p></div>
+              </li>
+              {livingUpdatedLabel ? (
+                <li className="is-update">
+                  <span aria-hidden="true">02</span>
+                  <div><small>آخر مراجعة موثقة</small><strong>{livingUpdatedLabel}</strong><p>{freshness.detail}</p></div>
+                </li>
+              ) : null}
+              {(listing.googlePlaceId || listing.googleMapsUrl) ? (
+                <li className="is-map">
+                  <span aria-hidden="true">03</span>
+                  <div><small>مرجع المكان</small><strong>موقع مرتبط بخرائط Google</strong><p>يمكن فتح المرجع الخارجي للتحقق من المكان والمعلومات المتاحة هناك.</p></div>
+                </li>
+              ) : null}
+              <li className="is-community">
+                <span aria-hidden="true">✦</span>
+                <div><small>المرحلة الحية</small><strong>آراء وردود أعضاء الدليل</strong><p><a href="#listing-community-reviews">انتقل لتجارب المجتمع وردود الأعضاء ↓</a></p></div>
+              </li>
+            </ol>
+          </section>
         </article>
 
         <aside className="detail-aside detail-aside--premium">
@@ -249,7 +313,14 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <p>{fallbackScope ? 'نرتب البدائل بحسب القسم والتشابه وجودة البيانات داخل مركز العسيرات.' : `نبدأ بالأقرب إلى ${listing.village} والتخصص نفسه، ثم نوسّع الاختيارات عند الحاجة بدل ترك المسار بلا بدائل.`}</p>
           </div>
           <div className="detail-aside__list">
-            {nearby.length ? nearby.map((item) => <ListingCard key={item.id} listing={item} compact />) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
+            {nearby.length ? nearby.map((match) => (
+              <div className="living-related-card" key={match.listing.id}>
+                <div className="living-related-card__reasons" aria-label="سبب اقتراح النشاط">
+                  {match.reasons.map((reason) => <span key={reason}>{reason}</span>)}
+                </div>
+                <ListingCard listing={match.listing} compact />
+              </div>
+            )) : <p className="detail-aside__empty">لا توجد سجلات مشابهة منشورة حاليًا.</p>}
           </div>
 
           <div className="detail-aside__discovery-actions">
@@ -269,6 +340,37 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             </Link>
           </div>
         </aside>
+      </section>
+
+      <section className="shell living-journey" aria-labelledby="living-journey-title">
+        <div className="living-journey__intro">
+          <span className="eyebrow eyebrow--dark">رحلة محلية واحدة</span>
+          <h2 id="living-journey-title">من المكان للمعلومة… ومن المعلومة للناس</h2>
+          <p>بدل ما تنتهي الزيارة عند بطاقة النشاط، كمّل للقرية أو المجتمع أو اطلب من سَند يجيب لك بدائل بنفس السياق.</p>
+        </div>
+        <nav className="living-journey__rail" aria-label="رحلة الاستكشاف داخل دليل العسيرات">
+          {villagePath ? <Link href={villagePath}><span>01</span><small>المكان</small><strong>{listing.village}</strong></Link> : null}
+          <a className="is-current" href="#main-content"><span>02</span><small>أنت هنا</small><strong>{listing.title}</strong></a>
+          <Link href="/community"><span>03</span><small>الناس</small><strong>نبض المجتمع</strong></Link>
+          <SandContextLink
+            className="living-journey__sand"
+            prompt={`هات لي بدائل مشابهة لـ ${listing.title} في ${listing.village} وابدأ بالأقرب والأحدث مراجعة`}
+          >
+            <span>04</span><small>مساعد محلي</small><strong>اسأل سَند</strong>
+          </SandContextLink>
+        </nav>
+      </section>
+
+      <section id="listing-community-reviews" className="shell living-reviews-section">
+        <MemberReviews
+          targetType="listing"
+          targetKey={listing.slug}
+          eyebrow="تجارب أعضاء المجتمع"
+          title={`آراء المجتمع حول ${listing.title}`}
+          description="تقييمات أعضاء دليل العسيرات منفصلة عن تقييمات خرائط Google أو أي مصدر خارجي، ويمكن للأعضاء الرد والنقاش داخل كل تجربة."
+          prompt={`كيف كانت تجربتك مع ${listing.title}؟`}
+          className="member-reviews--listing"
+        />
       </section>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
