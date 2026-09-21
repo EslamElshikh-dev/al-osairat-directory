@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { listings } from '@/lib/data';
 import {
   canonicalCoverageHasReleaseParity,
@@ -12,7 +13,7 @@ import {
 import { applyListingOverrides } from '@/lib/listing-overrides';
 import { getPublishedListings } from '@/lib/published-listings';
 
-export async function getPublicDirectoryListings() {
+export const getPublicDirectoryListings = cache(async function getPublicDirectoryListings() {
   const [publishedListings, baseListings] = await Promise.all([
     getPublishedListings(),
     applyListingOverrides(listings),
@@ -33,4 +34,4 @@ export async function getPublicDirectoryListings() {
   }
 
   return releaseListings;
-}
+});

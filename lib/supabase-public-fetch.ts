@@ -1,4 +1,4 @@
-const PUBLIC_REVALIDATE_SECONDS = 60;
+const PUBLIC_REVALIDATE_SECONDS = 1_800;
 const PUBLIC_FETCH_TIMEOUT_MS = 4_500;
 
 type NextFetchOptions = RequestInit & {
