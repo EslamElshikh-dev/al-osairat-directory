@@ -14,6 +14,16 @@ const articleTopicBySlug: Record<string, Exclude<BlogDiscoveryTopic, 'all'>> = {
   'origin-name-al-osairat': 'history',
   'al-osairat-famous-people': 'people',
   'famous-families-al-osairat': 'families',
+  'villages-al-osairat-guide': 'place',
+  'health-services-al-osairat': 'place',
+  'education-al-osairat': 'place',
+  'transport-al-osairat': 'place',
+  'markets-shopping-al-osairat': 'place',
+  'craftsmen-al-osairat': 'place',
+  'agriculture-al-osairat': 'place',
+  'hayah-karima-al-osairat': 'place',
+  'government-postal-services-al-osairat': 'place',
+  'how-to-use-al-osairat-directory': 'place',
 };
 
 export function getBlogDiscoveryTopic(slug: string): Exclude<BlogDiscoveryTopic, 'all'> {
