@@ -323,6 +323,8 @@ export default async function HomePage() {
         description="تقييمات مكتوبة من أعضاء مسجلين تساعدنا على تطوير الدليل وتحسين دقة وسهولة الوصول للمعلومات المحلية."
         prompt="شارك رأيك في تجربة استخدام الدليل"
         className="shell member-reviews--home"
+        pageSize={2}
+        activationMargin="3600px 0px"
       />
 
       <FaqSection />
