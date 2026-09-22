@@ -9,6 +9,7 @@ import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
 import { MemberReviews } from '@/components/member-reviews';
+import { SmartLocalCompass } from '@/components/smart-local-compass';
 import { homeFaq } from '@/lib/faq';
 import { blogArticles } from '@/lib/blog-published';
 import { getLocalNews, selectHomepageNews } from '@/lib/news';
@@ -99,21 +100,9 @@ export default async function HomePage() {
               ببيانات منظّمة وروابط خرائط مباشرة تساعدك على الوصول إلى المكان المناسب بسرعة.
             </p>
 
-            <form action="/directory" className="hero-search hero-search--premium">
-              <span className="hero-search__brand" aria-hidden="true"><BrandMark compact /></span>
-              <label className="sr-only" htmlFor="home-search">ابحث في دليل العسيرات</label>
-              <input id="home-search" name="q" placeholder="ابحث باسم خدمة أو نشاط أو قرية…" />
-              <button type="submit"><span>ابحث في الدليل</span><b aria-hidden="true">←</b></button>
-            </form>
-
-            <div className="hero__quick-links" aria-label="روابط بحث سريعة">
-              <span>وصول سريع</span>
-              <Link href="/directory/doctors">الأطباء</Link>
-              <Link href="/directory/pharmacies">الصيدليات</Link>
-              <Link href="/directory/shops">المحلات</Link>
-              <Link href="/villages">القرى</Link>
-              <Link href="/localities">النجوع والتوابع</Link>
-            </div>
+            <SmartLocalCompass
+              villages={villages.filter((village) => village.name !== 'مركز العسيرات').map(({ name, slug }) => ({ name, slug }))}
+            />
 
             <div className="hero__trust">
               <span><b>{allListings.length}</b><small>سجل منظم</small></span>
