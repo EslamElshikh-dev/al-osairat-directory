@@ -8,7 +8,6 @@ button:disabled,[aria-disabled="true"]{cursor:not-allowed;opacity:.62;transform:
 
 /* Keep expensive compositing hints only where they are useful. */
 .hero::before{will-change:auto}
-@media (min-width:900px) and (hover:hover) and (pointer:fine){.hero::before{will-change:transform,opacity}}
 
 /* Route-level loading / error states */
 .status-page{min-height:100svh;box-sizing:border-box;padding:72px 0 92px;background:radial-gradient(circle at 82% 10%,rgba(215,168,60,.12),transparent 32%),linear-gradient(180deg,#f8f6f0,#f2efe6)}
