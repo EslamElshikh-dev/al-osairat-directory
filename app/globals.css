@@ -38,7 +38,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .skip-link:focus { transform: none; }
 .shell { width: var(--shell); margin-inline: auto; }
 
-.site-header { position: sticky; top: 0; z-index: 80; background: rgba(246,243,235,.88); border-bottom: 1px solid rgba(16,42,36,.08); backdrop-filter: blur(18px); }
+.site-header { position: sticky; top: 0; z-index: 80; background: rgba(246,243,235,.88); border-bottom: 1px solid rgba(16,42,36,.08); }
 .site-header__inner { height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 30px; }
 .brand { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
 .brand strong { display: block; font-size: 17px; letter-spacing: -.3px; }
