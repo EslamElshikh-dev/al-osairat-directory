@@ -35,8 +35,6 @@ body {
   padding: 9px 0;
   background: rgba(247,244,237,.82);
   border-bottom: 0;
-  backdrop-filter: blur(24px) saturate(145%);
-  -webkit-backdrop-filter: blur(24px) saturate(145%);
 }
 
 .site-header::after {

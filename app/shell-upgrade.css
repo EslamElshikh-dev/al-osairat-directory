@@ -5,8 +5,6 @@
   padding: 10px 0;
   background: linear-gradient(180deg, rgba(246,243,235,.94), rgba(246,243,235,.82));
   border-bottom: 0;
-  backdrop-filter: blur(20px) saturate(135%);
-  -webkit-backdrop-filter: blur(20px) saturate(135%);
 }
 .site-header::after {
   content: '';

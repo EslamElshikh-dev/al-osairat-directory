@@ -23,10 +23,13 @@ test('optimized images keep a useful deployment-safe browser cache', async () =>
 });
 
 test('homepage preloads a compact review preview before it reaches the viewport', async () => {
-  const [home, reviews, api, phaseFour] = await Promise.all([
+  const [home, reviews, api, globals, shell, phaseOne, phaseFour] = await Promise.all([
     readProjectFile('app/page.tsx'),
     readProjectFile('components/member-reviews.tsx'),
     readProjectFile('app/api/content-reviews/route.ts'),
+    readProjectFile('app/globals.css'),
+    readProjectFile('app/shell-upgrade.css'),
+    readProjectFile('app/visual-redesign-phase1.css'),
     readProjectFile('app/visual-redesign-phase4.css'),
   ]);
 
