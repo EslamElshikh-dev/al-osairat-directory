@@ -1,0 +1,180 @@
+/* Smart Local Compass — one coherent path from need + village to a useful result. */
+.smart-compass {
+  position: relative;
+  z-index: 12;
+  width: 100%;
+  margin-top: 26px;
+  padding: 15px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 25px;
+  color: #173b31;
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 24px 70px rgba(4,25,20,.2), inset 0 1px 0 #fff;
+  backdrop-filter: blur(18px);
+}
+
+.smart-compass__heading {
+  display: grid;
+  grid-template-columns: 40px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 2px 3px 13px;
+}
+
+.smart-compass__seal {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(205,158,49,.27);
+  border-radius: 14px;
+  background: #fff7dd;
+}
+.smart-compass__seal::before,
+.smart-compass__seal::after,
+.smart-compass__seal i,
+.smart-compass__seal b { content: ""; position: absolute; }
+.smart-compass__seal::before { width: 18px; height: 18px; border: 1px solid #2e6655; border-radius: 50%; }
+.smart-compass__seal::after { width: 5px; height: 5px; border-radius: 50%; background: #d4a63b; }
+.smart-compass__seal i { width: 1px; height: 27px; background: linear-gradient(#d4a63b 0 50%,#2e6655 50%); transform: rotate(36deg); }
+.smart-compass__seal b { width: 27px; height: 1px; background: rgba(46,102,85,.2); }
+
+.smart-compass__heading span,
+.smart-compass__heading strong { display: block; }
+.smart-compass__heading span { color: #9a711d; font-size: .75rem; font-weight: 900; }
+.smart-compass__heading strong { margin-top: 2px; color: #173b31; font-size: .95rem; line-height: 1.45; }
+.smart-compass__heading > small { padding: 7px 10px; border-radius: 999px; color: #687771; background: #f0f4f1; font-size: .75rem; white-space: nowrap; }
+.smart-compass__heading > small b { color: #265d4c; }
+
+.smart-compass__form {
+  display: grid;
+  grid-template-columns: minmax(0,1.45fr) minmax(175px,.65fr) auto;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.smart-compass__field {
+  min-width: 0;
+  min-height: 68px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 8px 13px;
+  border: 1px solid rgba(23,59,49,.1);
+  border-radius: 17px;
+  background: #f5f7f4;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.smart-compass__field:focus-within { border-color: rgba(205,158,49,.55); background:#fff; box-shadow: 0 0 0 4px rgba(205,158,49,.09); }
+.smart-compass__field label,
+.smart-compass__field > span { color: #74827c; font-size: .75rem; font-weight: 850; }
+.smart-compass__input-row { display: flex; align-items: center; gap: 8px; }
+.smart-compass__input-row > span { color: #a5791f; font-size: 1.25rem; line-height: 1; }
+.smart-compass input,
+.smart-compass select { width: 100%; min-width: 0; border: 0; outline: 0; color: #173b31; background: transparent; font: inherit; font-size: 1rem; font-weight: 750; }
+.smart-compass input::placeholder { color: #85918c; font-weight: 550; }
+.smart-compass select { cursor: pointer; }
+
+.smart-compass__query { position: relative; }
+.smart-compass__suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline: 0;
+  z-index: 40;
+  overflow: hidden;
+  padding: 7px;
+  border: 1px solid rgba(23,59,49,.1);
+  border-radius: 19px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(12,42,34,.2);
+}
+.smart-compass__suggestions-status { padding: 7px 9px 9px; color: #75817c; font-size: .75rem; font-weight: 800; }
+.smart-compass__suggestions [role="listbox"] > button {
+  width: 100%;
+  min-height: 55px;
+  display: grid;
+  grid-template-columns: 35px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 13px;
+  color: #23483d;
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.smart-compass__suggestions [role="listbox"] > button:hover,
+.smart-compass__suggestions [role="listbox"] > button.is-active { background: #f1f5f2; }
+.smart-compass__result-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; color:#2d6754; background:#e9f2ed; font-weight: 900; }
+.smart-compass__suggestions [role="listbox"] > button > span:nth-child(2) { min-width: 0; }
+.smart-compass__suggestions strong,
+.smart-compass__suggestions small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.smart-compass__suggestions strong { font-size: .88rem; }
+.smart-compass__suggestions small { margin-top: 3px; color: #7d8884; font-size: .72rem; }
+.smart-compass__suggestions [role="listbox"] > button > i { padding: 4px 7px; border-radius: 999px; color: #87651b; background:#fff4d6; font-size: .7rem; font-style: normal; font-weight: 850; }
+.smart-compass__suggestions > a { min-height: 42px; display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:5px; padding:9px 11px; border-radius:12px; color:#fff; background:#183f34; font-size:.8rem; font-weight:900; }
+.smart-compass__suggestions > a b { color:#e4c369; }
+
+.smart-compass__submit {
+  min-width: 125px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 17px;
+  border: 0;
+  border-radius: 17px;
+  color: #fff;
+  background: linear-gradient(135deg,#235a49,#102e26);
+  box-shadow: 0 13px 28px rgba(16,46,38,.18);
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 950;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+.smart-compass__submit b { color:#e5c66f; font-size:1.05rem; transition:transform .18s ease; }
+.smart-compass__submit:hover { transform: translateY(-2px); box-shadow: 0 17px 34px rgba(16,46,38,.23); }
+.smart-compass__submit:hover b { transform: translateX(-3px); }
+.smart-compass__submit:disabled { opacity:.52; cursor:not-allowed; transform:none; box-shadow:none; }
+
+.smart-compass__shortcuts,
+.smart-compass__recent { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: start; gap: 10px; margin-top: 11px; padding-inline: 3px; }
+.smart-compass__shortcuts > span,
+.smart-compass__recent > span { padding-top: 6px; color:#7c8983; font-size:.75rem; font-weight:850; white-space:nowrap; }
+.smart-compass__shortcuts > div,
+.smart-compass__recent > div { display:flex; flex-wrap:wrap; gap:6px; }
+.smart-compass__shortcuts button,
+.smart-compass__recent button { min-height:32px; padding:6px 10px; border:1px solid rgba(23,59,49,.1); border-radius:999px; color:#38594f; background:#fff; font:inherit; font-size:.75rem; font-weight:800; cursor:pointer; transition:border-color .18s ease,background .18s ease,transform .18s ease; }
+.smart-compass__shortcuts button:hover,
+.smart-compass__recent button:hover { transform:translateY(-1px); border-color:rgba(205,158,49,.4); background:#fff9e9; }
+.smart-compass__recent { padding-top:10px; border-top:1px solid rgba(23,59,49,.08); }
+.smart-compass__recent button { display:inline-flex; align-items:center; gap:7px; border-radius:12px; }
+.smart-compass__recent small { color:#8b9691; font-size:.68rem; font-weight:700; }
+
+.smart-compass--catalog { max-width: 790px; margin-top: 24px; border-color: rgba(255,255,255,.18); }
+
+@media (max-width: 760px) {
+  .smart-compass { margin-top:20px; padding:11px; border-radius:21px; }
+  .smart-compass__heading { grid-template-columns:36px minmax(0,1fr); padding-bottom:11px; }
+  .smart-compass__seal { width:36px; height:36px; border-radius:12px; }
+  .smart-compass__heading > small { display:none; }
+  .smart-compass__heading strong { font-size:.88rem; }
+  .smart-compass__form { grid-template-columns:1fr; }
+  .smart-compass__field { min-height:64px; }
+  .smart-compass__submit { min-height:52px; }
+  .smart-compass__suggestions { position:fixed; top:auto; inset-inline:12px; bottom:calc(78px + env(safe-area-inset-bottom)); max-height:min(430px,62svh); overflow:auto; }
+  .smart-compass__shortcuts,
+  .smart-compass__recent { grid-template-columns:1fr; gap:6px; }
+  .smart-compass__shortcuts > div { flex-wrap:nowrap; overflow-x:auto; padding-bottom:3px; scrollbar-width:thin; }
+  .smart-compass__shortcuts button { flex:0 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smart-compass *,
+  .smart-compass *::before,
+  .smart-compass *::after { scroll-behavior:auto !important; transition:none !important; }
+}

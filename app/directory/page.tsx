@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { BrandMark } from '@/components/site-shell';
+import { SmartLocalCompass } from '@/components/smart-local-compass';
 import { categories, villages } from '@/lib/data';
 import { queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
@@ -94,30 +95,12 @@ export default async function DirectoryPage({
             <h1>دليل العسيرات <em>كل اللي بتدور عليه أقرب</em></h1>
             <p>اكتب اسم النشاط أو الخدمة أو القرية، وهتدخل مباشرة على النتائج بدل اللف بين الأقسام.</p>
 
-            <form className="catalog-hero-search" action="/directory" method="get" role="search">
-              <label className="sr-only" htmlFor="hero-directory-search">ابحث في دليل العسيرات</label>
-              <div className="catalog-hero-search__field">
-                <span aria-hidden="true"><BrandMark compact /></span>
-                <input
-                  id="hero-directory-search"
-                  name="q"
-                  defaultValue={params.q || ''}
-                  placeholder="مثال: دكتور أسنان، صيدلية، كهربائي، مدرسة..."
-                  inputMode="search"
-                  autoComplete="off"
-                />
-                <button type="submit" className="button button--light">ابحث الآن</button>
-              </div>
-              {params.village && params.village !== 'all' && <input type="hidden" name="village" value={params.village} />}
-            </form>
-
-            <nav className="catalog-hero-villages" aria-label="قرى شائعة في الدليل">
-              <span>أو اختَر القرية:</span>
-              {coreVillages.slice(0, 6).map((village) => (
-                <Link key={village.slug} href={`/directory?village=${encodeURIComponent(village.name)}`}>{village.name}</Link>
-              ))}
-              <Link href="/villages" className="catalog-hero-villages__all">كل القرى ←</Link>
-            </nav>
+            <SmartLocalCompass
+              variant="catalog"
+              villages={coreVillages.map(({ name, slug }) => ({ name, slug }))}
+              initialQuery={params.q || ''}
+              initialVillage={params.village || 'all'}
+            />
           </div>
 
           <aside className="catalog-hero__summary" aria-label="ملخص الدليل">

@@ -46,6 +46,7 @@ import './directory-discovery-v4.css';
 import './visual-vnext.css';
 import './visual-vnext2.css';
 import './living-directory.css';
+import './smart-local-compass.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
