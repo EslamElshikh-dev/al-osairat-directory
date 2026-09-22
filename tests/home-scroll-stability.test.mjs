@@ -21,3 +21,18 @@ test('optimized images keep a useful deployment-safe browser cache', async () =>
 
   assert.match(config, /minimumCacheTTL:\s*60 \* 60 \* 24 \* 7/);
 });
+
+test('homepage preloads a compact review preview before it reaches the viewport', async () => {
+  const [home, reviews, api, phaseFour] = await Promise.all([
+    readProjectFile('app/page.tsx'),
+    readProjectFile('components/member-reviews.tsx'),
+    readProjectFile('app/api/content-reviews/route.ts'),
+    readProjectFile('app/visual-redesign-phase4.css'),
+  ]);
+
+  assert.match(home, /pageSize=\{2\}/);
+  assert.match(home, /activationMargin="3600px 0px"/);
+  assert.match(reviews, /rootMargin: activationMargin/);
+  assert.match(api, /Math\.min\(MAX_PAGE_SIZE, pageSizeRaw\)/);
+  assert.match(phaseFour, /\.site-header\{[^}]*backdrop-filter:none/);
+});
