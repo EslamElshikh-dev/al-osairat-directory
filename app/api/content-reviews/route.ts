@@ -18,7 +18,8 @@ import {
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const PAGE_SIZE = 6;
+const DEFAULT_PAGE_SIZE = 6;
+const MAX_PAGE_SIZE = 6;
 const REVIEW_MIN_LENGTH = 20;
 const REVIEW_MAX_LENGTH = 1200;
 
@@ -225,14 +226,14 @@ async function readSummary(targetType: ReviewTargetType, targetKey: string) {
   };
 }
 
-async function readPublishedReviews(targetType: ReviewTargetType, targetKey: string, offset: number) {
+async function readPublishedReviews(targetType: ReviewTargetType, targetKey: string, offset: number, pageSize: number) {
   const query = new URLSearchParams({
     select: 'id,user_id,rating,body,author_name,avatar_url,created_at,updated_at',
     target_type: `eq.${targetType}`,
     target_key: `eq.${targetKey}`,
     status: 'eq.published',
     order: 'created_at.desc',
-    limit: String(PAGE_SIZE),
+    limit: String(pageSize),
     offset: String(offset),
   });
   const response = await fetch(`${SUPABASE_URL}/rest/v1/content_reviews?${query}`, {
@@ -267,12 +268,16 @@ export async function GET(request: Request) {
 
   const offsetRaw = Number(url.searchParams.get('offset') || 0);
   const offset = Number.isInteger(offsetRaw) && offsetRaw >= 0 ? Math.min(offsetRaw, 600) : 0;
+  const pageSizeRaw = Number(url.searchParams.get('pageSize') || DEFAULT_PAGE_SIZE);
+  const pageSize = Number.isInteger(pageSizeRaw)
+    ? Math.max(1, Math.min(MAX_PAGE_SIZE, pageSizeRaw))
+    : DEFAULT_PAGE_SIZE;
   const session = await resolveSession();
 
   try {
     const [summary, reviews, ownReview] = await Promise.all([
       readSummary(target.targetType, target.targetKey),
-      readPublishedReviews(target.targetType, target.targetKey, offset),
+      readPublishedReviews(target.targetType, target.targetKey, offset, pageSize),
       session ? readOwnReview(session, target.targetType, target.targetKey) : Promise.resolve(null),
     ]);
 
@@ -305,7 +310,7 @@ export async function GET(request: Request) {
         reactionSummaries.get(ownReview.id) || emptyReactionSummary(),
       ) : null,
       nextOffset: offset + reviews.length < summary.count ? offset + reviews.length : null,
-      pageSize: PAGE_SIZE,
+      pageSize,
     }, session);
   } catch {
     return respond({ error: 'تعذر تحميل تقييمات الأعضاء الآن.' }, session, 500);
