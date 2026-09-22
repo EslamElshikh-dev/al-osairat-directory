@@ -24,23 +24,9 @@
   to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
-@keyframes osairat-orbit {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes osairat-ambient {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .92; }
-  50% { transform: translate3d(10px, 8px, 0) scale(1.035); opacity: .72; }
-}
-
 @keyframes osairat-faq-reveal {
   from { opacity: 0; transform: translate3d(0, -6px, 0); }
   to { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-
-@keyframes osairat-view-reveal {
-  from { opacity: 0; transform: translate3d(0, 22px, 0) scale(.985); }
-  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 /* Hero entrance */
@@ -61,10 +47,6 @@
   opacity: 0;
   animation: osairat-panel-in .78s var(--motion-ease) .25s forwards;
 }
-.hero::before {
-  animation: osairat-ambient 14s ease-in-out infinite;
-  will-change: transform, opacity;
-}
 
 /* Brand/search polish */
 .hero-search,
@@ -77,11 +59,6 @@
   box-shadow: 0 20px 52px rgba(16, 42, 36, .14), 0 0 0 4px rgba(215, 168, 60, .11);
 }
 .hero-search:focus-within { transform: translateY(-2px); }
-.hero-search__brand .brand-mark__ring,
-.search-field__brand .brand-mark__ring {
-  animation: osairat-orbit 10s linear infinite;
-  transform-origin: center;
-}
 
 /* Homepage sections */
 .section-heading,
@@ -195,19 +172,6 @@
 }
 .category-pills {
   animation: osairat-fade-in .7s ease .16s both;
-}
-
-/* Progressive scroll reveal where supported — no JS, graceful fallback elsewhere */
-@supports (animation-timeline: view()) {
-  .listing-grid:not(.listing-grid--featured) .listing-card,
-  .village-grid .village-card,
-  .emergency-grid .emergency-card,
-  .faq-list .faq-item {
-    opacity: 0;
-    animation: osairat-view-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 5% cover 20%;
-  }
 }
 
 /* Mobile/touch: keep effects subtle and avoid accidental motion */

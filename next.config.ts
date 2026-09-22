@@ -39,6 +39,9 @@ const legacyVercelHosts = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
+    // Deployment URLs include a version marker, so a longer browser cache is safe
+    // while preventing repeat validation of the same optimized local image.
+    minimumCacheTTL: 60 * 60 * 24 * 7,
     remotePatterns: [
       {
         protocol: 'https',
