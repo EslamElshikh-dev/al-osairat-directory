@@ -34,5 +34,5 @@ test('homepage preloads a compact review preview before it reaches the viewport'
   assert.match(home, /activationMargin="3600px 0px"/);
   assert.match(reviews, /rootMargin: activationMargin/);
   assert.match(api, /Math\.min\(MAX_PAGE_SIZE, pageSizeRaw\)/);
-  assert.match(phaseFour, /\.site-header\{[^}]*backdrop-filter:none/);
+  assert.match(phaseFour, /\.site-header\{[^}]*backdrop-filter:none!important/);
 });
