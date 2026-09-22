@@ -46,6 +46,8 @@ type MemberReviewsProps = {
   description: string;
   prompt: string;
   className?: string;
+  pageSize?: number;
+  activationMargin?: string;
 };
 
 const REVIEW_MIN_LENGTH = 20;
@@ -126,6 +128,8 @@ export function MemberReviews({
   description,
   prompt,
   className = '',
+  pageSize = 6,
+  activationMargin = '320px 0px',
 }: MemberReviewsProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const formCardRef = useRef<HTMLDivElement | null>(null);
@@ -141,7 +145,8 @@ export function MemberReviews({
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
 
-  const endpoint = `/api/content-reviews?targetType=${encodeURIComponent(targetType)}&targetKey=${encodeURIComponent(targetKey)}`;
+  const safePageSize = Math.max(1, Math.min(6, Math.round(pageSize)));
+  const endpoint = `/api/content-reviews?targetType=${encodeURIComponent(targetType)}&targetKey=${encodeURIComponent(targetKey)}&pageSize=${safePageSize}`;
 
   const loadInitial = useCallback(async () => {
     setLoading(true);
@@ -182,10 +187,10 @@ export function MemberReviews({
         setActivated(true);
         observer.disconnect();
       }
-    }, { rootMargin: '320px 0px' });
+    }, { rootMargin: activationMargin });
     observer.observe(node);
     return () => observer.disconnect();
-  }, [activated]);
+  }, [activated, activationMargin]);
 
   useEffect(() => {
     if (activated) void loadInitial();
