@@ -24,6 +24,16 @@ const articleTopicBySlug: Record<string, Exclude<BlogDiscoveryTopic, 'all'>> = {
   'hayah-karima-al-osairat': 'place',
   'government-postal-services-al-osairat': 'place',
   'how-to-use-al-osairat-directory': 'place',
+  'awlad-hamza-heart-of-al-osairat': 'history',
+  'awlad-gabara-old-roots-al-osairat': 'history',
+  'geziret-awlad-hamza-story': 'history',
+  'rashida-al-osairat-place-story': 'history',
+  'nuwairat-from-hamza-to-village': 'history',
+  'awamer-al-osairat-name-history': 'history',
+  'al-shuhada-al-osairat-name-memory': 'history',
+  'al-ahaiwa-gharb-name-history': 'history',
+  'masaeed-al-osairat-tukh-story': 'history',
+  'awlad-bahig-al-osairat-history': 'history',
 };
 
 export function getBlogDiscoveryTopic(slug: string): Exclude<BlogDiscoveryTopic, 'all'> {
