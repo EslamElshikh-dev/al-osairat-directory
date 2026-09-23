@@ -280,6 +280,137 @@ export const articleJourneys: Record<string, ArticleJourney> = {
       },
     ],
   },
+
+  'awlad-hamza-heart-of-al-osairat': {
+    relatedSlugs: ['villages-al-osairat-guide', 'origin-name-al-osairat', 'geziret-awlad-hamza-story'],
+    links: [
+      {
+        afterSectionId: 'hamlets-addresses',
+        eyebrow: 'من الحكاية للخريطة',
+        title: 'عايز الخدمات نفسها مش تاريخ المكان؟',
+        description: 'دليل القرى يجمع السجلات الحالية حسب القرية والتصنيف بدل خلطها بالمقال التحريري.',
+        href: '/villages',
+        label: 'افتح دليل القرى',
+      },
+    ],
+  },
+  'awlad-gabara-old-roots-al-osairat': {
+    relatedSlugs: ['origin-name-al-osairat', 'rashida-al-osairat-place-story', 'al-shuhada-al-osairat-name-memory'],
+    links: [
+      {
+        afterSectionId: 'search-local',
+        eyebrow: 'ابحث بالمكان',
+        title: 'من أولاد جبارة لباقي قرى العسيرات',
+        description: 'انتقل إلى صفحات القرى والخدمات الحالية، وخلي المقال للتاريخ والسياق.',
+        href: '/villages',
+        label: 'استكشف القرى',
+      },
+    ],
+  },
+  'geziret-awlad-hamza-story': {
+    relatedSlugs: ['awlad-hamza-heart-of-al-osairat', 'villages-al-osairat-guide', 'transport-al-osairat'],
+    links: [
+      {
+        afterSectionId: 'hamlets-services',
+        eyebrow: 'الخدمات الحالية',
+        title: 'شوف اللي منشور داخل القرية',
+        description: 'ابدأ من دليل القرى ثم فلتر حسب الخدمة المطلوبة.',
+        href: '/villages',
+        label: 'دليل جزيرة أولاد حمزة',
+      },
+    ],
+  },
+  'rashida-al-osairat-place-story': {
+    relatedSlugs: ['awlad-gabara-old-roots-al-osairat', 'villages-al-osairat-guide', 'education-al-osairat'],
+    links: [
+      {
+        afterSectionId: 'address',
+        eyebrow: 'من العنوان للخدمة',
+        title: 'استخدم الدليل بدل ما تعتمد على وصف شفهي فقط',
+        description: 'راجع الأنشطة والمدارس والخدمات المنشورة داخل قرى العسيرات.',
+        href: '/directory',
+        label: 'افتح دليل الخدمات',
+      },
+    ],
+  },
+  'nuwairat-from-hamza-to-village': {
+    relatedSlugs: ['awlad-hamza-heart-of-al-osairat', 'awamer-al-osairat-name-history', 'villages-al-osairat-guide'],
+    links: [
+      {
+        afterSectionId: 'story-vs-directory',
+        eyebrow: 'صفحة المكان',
+        title: 'الحكاية هنا.. والخدمات في الدليل',
+        description: 'استكشف القرية والأنشطة المنشورة من الواجهة المخصصة للمكان.',
+        href: '/villages',
+        label: 'افتح دليل القرى',
+      },
+    ],
+  },
+  'awamer-al-osairat-name-history': {
+    relatedSlugs: ['nuwairat-from-hamza-to-village', 'government-postal-services-al-osairat', 'villages-al-osairat-guide'],
+    links: [
+      {
+        afterSectionId: 'services-search',
+        eyebrow: 'ابحث عمليًا',
+        title: 'الخدمات الحكومية والمحلية لها صفحات مستقلة',
+        description: 'قارن العناوين ووسائل التواصل بدون ما المقال التاريخي يتحول لقائمة طويلة.',
+        href: '/directory',
+        label: 'ابحث في الدليل',
+      },
+    ],
+  },
+  'al-shuhada-al-osairat-name-memory': {
+    relatedSlugs: ['awlad-gabara-old-roots-al-osairat', 'origin-name-al-osairat', 'famous-families-al-osairat'],
+    links: [
+      {
+        afterSectionId: 'why-caution',
+        eyebrow: 'منهج الدليل',
+        title: 'الرواية المحلية لها مكان.. ودرجة ثقة كمان',
+        description: 'راجع ملف العائلات لفهم طريقة فصل الرواية عن الوثيقة.',
+        href: '/blog/famous-families-al-osairat',
+        label: 'منهج توثيق العائلات',
+      },
+    ],
+  },
+  'al-ahaiwa-gharb-name-history': {
+    relatedSlugs: ['origin-name-al-osairat', 'villages-al-osairat-guide', 'hayah-karima-al-osairat'],
+    links: [
+      {
+        afterSectionId: 'infrastructure',
+        eyebrow: 'العسيرات اليوم',
+        title: 'من الاسم القديم لمشروعات الحاضر',
+        description: 'راجع ملف حياة كريمة والخدمات لتشوف كيف يظهر المكان في المشروعات الحديثة.',
+        href: '/blog/hayah-karima-al-osairat',
+        label: 'مشروعات العسيرات',
+      },
+    ],
+  },
+  'masaeed-al-osairat-tukh-story': {
+    relatedSlugs: ['origin-name-al-osairat', 'awlad-bahig-al-osairat-history', 'villages-al-osairat-guide'],
+    links: [
+      {
+        afterSectionId: 'seo-role',
+        eyebrow: 'صفحة القرية',
+        title: 'عايز النشاط أو الخدمة الموجودة فعليًا؟',
+        description: 'انتقل لصفحات القرى والأنشطة بدل البحث داخل المقال التحريري.',
+        href: '/villages',
+        label: 'استكشف قرى العسيرات',
+      },
+    ],
+  },
+  'awlad-bahig-al-osairat-history': {
+    relatedSlugs: ['masaeed-al-osairat-tukh-story', 'origin-name-al-osairat', 'villages-al-osairat-guide'],
+    links: [
+      {
+        afterSectionId: 'search',
+        eyebrow: 'كمّل من المكان',
+        title: 'كل قرية لها صفحة للخدمات الحالية',
+        description: 'استخدم صفحة القرى للوصول للأنشطة، وخلي المقال للأسئلة التاريخية.',
+        href: '/villages',
+        label: 'دليل القرى',
+      },
+    ],
+  },
 };
 
 export function getArticleJourney(slug: string) {
