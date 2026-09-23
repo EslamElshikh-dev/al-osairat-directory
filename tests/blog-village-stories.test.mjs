@@ -6,16 +6,16 @@ const projectUrl = (path) => new URL('../' + path, import.meta.url);
 const readProjectFile = (path) => readFile(projectUrl(path), 'utf8');
 
 const expectedVillageStories = [
-  ['awlad-hamza-heart-of-al-osairat', 'story-awlad-hamza.webp'],
-  ['awlad-gabara-old-roots-al-osairat', 'story-awlad-gabara.webp'],
-  ['geziret-awlad-hamza-story', 'story-geziret-awlad-hamza.webp'],
-  ['rashida-al-osairat-place-story', 'story-rashida.webp'],
-  ['nuwairat-from-hamza-to-village', 'story-nuwairat.webp'],
-  ['awamer-al-osairat-name-history', 'story-awamer.webp'],
-  ['al-shuhada-al-osairat-name-memory', 'story-al-shuhada.webp'],
-  ['al-ahaiwa-gharb-name-history', 'story-al-ahaiwa-gharb.webp'],
-  ['masaeed-al-osairat-tukh-story', 'story-masaeed.webp'],
-  ['awlad-bahig-al-osairat-history', 'story-awlad-bahig.webp'],
+  ['awlad-hamza-heart-of-al-osairat', 'hero-al-osairat.webp'],
+  ['awlad-gabara-old-roots-al-osairat', 'blog-origin-name.webp'],
+  ['geziret-awlad-hamza-story', 'blog-villages-guide.webp'],
+  ['rashida-al-osairat-place-story', 'blog-education.webp'],
+  ['nuwairat-from-hamza-to-village', 'blog-government-services.webp'],
+  ['awamer-al-osairat-name-history', 'blog-markets.webp'],
+  ['al-shuhada-al-osairat-name-memory', 'blog-families.webp'],
+  ['al-ahaiwa-gharb-name-history', 'blog-hayah-karima.webp'],
+  ['masaeed-al-osairat-tukh-story', 'blog-agriculture.webp'],
+  ['awlad-bahig-al-osairat-history', 'blog-craftsmen.webp'],
 ];
 
 test('village story cluster contains exactly ten distinct locality articles', async () => {
