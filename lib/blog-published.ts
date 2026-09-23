@@ -1,5 +1,6 @@
 import { blogArticles as baseBlogArticles, type BlogArticle } from './blog';
 import { seoBlogArticles } from './blog-seo-batch';
+import { villageStoryArticles } from './blog-village-stories';
 import { expandedFamilyArticle } from './family-article';
 import { refreshBlogArticle } from './blog-refresh';
 
@@ -29,7 +30,7 @@ const famousPeopleArticle = (article: BlogArticle): BlogArticle => ({
   ],
 });
 
-const sourceArticles = [...baseBlogArticles, ...seoBlogArticles];
+const sourceArticles = [...baseBlogArticles, ...seoBlogArticles, ...villageStoryArticles];
 
 export const blogArticles: BlogArticle[] = sourceArticles.map((article) => {
   const expanded = article.slug === 'famous-families-al-osairat'
