@@ -181,6 +181,51 @@ export const blogSectionSourceUrls: Record<string, Record<string, string[]>> = {
       'https://usayrat.online/account',
     ],
   },
+
+  'awlad-hamza-heart-of-al-osairat': {
+    'place-today': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'tukh-al-jabal': ['https://ar.wikisource.org/wiki/%D8%A7%D9%84%D9%82%D8%A7%D9%85%D9%88%D8%B3_%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A_%D9%84%D9%84%D8%A8%D9%84%D8%A7%D8%AF_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D8%A9_%D9%85%D9%86_%D8%B9%D9%87%D8%AF_%D9%82%D8%AF%D9%85%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D9%8A%D9%86_%D8%A5%D9%84%D9%89_%D8%B3%D9%86%D8%A9_1945/%D8%A7%D9%84%D9%82%D8%B3%D9%85_%D8%A7%D9%84%D8%A3%D9%88%D9%84/%D8%AD%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D9%84%D9%81', 'https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html'],
+    'boza-craft': ['https://www.elwatannews.com/news/details/1226920'],
+  },
+  'awlad-gabara-old-roots-al-osairat': {
+    'place-map': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'tukh-layer': ['https://ar.wikisource.org/wiki/%D8%A7%D9%84%D9%82%D8%A7%D9%85%D9%88%D8%B3_%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A_%D9%84%D9%84%D8%A8%D9%84%D8%A7%D8%AF_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D8%A9_%D9%85%D9%86_%D8%B9%D9%87%D8%AF_%D9%82%D8%AF%D9%85%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D9%8A%D9%86_%D8%A5%D9%84%D9%89_%D8%B3%D9%86%D8%A9_1945/%D8%A7%D9%84%D9%82%D8%B3%D9%85_%D8%A7%D9%84%D8%A3%D9%88%D9%84/%D8%AD%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D9%84%D9%81', 'https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html'],
+    'bayt-amun': ['https://www.youmakhir.com/2024/08/blog-post_201.html'],
+  },
+  'geziret-awlad-hamza-story': {
+    'independent-place': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'administrative-separation': ['https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html', 'https://www.alwafd.news/4269525'],
+  },
+  'rashida-al-osairat-place-story': {
+    'village-today': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'administrative-history': ['https://ahmedmahmoued-masoudi.blogspot.com/2022/09/blog-post_16.html'],
+  },
+  'nuwairat-from-hamza-to-village': {
+    'village-now': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    separation: ['https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html', 'https://www.alwafd.news/4269525'],
+  },
+  'awamer-al-osairat-name-history': {
+    'name-precision': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'separation-history': ['https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html', 'https://www.alwafd.news/4269525'],
+  },
+  'al-shuhada-al-osairat-name-memory': {
+    'today-name': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'old-name': ['https://aboeltayb.ahlamontada.net/t4825-topic'],
+  },
+  'al-ahaiwa-gharb-name-history': {
+    'current-place': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'old-name': ['https://ar.chped.com/wiki/%D9%82%D8%A7%D8%A6%D9%85%D8%A9_%D9%82%D8%B1%D9%89_%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9_%D8%B3%D9%88%D9%87%D8%A7%D8%AC'],
+    infrastructure: ['https://www.shorouknews.com/news/view.aspx?cdate=24022024&id=477d095b-b973-4c3a-990d-1b126e2bdeee'],
+  },
+  'masaeed-al-osairat-tukh-story': {
+    'current-village': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'tukh-history': ['https://ar.wikisource.org/wiki/%D8%A7%D9%84%D9%82%D8%A7%D9%85%D9%88%D8%B3_%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A_%D9%84%D9%84%D8%A8%D9%84%D8%A7%D8%AF_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D8%A9_%D9%85%D9%86_%D8%B9%D9%87%D8%AF_%D9%82%D8%AF%D9%85%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D9%8A%D9%86_%D8%A5%D9%84%D9%89_%D8%B3%D9%86%D8%A9_1945/%D8%A7%D9%84%D9%82%D8%B3%D9%85_%D8%A7%D9%84%D8%A3%D9%88%D9%84/%D8%AD%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D9%84%D9%81', 'https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html'],
+  },
+  'awlad-bahig-al-osairat-history': {
+    'place-now': ['https://www.sohag.gov.eg/gov2/division/marakez_display%281%29.aspx?ID=5'],
+    'old-registers': ['https://ahmedmahmoued-masoudi.blogspot.com/2020/12/blog-post_64.html'],
+    'tukh-context': ['https://ar.wikisource.org/wiki/%D8%A7%D9%84%D9%82%D8%A7%D9%85%D9%88%D8%B3_%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A_%D9%84%D9%84%D8%A8%D9%84%D8%A7%D8%AF_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D8%A9_%D9%85%D9%86_%D8%B9%D9%87%D8%AF_%D9%82%D8%AF%D9%85%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B5%D8%B1%D9%8A%D9%8A%D9%86_%D8%A5%D9%84%D9%89_%D8%B3%D9%86%D8%A9_1945/%D8%A7%D9%84%D9%82%D8%B3%D9%85_%D8%A7%D9%84%D8%A3%D9%88%D9%84/%D8%AD%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D9%84%D9%81'],
+  },
 };
 
 export function getBlogSectionSourceUrls(articleSlug: string, sectionId: string) {
