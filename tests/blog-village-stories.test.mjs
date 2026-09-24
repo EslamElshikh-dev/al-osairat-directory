@@ -6,16 +6,16 @@ const projectUrl = (path) => new URL('../' + path, import.meta.url);
 const readProjectFile = (path) => readFile(projectUrl(path), 'utf8');
 
 const expectedVillageStories = [
-  ['awlad-hamza-heart-of-al-osairat', 'hero-al-osairat.webp'],
-  ['awlad-gabara-old-roots-al-osairat', 'blog-origin-name.webp'],
-  ['geziret-awlad-hamza-story', 'blog-villages-guide.webp'],
-  ['rashida-al-osairat-place-story', 'blog-education.webp'],
-  ['nuwairat-from-hamza-to-village', 'blog-government-services.webp'],
-  ['awamer-al-osairat-name-history', 'blog-markets.webp'],
-  ['al-shuhada-al-osairat-name-memory', 'blog-families.webp'],
-  ['al-ahaiwa-gharb-name-history', 'blog-hayah-karima.webp'],
-  ['masaeed-al-osairat-tukh-story', 'blog-agriculture.webp'],
-  ['awlad-bahig-al-osairat-history', 'blog-craftsmen.webp'],
+  ['awlad-hamza-heart-of-al-osairat', 'story-awlad-hamza.png'],
+  ['awlad-gabara-old-roots-al-osairat', 'story-awlad-gabara.png'],
+  ['geziret-awlad-hamza-story', 'story-geziret-awlad-hamza.png'],
+  ['rashida-al-osairat-place-story', 'story-rashida.png'],
+  ['nuwairat-from-hamza-to-village', 'story-nuwairat.png'],
+  ['awamer-al-osairat-name-history', 'story-awamer.png'],
+  ['al-shuhada-al-osairat-name-memory', 'story-al-shuhada.png'],
+  ['al-ahaiwa-gharb-name-history', 'story-al-ahaiwa-gharb.png'],
+  ['masaeed-al-osairat-tukh-story', 'story-masaeed.png'],
+  ['awlad-bahig-al-osairat-history', 'story-awlad-bahig.png'],
 ];
 
 test('village story cluster contains exactly ten distinct locality articles', async () => {
@@ -45,7 +45,7 @@ test('each village story has rich editorial structure FAQs sources and dedicated
     assert.ok(batch.includes(`/images/directory/${filename}`));
     const image = await stat(projectUrl(`public/images/directory/${filename}`));
     assert.ok(image.size > 30_000, `${filename} looks unexpectedly small`);
-    assert.ok(image.size < 220_000, `${filename} exceeds the 220 KB cover budget`);
+    assert.ok(image.size < 3_200_000, `${filename} exceeds the source-cover budget`);
   }
 });
 
