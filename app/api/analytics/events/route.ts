@@ -167,6 +167,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'حدث غير صالح.' }, { status: 400 });
   }
 
+  // Exclude known automated checks from visit and search analytics.
+  if (/bot|crawl|spider|headlesschrome|playwright|puppeteer|lighthouse/i.test(request.headers.get('user-agent') || '')) {
+    return NextResponse.json({ accepted: false }, { status: 202 });
+  }
+
   const searchTerm = eventType === 'directory_search' ? safeSearchTerm(body?.searchTerm) : '';
   const searchVillage = eventType === 'directory_search' ? clean(body?.village, 100) || 'all' : '';
   const searchCategory = eventType === 'directory_search' ? clean(body?.category, 100) || 'all' : '';

@@ -129,6 +129,7 @@ function getAttribution(): Attribution {
 
 function sendOperationalEvent(event: OperationalEvent) {
   if (typeof window === 'undefined') return;
+  if (navigator.webdriver || /bot|crawl|spider|headlesschrome|playwright|puppeteer|lighthouse/i.test(navigator.userAgent)) return;
   const sessionId = operationalSessionId();
   const visitorId = operationalVisitorId();
   if (!sessionId || !visitorId) return;

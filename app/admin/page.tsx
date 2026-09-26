@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { AdminAnalyticsDashboard } from '@/components/admin/admin-analytics-dashboard';
+import { AdminDiscoveryInsights } from '@/components/admin/admin-discovery-insights';
 import { AdminAuthorityBatch } from '@/components/admin/admin-authority-batch';
 import { AdminDataQuality } from '@/components/admin/admin-data-quality';
 import { AdminDirectoryIntelligence } from '@/components/admin/admin-directory-intelligence';
@@ -35,6 +36,7 @@ export default async function AdminPage() {
             <p>واجهة تشغيل دقيقة لمتابعة النمو وسلوك البحث وجودة البيانات، ثم معالجة طلبات الأعضاء والبلاغات حسب الأولوية.</p>
             <nav className="workspace-hero__links" aria-label="اختصارات لوحة الإدارة">
               <a href="#analytics-overview">ملخص الأداء</a>
+              <a href="#admin-discovery">الزيارات اليومية</a>
               <a href="#directory-intelligence">الطلب والبحث</a>
               <a href="#data-quality">سلطة البيانات</a>
               <a href="#admin-requests">صندوق المراجعة</a>
@@ -63,7 +65,8 @@ export default async function AdminPage() {
       <div className="shell admin-workspace-shell">
         <nav className="admin-section-nav admin-section-nav--premium" aria-label="أقسام لوحة الإدارة">
           <a href="#analytics-overview"><span>01</span>ملخص الأداء</a>
-          <a href="#directory-intelligence"><span>02</span>الطلب والفجوات</a>
+          <a href="#admin-discovery"><span>02</span>الزيارات والصفحات</a>
+          <a href="#directory-intelligence"><span>03</span>الطلب والفجوات</a>
           <a href="#data-quality"><span>03</span>جودة البيانات</a>
           <a href="#authority-batch"><span>04</span>دفعة التوثيق</a>
           <a href="#admin-requests"><span>05</span>طلبات الأعضاء</a>
@@ -72,6 +75,7 @@ export default async function AdminPage() {
           <a href="#admin-jobs"><span>08</span>الوظائف</a>
         </nav>
         <AdminAnalyticsDashboard />
+        <AdminDiscoveryInsights />
         <AdminDirectoryIntelligence />
         <AdminDataQuality />
         <AdminAuthorityBatch />
