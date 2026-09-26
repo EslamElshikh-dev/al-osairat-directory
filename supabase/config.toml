@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.facebook-news-ingestion]
 verify_jwt = false
+
+[functions.osairat-jobs]
+verify_jwt = false

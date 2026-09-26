@@ -4,6 +4,7 @@ import { AnalyticsTracker } from '@/components/analytics-tracker';
 import { GoogleAnalyticsLoader } from '@/components/google-analytics-loader';
 import { NavigationScrollManager } from '@/components/navigation-scroll-manager';
 import { SandAssistant } from '@/components/sand-assistant';
+import { WelcomeBlessing } from '@/components/welcome-blessing';
 import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
@@ -48,9 +49,10 @@ import './visual-vnext2.css';
 import './living-directory.css';
 import './smart-local-compass.css';
 import './header-vnext.css';
+import './osairat-refresh.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
-const socialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
+const socialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20260926`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -88,7 +90,7 @@ export const metadata: Metadata = {
         url: socialImage,
         width: 1200,
         height: 630,
-        alt: 'دليل العسيرات - بتدور على إيه؟ وإحنا ندلّك عليه من قلب العسيرات',
+        alt: 'دليل العسيرات - الخدمات والقرى والنجوع والأخبار وفرص العمل من قلب سوهاج',
       },
     ],
   },
@@ -174,6 +176,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <Footer />
         <SandAssistant />
+        <WelcomeBlessing />
         <MobileNav />
         <GoogleAnalyticsLoader />
         <AnalyticsTracker />

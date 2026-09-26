@@ -10,6 +10,7 @@ import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
 import { MemberReviews } from '@/components/member-reviews';
 import { SmartLocalCompass } from '@/components/smart-local-compass';
+import { JobsTicker } from '@/components/jobs-ticker';
 import { homeFaq } from '@/lib/faq';
 import { blogArticles } from '@/lib/blog-published';
 import { getLocalNews, selectHomepageNews } from '@/lib/news';
@@ -173,8 +174,16 @@ export default async function HomePage() {
             <small>موجز أخبار محلي مرتب مع الرجوع للمصدر الأصلي عند القراءة.</small>
             <span className="home-route-card__cta">تابع الأخبار <b aria-hidden="true">←</b></span>
           </Link>
+          <Link href="/jobs" className="home-route-card home-route-card--jobs">
+            <span className="home-route-card__index" aria-hidden="true">05</span>
+            <span className="home-route-card__kicker">رزق أهل البلد</span>
+            <strong>شغل قريب من دارك</strong>
+            <small>فرص العسيرات وقراها، ووظائف مراكز سوهاج كلها في مكان واحد.</small>
+            <span className="home-route-card__cta">شوف الوظائف <b aria-hidden="true">←</b></span>
+          </Link>
         </div>
       </section>
+      <JobsTicker />
 
       <section className="section shell home-category-section">
         <div className="section-heading section-heading--editorial">

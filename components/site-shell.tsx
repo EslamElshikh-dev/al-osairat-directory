@@ -35,9 +35,9 @@ export function SiteHeader() {
           <Link href="/directory">الدليل</Link>
           <Link href="/villages">القرى</Link>
           <Link href="/localities">النجوع</Link>
+          <Link href="/jobs">الوظائف</Link>
           <Link href="/news">الأخبار</Link>
           <Link href="/community" className="nav-optional">المجتمع</Link>
-          <Link href="/members" className="nav-optional">الأعضاء</Link>
           <Link href="/blog" className="nav-optional">المدونة</Link>
         </nav>
 
@@ -119,7 +119,9 @@ export function Footer() {
             <Link href="/villages">قرى العسيرات</Link>
             <Link href="/localities">نجوع وتوابع العسيرات</Link>
             <Link href="/community">نبض المجتمع</Link>
+            <Link href="/jobs">شغل وفرص العسيرات</Link>
             <Link href="/members">أعضاء المجتمع</Link>
+            <Link href="/developer">حكاية مطوّر الدليل</Link>
             {categories.slice(5, 8).map((category) => (
               <Link key={category.id} href={`/directory/${category.id}`}>{category.shortLabel}</Link>
             ))}
@@ -146,11 +148,11 @@ export function Footer() {
           <span className="footer__separator" aria-hidden="true">•</span>
           <span>جميع البيانات قابلة للتحديث والمراجعة</span>
         </div>
-        <a href="https://www.eslam-elshikh.com/" target="_blank" rel="noreferrer" className="footer__signature">
+        <Link href="/developer" className="footer__signature">
           <span>تصميم وتطوير:</span>
           <b>المهندس إسلام الشيخ</b>
           <span className="footer__signature-arrow" aria-hidden="true">↗</span>
-        </a>
+        </Link>
       </div>
     </footer>
   );

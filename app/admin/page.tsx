@@ -5,6 +5,7 @@ import { AdminAnalyticsDashboard } from '@/components/admin/admin-analytics-dash
 import { AdminAuthorityBatch } from '@/components/admin/admin-authority-batch';
 import { AdminDataQuality } from '@/components/admin/admin-data-quality';
 import { AdminDirectoryIntelligence } from '@/components/admin/admin-directory-intelligence';
+import { AdminJobs } from '@/components/admin/admin-jobs';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
 import { AdminListingReports } from '@/components/admin/admin-listing-reports';
 import { AdminCommunityReports } from '@/components/admin/admin-community-reports';
@@ -37,6 +38,7 @@ export default async function AdminPage() {
               <a href="#directory-intelligence">الطلب والبحث</a>
               <a href="#data-quality">سلطة البيانات</a>
               <a href="#admin-requests">صندوق المراجعة</a>
+              <a href="#admin-jobs">وظائف العسيرات</a>
             </nav>
           </div>
           <aside className="workspace-hero__panel workspace-hero__panel--admin" aria-label="جلسة الإدارة الحالية">
@@ -67,6 +69,7 @@ export default async function AdminPage() {
           <a href="#admin-requests"><span>05</span>طلبات الأعضاء</a>
           <a href="#listing-reports"><span>06</span>بلاغات الأنشطة</a>
           <a href="#community-reports"><span>07</span>بلاغات المجتمع</a>
+          <a href="#admin-jobs"><span>08</span>الوظائف</a>
         </nav>
         <AdminAnalyticsDashboard />
         <AdminDirectoryIntelligence />
@@ -75,6 +78,7 @@ export default async function AdminPage() {
         <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
         <AdminListingReports />
         <AdminCommunityReports />
+        <AdminJobs />
       </div>
     </main>
   );
