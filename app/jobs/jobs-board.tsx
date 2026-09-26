@@ -36,7 +36,7 @@ function JobCard({ job }: { job: LocalJob }) {
     {job.experience && <p className={styles.experience}><b>الخبرة:</b> {job.experience}</p>}
     <div className={styles.cardFoot}>
       <a href={contactHref(job)} target={outbound ? '_blank' : undefined} rel={outbound ? 'noopener noreferrer external nofollow' : undefined}>
-        {job.kind === 'offer' ? 'اتواصل مع صاحب الفرصة' : 'اتواصل مع صاحب الخبرة'} <span aria-hidden="true">↗</span>
+        {job.origin === 'external' ? 'راجع الإعلان وطريقة التقديم' : job.kind === 'offer' ? 'اتواصل مع صاحب الفرصة' : 'اتواصل مع صاحب الخبرة'} <span aria-hidden="true">↗</span>
       </a>
       <small>{job.origin === 'external' ? <>المصدر: {job.source_name} · <a href={job.source_url || '#'} target="_blank" rel="noopener noreferrer external nofollow">الإعلان الأصلي</a></> : 'نُشرت وسيلة التواصل بموافقة صاحب الإعلان'}</small>
     </div>
@@ -112,7 +112,7 @@ export function JobsBoard({ jobs, places, available }: { jobs: LocalJob[]; place
 
   return <>
     <section className={`shell ${styles.board}`} id="opportunities" aria-labelledby="jobs-board-title">
-      <div className={styles.sectionHeading}><div><span>فرص من العسيرات لكل سوهاج</span><h2 id="jobs-board-title">دوّر في بلدك، ووسّع دايرة الفرص</h2><p>اختار العسيرات وقراها أو بقية المراكز. مشاركات الأهالي بتتراجع قبل النشر، والفرص من مصادر عامة معاها رابط الأصل؛ اتأكد من استمرار الإعلان وشروطه قبل التقديم.</p></div><strong>{jobs.length.toLocaleString('ar-EG')} إعلان منشور</strong></div>
+      <div className={styles.sectionHeading}><div><span>فرص من العسيرات لكل سوهاج</span><h2 id="jobs-board-title">دوّر في بلدك، ووسّع دايرة الفرص</h2><p>اختار العسيرات وقراها أو بقية المراكز. مشاركات الأهالي بتتراجع قبل النشر، والفرص من مصادر عامة معاها رابط المصدر؛ اتأكد من استمرار الإعلان وشروطه قبل التقديم.</p></div><strong>{jobs.length.toLocaleString('ar-EG')} إعلان منشور</strong></div>
       <div className={styles.boardFrame}>
         <div className={styles.tabs} role="group" aria-label="نوع الإعلانات"><button type="button" aria-pressed={kind === 'offer'} onClick={() => setKind('offer')}>فرص عمل <b>{offers.toLocaleString('ar-EG')}</b></button><button type="button" aria-pressed={kind === 'seeker'} onClick={() => setKind('seeker')}>باحثون عن شغل <b>{seekers.toLocaleString('ar-EG')}</b></button></div>
         <div className={styles.scope} role="group" aria-label="نطاق الوظائف"><button type="button" aria-pressed={scope === 'all'} onClick={() => { setScope('all'); setVillage(''); }}>كل سوهاج</button><button type="button" aria-pressed={scope === 'osairat'} onClick={() => { setScope('osairat'); setVillage(''); }}>العسيرات وقراها</button><button type="button" aria-pressed={scope === 'sohag'} onClick={() => { setScope('sohag'); setVillage(''); }}>باقي المراكز</button></div>

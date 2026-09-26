@@ -10,7 +10,7 @@ import styles from './jobs.module.css';
 export const dynamic = 'force-dynamic';
 export const metadata = buildPageMetadata({
   title: 'وظائف سوهاج ومراكزها | فرص العسيرات وقراها والبحث عن عمل',
-  description: 'وظائف سوهاج ومراكزها، مع قسم مخصص للعسيرات وقراها. اعرض وظيفة، شارك خبرتك، وابحث عن فرص بمصدرها ورابط التقديم المباشر.',
+  description: 'وظائف سوهاج ومراكزها، مع قسم مخصص للعسيرات وقراها. اعرض وظيفة، شارك خبرتك، وابحث عن فرص برابط المصدر وتفاصيل التقديم.',
   path: '/jobs',
 });
 
@@ -34,7 +34,7 @@ export default async function JobsPage() {
           <div className={styles.heroCopy}>
             <span className={styles.eyebrow}>من العسيرات لحد آخر مركز في سوهاج</span>
             <h1>شغل قريب منك، <em>وفرصة تستاهلك.</em></h1>
-            <p>عندك فرصة عمل في سوهاج؟ خلّي أهل المحافظة يعرفوا. بتدوّر على شغل؟ احكي عن خبرتك ومجالك، ويمكن رزقك يكون في العسيرات أو مركز قريب منك. بنراجع مشاركات الأهالي، وبنتابع المصادر العامة كل نص ساعة؛ ورابط الإعلان الأصلي دايمًا مع الفرصة المنقولة.</p>
+            <p>عندك فرصة عمل في سوهاج؟ خلّي أهل المحافظة يعرفوا. بتدوّر على شغل؟ احكي عن خبرتك ومجالك، ويمكن رزقك يكون في العسيرات أو مركز قريب منك. بنراجع مشاركات الأهالي، وبنفحص المصادر العامة كل نص ساعة؛ ورابط المصدر ظاهر مع كل فرصة منقولة.</p>
             <div className={styles.heroActions}><a href="#opportunities">شوف الفرص <span aria-hidden="true">↙</span></a><a href="#participate">اعرض وظيفة أو خبرتك <span aria-hidden="true">←</span></a></div>
           </div>
           <div className={styles.visual} aria-hidden="true">
