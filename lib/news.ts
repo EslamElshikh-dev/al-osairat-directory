@@ -117,6 +117,22 @@ const newsSources: FeedSource[] = [
     format: 'rss',
   },
   {
+    id: 'shorouk-governorates',
+    name: 'بوابة الشروق',
+    url: 'https://www.shorouknews.com/local/rss',
+    sourceUrl: 'https://www.shorouknews.com/local/suhag',
+    allowedHosts: ['www.shorouknews.com', 'shorouknews.com'],
+    format: 'rss',
+  },
+  {
+    id: 'elwatan-governorates',
+    name: 'الوطن',
+    url: 'https://www.elwatannews.com/home/valid_rss/147',
+    sourceUrl: 'https://www.elwatannews.com/section/147',
+    allowedHosts: ['www.elwatannews.com', 'elwatannews.com'],
+    format: 'rss',
+  },
+  {
     id: 'azhar',
     name: 'الأزهر الشريف',
     url: 'https://azhar.eg/alazhar/allnews/ctl/rss/mid/3414',
@@ -149,6 +165,16 @@ export const newsSourceCatalog = [
     name: 'مصراوي',
     type: 'RSS رسمي لأخبار المحافظات',
     url: 'https://www.masrawy.com/rss/feed/204/%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A7%D8%AA',
+  },
+  {
+    name: 'بوابة الشروق',
+    type: 'RSS رسمي لأخبار المحافظات',
+    url: 'https://www.shorouknews.com/rss/default.aspx',
+  },
+  {
+    name: 'الوطن',
+    type: 'RSS رسمي لأخبار المحافظات',
+    url: 'https://www.elwatannews.com/home/valid_rss/147',
   },
   {
     name: 'الأزهر الشريف',
@@ -546,7 +572,7 @@ export function buildSourceNewsDigest(
 }
 
 function isRelevant(raw: RawNewsItem, source: FeedSource) {
-  if (source.format === 'youm7-tag') return true;
+  if (source.id === 'youm7-usayrat') return true;
   const normalized = normalizeArabic(`${raw.title} ${raw.summary || ''}`);
   if (directAreaTerms.some((term) => normalized.includes(normalizeArabic(term)))) return true;
   const hasLocalContext = contextTerms.some((term) => normalized.includes(normalizeArabic(term)));

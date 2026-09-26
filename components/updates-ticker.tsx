@@ -3,13 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from './updates-ticker.module.css';
+import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
 
-type Update = {
-  id: string;
-  type: 'news' | 'job' | 'article';
-  title: string;
-  href: string;
-};
+type Update = PublicUpdate;
 
 const labels: Record<Update['type'], string> = {
   news: 'خبر',
@@ -22,17 +18,15 @@ export function UpdatesTicker() {
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let active = true;
     let timeout: ReturnType<typeof setTimeout>;
 
     async function load() {
       if (document.visibilityState !== 'visible') return;
       try {
-        const response = await fetch('/api/public-updates', { signal: controller.signal });
-        if (!response.ok) return;
-        const data: { updates?: Update[] } = await response.json();
-        if (controller.signal.aborted || !Array.isArray(data.updates)) return;
-        setItems(data.updates.filter((item) =>
+        const updates = await loadPublicUpdates();
+        if (!active) return;
+        setItems(updates.filter((item) =>
           item && typeof item.id === 'string'
           && (item.type === 'job' || item.type === 'news' || item.type === 'article')
           && typeof item.title === 'string' && typeof item.href === 'string'
@@ -50,7 +44,7 @@ export function UpdatesTicker() {
     document.addEventListener('visibilitychange', onVisible);
     const interval = window.setInterval(() => { void load(); }, 30 * 60 * 1000);
     return () => {
-      controller.abort();
+      active = false;
       window.removeEventListener('load', start);
       document.removeEventListener('visibilitychange', onVisible);
       clearTimeout(timeout);

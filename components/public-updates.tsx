@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './public-updates.module.css';
+import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
 
-type Update = { id: string; type: 'news' | 'job' | 'article'; title: string; summary: string; href: string; publishedAt: string };
+type Update = PublicUpdate;
 const STORAGE_KEY = 'osairat:public-updates:seen:v1';
 const labels = { news: 'خبر', job: 'وظيفة', article: 'مقال' };
 
@@ -32,10 +33,7 @@ export function PublicUpdates() {
 
   const load = useCallback(async () => {
     try {
-      const response = await fetch('/api/public-updates', { cache: 'no-store' });
-      if (!response.ok) throw new Error('UPDATES_UNAVAILABLE');
-      const data = await response.json();
-      const list: Update[] = Array.isArray(data.updates) ? data.updates : [];
+      const list = await loadPublicUpdates();
       setUpdates(list);
       const seen = new Set(seenIds());
       const recentCutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
