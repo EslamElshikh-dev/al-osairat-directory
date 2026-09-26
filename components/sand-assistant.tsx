@@ -193,7 +193,10 @@ export function SandAssistant() {
   useEffect(() => {
     if (open || !restoreTriggerFocusRef.current) return;
     const frame = window.requestAnimationFrame(() => {
-      document.querySelector<HTMLButtonElement>('[data-sand-trigger="true"]')?.focus();
+      const selector = window.matchMedia('(max-width: 760px)').matches
+        ? '.mobile-nav [data-sand-trigger="true"]'
+        : '.sand-assistant [data-sand-trigger="true"]';
+      document.querySelector<HTMLButtonElement>(selector)?.focus();
       restoreTriggerFocusRef.current = false;
     });
     return () => window.cancelAnimationFrame(frame);
