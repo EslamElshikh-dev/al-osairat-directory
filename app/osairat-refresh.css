@@ -127,22 +127,17 @@
   .workspace-hero--member .workspace-hero__metrics b { font-size: 21px; }
   .workspace-hero--member .workspace-hero__metrics small { font-size: 11px; line-height: 1.4; }
 
+  .site-header .account-trigger {
+    justify-content: center;
+    gap: 0;
+    overflow: hidden;
+  }
+  .site-header .account-trigger__label { display: none; }
+  .site-header .account-trigger__icon { flex: 0 0 32px; }
   .site-header .account-trigger__icon.has-photo {
-    position: relative;
     color: #245144;
     background: #edf2ed !important;
   }
-  .site-header .account-trigger__icon.has-photo svg {
-    position: absolute;
-    z-index: 0;
-  }
-  .site-header .account-trigger__icon.has-photo img {
-    position: relative;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity .15s ease;
-  }
-  .site-header .account-trigger__icon.has-photo img.is-ready { opacity: 1; }
 
   .mobile-nav__dock {
     overflow: visible;
@@ -187,6 +182,18 @@
   .mobile-nav__item--sand .mobile-nav__label { font-size: 11px; }
 }
 
+/* The fallback icon and photo share one fixed square on every viewport. */
+.site-header .account-trigger__icon.has-photo { position: relative; }
+.site-header .account-trigger__icon.has-photo svg { position: absolute; z-index: 0; }
+.site-header .account-trigger__icon.has-photo img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (prefers-reduced-motion:reduce) {
-  .mobile-nav__sand-avatar, .site-header .account-trigger__icon.has-photo img { transition: none; }
+  .mobile-nav__sand-avatar { transition: none; }
 }

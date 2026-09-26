@@ -28,7 +28,7 @@ export function AccountButton() {
   const previousPath = useRef(pathname);
   const [user, setUser] = useState<ClientSessionUser | null>(null);
   const [ready, setReady] = useState(false);
-  const [loadedAvatarUrl, setLoadedAvatarUrl] = useState('');
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -82,7 +82,7 @@ export function AccountButton() {
     >
       <span className={`account-trigger__icon${user?.avatarUrl ? ' has-photo' : ''}`} aria-hidden="true">
         <AccountIcon />
-        {user?.avatarUrl ? (
+        {user?.avatarUrl && failedAvatarUrl !== user.avatarUrl ? (
           <Image
             key={user.avatarUrl}
             src={user.avatarUrl}
@@ -94,8 +94,7 @@ export function AccountButton() {
             fetchPriority="high"
             unoptimized
             referrerPolicy="no-referrer"
-            className={loadedAvatarUrl === user.avatarUrl ? 'is-ready' : ''}
-            onLoad={() => setLoadedAvatarUrl(user.avatarUrl)}
+            onError={() => setFailedAvatarUrl(user.avatarUrl)}
           />
         ) : null}
       </span>
