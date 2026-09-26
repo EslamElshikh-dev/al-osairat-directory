@@ -3,6 +3,7 @@ import { categories, directoryStats } from '@/lib/data';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
 import { NotificationBell } from './auth/notification-bell';
+import { PublicUpdates } from './public-updates';
 import { GlobalSearch } from './global-search';
 
 export { MobileNav };
@@ -43,6 +44,7 @@ export function SiteHeader() {
 
         <div className="header-actions">
           <GlobalSearch />
+          <PublicUpdates />
           <NotificationBell />
           <AccountButton />
           <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
