@@ -26,7 +26,7 @@ export async function GET() {
     const time = Date.parse(date);
     return Number.isFinite(time) && time >= cutoff && time <= Date.now() + 60_000;
   };
-  const updates: Update[] = [
+  const candidates: Update[] = [
     ...jobsResult.jobs
       .filter((job) => job.kind === 'offer' && recent(job.published_at))
       .map((job) => ({
@@ -55,7 +55,17 @@ export async function GET() {
         href: `/blog/${encodeURIComponent(article.slug)}`,
         publishedAt: article.updatedAt || article.publishedAt,
       })),
-  ].sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt)).slice(0, 9);
+  ].sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+  // Show recent content from each source, even when one source publishes in a batch.
+  const counts: Record<Update['type'], number> = { news: 0, job: 0, article: 0 };
+  const balanced = candidates.filter((item) => {
+    if (counts[item.type] >= 3) return false;
+    counts[item.type] += 1;
+    return true;
+  });
+  const updates = [...balanced, ...candidates.filter((item) => !balanced.includes(item))]
+    .slice(0, 9)
+    .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
   return NextResponse.json({ updates }, {
     headers: { 'Cache-Control': 'public, max-age=60, s-maxage=120, stale-while-revalidate=300' },
   });
