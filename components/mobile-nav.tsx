@@ -1,6 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import Link, { useLinkStatus } from 'next/link';
+import { Fragment } from 'react';
 import { usePathname } from 'next/navigation';
 
 type NavItem = {
@@ -51,7 +53,6 @@ const items: NavItem[] = [
   {
     href: '/directory',
     label: 'الدليل',
-    primary: true,
     match: (pathname) => pathname.startsWith('/directory') || pathname.startsWith('/listing'),
     icon: (
       <svg {...iconProps}>
@@ -69,16 +70,6 @@ const items: NavItem[] = [
       <svg {...iconProps}>
         <rect x="3.8" y="8.2" width="16.4" height="11.4" rx="2" />
         <path d="M9 8.2V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2.2M3.8 12.7h16.4M10.2 12.7v2h3.6v-2" />
-      </svg>
-    ),
-  },
-  {
-    href: '/emergency',
-    label: 'الطوارئ',
-    match: (pathname) => pathname.startsWith('/emergency'),
-    icon: (
-      <svg {...iconProps}>
-        <path d="M8.8 3.8h6.4v4h4v6.4h-4v4H8.8v-4h-4V7.8h4Z" />
       </svg>
     ),
   },
@@ -101,20 +92,44 @@ export function MobileNav() {
   return (
     <nav className="mobile-nav" aria-label="التنقل الرئيسي على الجوال">
       <div className="mobile-nav__dock">
-        {items.map((item) => {
+        {items.map((item, index) => {
           const active = item.match(pathname);
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={active ? 'page' : undefined}
-              className={`mobile-nav__item${item.primary ? ' mobile-nav__item--primary' : ''}${active ? ' is-active' : ''}`}
-            >
-              <span className="mobile-nav__icon">{item.icon}</span>
-              <span className="mobile-nav__label">{item.label}</span>
-              <span className="mobile-nav__active-dot" aria-hidden="true" />
-              <MobileNavProgress />
-            </Link>
+            <Fragment key={item.href}>
+              {index === 2 ? (
+                <button
+                  type="button"
+                  className="mobile-nav__item mobile-nav__item--sand"
+                  aria-label="افتح سَند، مساعد دليل العسيرات"
+                  aria-haspopup="dialog"
+                  data-sand-trigger="true"
+                  onClick={() => window.dispatchEvent(new CustomEvent('sand:context'))}
+                >
+                  <span className="mobile-nav__sand-avatar">
+                    <Image
+                      src="/images/sand-avatar-v3.webp"
+                      alt=""
+                      width={43}
+                      height={43}
+                      sizes="43px"
+                      loading="eager"
+                    />
+                  </span>
+                  <span className="mobile-nav__label">سَند</span>
+                </button>
+              ) : null}
+              <Link
+                href={item.href}
+                prefetch={false}
+                aria-current={active ? 'page' : undefined}
+                className={`mobile-nav__item${active ? ' is-active' : ''}`}
+              >
+                <span className="mobile-nav__icon">{item.icon}</span>
+                <span className="mobile-nav__label">{item.label}</span>
+                <span className="mobile-nav__active-dot" aria-hidden="true" />
+                <MobileNavProgress />
+              </Link>
+            </Fragment>
           );
         })}
       </div>

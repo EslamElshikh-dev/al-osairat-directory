@@ -28,6 +28,7 @@ export function AccountButton() {
   const previousPath = useRef(pathname);
   const [user, setUser] = useState<ClientSessionUser | null>(null);
   const [ready, setReady] = useState(false);
+  const [loadedAvatarUrl, setLoadedAvatarUrl] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -71,7 +72,6 @@ export function AccountButton() {
   }, [pathname]);
 
   const label = user ? (user.displayName?.split(' ')[0] || 'حسابي') : 'دخول';
-  const initial = user?.displayName?.trim()?.charAt(0);
 
   return (
     <Link
@@ -81,20 +81,23 @@ export function AccountButton() {
       title={ready && user ? user.displayName : 'حساب الأعضاء'}
     >
       <span className={`account-trigger__icon${user?.avatarUrl ? ' has-photo' : ''}`} aria-hidden="true">
+        <AccountIcon />
         {user?.avatarUrl ? (
           <Image
+            key={user.avatarUrl}
             src={user.avatarUrl}
             alt=""
-            width={31}
-            height={31}
-            sizes="31px"
+            width={32}
+            height={32}
+            sizes="32px"
+            loading="eager"
+            fetchPriority="high"
+            unoptimized
             referrerPolicy="no-referrer"
+            className={loadedAvatarUrl === user.avatarUrl ? 'is-ready' : ''}
+            onLoad={() => setLoadedAvatarUrl(user.avatarUrl)}
           />
-        ) : initial ? (
-          <b>{initial}</b>
-        ) : (
-          <AccountIcon />
-        )}
+        ) : null}
       </span>
       <span className="account-trigger__label">{ready ? label : 'حسابي'}</span>
     </Link>
