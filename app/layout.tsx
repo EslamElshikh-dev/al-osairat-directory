@@ -5,6 +5,7 @@ import { GoogleAnalyticsLoader } from '@/components/google-analytics-loader';
 import { NavigationScrollManager } from '@/components/navigation-scroll-manager';
 import { SandAssistant } from '@/components/sand-assistant';
 import { WelcomeBlessing } from '@/components/welcome-blessing';
+import { UpdatesTicker } from '@/components/updates-ticker';
 import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
@@ -173,6 +174,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </Suspense>
         <a className="skip-link" href="#main-content">تجاوز إلى المحتوى</a>
         <SiteHeader />
+        <UpdatesTicker />
         {children}
         <Footer />
         <SandAssistant />
