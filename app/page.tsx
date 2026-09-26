@@ -8,7 +8,7 @@ import { NewsCard } from '@/components/news-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/site-shell';
 import { FaqSection } from '@/components/faq-section';
-import { MemberReviews } from '@/components/member-reviews';
+import { HomeMemberReviews } from '@/components/home-member-reviews';
 import { SmartLocalCompass } from '@/components/smart-local-compass';
 import { JobsTicker } from '@/components/jobs-ticker';
 import { homeFaq } from '@/lib/faq';
@@ -324,7 +324,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <MemberReviews
+      <HomeMemberReviews
         targetType="site"
         targetKey="site"
         eyebrow="تجربة أعضاء المجتمع"

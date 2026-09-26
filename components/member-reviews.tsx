@@ -38,7 +38,7 @@ type ReviewsPayload = {
   error?: string;
 };
 
-type MemberReviewsProps = {
+export type MemberReviewsProps = {
   targetType: ReviewTargetType;
   targetKey: string;
   eyebrow: string;
