@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { categories, directoryStats } from '@/lib/data';
+import { directoryStats } from '@/lib/data';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
 import { NotificationBell } from './auth/notification-bell';
 import { PublicUpdates } from './public-updates';
 import { GlobalSearch } from './global-search';
+import footerStyles from './site-footer.module.css';
 
 export { MobileNav };
 
@@ -61,100 +62,96 @@ export function SiteHeader() {
   );
 }
 
+const footerRoutes = [
+  { href: '/directory', index: '01', title: 'دليل الخدمات', description: 'أنشطة وخدمات مركز العسيرات' },
+  { href: '/villages', index: '02', title: 'القرى', description: 'كل قرية والخدمات المتاحة فيها' },
+  { href: '/localities', index: '03', title: 'النجوع والتوابع', description: 'الأماكن الأصغر داخل المركز' },
+  { href: '/news', index: '04', title: 'أخبار العسيرات', description: 'آخر التغطيات مع مصدرها الأصلي' },
+  { href: '/jobs', index: '05', title: 'شغل وفرص', description: 'فرص محلية وفرص سوهاج القريبة' },
+  { href: '/blog', index: '06', title: 'مدونة العسيرات', description: 'حكايات وموضوعات من البلد' },
+  { href: '/community', index: '07', title: 'مجتمع العسيرات', description: 'نقاشات وتجارب أهل المركز' },
+];
+
+const footerUtilities = [
+  { href: '/directory', label: 'كل أقسام الدليل' },
+  { href: '/news#news-method', label: 'مصادر الأخبار' },
+  { href: '/members', label: 'أعضاء المجتمع' },
+  { href: '/developer', label: 'عن المطوّر' },
+  { href: '/emergency', label: 'أرقام مهمة' },
+  { href: '/account', label: 'حسابي' },
+];
+
 export function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer__accent" aria-hidden="true" />
-
-      <div className="shell footer__top">
-        <div className="footer__brand-lockup">
-          <span className="footer__brand-emblem"><BrandMark /></span>
-          <div className="footer__brand-copy">
-            <span className="footer__kicker">الموسوعة المحلية لمركز العسيرات وقراه</span>
-            <h2>دليل وموسوعة العسيرات</h2>
-            <p>
-              منصة محلية لتنظيم وإتاحة بيانات الخدمات والأنشطة داخل مركز العسيرات بمحافظة سوهاج،
-              ضمن هيكل واضح يساعدك على الوصول إلى الخدمة والقرية والمعلومة بسرعة.
-            </p>
-          </div>
-        </div>
-
-        <div className="footer__top-actions">
-          <span className="footer__scope">
-            <span className="footer__scope-dot" aria-hidden="true" />
-            مركز العسيرات · سوهاج
-          </span>
-          <Link href="/directory" className="footer__cta">
-            <span>استكشف الدليل</span>
-            <b aria-hidden="true">←</b>
-          </Link>
-        </div>
-      </div>
-
-      <div className="shell footer__grid">
-        <section className="footer__about" aria-labelledby="footer-stats-title">
-          <span className="footer__section-label" id="footer-stats-title">الدليل في أرقام</span>
-          <div className="footer__stats">
-            <span><b>{directoryStats.total}</b> سجل منظم</span>
-            <span><b>{directoryStats.villages}</b> قرى أساسية</span>
-            <span><b>{directoryStats.categories}</b> أقسام</span>
-          </div>
-          <p className="footer__note">
-            البيانات قابلة للتحديث والمراجعة المستمرة، وتُفصل السجلات غير المؤكدة عن المحتوى المنشور قدر الإمكان.
-          </p>
-        </section>
-
-        <nav className="footer__column" aria-label="أقسام الدليل">
-          <h2>أقسام الدليل</h2>
-          <div className="footer__links">
-            {categories.slice(0, 5).map((category) => (
-              <Link key={category.id} href={`/directory/${category.id}`}>{category.shortLabel}</Link>
-            ))}
-          </div>
-        </nav>
-
-        <nav className="footer__column" aria-label="استكشف المزيد">
-          <h2>استكشف</h2>
-          <div className="footer__links">
-            <Link href="/news">أخبار العسيرات</Link>
-            <Link href="/blog">مدونة العسيرات</Link>
-            <Link href="/villages">قرى العسيرات</Link>
-            <Link href="/localities">نجوع وتوابع العسيرات</Link>
-            <Link href="/community">نبض المجتمع</Link>
-            <Link href="/jobs">شغل وفرص العسيرات</Link>
-            <Link href="/members">أعضاء المجتمع</Link>
-            <Link href="/developer">حكاية مطوّر الدليل</Link>
-            {categories.slice(5, 8).map((category) => (
-              <Link key={category.id} href={`/directory/${category.id}`}>{category.shortLabel}</Link>
-            ))}
-            <Link href="/directory">كل الأقسام</Link>
-          </div>
-        </nav>
-
-        <section className="footer__column footer__trust-column" aria-labelledby="footer-trust-title">
-          <h2 id="footer-trust-title">معلومات مهمة</h2>
-          <div className="footer__trust-card">
-            <div className="footer__trust-title">
-              <span className="footer__trust-icon" aria-hidden="true">✓</span>
-              <span>نطاق محلي واضح</span>
+    <footer className={footerStyles.root}>
+      <div className={footerStyles.accent} aria-hidden="true" />
+      <div className={`shell ${footerStyles.shell}`}>
+        <section className={footerStyles.masthead} aria-labelledby="site-footer-title">
+          <div className={footerStyles.identity}>
+            <span className={footerStyles.emblem}><BrandMark /></span>
+            <div className={footerStyles.identityCopy}>
+              <span className={footerStyles.kicker}>من أهل البلد، لأهل البلد</span>
+              <h2 id="site-footer-title">دليل وموسوعة العسيرات</h2>
+              <p>خدمات العسيرات وقراها ونجوعها وأخبارها في مكان واحد. بنراجع البيانات ونحدّثها، والدليل يكبر بمشاركة أهل البلد.</p>
             </div>
-            <p>التغطية مخصصة لمركز العسيرات وقراه وتوابعه بمحافظة سوهاج.</p>
-            <Link href="/emergency" className="footer__emergency-link">أرقام الطوارئ والخدمات المهمة</Link>
+          </div>
+          <div className={footerStyles.actions}>
+            <Link prefetch={false} href="/directory" className={footerStyles.primaryAction}><span>دوّر على خدمة</span><b aria-hidden="true">←</b></Link>
+            <Link prefetch={false} href="/jobs#participate" className={footerStyles.secondaryAction}><span>عندك فرصة عمل؟</span><b aria-hidden="true">←</b></Link>
           </div>
         </section>
-      </div>
 
-      <div className="shell footer__bottom">
-        <div className="footer__legal">
-          <span>© {new Date().getFullYear()} دليل العسيرات</span>
-          <span className="footer__separator" aria-hidden="true">•</span>
-          <span>جميع البيانات قابلة للتحديث والمراجعة</span>
+        <div className={footerStyles.content}>
+          <nav className={footerStyles.routesPanel} aria-labelledby="footer-routes-title">
+            <div className={footerStyles.sectionHeading}>
+              <div><span>الطريق من هنا</span><h2 id="footer-routes-title">تدوّر على إيه؟</h2></div>
+              <small>كل باب يوصّلك لحاجة من بلدنا</small>
+            </div>
+            <div className={footerStyles.routes}>
+              {footerRoutes.map((route) => (
+                <Link prefetch={false} href={route.href} className={footerStyles.route} key={route.href}>
+                  <span className={footerStyles.routeIndex}>{route.index}</span>
+                  <span className={footerStyles.routeCopy}><strong>{route.title}</strong><small>{route.description}</small></span>
+                  <b className={footerStyles.routeArrow} aria-hidden="true">←</b>
+                </Link>
+              ))}
+            </div>
+          </nav>
+
+          <aside className={footerStyles.side} aria-label="معلومات دليل العسيرات">
+            <section className={footerStyles.metrics} aria-labelledby="footer-metrics-title">
+              <div className={footerStyles.sectionHeading}>
+                <div><span>من أرض العسيرات</span><h2 id="footer-metrics-title">بلدنا في الدليل</h2></div>
+              </div>
+              <div className={footerStyles.stats}>
+                <span><b>{directoryStats.total.toLocaleString('ar-EG')}</b><small>سجل منظم</small></span>
+                <span><b>{directoryStats.villages.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
+                <span><b>{directoryStats.categories.toLocaleString('ar-EG')}</b><small>أقسام</small></span>
+              </div>
+            </section>
+
+            <section className={footerStyles.localCard} aria-labelledby="footer-scope-title">
+              <span className={footerStyles.localIcon} aria-hidden="true">⌖</span>
+              <div><strong id="footer-scope-title">العسيرات وقراها ونجوعها</strong><p>الدليل مخصص لمركز العسيرات في محافظة سوهاج، وبنراجع بياناته ونحدّثها باستمرار.</p></div>
+              <Link prefetch={false} href="/emergency">أرقام الطوارئ والخدمات المهمة <b aria-hidden="true">←</b></Link>
+            </section>
+
+            <div className={footerStyles.utilities}>
+              <h2 id="footer-utilities-title">روابط تهمك</h2>
+              <nav className={footerStyles.utilityLinks} aria-labelledby="footer-utilities-title">
+                {footerUtilities.map((item) => <Link prefetch={false} href={item.href} key={item.href}>{item.label}<b aria-hidden="true">←</b></Link>)}
+              </nav>
+            </div>
+          </aside>
         </div>
-        <Link href="/developer" className="footer__signature">
-          <span>تصميم وتطوير:</span>
-          <b>المهندس إسلام الشيخ</b>
-          <span className="footer__signature-arrow" aria-hidden="true">↗</span>
-        </Link>
+
+        <div className={footerStyles.bottom}>
+          <div className={footerStyles.bottomInfo}>
+            <span className={footerStyles.location}><i aria-hidden="true" /> مركز العسيرات · محافظة سوهاج</span>
+            <div className={footerStyles.legal}><span>© {new Date().getFullYear()} دليل العسيرات</span><Link prefetch={false} href="/news#news-method">سياسة الأخبار</Link><span>البيانات قابلة للتحديث والمراجعة</span></div>
+          </div>
+          <Link prefetch={false} href="/developer" className={footerStyles.signature}><span>تصميم وتطوير</span><b>المهندس إسلام الشيخ</b><span aria-hidden="true">←</span></Link>
+        </div>
       </div>
     </footer>
   );

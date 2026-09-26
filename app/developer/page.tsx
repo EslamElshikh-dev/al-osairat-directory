@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { buildPageMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 import styles from './developer.module.css';
+import { DeveloperProjects } from '@/components/developer-projects';
 
 export const metadata = buildPageMetadata({
   title: 'المهندس إسلام الشيخ | ابن العسيرات ومطوّر الدليل',
@@ -15,14 +16,15 @@ const chapters = [
   { id: 'journey', label: 'الجذور والدراسة', number: '٠٢', detail: 'المكان والتخصص وطريق التعلّم.' },
   { id: 'experience', label: 'الخبرة', number: '٠٣', detail: 'قطاعات وشركات مختلفة.' },
   { id: 'work', label: 'المشروعات', number: '٠٤', detail: 'خمسة أعمال، وأولها دليل العسيرات.' },
+  { id: 'connect', label: 'تواصل', number: '٠٥', detail: 'موقعه الشخصي وحسابه البرمجي.' },
 ];
 
 const projects = [
-  { title: 'دليل وموسوعة العسيرات', place: 'العسيرات · سوهاج', image: '/images/directory/hero-al-osairat.webp', alt: 'مشهد تعبيري لقرى العسيرات ضمن دليل العسيرات', href: '/', text: 'مشروع محلي يبدأ من بلده؛ تنظيم الخدمات والقرى والنجوع وأخبار المجتمع ومعلوماته في مكان واحد يخدم أهل المركز.', tags: ['دليل محلي', 'قرى ونجوع', 'مجتمع'] },
-  { title: 'دليل نقادة', place: 'نقادة · قنا', image: '/images/developer/naqada-city.webp', alt: 'مشهد تعبيري من نقادة مرتبط بمشروع دليل نقادة', href: 'https://naqada-directory.vercel.app/', text: 'فكرة قريبة من دليل العسيرات، توسّع التجربة لتقرّب خدمات نقادة وقراها وحكايات أهلها وفرص العمل من زوارها.', tags: ['خدمات', 'حكايات', 'فرص'] },
-  { title: 'شركة تعاود للمقاولات', place: 'الرياض · الدمام', image: '/images/developer/tawod.webp', alt: 'واجهة موقع شركة تعاود للمقاولات', href: 'https://tawodco.com/', text: 'واجهة رقمية تقدّم الشركة وخدماتها للزائر بوضوح، وتسهّل عليه الوصول إلى المعلومات ووسائل التواصل.', tags: ['مقاولات', 'تجربة رقمية'] },
-  { title: 'معامل سما سكان', place: 'الرياض', image: '/images/developer/sama-scan.webp', alt: 'واجهة موقع معامل سما سكان للأشعة التشخيصية', href: 'https://samascan.vercel.app/', text: 'عرض منظم لخدمات الأشعة التشخيصية ومعلوماتها، يساعد الزائر على معرفة الخدمة المناسبة وطريقة الوصول إليها.', tags: ['صحة', 'سهولة وصول'] },
-  { title: 'باودي لابز', place: 'ذكاء اصطناعي', image: '/images/developer/bowdy-labs.webp', alt: 'واجهة موقع شركة باودي لابز', href: 'https://bowdylabs.com/', text: 'حضور رقمي لشركة تعمل في الذكاء الاصطناعي، ضمن أعماله التي تمتد من المشاريع المحلية إلى القطاعات التقنية.', tags: ['ذكاء اصطناعي', 'منتج'] },
+  { title: 'دليل وموسوعة العسيرات', place: 'العسيرات · سوهاج', image: '/images/directory/hero-al-osairat.webp', alt: 'مشهد تعبيري لقرى العسيرات ضمن دليل العسيرات', href: '/', text: 'مشروع محلي يبدأ من بلده؛ تنظيم الخدمات والقرى والنجوع وأخبار المجتمع ومعلوماته في مكان واحد يخدم أهل المركز.', tags: ['دليل محلي', 'قرى ونجوع', 'مجتمع'], category: 'local' },
+  { title: 'دليل نقادة', place: 'نقادة · قنا', image: '/images/developer/naqada-city.webp', alt: 'مشهد تعبيري من نقادة مرتبط بمشروع دليل نقادة', href: 'https://naqada-directory.vercel.app/', text: 'فكرة قريبة من دليل العسيرات، توسّع التجربة لتقرّب خدمات نقادة وقراها وحكايات أهلها وفرص العمل من زوارها.', tags: ['خدمات', 'حكايات', 'فرص'], category: 'local' },
+  { title: 'شركة تعاود للمقاولات', place: 'الرياض · الدمام', image: '/images/developer/tawod.webp', alt: 'واجهة موقع شركة تعاود للمقاولات', href: 'https://tawodco.com/', text: 'واجهة رقمية تقدّم الشركة وخدماتها للزائر بوضوح، وتسهّل عليه الوصول إلى المعلومات ووسائل التواصل.', tags: ['مقاولات', 'تجربة رقمية'], category: 'business' },
+  { title: 'معامل سما سكان', place: 'الرياض', image: '/images/developer/sama-scan.webp', alt: 'واجهة موقع معامل سما سكان للأشعة التشخيصية', href: 'https://samascan.vercel.app/', text: 'عرض منظم لخدمات الأشعة التشخيصية ومعلوماتها، يساعد الزائر على معرفة الخدمة المناسبة وطريقة الوصول إليها.', tags: ['صحة', 'سهولة وصول'], category: 'health' },
+  { title: 'باودي لابز', place: 'ذكاء اصطناعي', image: '/images/developer/bowdy-labs.webp', alt: 'واجهة موقع شركة باودي لابز', href: 'https://bowdylabs.com/', text: 'حضور رقمي لشركة تعمل في الذكاء الاصطناعي، ضمن أعماله التي تمتد من المشاريع المحلية إلى القطاعات التقنية.', tags: ['ذكاء اصطناعي', 'منتج'], category: 'technology' },
 ];
 
 export default function DeveloperPage() {
@@ -46,9 +48,9 @@ export default function DeveloperPage() {
 
     <section className={`shell ${styles.experience}`} id="experience"><div className={styles.sectionLabel}>٠٣ / العمل والخبرة</div><div><h2>من مشروعات تخدم أهل البلد<br /><em>لشركات في قطاعات مختلفة.</em></h2><p>يعرّف إسلام نفسه بأنه مهندس أمن سيبراني ومطور في جوجل، وأحد أبرز الكوادر المصرية الشابة في الأمن السيبراني والبرمجة بالسوق السعودي، مع بروز مسيرته نهاية عام ٢٠٢٥. ويذكر ضمن سيرته أنه من الكوادر المصرية والعربية النادرة المعتمدة والعاملة لدى جوجل، ومن أفضل ١٠ مطورين عرب مستقلين في الترتيب المحلي.</p><p>وعمل مع شركات كبرى منها شركة تعاود للمقاولات العامة بفرعي الرياض والدمام، وشركة الأرجان العقارية، ومعامل سما سكان للأشعة التشخيصية في الرياض، وشركة باودي لابز للذكاء الاصطناعي، وغيرها. الأعمال المختارة تحت تتيح لك تتصفح أمثلة من مشروعاته بنفسك.</p><div className={styles.companyChips}><span>تعاود للمقاولات</span><span>الأرجان العقارية</span><span>سما سكان</span><span>باودي لابز</span></div></div></section>
 
-    <section className={styles.works} id="work"><div className={`shell ${styles.workInner}`}><header><span className={styles.sectionLabel}>٠٤ / خمسة مشروعات</span><h2>ابدأ من العسيرات،<br /><em>وكمل في بقية الأعمال.</em></h2><p>بدأنا بدليل العسيرات لأنه مشروع من قلب البلد، ثم دليل نقادة لقرب الفكرة، وبعدهما نماذج من قطاعات المقاولات والصحة والتقنية.</p></header><div className={styles.workGrid}>{projects.map((project, index) => <article key={project.title} className={styles.workCard}><div className={styles.workMedia}><Image src={project.image} alt={project.alt} fill sizes="(max-width: 760px) 100vw, 45vw" /><span>{String(index + 1).padStart(2, '0')}</span></div><div className={styles.workContent}><small>{project.place}</small><h3>{project.title}</h3><p>{project.text}</p><div className={styles.tags}>{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><a href={project.href} target={index ? '_blank' : undefined} rel={index ? 'noopener noreferrer' : undefined}>افتح المشروع <span aria-hidden="true">↗</span></a></div></article>)}</div></div></section>
+    <section className={styles.works} id="work"><div className={`shell ${styles.workInner}`}><header><span className={styles.sectionLabel}>٠٤ / خمسة مشروعات</span><h2>ابدأ من العسيرات،<br /><em>وكمل في بقية الأعمال.</em></h2><p>بدأنا بدليل العسيرات لأنه مشروع من قلب البلد، ثم دليل نقادة لقرب الفكرة، وبعدهما نماذج من قطاعات المقاولات والصحة والتقنية. اختَر المجال اللي يهمك من الأزرار لعرض مشروعاته.</p></header><DeveloperProjects projects={projects} /></div></section>
 
-    <section className={`shell ${styles.connect}`}><span aria-hidden="true">✦</span><div><small>كمل الحكاية</small><h2>من هنا للخطوة اللي بعدها.</h2><p>لو حابب تتعرّف أكثر على إسلام الشيخ وبقية أعماله، شوف موقعه الشخصي أو صفحته على GitHub.</p></div><div><a href="https://www.eslam-elshikh.com/" target="_blank" rel="noopener noreferrer me">الموقع الشخصي ↗</a><a href="https://github.com/EslamElshikh-dev" target="_blank" rel="noopener noreferrer me">GitHub ↗</a></div></section>
+    <section className={`shell ${styles.connect}`} id="connect"><span aria-hidden="true">✦</span><div><small>كمل الحكاية</small><h2>من هنا للخطوة اللي بعدها.</h2><p>لو حابب تتعرّف أكثر على إسلام الشيخ وبقية أعماله، شوف موقعه الشخصي أو صفحته على GitHub.</p></div><div><a href="https://www.eslam-elshikh.com/" target="_blank" rel="noopener noreferrer me">الموقع الشخصي ↗</a><a href="https://github.com/EslamElshikh-dev" target="_blank" rel="noopener noreferrer me">GitHub ↗</a></div></section>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
   </main>;
 }
