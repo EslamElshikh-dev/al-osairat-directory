@@ -12,6 +12,7 @@ import { FollowingFeedPanel } from './following-feed-panel';
 import { CommunityProgressPanel } from './community-progress-panel';
 import { CommunityLibraryPanel } from './community-library-panel';
 import { AdminAccessCard } from './admin-access-card';
+import { refreshClientSession } from './client-session';
 
 type User = {
   localId: string;
@@ -54,14 +55,16 @@ export function AccountPanel() {
   const [removingFavorite, setRemovingFavorite] = useState('');
 
   useEffect(() => {
-    fetch('/api/auth/session', { cache: 'no-store', credentials: 'same-origin' })
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.user) router.replace('/account/login');
-        else setUser(data.user);
+    let active = true;
+    void refreshClientSession()
+      .then((nextUser) => {
+        if (!active) return;
+        if (!nextUser) router.replace('/account/login');
+        else setUser(nextUser as User);
       })
-      .catch(() => router.replace('/account/login'))
-      .finally(() => setLoading(false));
+      .catch(() => { if (active) router.replace('/account/login'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, [router]);
 
   useEffect(() => {

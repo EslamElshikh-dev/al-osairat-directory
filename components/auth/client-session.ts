@@ -24,8 +24,8 @@ function emit() {
 }
 
 async function loadSession(force = false): Promise<ClientSessionUser | null> {
+  if (sessionPromise) return sessionPromise;
   if (!force && cachedUser !== undefined) return cachedUser;
-  if (!force && sessionPromise) return sessionPromise;
 
   const generation = ++requestGeneration;
   const request = fetch('/api/auth/session', {
