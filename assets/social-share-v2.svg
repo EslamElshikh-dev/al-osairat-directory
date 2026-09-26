@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="دليل العسيرات — الخدمات والقرى والفرص من قلب سوهاج">
+  <!-- Editable source. The scenic artwork is explicitly illustrative, not a documentary photo. -->
+  <defs>
+    <linearGradient id="forest" x1="1200" y1="0" x2="360" y2="630" gradientUnits="userSpaceOnUse"><stop stop-color="#1b4c3b"/><stop offset=".6" stop-color="#102e26"/><stop offset="1" stop-color="#0a251e"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="630" gradientUnits="userSpaceOnUse"><stop stop-color="#f3db9c"/><stop offset=".7" stop-color="#d5a849"/><stop offset="1" stop-color="#bd8930"/></linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="630" gradientUnits="userSpaceOnUse"><stop stop-color="#0b271e" stop-opacity=".06"/><stop offset=".62" stop-color="#0b271e" stop-opacity=".10"/><stop offset="1" stop-color="#0b271e" stop-opacity=".86"/></linearGradient>
+    <clipPath id="photo"><path d="M0 0H580C545 132 570 209 551 312C529 447 517 546 460 630H0Z"/></clipPath>
+    <pattern id="grain" width="38" height="38" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#ffebb8" opacity=".09"/></pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#forest)"/>
+  <rect x="580" y="0" width="620" height="630" fill="url(#grain)"/>
+  <g clip-path="url(#photo)">
+    <image x="-320" y="0" width="1120" height="630" xlink:href="social-share-photo.jpg" preserveAspectRatio="xMidYMid slice"/>
+    <rect width="600" height="630" fill="url(#shade)"/>
+    <rect x="20" y="35" width="235" height="45" rx="22" fill="#103528" opacity=".91"/>
+    <circle cx="231" cy="57" r="5" fill="#f2d78b"/>
+    <text x="216" y="64" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="19" font-weight="700" fill="#fff6e8">العسيرات · سوهاج</text>
+    <path d="M63 541H356" stroke="#e8c977" stroke-width="2" opacity=".85"/>
+    <circle cx="63" cy="541" r="5" fill="#e8c977"/>
+    <circle cx="211" cy="541" r="5" fill="#e8c977"/>
+    <circle cx="356" cy="541" r="5" fill="#e8c977"/>
+    <text x="456" y="588" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="20" fill="#fff7e7">صورة تعبيرية من روح البلد</text>
+  </g>
+  <path d="M580 0C545 132 570 209 551 312C529 447 517 546 460 630" fill="none" stroke="url(#gold)" stroke-width="3" opacity=".94"/>
+  <circle cx="1004" cy="283" r="220" fill="none" stroke="#f2d78b" stroke-width="1.5" opacity=".085"/>
+  <circle cx="1004" cy="283" r="281" fill="none" stroke="#f2d78b" stroke-width="1.5" opacity=".05"/>
+  <g transform="translate(1068 56)">
+    <rect width="82" height="82" rx="23" fill="#f8f5ec"/>
+    <circle cx="41" cy="38" r="23" fill="none" stroke="#103c2d" stroke-width="7"/>
+    <path d="M19 31a23 23 0 0 1 18-16" fill="none" stroke="#d7a83c" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="41" cy="38" r="5" fill="#d7a83c"/>
+    <path d="M25 56 15 66" stroke="#103c2d" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <text x="1045" y="111" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="20" font-weight="700" fill="#eccc79">من قلب العسيرات، لكل أهلها</text>
+  <text x="1110" y="270" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="78" font-weight="700" fill="#fff9ec">دليل العسيرات</text>
+  <text x="1107" y="338" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="31" font-weight="700" fill="#ebc978">بلدنا كلها في مكان واحد</text>
+  <path d="M625 370H1109" stroke="#e6c178" stroke-width="2" opacity=".48"/>
+  <circle cx="625" cy="370" r="4" fill="#e6c178"/>
+  <text x="1108" y="432" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="24" fill="#f5f0e3">خدمات · قرى ونجوع · أخبار · فرص عمل</text>
+  <rect x="729" y="487" width="380" height="60" rx="29" fill="#e8c46e"/>
+  <text x="1078" y="526" direction="rtl" text-anchor="start" font-family="DejaVu Sans" font-size="21" font-weight="700" fill="#193c30">اسأل عن اللي عاوزه.. وإحنا ندلّك</text>
+  <path d="M1109 586H641" stroke="#e6c178" stroke-width="1" opacity=".25"/>
+  <text x="641" y="610" font-family="DejaVu Sans" font-size="17" fill="#cbdace">usayrat.online</text>
+</svg>

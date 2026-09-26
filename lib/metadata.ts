@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/site';
 
-const defaultSocialImage = `${siteConfig.url}/images/social-share-ar.png?v=20260830-ar-2`;
-const defaultSocialImageAlt = 'دليل العسيرات - بتدور على إيه؟ وإحنا ندلّك عليه من قلب العسيرات';
+const defaultSocialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20260926`;
+const defaultSocialImageAlt = 'دليل العسيرات - الخدمات والقرى والنجوع والأخبار وفرص العمل من قلب سوهاج';
 const SITE_TITLE_SUFFIX = /\s*(?:[-–—|])\s*دليل العسيرات\s*$/;
 
 type BaseMetadataInput = {
