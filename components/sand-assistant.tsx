@@ -36,6 +36,7 @@ const starterSuggestions = [
   'صيدلية في الرشايدة',
   'مواصلات العسيرات',
   'خدمات النويرات',
+  'تثبيت دليل العسيرات',
   'أرقام الطوارئ',
 ];
 
@@ -137,12 +138,12 @@ function modeLabel(payload?: SandApiResponse) {
   return 'بحث مباشر';
 }
 
-export function SandAssistant() {
+export function SandAssistant({ initialPrompt = '' }: { initialPrompt?: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [messages, setMessages] = useState<ChatEntry[]>([welcome]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(initialPrompt);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [lastFailedText, setLastFailedText] = useState('');

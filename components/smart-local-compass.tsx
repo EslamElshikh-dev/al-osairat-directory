@@ -84,7 +84,7 @@ export function SmartLocalCompass({
   const panelOpen = focused && canSuggest;
 
   useEffect(() => {
-    setRecentSearches(safeRecentSearches(window.localStorage.getItem(recentSearchesKey)));
+    try { setRecentSearches(safeRecentSearches(window.localStorage.getItem(recentSearchesKey))); } catch { /* Search works without local storage. */ }
   }, []);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export function SmartLocalCompass({
       }
     }, 180);
 
-    return () => window.clearTimeout(timer);
+    return () => { window.clearTimeout(timer); requestRef.current?.abort(); };
   }, [canSuggest, normalizedQuery]);
 
   function rememberSearch(nextQuery: string, nextVillage: string) {
@@ -263,7 +263,7 @@ export function SmartLocalCompass({
         </label>
 
         <button className="smart-compass__submit" type="submit" disabled={!normalizedQuery}>
-          <span>دلّني الآن</span>
+          <span>دوّر</span>
           <b aria-hidden="true">←</b>
         </button>
       </form>

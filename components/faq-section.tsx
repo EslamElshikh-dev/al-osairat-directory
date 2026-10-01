@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { homeFaq } from '@/lib/faq';
-import { BrandMark } from './site-shell';
+import { BrandMark } from './brand-mark';
 
 function FaqAnswer({ answer, linkLabel, linkHref }: { answer: string; linkLabel?: string; linkHref?: string }) {
   if (!linkLabel || !linkHref || !answer.includes(linkLabel)) {

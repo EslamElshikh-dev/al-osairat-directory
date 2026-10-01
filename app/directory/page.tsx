@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { SmartLocalCompass } from '@/components/smart-local-compass';
 import { categories, villages } from '@/lib/data';
 import { queryDirectoryListings } from '@/lib/directory-query';

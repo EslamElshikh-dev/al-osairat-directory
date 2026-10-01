@@ -37,5 +37,6 @@ test('V2.9.1 removes the redundant executable inline scroll bootstrap', async ()
   const layout = await readProjectFile('app/layout.tsx');
   assert.doesNotMatch(layout, /scrollRestorationScript/);
   assert.doesNotMatch(layout, /<script dangerouslySetInnerHTML=\{\{ __html: scrollRestorationScript/);
-  assert.match(layout, /<NavigationScrollManager/);
+  // Next owns navigation and history restoration; do not override it globally.
+  assert.doesNotMatch(layout, /<NavigationScrollManager/);
 });

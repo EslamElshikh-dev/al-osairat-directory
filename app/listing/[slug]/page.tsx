@@ -12,7 +12,7 @@ import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
 import { ListingReport } from '@/components/listing-report';
 import { CategoryVisual } from '@/components/category-visual';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { imageForListing } from '@/lib/directory-images';
 import { villageCategoryDirectoryHref } from '@/lib/discovery';
 import { latestScanImageForListing } from '@/lib/latest-scan-images';

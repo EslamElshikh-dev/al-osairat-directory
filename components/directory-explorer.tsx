@@ -8,7 +8,7 @@ import {
   transportVehicleFilters,
 } from '@/lib/transport-filters';
 import { ListingCard } from './listing-card';
-import { BrandMark } from './site-shell';
+import { BrandMark } from './brand-mark';
 import { CategoryVisual } from './category-visual';
 import { DirectorySearchTelemetry } from './directory-search-telemetry';
 

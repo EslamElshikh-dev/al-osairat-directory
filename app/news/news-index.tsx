@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { NewsCard } from '@/components/news-card';
 import { NewsRefreshPulse } from '@/components/news-refresh-pulse';
 import { getLocalNews, newsSourceCatalog, type NewsTopic } from '@/lib/news';

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { listings } from '@/lib/data';
 import { CategoryVisual } from '@/components/category-visual';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { buildPageMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { NewsShare } from '@/components/news-share';
 import { NewsCard } from '@/components/news-card';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { buildArticleMetadata, buildPageMetadata } from '@/lib/metadata';
 import { getGeneratedNewsEditorial } from '@/lib/news-editorial';
 import {
@@ -51,6 +52,7 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
         description,
         path,
         imageAlt: `${item.title} - أخبار العسيرات`,
+        imageUrl: `/news/${encodeURIComponent(item.id)}/opengraph-image`,
         publishedTime: item.publishedAt,
         modifiedTime: item.editorial.updatedAt,
         authors: [item.editorial.author],
@@ -67,6 +69,7 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
       path,
       noIndex: true,
       imageAlt: `${item.title} - موجز من أخبار العسيرات`,
+      imageUrl: `/news/${encodeURIComponent(item.id)}/opengraph-image`,
     }),
     alternates: { canonical: item.url },
   };
@@ -185,6 +188,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       <div className={`shell ${styles.layout}`}>
         <article className={styles.article}>
+          <NewsShare title={item.title} url={pageUrl} />
           {generatedEditorial ? (
             <div className={`${styles.disclosure} ${styles.editorialDisclosure}`} role="note">
               <span aria-hidden="true">✓</span>
@@ -211,8 +215,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
               <div>
-                <strong>خبر موثق دون تكلفة ذكاء اصطناعي</strong>
-                <p>يعرض الدليل البيانات والموجز المتاحين من المصدر، مع رابط الناشر الأصلي، دون تشغيل نموذج مدفوع أو اختلاق صياغة.</p>
+                <strong>موجز من المصدر الأصلي</strong>
+                <p>يعرض الدليل الموجز المتاح مع اسم الناشر ورابط التغطية الأصلية للاطلاع على التفاصيل.</p>
               </div>
             </div>
           ) : item.persisted && item.editorialStatus === 'pending' ? (

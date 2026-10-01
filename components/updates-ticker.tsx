@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './updates-ticker.module.css';
 import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
 
@@ -16,6 +16,16 @@ const labels: Record<Update['type'], string> = {
 export function UpdatesTicker() {
   const [items, setItems] = useState<Update[]>([]);
   const [paused, setPaused] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const rootRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    let inView = true;
+    const update = () => setVisible(inView && document.visibilityState === 'visible');
+    const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; update(); });
+    if (rootRef.current) observer.observe(rootRef.current);
+    document.addEventListener('visibilitychange', update);
+    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', update); };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -52,7 +62,7 @@ export function UpdatesTicker() {
     };
   }, []);
 
-  return <section className={styles.root} data-paused={paused} data-empty={!items.length} dir="rtl" aria-label="آخر أخبار وفرص دليل العسيرات">
+  return <section ref={rootRef} className={styles.root} data-paused={paused || !visible} data-empty={!items.length} dir="rtl" aria-label="آخر أخبار وفرص دليل العسيرات">
     <div className={styles.heading}><i aria-hidden="true" /><span><small>نبض العسيرات</small><strong>الجديد عندنا</strong></span></div>
     {items.length ? <>
       <div className={styles.viewport}>
@@ -63,9 +73,9 @@ export function UpdatesTicker() {
             </Link>)}
           </div>
           <div className={`${styles.group} ${styles.clone}`} aria-hidden="true">
-            {items.map((item) => <span className={styles.item} key={`copy-${item.id}`}>
+            {items.map((item) => <Link prefetch={false} href={item.href} tabIndex={-1} className={styles.item} key={`copy-${item.id}`}>
               <span>{labels[item.type]}</span><strong>{item.title}</strong><b aria-hidden="true">←</b>
-            </span>)}
+            </Link>)}
           </div>
         </div>
       </div>

@@ -1,0 +1,48 @@
+.page { background: #f8f8f2; color: #173e31; }
+.content { padding-block: 30px 90px; }
+.breadcrumbs { display: flex; align-items: center; gap: 10px; color: #68776b; font-size: .875rem; }
+.breadcrumbs a { color: #21553e; text-decoration: none; }
+.breadcrumbs a:hover { text-decoration: underline; }
+.hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr); align-items: center; gap: clamp(30px, 6vw, 95px); min-height: 480px; margin-top: 28px; padding: clamp(32px, 5vw, 68px); overflow: hidden; border-radius: 32px; background: radial-gradient(circle at 4% 100%, #326d4c 0, transparent 43%), linear-gradient(115deg, #103c2e, #102a24); color: #f7f9f2; }
+.hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(125deg, transparent 0 115px, #ffffff06 116px, transparent 117px 233px); }
+.heroCopy, .appCard { position: relative; z-index: 1; min-width: 0; }
+.eyebrow { display: inline-flex; align-items: center; min-height: 33px; padding: 4px 13px; border: 1px solid #d9c48755; border-radius: 100px; color: #f0d393; background: #ffffff0b; font-size: .8125rem; font-weight: 700; }
+.hero h1 { max-width: 16ch; margin: 20px 0 15px; font-size: clamp(2rem, 4.5vw, 3.7rem); line-height: 1.45; letter-spacing: -.035em; }
+.hero h1 em { color: #f0d393; font-style: normal; }
+.heroCopy > p:not(.note) { max-width: 55ch; margin: 0; color: #d7e9dd; font-size: 1.0625rem; line-height: 1.9; }
+.primaryAction { margin-top: 29px; }
+.primaryAction button, .primaryAction a { display: inline-flex; align-items: center; justify-content: center; gap: 20px; min-height: 54px; padding: 12px 24px; border: 0; border-radius: 13px; color: #173e31; background: #f0d393; box-shadow: 0 8px 20px #001b1530; font: inherit; font-size: 1rem; font-weight: 800; text-decoration: none; cursor: pointer; }
+.primaryAction button:hover, .primaryAction a:hover { background: #ffe2a5; }
+.note { max-width: 57ch; margin: 17px 0 0; color: #bed1c5; font-size: .8125rem; line-height: 1.9; }
+.appCard { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 330px; padding: 28px; overflow: hidden; border: 1px solid #eddfbd38; border-radius: 28px; background: linear-gradient(155deg, #ffffff17, #ffffff08); box-shadow: 0 22px 60px #061d1640, inset 0 1px #ffffff21; text-align: center; }
+.appCardLabel { position: absolute; top: 20px; color: #e7d7b2; font-size: .75rem; }
+.iconFrame { display: grid; place-items: center; width: 152px; height: 152px; margin: 13px 0 13px; border: 1px solid #f7dfad46; border-radius: 37px; background: #ffffff10; box-shadow: 0 15px 32px #031b183a; }
+.iconFrame img { border-radius: 31px; }
+.appCard strong { font-size: 1.625rem; line-height: 1.6; }
+.appCard > span:last-of-type { color: #c9ddce; font-size: .875rem; }
+.appCardLine { position: absolute; right: 15%; bottom: 18px; left: 15%; height: 1px; background: linear-gradient(90deg, transparent, #e7cb9166, transparent); }
+.howTo { padding-top: 70px; }
+.sectionHeading > span, .shareCard > div > span { color: #8c6836; font-size: .875rem; font-weight: 800; }
+.sectionHeading h2, .shareCard h2 { margin: 5px 0 8px; font-size: clamp(1.5rem, 2.8vw, 2.25rem); line-height: 1.5; }
+.sectionHeading p, .shareCard p { max-width: 65ch; margin: 0; color: #5c6f62; font-size: 1rem; line-height: 1.85; }
+.platformGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 25px; }
+.platformCard { min-width: 0; padding: clamp(23px, 3vw, 34px); border: 1px solid #dce7db; border-radius: 22px; background: #fff; scroll-margin-top: 112px; }
+.platformHeader { display: flex; align-items: center; gap: 13px; padding-bottom: 18px; border-bottom: 1px solid #e9eee7; }
+.platformIcon { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; border-radius: 14px; color: #f3db9f; background: #174e3b; font: 800 1.5rem/1 system-ui, sans-serif; }
+.platformHeader div > span { color: #7b6b4c; font-size: .8125rem; }
+.platformHeader h3 { margin: 2px 0 0; font-size: 1.25rem; }
+.platformCard ol { display: grid; gap: 16px; margin: 23px 0 0; padding: 0; list-style: none; }
+.platformCard li { display: flex; align-items: start; gap: 13px; }
+.platformCard li span { flex: 0 0 34px; color: #ac7b37; font-size: .875rem; font-weight: 800; }
+.platformCard li p { margin: 0; color: #3f5949; font-size: .9375rem; line-height: 1.8; }
+.shareCard { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin-top: 32px; padding: clamp(24px, 3vw, 34px); border: 1px solid #e2dfd2; border-radius: 22px; background: #f5f0e4; }
+.shareCard h2 { font-size: 1.375rem; }
+.shareAction { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 8px; border: 1px solid #d3dacc; border-radius: 12px; background: #fff; }
+.shareAction code { max-width: 280px; overflow: auto; padding-inline: 8px; color: #325442; font: 600 .875rem/1.7 system-ui, sans-serif; white-space: nowrap; }
+.shareAction button { flex-shrink: 0; min-height: 42px; padding: 8px 14px; border: 0; border-radius: 8px; background: #174e3b; color: #fff; font: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
+.shareAction button:hover { background: #246448; }
+.page a:focus-visible, .page button:focus-visible { outline: 3px solid #b88639; outline-offset: 3px; }
+@media (max-width: 900px) { .hero { gap: 30px; padding: 38px; } .appCard { min-height: 300px; } .shareCard { align-items: stretch; flex-direction: column; } .shareAction { align-self: start; } }
+@media (max-width: 680px) { .content { padding-block: 20px 48px; } .hero { grid-template-columns: 1fr; margin-top: 18px; padding: 30px 22px; border-radius: 24px; } .hero h1 { max-width: 18ch; font-size: clamp(2rem, 8.5vw, 2.8rem); } .heroCopy > p:not(.note) { font-size: 1rem; } .appCard { min-height: 210px; padding: 18px; } .appCardLabel { top: 14px; } .iconFrame { width: 100px; height: 100px; margin: 15px 0 5px; border-radius: 25px; } .iconFrame img { width: 86px; height: 86px; border-radius: 22px; } .appCard strong { font-size: 1.25rem; } .howTo { padding-top: 48px; } .platformGrid { grid-template-columns: 1fr; gap: 13px; } .shareAction { align-self: stretch; } .shareAction code { flex: 1; min-width: 0; } }
+@media (max-width: 390px) { .shareAction { align-items: stretch; flex-direction: column; } .shareAction code { max-width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .page *, .page *::before, .page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
