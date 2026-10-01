@@ -32,9 +32,9 @@ export default async function NewsOpenGraph({ params }: { params: Promise<{ id: 
   if (!item) notFound();
   const wordLine = (text: string, key: string | number) => <div key={key} style={{ display: 'flex', flexDirection: 'row-reverse', gap: 12 }}>{text.split(' ').map((word, index) => <span key={index}>{word}</span>)}</div>;
   return new ImageResponse(
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '100%', height: '100%', padding: '48px 62px', background: '#103c30', color: '#fff', fontFamily: 'OsairatArabic', borderBottom: '12px solid #d9b965' }}>
+    <div style={{ display: 'flex', position: 'relative', flexDirection: 'column', alignItems: 'flex-end', width: '100%', height: '100%', padding: '48px 62px', background: '#103c30', color: '#fff', fontFamily: 'OsairatArabic', borderBottom: '12px solid #d9b965' }}>
+      <img alt="" src={`data:image/png;base64,${icon.toString('base64')}`} width={78} height={78} style={{ position: 'absolute', left: 62, top: 42, width: 78, height: 78, borderRadius: 18 }} />
       <div style={{ display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', gap: 24, color: '#eed8a6', fontSize: 32 }}>
-        <img alt="" src={`data:image/png;base64,${icon.toString('base64')}`} width="78" height="78" style={{ borderRadius: 18 }} />
         {wordLine('أخبار العسيرات', 'brand')}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', flex: 1, fontSize: 42, lineHeight: 1.65 }}>{linesFor(item.title).map((line, index) => wordLine(line, index))}</div>
