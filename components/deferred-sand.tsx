@@ -33,7 +33,7 @@ export function DeferredSand() {
   return <>
     <div className="sand-assistant">
       <button type="button" className="sand-trigger" data-sand-trigger="true" aria-label="افتح مساعد سَند" aria-haspopup="dialog" onClick={() => window.dispatchEvent(new CustomEvent('sand:context'))}>
-        <span className="sand-avatar sand-avatar--trigger" aria-hidden="true"><Image src="/images/sand-avatar-v3.webp" alt="" fill sizes="50px" /></span>
+        <span className="sand-avatar sand-avatar--trigger" aria-hidden="true"><Image className="sand-avatar__image" src="/images/sand-avatar-v3.webp" alt="" fill sizes="50px" /><span className="sand-avatar__status" /></span>
       </button>
     </div>
     {loading || failed ? <div className="us-sand-loading" role="status">{failed ? 'تعذر فتح سَند. اضغط عليه للمحاولة مرة ثانية.' : 'سَند جاي لك…'}</div> : null}

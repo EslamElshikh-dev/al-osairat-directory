@@ -53,9 +53,9 @@ body > main { animation: none; }
 .us-section-nav > span { margin-inline-end: auto; font-weight: 700; color: #8c6b2f; }
 .us-section-nav a { position: relative; min-height: 40px; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
 .us-section-nav a::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #c6a45c; }
-.home-redesign .home-route-rail { padding-block: 34px 6px; margin-top: 0; }
+.home-redesign .home-route-rail { display: block; padding: 34px 0 6px; margin-top: 0; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; }
 .home-redesign .home-route-rail__intro { display: none; }
-.home-redesign .home-route-rail__grid { gap: 12px; }
+.home-redesign .home-route-rail__grid { min-width: 0; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
 .home-redesign .home-route-rail__grid::before { display: none; }
 .home-redesign .home-route-card { min-height: 172px; padding: 20px; border-radius: 18px; box-shadow: none; transform: none; }
 .home-redesign .home-route-card__index { width: auto; height: auto; display: block; margin-bottom: 14px; background: none; box-shadow: none; color: #9e8047; font-size: .875rem; }
