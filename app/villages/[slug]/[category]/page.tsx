@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CategoryVisual } from '@/components/category-visual';
 import { ListingCard } from '@/components/listing-card';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { categories, listings } from '@/lib/data';
 import { createDirectoryHref, DIRECTORY_PAGE_SIZE } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';

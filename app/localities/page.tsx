@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { villages } from '@/lib/data';
 import { buildPageMetadata } from '@/lib/metadata';
 import { isFallbackScope } from '@/lib/seo-growth';

@@ -23,6 +23,7 @@ export type SandNavigationAction = {
 };
 
 export const sandNavigationActions: SandNavigationAction[] = [
+  { label: 'تثبيت دليل العسيرات', href: '/install', aliases: ['تثبيت دليل العسيرات', 'تثبيت التطبيق', 'تحميل التطبيق', 'حمل الدليل', 'الدليل على الموبايل'] },
   {
     label: 'أخبار العسيرات',
     href: '/news',

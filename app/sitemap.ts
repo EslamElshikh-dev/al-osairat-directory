@@ -33,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/directory'), ...(directoryLastModified ? { lastModified: directoryLastModified } : {}), changeFrequency: 'weekly', priority: 0.95 },
     { url: absoluteUrl('/news'), changeFrequency: 'hourly', priority: 0.92 },
     { url: absoluteUrl('/jobs'), changeFrequency: 'daily', priority: 0.8 },
+    { url: absoluteUrl('/install'), changeFrequency: 'monthly', priority: 0.5 },
     { url: absoluteUrl('/developer'), changeFrequency: 'monthly', priority: 0.67 },
     { url: absoluteUrl('/blog'), changeFrequency: 'weekly', priority: 0.9 },
     { url: absoluteUrl('/villages'), changeFrequency: 'weekly', priority: 0.9 },

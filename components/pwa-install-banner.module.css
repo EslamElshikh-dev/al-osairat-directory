@@ -1,0 +1,40 @@
+.banner {
+  position: fixed;
+  z-index: 234;
+  inset-block-start: 94px;
+  inset-inline-start: 22px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 40px;
+  align-items: start;
+  gap: 8px 11px;
+  width: min(410px, calc(100vw - 44px));
+  padding: 14px;
+  border: 1px solid #c9d9c9;
+  border-radius: 18px;
+  background: #fffef9;
+  color: #244b39;
+  box-shadow: 0 16px 44px rgba(9, 46, 32, .2);
+}
+.icon { border-radius: 11px; }
+.copy { display: grid; gap: 3px; min-width: 0; }
+.copy strong { color: #174e3b; font-size: .9375rem; line-height: 1.6; }
+.copy span { color: #526b5a; font-size: .8125rem; line-height: 1.65; }
+.dismiss { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 10px; background: #edf3eb; color: #315944; font: 400 1.5rem/1 sans-serif; cursor: pointer; }
+.dismiss:hover { background: #dcebdc; }
+.actions { grid-column: 2 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.install { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 14px; border: 0; border-radius: 10px; background: #174e3b; color: #fff; font: inherit; font-size: .8125rem; font-weight: 750; text-decoration: none; cursor: pointer; }
+.install:hover { background: #23694d; }
+.actions span { color: #7b7258; font-size: .75rem; }
+.banner :is(button, a):focus-visible { outline: 3px solid #b88639; outline-offset: 2px; }
+@media (max-width: 860px) {
+  .banner { inset-inline: 12px; width: auto; inset-block-start: 84px; }
+  .banner[data-welcome='true'] { inset-block-start: 215px; }
+}
+@media (max-width: 390px) {
+  .banner { padding: 11px; gap: 7px; }
+  .banner[data-welcome='true'] { inset-block-start: 225px; }
+  .copy strong { font-size: .875rem; }
+}
+@media (prefers-reduced-motion: no-preference) { .banner { animation: installNoticeArrival .22s ease-out both; transition: inset-block-start .2s ease; } }
+@keyframes installNoticeArrival { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@media print { .banner { display: none; } }

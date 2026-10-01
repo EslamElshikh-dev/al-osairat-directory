@@ -7,7 +7,7 @@ import { buildPageMetadata } from '@/lib/metadata';
 import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { ListingCard } from '@/components/listing-card';
 import { CategoryVisual } from '@/components/category-visual';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { isVillageCategoryLandingEligible, isVillageHubIndexable, villageCategoryLandingPath } from '@/lib/programmatic-seo';
 import { isFallbackScope, isFilteredDirectoryState } from '@/lib/seo-growth';
 import { normalizeRouteSlug, siteConfig } from '@/lib/site';

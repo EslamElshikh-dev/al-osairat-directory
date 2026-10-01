@@ -53,7 +53,7 @@
   border-radius: 50%;
   background: #f2c75d;
   box-shadow: 0 0 0 5px rgba(242, 199, 93, .11), 0 0 18px rgba(242, 199, 93, .55);
-  animation: livePulse 2.4s ease-in-out infinite;
+  animation: none;
 }
 
 .heading > span { display: grid; gap: 0; }
@@ -213,3 +213,5 @@
 }
 
 .root[data-empty='true'] { grid-template-columns: auto minmax(0, 1fr); }
+
+.root[data-paused='true'] .track { will-change: auto; }

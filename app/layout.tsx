@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { AnalyticsTracker } from '@/components/analytics-tracker';
 import { GoogleAnalyticsLoader } from '@/components/google-analytics-loader';
-import { NavigationScrollManager } from '@/components/navigation-scroll-manager';
-import { SandAssistant } from '@/components/sand-assistant';
+import { DeferredSand } from '@/components/deferred-sand';
+import { PwaSetup } from '@/components/pwa-setup';
 import { WelcomeBlessing } from '@/components/welcome-blessing';
 import { UpdatesTicker } from '@/components/updates-ticker';
 import { Footer, MobileNav, SiteHeader } from '@/components/site-shell';
@@ -51,6 +51,7 @@ import './living-directory.css';
 import './smart-local-compass.css';
 import './header-vnext.css';
 import './osairat-refresh.css';
+import './usayrat-design.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20260926`;
@@ -77,7 +78,7 @@ export const metadata: Metadata = {
       { url: '/icon.svg', type: 'image/svg+xml' },
     ],
     shortcut: '/favicon.png',
-    apple: [{ url: '/favicon.png', type: 'image/png', sizes: '96x96' }],
+    apple: [{ url: '/app-icons/apple-touch-icon.png', type: 'image/png', sizes: '180x180' }],
   },
   openGraph: {
     type: 'website',
@@ -169,15 +170,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ar" dir="rtl">
       <body>
-        <Suspense fallback={null}>
-          <NavigationScrollManager />
-        </Suspense>
         <a className="skip-link" href="#main-content">تجاوز إلى المحتوى</a>
         <SiteHeader />
         <UpdatesTicker />
         {children}
-        <Footer />
-        <SandAssistant />
+        <Suspense fallback={null}><Footer /></Suspense>
+        <DeferredSand />
+        <PwaSetup />
         <WelcomeBlessing />
         <MobileNav />
         <GoogleAnalyticsLoader />

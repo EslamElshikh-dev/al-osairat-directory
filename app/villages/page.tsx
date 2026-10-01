@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getListingsByVillage, villages } from '@/lib/data';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { buildPageMetadata } from '@/lib/metadata';
 import { isFallbackScope } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';

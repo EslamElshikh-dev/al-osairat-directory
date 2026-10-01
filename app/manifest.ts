@@ -5,6 +5,8 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات',
     short_name: 'دليل العسيرات',
     description: 'الدليل المحلي الشامل لمركز العسيرات وقراه بمحافظة سوهاج.',
+    id: '/',
+    scope: '/',
     start_url: '/',
     display: 'standalone',
     background_color: '#f6f3eb',
@@ -12,18 +14,10 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'ar',
     dir: 'rtl',
     icons: [
-      {
-        src: '/icon.svg',
-        sizes: 'any',
-        type: 'image/svg+xml',
-        purpose: 'any',
-      },
-      {
-        src: '/icon.svg',
-        sizes: 'any',
-        type: 'image/svg+xml',
-        purpose: 'maskable',
-      },
+      { src: '/app-icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/app-icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/app-icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
     ],
   };
 }

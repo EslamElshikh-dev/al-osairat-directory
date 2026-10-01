@@ -46,7 +46,7 @@ export function NewsCard({ item, compact = false }: { item: LocalNewsItem; compa
         </div>
 
         <h3>
-          <Link
+          <Link prefetch={false}
             href={newsItemPath(item)}
             data-news-detail={item.id}
             data-news-topic={item.topic}
@@ -65,7 +65,7 @@ export function NewsCard({ item, compact = false }: { item: LocalNewsItem; compa
             {item.village}
           </span>
           <span className={styles.actions}>
-            <Link
+            <Link prefetch={false}
               className={styles.details}
               href={newsItemPath(item)}
               data-news-detail={item.id}

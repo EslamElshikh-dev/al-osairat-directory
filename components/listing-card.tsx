@@ -4,15 +4,15 @@ import { categoryById, type DirectoryListing } from '@/lib/data';
 import { imageForListing } from '@/lib/directory-images';
 import { latestScanImageForListing } from '@/lib/latest-scan-images';
 import { googleMapsHref, phoneHref, sourceLabel } from '@/lib/site';
-import { BrandMark } from './site-shell';
+import { BrandMark } from './brand-mark';
 import { CategoryVisual } from './category-visual';
 import { FavoriteButton } from './favorite-button';
 
 function compactReviewDate(value?: string) {
   if (!value) return null;
-  const [year, month, day] = value.split('-');
-  if (!year || !month || !day) return value;
-  return `${day}/${month}/${year}`;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Cairo' }).format(date);
 }
 
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
@@ -26,7 +26,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
     <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
       {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
 
-      <Link href={`/listing/${listing.slug}`} className="listing-card__media" aria-label={`عرض ${listing.title}`}>
+      <Link prefetch={false} href={`/listing/${listing.slug}`} className="listing-card__media" aria-label={`عرض ${listing.title}`}>
         <Image src={image.src} alt={image.alt} fill sizes={compact ? '(max-width: 620px) 100vw, 360px' : '(max-width: 620px) 100vw, (max-width: 1100px) 50vw, 360px'} />
         <span className="directory-media__shade" aria-hidden="true" />
         <span className="directory-media__label">{image.label}</span>
@@ -48,7 +48,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
 
       <div className="listing-card__top">
         <h3>
-          <Link href={`/listing/${listing.slug}`}>{listing.title}</Link>
+          <Link prefetch={false} href={`/listing/${listing.slug}`}>{listing.title}</Link>
         </h3>
         <p className="listing-card__location">{listing.location}</p>
       </div>
@@ -79,7 +79,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
       )}
 
       <div className="listing-card__actions">
-        <Link href={`/listing/${listing.slug}`} className="button button--primary">
+        <Link prefetch={false} href={`/listing/${listing.slug}`} className="button button--primary">
           <span className="sr-only">{listing.title}: </span>
           عرض التفاصيل
         </Link>

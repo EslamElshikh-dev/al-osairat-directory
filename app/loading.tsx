@@ -1,4 +1,4 @@
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 
 export default function Loading() {
   return (

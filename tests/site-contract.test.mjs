@@ -80,13 +80,13 @@ test('final responsive QA keeps dense mobile content readable', async () => {
   assert.match(css, /home-category-section \.category-grid--editorial \.category-card/);
   assert.match(css, /listing-card__source\{font-size:11\.5px\}/);
   assert.match(css, /max-width:420px[\s\S]*?sand-invite\{display:none\}/);
-  assert.match(home, /\(max-width: 420px\) 96px, \(max-width: 760px\) 112px/);
+  assert.match(home, /\(max-width: 760px\) 96px/);
 });
 
 test('locality SEO hub is linked, searchable and included in the sitemap', async () => {
   const [page, shell, search, sitemap] = await Promise.all([
     readProjectFile('app/localities/page.tsx'),
-    readProjectFile('components/site-shell.tsx'),
+    readProjectFile('components/header-navigation.tsx'),
     readProjectFile('app/api/site-search/route.ts'),
     readProjectFile('app/sitemap.ts'),
   ]);
@@ -94,7 +94,7 @@ test('locality SEO hub is linked, searchable and included in the sitemap', async
   assert.match(page, /نجوع وقرى العسيرات - الدليل الجغرافي الكامل/);
   assert.match(page, /'@type': 'ItemList'/);
   assert.match(page, /numberOfItems: localities\.length/);
-  assert.match(shell, /href="\/localities"/);
+  assert.match(shell, /\['\/localities', 'النجوع'\]/);
   assert.match(search, /kind: 'locality'/);
   assert.match(sitemap, /absoluteUrl\('\/localities'\)/);
 });

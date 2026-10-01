@@ -7,7 +7,7 @@ import { ArticleReadingProgress } from '@/components/article-reading-progress';
 import { ArticleUtilityController } from '@/components/article-utility-controller';
 import { BlogCard } from '@/components/blog-card';
 import { MemberReviews } from '@/components/member-reviews';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { blogArticles, blogBySlug } from '@/lib/blog-published';
 import { getArticleJourney } from '@/lib/blog-navigation';
 import { getBlogSectionSourceUrls } from '@/lib/blog-section-sources';

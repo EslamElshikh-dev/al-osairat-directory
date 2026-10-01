@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogCard } from '@/components/blog-card';
 import { BlogDiscoveryControls } from '@/components/blog-discovery-controls';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { blogArticles } from '@/lib/blog-published';
 import { getBlogDiscoveryTopic, normalizeBlogSearchText } from '@/lib/blog-discovery';
 import { buildPageMetadata } from '@/lib/metadata';

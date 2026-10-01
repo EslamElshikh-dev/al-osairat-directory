@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ListingCard } from '@/components/listing-card';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { listings, villages } from '@/lib/data';
 import { createDirectoryHref, DIRECTORY_PAGE_SIZE } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';

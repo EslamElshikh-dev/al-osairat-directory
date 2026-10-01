@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DirectoryExplorer } from '@/components/directory-explorer';
 import { CategoryVisual } from '@/components/category-visual';
-import { BrandMark } from '@/components/site-shell';
+import { BrandMark } from '@/components/brand-mark';
 import { categories, categoryById, villages, type DirectoryCategory } from '@/lib/data';
 import { createDirectoryHref, queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';

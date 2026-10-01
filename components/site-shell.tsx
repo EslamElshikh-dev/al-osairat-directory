@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { directoryStats } from '@/lib/data';
+import { HeaderNavigation } from './header-navigation';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
 import { NotificationBell } from './auth/notification-bell';
@@ -7,23 +9,14 @@ import { PublicUpdates } from './public-updates';
 import { GlobalSearch } from './global-search';
 import footerStyles from './site-footer.module.css';
 
-export { MobileNav };
-
-export function BrandMark({ compact = false }: { compact?: boolean }) {
-  return (
-    <span className="brand-mark" aria-hidden="true">
-      <span className="brand-mark__ring" />
-      <span className="brand-mark__dot" />
-      {!compact && <span className="brand-mark__line" />}
-    </span>
-  );
-}
+import { BrandMark } from './brand-mark';
+export { MobileNav, BrandMark };
 
 export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="shell site-header__inner">
-        <Link href="/" className="brand site-header__brand" aria-label="دليل وموسوعة العسيرات - الرئيسية">
+        <Link prefetch={false} href="/" className="brand site-header__brand" aria-label="دليل وموسوعة العسيرات - الرئيسية">
           <span className="brand__emblem"><BrandMark /></span>
           <span className="brand__copy">
             <strong>دليل العسيرات</strong>
@@ -32,27 +25,18 @@ export function SiteHeader() {
           <span className="brand__scope">سوهاج</span>
         </Link>
 
-        <nav className="desktop-nav" aria-label="التنقل الرئيسي">
-          <Link href="/">الرئيسية</Link>
-          <Link href="/directory">الدليل</Link>
-          <Link href="/villages">القرى</Link>
-          <Link href="/localities">النجوع</Link>
-          <Link href="/jobs">الوظائف</Link>
-          <Link href="/news">الأخبار</Link>
-          <Link href="/community" className="nav-optional">المجتمع</Link>
-          <Link href="/blog" className="nav-optional">المدونة</Link>
-        </nav>
+        <HeaderNavigation />
 
         <div className="header-actions">
           <GlobalSearch />
           <PublicUpdates />
           <NotificationBell />
           <AccountButton />
-          <Link href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
+          <Link prefetch={false} href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">
             <span className="header-emergency__dot" aria-hidden="true" />
             <span className="header-emergency__label">أرقام مهمة</span>
           </Link>
-          <Link href="/directory" className="header-cta">
+          <Link prefetch={false} href="/directory" className="header-cta">
             <span>استكشف الدليل</span>
             <b aria-hidden="true">←</b>
           </Link>
@@ -79,9 +63,11 @@ const footerUtilities = [
   { href: '/developer', label: 'عن المطوّر' },
   { href: '/emergency', label: 'أرقام مهمة' },
   { href: '/account', label: 'حسابي' },
+  { href: '/install', label: 'ثبّت الدليل على موبايلك' },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const total = (await getPublicDirectoryListings()).length;
   return (
     <footer className={footerStyles.root}>
       <div className={footerStyles.accent} aria-hidden="true" />
@@ -124,7 +110,7 @@ export function Footer() {
                 <div><span>من أرض العسيرات</span><h2 id="footer-metrics-title">بلدنا في الدليل</h2></div>
               </div>
               <div className={footerStyles.stats}>
-                <span><b>{directoryStats.total.toLocaleString('ar-EG')}</b><small>سجل منظم</small></span>
+                <span><b>{total.toLocaleString('ar-EG')}</b><small>سجل منظم</small></span>
                 <span><b>{directoryStats.villages.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
                 <span><b>{directoryStats.categories.toLocaleString('ar-EG')}</b><small>أقسام</small></span>
               </div>
