@@ -186,7 +186,7 @@ export function SmartLocalCompass({
   }
 
   return (
-    <section className={`smart-compass smart-compass--${variant}`} aria-label="بوصلة البحث المحلي" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
+    <section className={`smart-compass smart-compass--${variant}`} aria-label="بوصلة البحث المحلي">
       <div className="smart-compass__heading">
         <div className="smart-compass__seal" aria-hidden="true">
           <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="18" stroke="currentColor" strokeWidth="1.2" /><path d="M24 3v6m0 30v6M3 24h6m30 0h6" stroke="currentColor" strokeWidth="1.5" /><g className="smart-compass__needle"><path d="m31 13-4 14-14 8 8-14Z" fill="#b88b33" /><path d="m31 13-10 8 6 6Z" fill="#174837" /></g><circle cx="24" cy="24" r="2.4" fill="#fffdf5" stroke="#174837" /></svg>
@@ -199,7 +199,7 @@ export function SmartLocalCompass({
       </div>
 
       <form className="smart-compass__form" action="/directory" method="get" role="search" onSubmit={handleSubmit}>
-        <div className="smart-compass__field smart-compass__query">
+        <div className="smart-compass__field smart-compass__query" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
           <label htmlFor={`${listId}-query`}>الخدمة أو المكان</label>
           <div className="smart-compass__input-row">
             <svg className="smart-compass__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" strokeLinecap="round" /></svg>
