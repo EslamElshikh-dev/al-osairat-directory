@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import { notFound } from 'next/navigation';
-import { getLocalNews } from '@/lib/news';
+import { getLocalNewsItem } from '@/lib/news';
 
 export const runtime = 'nodejs';
 export const revalidate = 1800;
@@ -24,12 +24,11 @@ function linesFor(title: string) {
 
 export default async function NewsOpenGraph({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [feed, font, icon] = await Promise.all([
-    getLocalNews(),
+  const [item, font, icon] = await Promise.all([
+    getLocalNewsItem(id),
     readFile(join(process.cwd(), 'app/fonts/dejavu-sans-bold.ttf')),
     readFile(join(process.cwd(), 'public/app-icons/icon-192.png')),
   ]);
-  const item = feed.items.find((entry) => entry.id === id);
   if (!item) notFound();
   const wordLine = (text: string, key: string | number) => <div key={key} style={{ display: 'flex', flexDirection: 'row-reverse', gap: 12 }}>{text.split(' ').map((word, index) => <span key={index}>{word}</span>)}</div>;
   return new ImageResponse(

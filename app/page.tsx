@@ -163,22 +163,22 @@ export default async function HomePage() {
             const count = allListings.filter((item) => item.category === category.id).length;
             const categoryImage = imageForCategory(category.id);
             return (
-              <Link prefetch={false} key={category.id} href={`/directory/${category.id}`} className={`category-card category-card--${category.id}`}>
-                <div className="category-card__media">
+              <Link prefetch={false} key={category.id} href={`/directory/${category.id}`} className={`us-category-card us-category-card--${category.id}`}>
+                <div className="us-category-card__media">
                   <Image
                     src={categoryImage.src}
                     alt={categoryImage.alt}
                     fill
                     sizes="(max-width: 760px) 96px, (max-width: 1100px) 30vw, 280px"
                   />
-                  <span className="category-card__media-shade" aria-hidden="true" />
+                  <span className="us-category-card__media-shade" aria-hidden="true" />
                   <CategoryVisual category={category.id} size="md" />
                   <span className="directory-media__label">صورة تعبيرية</span>
                 </div>
-                <span className="category-card__number">{String(count).padStart(2, '0')}</span>
+                <span className="us-category-card__number">{String(count).padStart(2, '0')}</span>
                 <h3>{category.shortLabel}</h3>
                 <p>{category.description}</p>
-                <span className="category-card__arrow">استكشف القسم <b aria-hidden="true">←</b></span>
+                <span className="us-category-card__arrow">استكشف القسم <b aria-hidden="true">←</b></span>
               </Link>
             );
           })}
