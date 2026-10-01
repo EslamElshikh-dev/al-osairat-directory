@@ -1,180 +1,88 @@
-/* Smart Local Compass — one coherent path from need + village to a useful result. */
+/* One responsive search system shared by home and directory. */
 .smart-compass {
-  position: relative;
-  z-index: 12;
-  width: 100%;
-  margin-top: 26px;
-  padding: 15px;
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 25px;
-  color: #173b31;
-  background: rgba(255,255,255,.97);
-  box-shadow: 0 24px 70px rgba(4,25,20,.2), inset 0 1px 0 #fff;
-  backdrop-filter: blur(18px);
+  position: relative; z-index: 12; width: 100%; min-width: 0;
+  margin-top: 24px; padding: 20px; border: 1px solid #d5dfd3;
+  border-radius: 24px; color: #173b31; background: #fffefb;
+  box-shadow: 0 14px 38px #173b310b; isolation: isolate;
 }
-
-.smart-compass__heading {
-  display: grid;
-  grid-template-columns: 40px minmax(0,1fr) auto;
-  align-items: center;
-  gap: 11px;
-  padding: 2px 3px 13px;
-}
-
-.smart-compass__seal {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(205,158,49,.27);
-  border-radius: 14px;
-  background: #fff7dd;
-}
-.smart-compass__seal::before,
-.smart-compass__seal::after,
-.smart-compass__seal i,
-.smart-compass__seal b { content: ""; position: absolute; }
-.smart-compass__seal::before { width: 18px; height: 18px; border: 1px solid #2e6655; border-radius: 50%; }
-.smart-compass__seal::after { width: 5px; height: 5px; border-radius: 50%; background: #d4a63b; }
-.smart-compass__seal i { width: 1px; height: 27px; background: linear-gradient(#d4a63b 0 50%,#2e6655 50%); transform: rotate(36deg); }
-.smart-compass__seal b { width: 27px; height: 1px; background: rgba(46,102,85,.2); }
-
-.smart-compass__heading span,
-.smart-compass__heading strong { display: block; }
-.smart-compass__heading span { color: #9a711d; font-size: .75rem; font-weight: 900; }
-.smart-compass__heading strong { margin-top: 2px; color: #173b31; font-size: .95rem; line-height: 1.45; }
-.smart-compass__heading > small { padding: 7px 10px; border-radius: 999px; color: #687771; background: #f0f4f1; font-size: .75rem; white-space: nowrap; }
-.smart-compass__heading > small b { color: #265d4c; }
-
-.smart-compass__form {
-  display: grid;
-  grid-template-columns: minmax(0,1.45fr) minmax(175px,.65fr) auto;
-  align-items: stretch;
-  gap: 8px;
-}
-
-.smart-compass__field {
-  min-width: 0;
-  min-height: 68px;
-  display: grid;
-  align-content: center;
-  gap: 4px;
-  padding: 8px 13px;
-  border: 1px solid rgba(23,59,49,.1);
-  border-radius: 17px;
-  background: #f5f7f4;
-  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
-}
-.smart-compass__field:focus-within { border-color: rgba(205,158,49,.55); background:#fff; box-shadow: 0 0 0 4px rgba(205,158,49,.09); }
-.smart-compass__field label,
-.smart-compass__field > span { color: #74827c; font-size: .75rem; font-weight: 850; }
-.smart-compass__input-row { display: flex; align-items: center; gap: 8px; }
-.smart-compass__input-row > span { color: #a5791f; font-size: 1.25rem; line-height: 1; }
-.smart-compass input,
-.smart-compass select { width: 100%; min-width: 0; border: 0; outline: 0; color: #173b31; background: transparent; font: inherit; font-size: 1rem; font-weight: 750; }
-.smart-compass input::placeholder { color: #85918c; font-weight: 550; }
-.smart-compass select { cursor: pointer; }
-
-.smart-compass__query { position: relative; }
-.smart-compass__suggestions {
-  position: absolute;
-  top: calc(100% + 8px);
-  inset-inline: 0;
-  z-index: 40;
-  overflow: hidden;
-  padding: 7px;
-  border: 1px solid rgba(23,59,49,.1);
-  border-radius: 19px;
-  background: #fff;
-  box-shadow: 0 24px 70px rgba(12,42,34,.2);
-}
-.smart-compass__suggestions-status { padding: 7px 9px 9px; color: #75817c; font-size: .75rem; font-weight: 800; }
-.smart-compass__suggestions [role="listbox"] > button {
-  width: 100%;
-  min-height: 55px;
-  display: grid;
-  grid-template-columns: 35px minmax(0,1fr) auto;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 9px;
-  border: 0;
-  border-radius: 13px;
-  color: #23483d;
-  background: transparent;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-}
-.smart-compass__suggestions [role="listbox"] > button:hover,
-.smart-compass__suggestions [role="listbox"] > button.is-active { background: #f1f5f2; }
-.smart-compass__result-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; color:#2d6754; background:#e9f2ed; font-weight: 900; }
-.smart-compass__suggestions [role="listbox"] > button > span:nth-child(2) { min-width: 0; }
-.smart-compass__suggestions strong,
-.smart-compass__suggestions small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.smart-compass__suggestions strong { font-size: .88rem; }
-.smart-compass__suggestions small { margin-top: 3px; color: #7d8884; font-size: .72rem; }
-.smart-compass__suggestions [role="listbox"] > button > i { padding: 4px 7px; border-radius: 999px; color: #87651b; background:#fff4d6; font-size: .7rem; font-style: normal; font-weight: 850; }
-.smart-compass__suggestions > a { min-height: 42px; display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:5px; padding:9px 11px; border-radius:12px; color:#fff; background:#183f34; font-size:.8rem; font-weight:900; }
-.smart-compass__suggestions > a b { color:#e4c369; }
-
-.smart-compass__submit {
-  min-width: 125px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 17px;
-  border: 0;
-  border-radius: 17px;
-  color: #fff;
-  background: linear-gradient(135deg,#235a49,#102e26);
-  box-shadow: 0 13px 28px rgba(16,46,38,.18);
-  font: inherit;
-  font-size: .88rem;
-  font-weight: 950;
-  cursor: pointer;
-  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
-}
-.smart-compass__submit b { color:#e5c66f; font-size:1.05rem; transition:transform .18s ease; }
-.smart-compass__submit:hover { transform: translateY(-2px); box-shadow: 0 17px 34px rgba(16,46,38,.23); }
-.smart-compass__submit:hover b { transform: translateX(-3px); }
-.smart-compass__submit:disabled { opacity:.52; cursor:not-allowed; transform:none; box-shadow:none; }
-
-.smart-compass__shortcuts,
-.smart-compass__recent { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: start; gap: 10px; margin-top: 11px; padding-inline: 3px; }
-.smart-compass__shortcuts > span,
-.smart-compass__recent > span { padding-top: 6px; color:#7c8983; font-size:.75rem; font-weight:850; white-space:nowrap; }
-.smart-compass__shortcuts > div,
-.smart-compass__recent > div { display:flex; flex-wrap:wrap; gap:6px; }
-.smart-compass__shortcuts button,
-.smart-compass__recent button { min-height:32px; padding:6px 10px; border:1px solid rgba(23,59,49,.1); border-radius:999px; color:#38594f; background:#fff; font:inherit; font-size:.75rem; font-weight:800; cursor:pointer; transition:border-color .18s ease,background .18s ease,transform .18s ease; }
-.smart-compass__shortcuts button:hover,
-.smart-compass__recent button:hover { transform:translateY(-1px); border-color:rgba(205,158,49,.4); background:#fff9e9; }
-.smart-compass__recent { padding-top:10px; border-top:1px solid rgba(23,59,49,.08); }
-.smart-compass__recent button { display:inline-flex; align-items:center; gap:7px; border-radius:12px; }
-.smart-compass__recent small { color:#8b9691; font-size:.68rem; font-weight:700; }
-
-.smart-compass--catalog { max-width: 790px; margin-top: 24px; border-color: rgba(255,255,255,.18); }
-
+.smart-compass::before { content: ''; position: absolute; inset: -1px 28px auto; height: 3px; border-radius: 5px; background: linear-gradient(90deg,transparent,#c29b4d,#e7d4a2,transparent); pointer-events: none; }
+.smart-compass__heading { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; align-items: center; gap: 12px; padding-bottom: 18px; }
+.smart-compass__seal { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid #e1d5b4; border-radius: 15px; color: #527262; background: #fbf4e2; }
+.smart-compass__seal svg { width: 34px; height: 34px; }
+.smart-compass__needle { transform-origin: 24px 24px; transform: rotate(-12deg); transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.smart-compass:focus-within .smart-compass__needle { transform: rotate(20deg); }
+.smart-compass__heading span,.smart-compass__heading strong { display: block; }
+.smart-compass__heading span { color: #876726; font-size: .75rem; font-weight: 750; line-height: 1.6; }
+.smart-compass__heading strong { margin-top: 2px; color: #173f30; font-size: 1.05rem; line-height: 1.6; }
+.smart-compass__heading > small { padding: 6px 10px; border: 1px solid #e1e8dc; border-radius: 20px; color: #53725d; font-size: .6875rem; white-space: nowrap; }
+.smart-compass__form { display: grid; grid-template-columns: minmax(0,1fr) 128px; gap: 9px; align-items: stretch; }
+.smart-compass__field { min-width: 0; min-height: 64px; display: grid; align-content: center; gap: 4px; margin: 0; padding: 9px 13px; border: 1px solid #dce4d8; border-radius: 14px; background: #f5f7f1; transition: border-color .18s,box-shadow .18s,background .18s; }
+.smart-compass__field:focus-within { border-color: #a88c4d; background: #fff; box-shadow: 0 0 0 3px #d0b46d20; }
+.smart-compass__field label,.smart-compass__field > span { display: flex; align-items: center; gap: 5px; color: #68796a; font-size: .6875rem; font-weight: 700; line-height: 1.4; }
+.smart-compass__query { position: relative; grid-column: 1 / -1; background: #fff; min-height: 70px; }
+.smart-compass__input-row { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.smart-compass__search-icon { width: 20px; height: 20px; flex: 0 0 20px; color: #8e773f; }
+.smart-compass input,.smart-compass select { width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; color: #173b31; background: transparent; font: inherit; font-size: 16px; font-weight: 650; line-height: 1.6; }
+.smart-compass input::placeholder { color: #889489; font-weight: 450; font-size: .9375rem; }
+.smart-compass select { cursor: pointer; padding-inline-end: 3px; }
+.smart-compass__village > span svg { width: 13px; height: 13px; }
+.smart-compass__clear { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; margin-block: -6px; border: 0; border-radius: 50%; background: #eef2e9; color: #617260; cursor: pointer; }
+.smart-compass__clear svg { width: 20px; height: 20px; }
+.smart-compass__submit { min-width: 0; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border: 1px solid #103c2d; border-radius: 14px; color: #fff; background: #173f30; font: inherit; font-size: .9375rem; font-weight: 800; cursor: pointer; transition: background .2s,transform .2s; }
+.smart-compass__submit b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #ffffff16; color: #ebcf8d; font-size: .875rem; }
+.smart-compass__submit:disabled { background: #e8eee1; border-color: #dde5d6; color: #67775d; cursor: not-allowed; }
+.smart-compass__submit:disabled b { color: #7b8765; background: #dae3d1; }
+.smart-compass :is(button,a,summary):focus-visible { outline: 2px solid #a47e2c; outline-offset: 3px; }
+.smart-compass__shortcuts { display: grid; grid-template-columns: minmax(0,1fr); gap: 7px; margin-top: 16px; }
+.smart-compass__shortcuts > span { color: #798474; font-size: .6875rem; line-height: 1.5; }
+.smart-compass__shortcuts > div { display: flex; flex-wrap: nowrap; gap: 7px; min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; padding: 3px 2px 7px; scrollbar-width: thin; scrollbar-color: #d5decb transparent; }
+.smart-compass__shortcuts button { flex: 0 0 auto; min-height: 40px; padding: 7px 15px; border: 1px solid #e0e6d8; border-radius: 11px; color: #405c46; background: #f3f6ed; font: inherit; font-size: .8125rem; font-weight: 650; cursor: pointer; transition: background .18s,border-color .18s; }
+.smart-compass__recent { margin-top: 10px; border-top: 1px dashed #dce3d2; }
+.smart-compass__recent summary { min-height: 36px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0 0; list-style: none; color: #7a856f; font-size: .6875rem; cursor: pointer; }
+.smart-compass__recent summary::-webkit-details-marker { display: none; }
+.smart-compass__recent summary > span:last-child { font-size: 1rem; transition: transform .2s; }
+.smart-compass__recent[open] summary > span:last-child { transform: rotate(180deg); }
+.smart-compass__recent > div { display: flex; flex-wrap: wrap; gap: 7px; padding-top: 10px; }
+.smart-compass__recent button { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 8px 11px; border: 1px solid #e0e6d8; border-radius: 10px; color: #385543; background: #f5f7f0; font: inherit; cursor: pointer; }
+.smart-compass__recent strong { font-size: .75rem; }
+.smart-compass__recent small,.smart-compass__recent p { color: #798474; font-size: .6875rem; }
+.smart-compass__recent p { margin: 0; line-height: 1.8; }
+.smart-compass__suggestions { position: absolute; top: calc(100% + 7px); inset-inline: -1px; z-index: 40; max-height: min(390px,50dvh); overflow-y: auto; overscroll-behavior: contain; padding: 7px; border: 1px solid #d5dfcf; border-radius: 16px; background: #fffefb; box-shadow: 0 14px 35px #123e3226; }
+.smart-compass__suggestions-status { padding: 8px; color: #71836c; font-size: .75rem; line-height: 1.8; }
+.smart-compass__suggestions [role="listbox"] > button { width: 100%; min-height: 58px; display: grid; grid-template-columns: 30px minmax(0,1fr) auto; align-items: center; gap: 8px; padding: 9px 8px; border: 0; border-radius: 10px; background: transparent; color: #234b35; text-align: start; font: inherit; cursor: pointer; }
+.smart-compass__suggestions [role="listbox"] > button:is(:hover,.is-active) { background: #edf3e6; }
+.smart-compass__result-icon { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; background: #ecf2e6; color: #496e4f; font-weight: 800; }
+.smart-compass__suggestions button > span:nth-child(2) { min-width: 0; }
+.smart-compass__suggestions strong,.smart-compass__suggestions small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.smart-compass__suggestions strong { font-size: .8125rem; }
+.smart-compass__suggestions small { margin-top: 3px; color: #7d8877; font-size: .6875rem; }
+.smart-compass__suggestions button > i { padding: 4px 6px; border-radius: 6px; color: #88703f; background: #f8f0d9; font-size: .625rem; font-style: normal; }
+.smart-compass__suggestions > a { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; padding: 10px; border-radius: 10px; color: #fff; background: #173f30; font-size: .75rem; line-height: 1.8; }
+.smart-compass__suggestions > a b { color: #e2c785; }
+.smart-compass--catalog { max-width: 790px; }
+@media (min-width: 1101px) { .smart-compass--catalog .smart-compass__form { grid-template-columns: minmax(0,1fr) minmax(170px,.6fr) 115px; } .smart-compass--catalog .smart-compass__query { grid-column: auto; } }
+@media (hover:hover) and (pointer:fine) { .smart-compass__submit:not(:disabled):hover { background: #24573e; transform: translateY(-1px); } .smart-compass__shortcuts button:hover { border-color: #bdaa76; background: #fcf6e5; } }
 @media (max-width: 760px) {
-  .smart-compass { margin-top:20px; padding:11px; border-radius:21px; }
-  .smart-compass__heading { grid-template-columns:36px minmax(0,1fr); padding-bottom:11px; }
-  .smart-compass__seal { width:36px; height:36px; border-radius:12px; }
-  .smart-compass__heading > small { display:none; }
-  .smart-compass__heading strong { font-size:.88rem; }
-  .smart-compass__form { grid-template-columns:1fr; }
-  .smart-compass__field { min-height:64px; }
-  .smart-compass__submit { min-height:52px; }
-  .smart-compass__suggestions { position:fixed; top:auto; inset-inline:12px; bottom:calc(78px + env(safe-area-inset-bottom)); max-height:min(430px,62svh); overflow:auto; }
-  .smart-compass__shortcuts,
-  .smart-compass__recent { grid-template-columns:1fr; gap:6px; }
-  .smart-compass__shortcuts > div { flex-wrap:nowrap; overflow-x:auto; padding-bottom:3px; scrollbar-width:thin; }
-  .smart-compass__shortcuts button { flex:0 0 auto; }
+  .smart-compass { margin-top: 20px; padding: 15px; border-radius: 22px; box-shadow: 0 8px 24px #173b3109; }
+  .smart-compass__heading { grid-template-columns: 42px minmax(0,1fr); gap: 10px; padding-bottom: 13px; }
+  .smart-compass__heading > small { display: none; }
+  .smart-compass__seal { width: 42px; height: 42px; border-radius: 14px; }
+  .smart-compass__heading span { font-size: .6875rem; }
+  .smart-compass__heading strong { font-size: .9375rem; }
+  .smart-compass__form { grid-template-columns: minmax(0,1fr) 106px; gap: 8px; }
+  .smart-compass__field { min-height: 60px; padding: 9px 11px; border-radius: 12px; }
+  .smart-compass__query { min-height: 67px; }
+  .smart-compass__submit { border-radius: 12px; padding: 10px 8px; gap: 6px; font-size: .875rem; }
+  .smart-compass__submit b { width: 18px; height: 18px; background: none; }
+  .smart-compass__shortcuts { margin-top: 12px; gap: 4px; }
+  .smart-compass__shortcuts button { min-height: 42px; padding-inline: 14px; }
+  .smart-compass__clear { width: 40px; height: 40px; flex-basis: 40px; }
+  .smart-compass__recent { margin-top: 6px; }
+  .smart-compass__recent summary { min-height: 40px; }
+  .smart-compass__suggestions { max-height: min(330px,44dvh); }
+  .smart-compass__suggestions [role="listbox"] > button { grid-template-columns: 28px minmax(0,1fr); }
+  .smart-compass__suggestions button > i { display: none; }
+  .smart-compass__query { scroll-margin-top: 96px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .smart-compass *,
-  .smart-compass *::before,
-  .smart-compass *::after { scroll-behavior:auto !important; transition:none !important; }
-}
+@media (max-width: 359px) { .smart-compass { padding: 12px; } .smart-compass__form { grid-template-columns: minmax(0,1fr) 94px; } .smart-compass__heading strong { font-size: .875rem; } .smart-compass__submit { gap: 4px; font-size: .8125rem; } .smart-compass__submit b { display: none; } .smart-compass input::placeholder { font-size: .875rem; } }
+@media (prefers-reduced-motion: reduce) { .smart-compass *, .smart-compass *::before, .smart-compass *::after { scroll-behavior: auto !important; transition: none !important; } }
