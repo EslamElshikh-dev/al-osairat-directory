@@ -60,7 +60,7 @@
 .smart-compass__suggestions > a { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; padding: 10px; border-radius: 10px; color: #fff; background: #173f30; font-size: .75rem; line-height: 1.8; }
 .smart-compass__suggestions > a b { color: #e2c785; }
 .smart-compass--catalog { max-width: 790px; }
-@media (min-width: 1101px) { .smart-compass--catalog .smart-compass__form { grid-template-columns: minmax(0,1fr) minmax(170px,.6fr) 115px; } .smart-compass--catalog .smart-compass__query { grid-column: auto; } }
+@media (min-width: 1101px) { .smart-compass__form { grid-template-columns: minmax(0,1fr) minmax(158px,.58fr) 106px; } .smart-compass__query { grid-column: auto; } }
 @media (hover:hover) and (pointer:fine) { .smart-compass__submit:not(:disabled):hover { background: #24573e; transform: translateY(-1px); } .smart-compass__shortcuts button:hover { border-color: #bdaa76; background: #fcf6e5; } }
 @media (max-width: 760px) {
   .smart-compass { margin-top: 20px; padding: 15px; border-radius: 22px; box-shadow: 0 8px 24px #173b3109; }
@@ -75,6 +75,7 @@
   .smart-compass__submit { border-radius: 12px; padding: 10px 8px; gap: 6px; font-size: .875rem; }
   .smart-compass__submit b { width: 18px; height: 18px; background: none; }
   .smart-compass__shortcuts { margin-top: 12px; gap: 4px; }
+  .smart-compass__shortcuts > span { display: none; }
   .smart-compass__shortcuts button { min-height: 42px; padding-inline: 14px; }
   .smart-compass__clear { width: 40px; height: 40px; flex-basis: 40px; }
   .smart-compass__recent { margin-top: 6px; }

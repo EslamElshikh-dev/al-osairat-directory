@@ -193,7 +193,7 @@ export function SmartLocalCompass({
         </div>
         <div>
           <span>بوصلة العسيرات الذكية</span>
-          <strong>احتياجك فين؟ خلّينا ندلّك.</strong>
+          <strong>بتدور على إيه النهارده؟</strong>
         </div>
         <small>بحث محلي</small>
       </div>
@@ -211,7 +211,7 @@ export function SmartLocalCompass({
               onChange={(event) => { setQuery(event.target.value.slice(0, 100)); setActiveIndex(-1); }}
               onFocus={() => setFocused(true)}
               onKeyDown={handleInputKeyDown}
-              placeholder="مثال: دكتور أسنان، صيدلية، نجار…"
+              placeholder="دكتور، صيدلية، نجار…"
               autoComplete="off"
               inputMode="search"
               enterKeyHint="search"
