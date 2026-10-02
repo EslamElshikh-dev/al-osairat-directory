@@ -25,3 +25,6 @@ No historical visits were reconstructed. Previously published directory records 
 
 ## Preview verification
 Vercel preview build READY for 2fb5494. Browser checks confirmed working cross-page news filtering (17 health items out of 65), the first-visit greeting, developer biography/project navigation, loaded images and no horizontal desktop overflow. The news cron completed with 63 items and 6/8 responding channels. This browser had no member/admin session, so private flows were validated through their database transaction and input/API boundaries rather than a signed-in browser session.
+
+## Post-publication correction
+The live end-to-end check caught a PostgreSQL privilege requirement missed by the initial plain INSERT transaction: ON CONFLICT(event_id) requires SELECT permission, while anonymous analytics intentionally has INSERT only. Keep that privacy boundary unchanged: the API now performs plain INSERT and treats only a 23505 conflict on directory_analytics_event_id_key as an accepted duplicate. No anonymous SELECT grant was added.

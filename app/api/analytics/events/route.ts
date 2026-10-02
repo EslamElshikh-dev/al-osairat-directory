@@ -232,18 +232,26 @@ export async function POST(request: Request) {
     utm_content: clean(body?.utmContent, 180) || null,
   };
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/directory_analytics_events${eventId ? '?on_conflict=event_id' : ''}`, {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/directory_analytics_events`, {
     method: 'POST',
     headers: {
       apikey: SUPABASE_PUBLISHABLE_KEY,
       'Content-Type': 'application/json',
-      Prefer: 'return=minimal,resolution=ignore-duplicates',
+      Prefer: 'return=minimal',
     },
     body: JSON.stringify(payload),
     cache: 'no-store',
     signal: AbortSignal.timeout(8000),
   }).catch(() => null);
 
+  // Anonymous tracking is INSERT-only. Postgres ON CONFLICT would also require
+  // SELECT permission; keep records private and acknowledge only this unique key.
+  if (eventId && response?.status === 409) {
+    const failure = await response.json().catch(() => ({}));
+    if (failure.code === '23505' && String(failure.message).includes('directory_analytics_event_id_key')) {
+      return NextResponse.json({ accepted: true, duplicate: true }, { status: 200 });
+    }
+  }
   if (!response?.ok) {
     console.error('[directory-analytics] Event write failed', response?.status || 'network');
     return NextResponse.json({ accepted: false, error: 'تعذر تسجيل القياس.' }, { status: 503 });
