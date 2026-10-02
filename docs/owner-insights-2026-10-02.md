@@ -22,3 +22,6 @@ The developer biography and project showcase were adapted from the current Naqad
 - News and job Edge functions deployed with their existing custom cron authentication preserved.
 
 No historical visits were reconstructed. Previously published directory records were not rewritten.
+
+## Preview verification
+Vercel preview build READY for 2fb5494. Browser checks confirmed working cross-page news filtering (17 health items out of 65), the first-visit greeting, developer biography/project navigation, loaded images and no horizontal desktop overflow. The news cron completed with 63 items and 6/8 responding channels. This browser had no member/admin session, so private flows were validated through their database transaction and input/API boundaries rather than a signed-in browser session.

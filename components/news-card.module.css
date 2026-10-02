@@ -290,3 +290,10 @@
 @media (prefers-reduced-motion:reduce) {
   .card::before,.icon,.details,.read,.read b { transition:none; transform:none!important; }
 }
+
+/* Readable summaries and source labels on phone and desktop. */
+.body > p { font-size:14px; line-height:1.95; }
+.meta { font-size:12px; line-height:1.7; }
+.footer,.location { font-size:12px; }
+.actions a { min-height:42px; display:inline-flex; align-items:center; }
+@media(max-width:640px){.body > p{font-size:14px;}.body h3{font-size:18px;line-height:1.8;}.meta{flex-wrap:wrap;gap:6px;}}

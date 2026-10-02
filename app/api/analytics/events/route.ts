@@ -242,10 +242,10 @@ export async function POST(request: Request) {
     body: JSON.stringify(payload),
     cache: 'no-store',
     signal: AbortSignal.timeout(8000),
-  });
+  }).catch(() => null);
 
-  if (!response.ok) {
-    console.error('[directory-analytics] Event write failed', response.status);
+  if (!response?.ok) {
+    console.error('[directory-analytics] Event write failed', response?.status || 'network');
     return NextResponse.json({ accepted: false, error: 'تعذر تسجيل القياس.' }, { status: 503 });
   }
   return NextResponse.json({ accepted: true }, { status: 201 });
