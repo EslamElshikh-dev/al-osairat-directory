@@ -1,8 +1,10 @@
+import { businessImagePathPattern } from '@/lib/business-images';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { categories, villages } from '@/lib/data';
 import {
   normalizeEgyptianPhone,
+  normalizeBusinessWebsite,
   normalizeGoogleMapsUrl,
   validateBusinessSubmissionInput,
 } from '@/lib/business-submission-validation';
@@ -36,6 +38,8 @@ type SubmissionRow = {
   hours: string | null;
   description: string | null;
   google_maps_url: string | null;
+  website_url: string | null;
+  image_paths: string[];
   status: SubmissionStatus;
   review_note: string | null;
   created_at: string;
@@ -104,7 +108,7 @@ async function resolveSession(): Promise<ResolvedSession | null> {
 }
 
 function respond(payload: unknown, session: ResolvedSession | null, status = 200) {
-  const response = NextResponse.json(payload, { status });
+  const response = NextResponse.json(payload, { status, headers: { 'Cache-Control': 'private, no-store', Vary: 'Cookie' } });
   if (session?.refreshed) {
     response.cookies.set(AUTH_ACCESS_COOKIE, session.refreshed.accessToken, {
       ...authCookieBase,
@@ -143,6 +147,8 @@ function serialize(row: SubmissionRow) {
     hours: row.hours || '',
     description: row.description || '',
     googleMapsUrl: row.google_maps_url || '',
+    websiteUrl: row.website_url || '',
+    imagePaths: row.image_paths || [],
     status: row.status,
     reviewNote: row.review_note || '',
     createdAt: row.created_at,
@@ -157,7 +163,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/business_submissions?select=id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,status,review_note,created_at,updated_at,reviewed_at&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/business_submissions?select=id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,website_url,image_paths,status,review_note,created_at,updated_at,reviewed_at&user_id=eq.${session.userId}&order=created_at.desc`,
       { headers: restHeaders(session.accessToken), cache: 'no-store' },
     );
     if (!response.ok) throw new Error('SUBMISSIONS_READ_FAILED');
@@ -176,10 +182,12 @@ export async function POST(request: Request) {
   if (!session.emailVerified) return respond({ error: 'أكد بريدك الإلكتروني قبل إرسال نشاط جديد.' }, session, 403);
 
   const body = await request.json().catch(() => ({}));
+  const requestId = cleanText(body?.requestId, 36);
+  if (requestId && !/^[0-9a-f-]{36}$/i.test(requestId)) return respond({error:'طلب غير صالح.'},session,400);
   const businessName = cleanText(body?.businessName, 120);
   const category = cleanText(body?.category, 40);
   const subCategory = cleanText(body?.subCategory, 120);
-  const village = cleanText(body?.village, 80);
+  const village = cleanText(body?.village, 80) || 'مركز العسيرات';
   const locality = cleanText(body?.locality, 100);
   const locationDetails = cleanText(body?.locationDetails, 240);
   const rawPhone = cleanText(body?.phone, 32);
@@ -190,6 +198,10 @@ export async function POST(request: Request) {
   const description = cleanMultiline(body?.description, 800);
   const rawMapsUrl = cleanText(body?.googleMapsUrl, 500);
   const googleMapsUrl = normalizeGoogleMapsUrl(rawMapsUrl);
+  const rawWebsite = cleanText(body?.websiteUrl, 500);
+  const websiteUrl = normalizeBusinessWebsite(rawWebsite);
+  const imagePaths: string[] = Array.isArray(body?.imagePaths) ? body.imagePaths : [];
+  if (imagePaths.length > 3 || imagePaths.some(path => typeof path !== 'string' || !businessImagePathPattern.test(path) || !path.startsWith(`${session.userId}/`))) return respond({error:'صور النشاط غير صالحة.'},session,400);
   const contactPublishConsent = body?.contactPublishConsent === true;
 
   const validationError = validateBusinessSubmissionInput({
@@ -200,48 +212,48 @@ export async function POST(request: Request) {
     phone: rawPhone,
     whatsapp: rawWhatsapp,
     googleMapsUrl: rawMapsUrl,
+    websiteUrl: rawWebsite,
+    description,
   });
   if (validationError) return respond({ error: validationError }, session, 400);
   if (!categoryIds.has(category)) return respond({ error: 'اختر قسمًا صحيحًا للنشاط.' }, session, 400);
-  if (!villageNames.has(village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
+  if (village !== 'مركز العسيرات' && !villageNames.has(village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
   if (category === 'transport' && (phone || whatsapp) && !contactPublishConsent) {
     return respond({ error: 'يلزم الموافقة صراحةً على نشر رقم الاتصال أو واتساب كوسيلة تواصل عامة للخدمة.' }, session, 400);
   }
 
   try {
     const pendingResponse = await fetch(
-      `${SUPABASE_URL}/rest/v1/business_submissions?select=id&status=in.(pending,needs_changes)&limit=6`,
+      `${SUPABASE_URL}/rest/v1/business_submissions?select=id&user_id=eq.${session.userId}&status=in.(pending,needs_changes)&limit=6`,
       { headers: restHeaders(session.accessToken), cache: 'no-store' },
     );
     if (!pendingResponse.ok) throw new Error('PENDING_COUNT_FAILED');
     const pendingRows = await pendingResponse.json() as Array<{ id: string }>;
-    if (pendingRows.length >= 5) {
+    if (!requestId && pendingRows.length >= 5) {
       return respond({ error: 'لديك 5 طلبات مفتوحة بالفعل. انتظر مراجعتها قبل إرسال طلب جديد.' }, session, 429);
     }
 
+    const values = {
+      business_name: businessName, category, sub_category: subCategory || null,
+      village, locality: locality || null, location_details: locationDetails,
+      phone: phone || null, whatsapp: whatsapp || null, hours: hours || null,
+      description, google_maps_url: googleMapsUrl || null, website_url: websiteUrl || null,
+      image_paths: imagePaths, contact_publish_consent: category === 'transport' ? contactPublishConsent : false,
+    };
+    if (requestId) {
+      const revised = await fetch(`${SUPABASE_URL}/rest/v1/rpc/revise_business_submission`, {
+        method: 'POST', headers: restHeaders(session.accessToken, true),
+        body: JSON.stringify({ p_id: requestId, p_data: values }), cache: 'no-store',
+      });
+      if (!revised.ok) return respond({error:'لا يمكن تعديل هذا الطلب الآن. يمكن استكمال الطلبات التي تحتاج تعديلًا فقط.'},session,409);
+      const updated = await fetch(`${SUPABASE_URL}/rest/v1/business_submissions?select=*&id=eq.${requestId}&user_id=eq.${session.userId}`, {headers:restHeaders(session.accessToken),cache:'no-store'});
+      if (!updated.ok) throw new Error('REVISION_READ_FAILED');
+      const rows = await updated.json() as SubmissionRow[];
+      return respond({saved:true,submission:serialize(rows[0])},session);
+    }
     const response = await fetch(`${SUPABASE_URL}/rest/v1/business_submissions`, {
-      method: 'POST',
-      headers: {
-        ...restHeaders(session.accessToken, true),
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({
-        user_id: session.userId,
-        business_name: businessName,
-        category,
-        sub_category: subCategory || null,
-        village,
-        locality: locality || null,
-        location_details: locationDetails,
-        phone: phone || null,
-        whatsapp: whatsapp || null,
-        hours: hours || null,
-        description: description || null,
-        google_maps_url: googleMapsUrl || null,
-        contact_publish_consent: category === 'transport' ? contactPublishConsent : false,
-        status: 'pending',
-      }),
-      cache: 'no-store',
+      method: 'POST', headers: {...restHeaders(session.accessToken,true),Prefer:'return=representation'},
+      body:JSON.stringify({...values,user_id:session.userId,status:'pending'}),cache:'no-store',
     });
 
     if (!response.ok) throw new Error('SUBMISSION_CREATE_FAILED');

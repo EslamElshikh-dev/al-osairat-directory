@@ -87,6 +87,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
     : item.generatedEditorial || (!item.persisted ? await getGeneratedNewsEditorial(item) : undefined);
   const sourceDigest = fullArticle || generatedEditorial ? undefined : item.sourceDigest;
   const heroSummary = generatedEditorial?.lead || sourceDigest?.lead || excerpt;
+  const readingWords=[heroSummary||'',...(item.editorial?.body||generatedEditorial?.body||sourceDigest?.excerpts||[])].join(' ').split(/\s+/).filter(Boolean).length;
+  const readingMinutes=Math.max(1,Math.ceil(readingWords/180));
   const pageUrl = `${siteConfig.url}${newsItemPath(item)}`;
   const related = feed.items
     .filter((candidate) => candidate.id !== item.id)
@@ -188,6 +190,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       <div className={`shell ${styles.layout}`}>
         <article className={styles.article}>
+          <nav className={styles.readingTools} aria-label="تنقل داخل الخبر"><span>قراءة في نحو {readingMinutes.toLocaleString('ar-EG')} دقيقة</span><a href="#news-story-title">الموجز</a><a href="#news-facts-title">بطاقة الخبر</a><a href={item.url} target="_blank" rel="noopener noreferrer">المصدر الأصلي ↗</a></nav>
           <NewsShare title={item.title} url={pageUrl} />
           {generatedEditorial ? (
             <div className={`${styles.disclosure} ${styles.editorialDisclosure}`} role="note">
@@ -204,7 +207,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <div className={styles.disclosure} role="note">
               <span aria-hidden="true">✓</span>
               <div>
-                <strong>موجز موسّع موثّق — من دون ذكاء اصطناعي</strong>
+                <strong>موجز موسّع من المصدر</strong>
                 <p>
                   جُلبت هذه التفاصيل مباشرة من صفحة {item.source}، ثم قُسمت إلى مقتطفات قصيرة
                   مع بقاء المقال الكامل وحقوقه لدى الناشر الأصلي.
@@ -223,8 +226,8 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
             <div className={styles.disclosure} role="status">
               <span aria-hidden="true">↻</span>
               <div>
-                <strong>التغطية الكاملة قيد التجهيز في الخلفية</strong>
-                <p>حُفظ الخبر ومصدره، وسيظهر النص الكامل تلقائيًا بعد انتهاء التوليد والتدقيق دون إبطاء هذه الصفحة.</p>
+                <strong>تفاصيل إضافية عند تحديث المصدر</strong>
+                <p>نعرض المعلومات المتاحة حاليًا. يمكنك قراءة التغطية لدى الناشر، وتظهر أي تفاصيل إضافية بعد فحص المصدر.</p>
               </div>
             </div>
           ) : !fullArticle ? (
@@ -307,7 +310,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
               </p>
             ) : sourceDigest ? (
               <p>
-                يجلب النظام وصف الخبر ونصه المتاحين لدى {item.source}، ويعرض مقتطفات محدودة منسوبة إليه دون تشغيل أي نموذج ذكاء اصطناعي.
+                يجلب النظام وصف الخبر ونصه المتاحين لدى {item.source}، ويعرض مقتطفات محدودة منسوبة إليه مع الحفاظ على حقوق الناشر.
                 لا يضيف الدليل وقائع جديدة، وتظل صفحة الناشر المرجع النهائي والنص الكامل.
               </p>
             ) : (

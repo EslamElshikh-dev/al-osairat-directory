@@ -74,8 +74,8 @@ export default async function AdminPage() {
           <a href="#community-reports"><span>07</span>بلاغات المجتمع</a>
           <a href="#admin-jobs"><span>08</span>الوظائف</a>
         </nav>
-        <AdminAnalyticsDashboard />
         <AdminDiscoveryInsights />
+        <AdminAnalyticsDashboard />
         <AdminDirectoryIntelligence />
         <AdminDataQuality />
         <AdminAuthorityBatch />

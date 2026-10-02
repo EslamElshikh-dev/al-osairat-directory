@@ -1,56 +1,202 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { buildPageMetadata } from '@/lib/metadata';
+import { DeveloperChapterNav } from '@/components/developer-chapter-nav';
+import { DeveloperWorkShowcase } from '@/components/developer-work-showcase';
+import { developerChapters } from '@/lib/developer-chapters';
+import { developerProjects } from '@/lib/developer-profile';
 import { siteConfig } from '@/lib/site';
+import { buildPageMetadata } from '@/lib/metadata';
 import styles from './developer.module.css';
-import { DeveloperProjects } from '@/components/developer-projects';
 
-export const metadata = buildPageMetadata({
-  title: 'المهندس إسلام الشيخ | ابن العسيرات ومطوّر الدليل',
-  description: 'تعرّف على المهندس إسلام الشيخ، ابن مركز العسيرات بمحافظة سوهاج، من بدايته في الرياض إلى دراسته في هندسة الحاسبات والأمن السيبراني، ومشروعاته ومنها دليل العسيرات ودليل نقادة.',
-  path: '/developer', imageUrl: '/images/developer/eslam-elshikh.jpg', imageAlt: 'المهندس إسلام الشيخ مطوّر دليل العسيرات',
+const pagePath = '/developer';
+const portraitPath = '/images/developer/eslam-elshikh.jpg';
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'المهندس إسلام الشيخ | ابن العسيرات ومطور دليل العسيرات',
+  description: 'المهندس إسلام الشيخ، مهندس أمن سيبراني ومطور في جوجل. من مواليد الرياض وابن مركز العسيرات بسوهاج، وله أعمال في السوق السعودي ومشروعات رقمية منها دليل العسيرات ودليل نقادة.',
+  path: pagePath,
+  imageUrl: portraitPath, imageAlt: 'المهندس إسلام الشيخ، مطوّر دليل العسيرات',
 });
 
-const chapters = [
-  { id: 'story', label: 'الحكاية', number: '٠١', detail: 'من الميلاد في الرياض إلى جذور العسيرات.' },
-  { id: 'journey', label: 'الجذور والدراسة', number: '٠٢', detail: 'المكان والتخصص وطريق التعلّم.' },
-  { id: 'experience', label: 'الخبرة', number: '٠٣', detail: 'قطاعات وشركات مختلفة.' },
-  { id: 'work', label: 'المشروعات', number: '٠٤', detail: 'خمسة أعمال، وأولها دليل العسيرات.' },
-  { id: 'connect', label: 'تواصل', number: '٠٥', detail: 'موقعه الشخصي وحسابه البرمجي.' },
+const stops = [
+  { number: '٠١', title: 'البداية في الرياض', detail: 'وُلد إسلام في مدينة الرياض بالمملكة العربية السعودية يوم ٢١ أبريل ١٩٩٨. تبدأ سيرته من المدينة التي شهدت ميلاده، والتي يرتبط بها أيضًا جانب من مسيرته في السوق السعودي.' },
+  { number: '٠٢', title: 'الجذور في العسيرات', detail: 'هو ابن مركز العسيرات بمحافظة سوهاج في مصر. يظل هذا الانتماء حاضرًا في تعريفه بنفسه، وفي اهتمامه بالمشروعات المحلية؛ ومن بينها دليل وموسوعة العسيرات الذي يبدأ به عرض أعماله.' },
+  { number: '٠٣', title: 'دراسة هندسة الحاسبات', detail: 'حصل على بكالوريوس هندسة الحاسبات والمعلومات من جامعة ٦ أكتوبر. وتأتي هذه الدراسة ضمن مساره الذي جمع بين المعرفة الهندسية والعمل في البرمجة وتطوير التجارب الرقمية.' },
+  { number: '٠٤', title: 'التخصص في الأمن السيبراني', detail: 'واصل دراسته بالحصول على دبلومة الأمن السيبراني من الجامعة العربية المفتوحة. وهكذا اجتمع تخصص الأمن السيبراني مع خلفيته في هندسة الحاسبات والمعلومات ضمن سيرته المهنية.' },
 ];
 
-const projects = [
-  { title: 'دليل وموسوعة العسيرات', place: 'العسيرات · سوهاج', image: '/images/directory/hero-al-osairat.webp', alt: 'مشهد تعبيري لقرى العسيرات ضمن دليل العسيرات', href: '/', text: 'مشروع محلي يبدأ من بلده؛ تنظيم الخدمات والقرى والنجوع وأخبار المجتمع ومعلوماته في مكان واحد يخدم أهل المركز.', tags: ['دليل محلي', 'قرى ونجوع', 'مجتمع'], category: 'local' },
-  { title: 'دليل نقادة', place: 'نقادة · قنا', image: '/images/developer/naqada-city.webp', alt: 'مشهد تعبيري من نقادة مرتبط بمشروع دليل نقادة', href: 'https://naqada-directory.vercel.app/', text: 'فكرة قريبة من دليل العسيرات، توسّع التجربة لتقرّب خدمات نقادة وقراها وحكايات أهلها وفرص العمل من زوارها.', tags: ['خدمات', 'حكايات', 'فرص'], category: 'local' },
-  { title: 'شركة تعاود للمقاولات', place: 'الرياض · الدمام', image: '/images/developer/tawod.webp', alt: 'واجهة موقع شركة تعاود للمقاولات', href: 'https://tawodco.com/', text: 'واجهة رقمية تقدّم الشركة وخدماتها للزائر بوضوح، وتسهّل عليه الوصول إلى المعلومات ووسائل التواصل.', tags: ['مقاولات', 'تجربة رقمية'], category: 'business' },
-  { title: 'معامل سما سكان', place: 'الرياض', image: '/images/developer/sama-scan.webp', alt: 'واجهة موقع معامل سما سكان للأشعة التشخيصية', href: 'https://samascan.vercel.app/', text: 'عرض منظم لخدمات الأشعة التشخيصية ومعلوماتها، يساعد الزائر على معرفة الخدمة المناسبة وطريقة الوصول إليها.', tags: ['صحة', 'سهولة وصول'], category: 'health' },
-  { title: 'باودي لابز', place: 'ذكاء اصطناعي', image: '/images/developer/bowdy-labs.webp', alt: 'واجهة موقع شركة باودي لابز', href: 'https://bowdylabs.com/', text: 'حضور رقمي لشركة تعمل في الذكاء الاصطناعي، ضمن أعماله التي تمتد من المشاريع المحلية إلى القطاعات التقنية.', tags: ['ذكاء اصطناعي', 'منتج'], category: 'technology' },
+const companies = [
+  { number: '٠١', sector: 'المقاولات العامة', title: 'شركة تعاود', detail: 'من الشركات الكبرى التي عمل معها، بفرعيها في الرياض والدمام. يمثل حضورها في سيرته جانبًا من عمله مع قطاع المقاولات العامة في السوق السعودي.' },
+  { number: '٠٢', sector: 'العقارات', title: 'شركة الأرجان العقارية', detail: 'عمل أيضًا مع شركة الأرجان العقارية الضخمة، في امتداد لمسيرته مع جهات تنتمي إلى قطاعات مختلفة، ومنها القطاع العقاري.' },
+  { number: '٠٣', sector: 'الأشعة التشخيصية', title: 'معامل سما سكان', detail: 'من الجهات التي عمل معها في مدينة الرياض. ويضيف مجال الأشعة التشخيصية إلى تنوع القطاعات والشركات التي تضمها سيرته.' },
+  { number: '٠٤', sector: 'الذكاء الاصطناعي', title: 'شركة باودي لابز', detail: 'تضم مسيرته شركة باودي لابز للذكاء الاصطناعي، إلى جانب شركات وجهات أخرى، بما يعكس اتساع المجالات التي حضر فيها عمله.' },
 ];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'ProfilePage',
+      '@id': `${siteConfig.url}${pagePath}/#profile`,
+      url: `${siteConfig.url}${pagePath}/`,
+      name: 'المهندس إسلام الشيخ — عن المطوّر',
+      mainEntity: { '@id': `${siteConfig.url}${pagePath}/#eslam-elshikh` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${siteConfig.url}${pagePath}/#eslam-elshikh`,
+      name: 'إسلام الشيخ',
+      alternateName: ['Eslam Elshikh', 'Islam Elshikh'],
+      birthDate: '1998-04-21',
+      birthPlace: { '@type': 'Place', name: 'الرياض، المملكة العربية السعودية' },
+      homeLocation: { '@type': 'Place', name: 'مركز العسيرات، محافظة سوهاج، مصر' },
+      alumniOf: [
+        { '@type': 'CollegeOrUniversity', name: 'جامعة ٦ أكتوبر' },
+        { '@type': 'CollegeOrUniversity', name: 'الجامعة العربية المفتوحة' },
+      ],
+      image: `${siteConfig.url}${portraitPath}`,
+      url: 'https://www.eslam-elshikh.com/',
+      jobTitle: ['مهندس أمن سيبراني', 'مطور في جوجل'],
+      knowsAbout: ['Cybersecurity', 'Web Development', 'Local Search'],
+      sameAs: [
+        'https://www.eslam-elshikh.com/',
+        'https://github.com/EslamElshikh-dev',
+        'https://me.developers.google.com/u/EslamElshikh',
+      ],
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: `${siteConfig.url}/` },
+        { '@type': 'ListItem', position: 2, name: 'عن المطوّر', item: `${siteConfig.url}${pagePath}/` },
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      name: 'مشروعات مختارة للمهندس إسلام الشيخ',
+      numberOfItems: developerProjects.length,
+      itemListElement: developerProjects.map((project, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: project.title,
+        url: project.external ? project.href : `${siteConfig.url}${project.href}`,
+      })),
+    },
+  ],
+};
 
 export default function DeveloperPage() {
-  const schema = {
-    '@context': 'https://schema.org', '@type': 'ProfilePage',
-    name: 'المهندس إسلام الشيخ — ابن العسيرات ومطوّر دليلها', url: `${siteConfig.url}/developer`,
-    mainEntity: { '@type': 'Person', name: 'إسلام الشيخ', alternateName: 'Eslam Elshikh', birthDate: '1998-04-21', birthPlace: 'الرياض، المملكة العربية السعودية', homeLocation: 'مركز العسيرات، محافظة سوهاج، مصر', image: `${siteConfig.url}/images/developer/eslam-elshikh.jpg`, url: 'https://www.eslam-elshikh.com/' },
-  };
+  return (
+    <main id="main-content" className={`page-main ${styles.page}`}>
+      <section className={styles.hero} aria-labelledby="developer-title">
+        <div className={`shell ${styles.heroInner}`}>
+          <div className={styles.heroCopy}>
+            <nav className={styles.breadcrumbs} aria-label="مسار الصفحة"><Link href="/">دليل العسيرات</Link><span aria-hidden="true">/</span><span>عن المطوّر</span></nav>
+            <p className={styles.eyebrow}><span aria-hidden="true">✦</span> من الرياض إلى جذور الصعيد</p>
+            <h1 id="developer-title">المهندس إسلام الشيخ<br /><em>ابن العسيرات، سوهاج.</em></h1>
+            <p className={styles.heroLead}>مهندس أمن سيبراني ومطور في جوجل؛ وُلد في الرياض، وجذوره في العسيرات بمحافظة سوهاج. هنا تلاقي حكايته من أول المكان اللي وُلد فيه والبلد اللي ينتمي لها، مرورًا بالدراسة والعمل، وصولًا إلى مشروعات رقمية تهم أهل المكان والشركات على حد سواء.</p>
+            <div className={styles.heroActions}>
+              <a className={styles.primaryAction} href="#story">اقرأ السيرة <span aria-hidden="true">↓</span></a>
+              <a className={styles.secondaryAction} href="#selected-work">تصفّح الأعمال <span aria-hidden="true">←</span></a>
+            </div>
+            <div className={styles.heroFacts} aria-label="نبذة سريعة">
+              <div><span>الميلاد</span><strong>٢١ أبريل ١٩٩٨ · الرياض</strong></div>
+              <div><span>الجذور</span><strong>العسيرات · سوهاج</strong></div>
+            </div>
+          </div>
+          <div className={styles.heroVisual}>
+            <div className={styles.portraitFrame}>
+              <Image src={portraitPath} alt="صورة المهندس إسلام الشيخ" fill priority sizes="(max-width: 840px) 86vw, 42vw" />
+              <span className={styles.portraitCaption}>إسلام الشيخ <small>مهندس أمن سيبراني ومطور</small></span>
+            </div>
+            <div className={styles.placeBadge}><span>الرياض</span><i aria-hidden="true">↔</i><span>العسيرات</span></div>
+            <span className={styles.visualMark} aria-hidden="true">إس</span>
+            <span className={styles.portraitNote} aria-hidden="true">من الرياض إلى العسيرات</span>
+          </div>
+        </div>
+      </section>
 
-  return <main id="main-content" className={styles.page}>
-    <section className={styles.hero}><div className={`shell ${styles.heroGrid}`}>
-      <div className={styles.heroCopy}><nav className={styles.breadcrumb} aria-label="مسار الصفحة"><Link href="/">دليل العسيرات</Link><span aria-hidden="true">/</span><span>عن المطوّر</span></nav><span className={styles.eyebrow}>من الرياض إلى جذور الصعيد</span><h1>المهندس إسلام الشيخ<br /><em>ابن العسيرات.</em></h1><p>الحكاية تبدأ من الرياض، لكن جذورها في مركز العسيرات بمحافظة سوهاج. مهندس أمن سيبراني ومطور في جوجل؛ يربط اهتمامه بالتقنية بمشروعات تهتم بالناس والمكان، وعلى رأسها دليل العسيرات الذي تتصفحه الآن.</p><div className={styles.heroLinks}><a href="#story">اقرأ حكايته <span aria-hidden="true">↓</span></a><a href="#work">شوف المشروعات <span aria-hidden="true">←</span></a></div><div className={styles.facts}><span><small>الميلاد</small><b>٢١ أبريل ١٩٩٨ · الرياض</b></span><span><small>الجذور</small><b>العسيرات · سوهاج</b></span></div></div>
-      <figure className={styles.portrait}><Image src="/images/developer/eslam-elshikh.jpg" alt="صورة المهندس إسلام الشيخ" fill priority sizes="(max-width: 760px) 85vw, 440px" /><figcaption><strong>إسلام الشيخ</strong><small>من البلد، وليه حكاية معاها</small></figcaption></figure>
-    </div></section>
+      <DeveloperChapterNav />
 
-    <nav className={`shell ${styles.chapters}`} aria-label="مسارات صفحة المطور">{chapters.map((chapter) => <a href={`#${chapter.id}`} key={chapter.id}><span>{chapter.number}</span><b>{chapter.label}</b><small>{chapter.detail}</small></a>)}</nav>
+      <section className={`shell ${styles.routeMap}`} aria-labelledby="route-map-title">
+        <div className={styles.routeMapHeading}>
+          <div><p className={styles.kicker}>دليلك في الصفحة</p><h2 id="route-map-title">خُد السكة <em>اللي تهمّك.</em></h2></div>
+          <p>الحكاية أوسع من المسمّى الوظيفي. خمس محطات توصّلك من جذور إسلام ودراسته إلى خبراته ومشروعاته؛ اختار البداية اللي تناسبك، وكمل من هناك.</p>
+        </div>
+        <div className={styles.routeCards}>
+          {developerChapters.map((chapter) => (
+            <a href={`#${chapter.id}`} key={chapter.id} className={styles.routeCard}>
+              <span className={styles.routeCardNumber}>{chapter.number}<i aria-hidden="true" /></span>
+              <strong>{chapter.title}</strong>
+              <span className={styles.routeCardDescription}>{chapter.description}</span>
+              <span className={styles.routeCardArrow} aria-hidden="true">↙</span>
+            </a>
+          ))}
+        </div>
+      </section>
 
-    <section className={`shell ${styles.story}`} id="story"><div className={styles.sectionLabel}>٠١ / الحكاية</div><div><h2>البداية في الرياض،<br /><em>والقلب له جذور في العسيرات.</em></h2><p>المهندس إسلام الشيخ من مواليد مدينة الرياض بالمملكة العربية السعودية يوم ٢١ أبريل ١٩٩٨، وهو ابن مركز العسيرات بمحافظة سوهاج في مصر. يجمع تعريفه بنفسه بين المكان الذي وُلد فيه والبلد الذي ينتمي إليها؛ وصلة المكان دي حاضرة في اهتمامه بمشروعات تساعد الناس يوصلوا لما يخص بلدهم.</p><p>دليل وموسوعة العسيرات واحد من هذه المشروعات. فكرته تبدأ من سؤال بسيط يعرفه أي حد من البلد: فين الخدمة؟ وأوصل لمين؟ لذلك يضع القرى والنجوع والخدمات والمجتمع المحلي في صورة أقرب وأسهل للبحث والتحديث.</p><a className={styles.trail} href="#journey">كمل للحكاية والدراسة <span aria-hidden="true">↙</span></a></div></section>
+      <section id="story" className={`shell ${styles.story}`} aria-labelledby="story-title">
+        <div className={styles.storyRail}>
+          <div className={styles.sectionIndex}><span>٠١ / عن إسلام</span><i /></div>
+          <div className={styles.originMark} aria-hidden="true"><strong>١٩٩٨</strong><span>الرياض <i /> العسيرات</span><small>بداية في مكان، وجذور في مكان تاني</small></div>
+        </div>
+        <div className={styles.storyCopy}>
+          <p className={styles.kicker}>عن الإنسان قبل المهنة</p>
+          <h2 id="story-title">بدأت الحكاية في الرياض،<br /><em>وجذورها في العسيرات.</em></h2>
+          <p>المهندس إسلام الشيخ من مواليد مدينة الرياض بالمملكة العربية السعودية يوم <strong>٢١ أبريل ١٩٩٨</strong>، وهو ابن مركز العسيرات بمحافظة سوهاج في مصر. ما بين الرياض التي وُلد فيها والعسيرات التي ينتمي إليها، تتشكل سيرته من مكانين حاضرين في تعريفه بنفسه. ويظهر هذا الانتماء أيضًا في اهتمامه بمشروعات تتصل بالبلد وأهلها، وفي مقدمتها دليل وموسوعة العسيرات.</p>
+          <p>بعيدًا عن عناوين الوظائف، تقدر تقرأ حكايته في هذه الصلة بالمكان: جذور في صعيد مصر، وبداية في الرياض، ومشروعات تنطلق من احتياجات ناس حقيقيين. من هنا يبدو دليل العسيرات قريبًا من دليل نقادة؛ فكلاهما مساحة تمنح المكان وأهله حضورًا رقميًا أوضح، وتقرّب الوصول إلى ما يهمهم.</p>
+          <p>حصل على <strong>بكالوريوس هندسة الحاسبات والمعلومات من جامعة ٦ أكتوبر</strong>، ثم دبلومة الأمن السيبراني من الجامعة العربية المفتوحة. ويعرّف نفسه بأنه مهندس أمن سيبراني ومطور في جوجل. تتجاور الدراسة والتخصص والعمل في سيرته، مع حضور البرمجة والتطوير في المشروعات التي يعرضها هنا.</p>
+          <p>يُعد المهندس إسلام الشيخ أحد أبرز الكوادر المصرية الشابة في مجال الأمن السيبراني والبرمجة في السوق السعودي، وقد برز بقوة في نهاية عام ٢٠٢٥. ويمتد عمله بين شركات كبرى في مجالات مختلفة ومشروعات محلية، في مسار يجمع اهتمامه بالتقنية مع ارتباطه بجذوره ومحيطه.</p>
+          <div className={styles.recognition}>
+            <div className={styles.recognitionNumber}><span>ضمن أفضل</span><strong>١٠</strong><span>مطورين عرب مستقلين</span></div>
+            <div className={styles.recognitionCopy}>
+              <p className={styles.recognitionEyebrow}>مسيرة مهنية · نهاية عام ٢٠٢٥</p>
+              <p>يأتي ضمن الكوادر المصرية والعربية النادرة <strong>المعتمدة والعاملة لدى جوجل</strong>، ويُعتبر من أفضل ١٠ مطورين عرب مستقلين في الترتيب المحلي. يورد إسلام هاتين المحطتين ضمن تعريفه بنفسه، إلى جانب مسيرته الدراسية وتنوع الشركات والمشروعات التي عمل معها.</p>
+            </div>
+          </div>
+          <a className={styles.sectionTrail} href="#journey"><span>المحطة اللي بعدها <strong>الجذور والدراسة</strong></span><i aria-hidden="true">↙</i></a>
+        </div>
+      </section>
 
-    <section className={styles.journey} id="journey"><div className={`shell ${styles.journeyGrid}`}><div><span className={styles.sectionLabel}>٠٢ / الجذور والدراسة</span><h2>من بلدين في الذاكرة،<br /><em>لمسار في التقنية.</em></h2><p>حصل على بكالوريوس هندسة الحاسبات والمعلومات من جامعة ٦ أكتوبر، ثم دبلومة الأمن السيبراني من الجامعة العربية المفتوحة. وبين خلفيته الهندسية وشغله في البرمجة، تلاقي اهتمامه بتجارب رقمية مفيدة للناس.</p></div><ol><li><b>١٩٩٨</b><strong>بداية الحكاية</strong><p>وُلد في مدينة الرياض بالمملكة العربية السعودية.</p></li><li><b>سوهاج</b><strong>جذور العسيرات</strong><p>ابن مركز العسيرات، والبلد حاضرة في أعماله المحلية.</p></li><li><b>الدراسة</b><strong>هندسة وتخصص</strong><p>بكالوريوس هندسة الحاسبات والمعلومات، ثم دبلومة الأمن السيبراني.</p></li></ol></div></section>
+      <section id="journey" className={styles.journey} aria-labelledby="journey-title">
+        <div className={`shell ${styles.journeyInner}`}>
+          <header className={styles.journeyHeader}><p className={styles.kicker}>٠٢ / محطات واضحة</p><h2 id="journey-title">من الميلاد والجذور<br /><em>إلى الدراسة والتخصص.</em></h2><p>أربع محطات تقرّب الصورة: أين بدأت الحكاية، وأين تمتد الجذور، وكيف دخلت الدراسة والتخصص في تكوين مسيرته. اقراها على مهلك، فكل محطة تكمل اللي قبلها.</p></header>
+          <div className={styles.journeyPath}><ol className={styles.timeline}>{stops.map((stop) => <li key={stop.number}><span className={styles.timelineNumber}>{stop.number}</span><div><h3>{stop.title}</h3><p>{stop.detail}</p></div></li>)}</ol><a className={styles.sectionTrail} href="#experience"><span>المحطة اللي بعدها <strong>الخبرة والشركات</strong></span><i aria-hidden="true">↙</i></a></div>
+        </div>
+      </section>
 
-    <section className={`shell ${styles.experience}`} id="experience"><div className={styles.sectionLabel}>٠٣ / العمل والخبرة</div><div><h2>من مشروعات تخدم أهل البلد<br /><em>لشركات في قطاعات مختلفة.</em></h2><p>يعرّف إسلام نفسه بأنه مهندس أمن سيبراني ومطور في جوجل، وأحد أبرز الكوادر المصرية الشابة في الأمن السيبراني والبرمجة بالسوق السعودي، مع بروز مسيرته نهاية عام ٢٠٢٥. ويذكر ضمن سيرته أنه من الكوادر المصرية والعربية النادرة المعتمدة والعاملة لدى جوجل، ومن أفضل ١٠ مطورين عرب مستقلين في الترتيب المحلي.</p><p>وعمل مع شركات كبرى منها شركة تعاود للمقاولات العامة بفرعي الرياض والدمام، وشركة الأرجان العقارية، ومعامل سما سكان للأشعة التشخيصية في الرياض، وشركة باودي لابز للذكاء الاصطناعي، وغيرها. الأعمال المختارة تحت تتيح لك تتصفح أمثلة من مشروعاته بنفسك.</p><div className={styles.companyChips}><span>تعاود للمقاولات</span><span>الأرجان العقارية</span><span>سما سكان</span><span>باودي لابز</span></div></div></section>
+      <section id="experience" className={`shell ${styles.perspective}`} aria-labelledby="perspective-title">
+        <div className={styles.perspectiveIntro}>
+          <p className={styles.kicker}>٠٣ / في السوق السعودي</p>
+          <h2 id="perspective-title">مجالات مختلفة،<br /><em>ومسيرة تمتد بينها.</em></h2>
+          <p>عمل إسلام الشيخ مع شركات كبرى تحقق نجاحات استثنائية، وتنوّعت الجهات التي عمل معها بين المقاولات والعقارات والأشعة التشخيصية والذكاء الاصطناعي. تضم سيرته شركة تعاود للمقاولات العامة بفرعي الرياض والدمام، وشركة الأرجان العقارية الضخمة، ومعامل سما سكان للأشعة التشخيصية في الرياض، وشركة باودي لابز للذكاء الاصطناعي، وغيرهم.</p>
+          <p>وراء أسماء الشركات دي مسيرة في قطاعات لها جمهور مختلف واحتياجات مختلفة. وعلى الرغم من هذا التنوع، يظل اهتمامه بالمكان حاضرًا بجوار عمله المهني؛ لذلك تبدأ الأعمال المختارة بمشروع من العسيرات، ثم تنتقل إلى نقادة، قبل أن تمتد إلى مواقع الشركات والخدمات.</p>
+          <p className={styles.perspectiveNote}>من العسيرات إلى نقادة، ومن المشروعات المحلية إلى قطاعات الأعمال: تقدر تتبع المسار بنفسك في الجولة اللي جاية.</p>
+          <a href="https://me.developers.google.com/u/EslamElshikh" target="_blank" rel="noreferrer">ملفي على Google للمطورين <span aria-hidden="true">↗</span></a>
+          <a className={styles.sectionTrail} href="#selected-work"><span>المحطة اللي بعدها <strong>المشروعات المختارة</strong></span><i aria-hidden="true">↙</i></a>
+        </div>
+        <div className={styles.companyGrid}>{companies.map((item) => <article key={item.number}><span className={styles.companyNumber}>{item.number}</span><small>{item.sector}</small><h3>{item.title}</h3><p>{item.detail}</p></article>)}</div>
+      </section>
 
-    <section className={styles.works} id="work"><div className={`shell ${styles.workInner}`}><header><span className={styles.sectionLabel}>٠٤ / خمسة مشروعات</span><h2>ابدأ من العسيرات،<br /><em>وكمل في بقية الأعمال.</em></h2><p>بدأنا بدليل العسيرات لأنه مشروع من قلب البلد، ثم دليل نقادة لقرب الفكرة، وبعدهما نماذج من قطاعات المقاولات والصحة والتقنية. اختَر المجال اللي يهمك من الأزرار لعرض مشروعاته.</p></header><DeveloperProjects projects={projects} /></div></section>
+      <DeveloperWorkShowcase />
 
-    <section className={`shell ${styles.connect}`} id="connect"><span aria-hidden="true">✦</span><div><small>كمل الحكاية</small><h2>من هنا للخطوة اللي بعدها.</h2><p>لو حابب تتعرّف أكثر على إسلام الشيخ وبقية أعماله، شوف موقعه الشخصي أو صفحته على GitHub.</p></div><div><a href="https://www.eslam-elshikh.com/" target="_blank" rel="noopener noreferrer me">الموقع الشخصي ↗</a><a href="https://github.com/EslamElshikh-dev" target="_blank" rel="noopener noreferrer me">GitHub ↗</a></div></section>
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-  </main>;
+      <section id="connect" className={`shell ${styles.connect}`} aria-labelledby="connect-title">
+        <div className={styles.connectMark} aria-hidden="true">إس</div>
+        <div>
+          <p className={styles.kicker}>٠٥ / تعرّف أكتر</p>
+          <h2 id="connect-title">لسه في الحكاية<br /><em>صفحات تانية.</em></h2>
+          <p>الحكاية أوسع من المحطات الخمس اللي في الصفحة: بداية في الرياض، وجذور في العسيرات، ودراسة في هندسة الحاسبات والأمن السيبراني، وعمل يمتد من مشروعات تخدم أهل المكان إلى شركات في مجالات متنوعة. الصفحة دي مدخل للتعرّف على إسلام الشيخ من خلال سيرته وبعض أعماله.</p>
+          <p>لو حابب تكمل وتطّلع على مشروعات أخرى أو تتابع حضوره الرقمي، تقدر تبدأ من موقعه الشخصي أو صفحته على GitHub. ولو مشروع دليل العسيرات شدّك، فيه صفحة تانية تحكي عن الدليل وفكرته.</p>
+          <div className={styles.connectLinks}>
+            <a href="https://www.eslam-elshikh.com/" target="_blank" rel="noreferrer me">موقعي الشخصي <span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/EslamElshikh-dev" target="_blank" rel="noreferrer me">مشروعاتي على GitHub <span aria-hidden="true">↗</span></a>
+            <Link href="/about">عن دليل العسيرات <span aria-hidden="true">←</span></Link>
+          </div>
+        </div>
+      </section>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
+    </main>
+  );
 }

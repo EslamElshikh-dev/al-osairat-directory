@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { LocalNewsItem, NewsTopic } from '@/lib/news';
-import { newsItemPath } from '@/lib/news';
+const newsItemPath = (item: { id: string }) => `/news/${encodeURIComponent(item.id)}`;
 import styles from './news-card.module.css';
 
 const topicIcons: Record<NewsTopic, React.ReactNode> = {

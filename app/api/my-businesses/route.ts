@@ -236,8 +236,7 @@ export async function POST(request: Request) {
   };
 
   if (finalState.title.length < 2) return respond({ error: 'اكتب اسم النشاط بشكل صحيح.' }, session, 400);
-  if (finalState.location.length < 3) return respond({ error: 'اكتب وصفًا واضحًا لموقع النشاط.' }, session, 400);
-  if (!villageNames.has(finalState.village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
+  if (finalState.village !== 'مركز العسيرات' && !villageNames.has(finalState.village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
   if (finalState.phone && !isValidEgyptianPhone(finalState.phone)) return respond({ error: 'رقم الهاتف غير صحيح.' }, session, 400);
   if (finalState.whatsapp && !isValidEgyptianMobile(finalState.whatsapp)) return respond({ error: 'رقم واتساب غير صحيح.' }, session, 400);
   if (finalState.googleMapsUrl) {

@@ -47,6 +47,15 @@ export default async function JobsPage() {
     </section>
     <div className={`shell ${styles.steps}`} aria-label="خطوات قسم الوظائف"><span><b>01</b> اختار العسيرات أو أي مركز في سوهاج</span><span><b>02</b> راجع المصدر واتواصل للتقديم</span><span><b>03</b> شارك فرصتك أو خبرتك</span></div>
     <JobsBoard jobs={jobs} places={places} available={available} />
+    <section className={`shell ${styles.sourceDirectory}`} aria-labelledby="job-sources-title">
+      <div><span className="eyebrow eyebrow--dark">وسّع دائرة البحث</span><h2 id="job-sources-title">مصادر أخرى لفرص سوهاج</h2><p>روابط مباشرة لمنصات التوظيف والمصادر المحلية. كل منصة تعرض فرصها وشروط التقديم؛ ظهور الرابط لا يعني اعتماد كل إعلان فيها.</p></div>
+      <div className={styles.sourceCards}>
+        <a href="https://wuzzuf.net/a/jobs-in-sohag" target="_blank" rel="noopener noreferrer"><strong>WUZZUF <span aria-hidden="true">↗</span></strong><span>وظائف الشركات في سوهاج</span></a>
+        <a href="https://shaghalni.com/hiring-center/employers" target="_blank" rel="noopener noreferrer"><strong>شغلني <span aria-hidden="true">↗</span></strong><span>مراكز توظيف تشمل فرع سوهاج</span></a>
+        <a href="https://www.sohag24.com/" target="_blank" rel="noopener noreferrer"><strong>سوهاج 24 <span aria-hidden="true">↗</span></strong><span>إعلانات وأخبار محلية</span></a>
+      </div>
+      <p className={styles.sourceNote}>الفرص المنقولة داخل الدليل تحمل مصدرها وتاريخها، وتُستبعد تلقائيًا بعد انتهاء مدتها. تأكد من استمرار التقديم لدى صاحب الإعلان.</p>
+    </section>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
   </main>;
 }

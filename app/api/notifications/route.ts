@@ -75,7 +75,7 @@ async function resolveSession(): Promise<ResolvedSession | null> {
 }
 
 function respond(payload: unknown, session: ResolvedSession | null, status = 200) {
-  const response = NextResponse.json(payload, { status });
+  const response = NextResponse.json(payload, { status, headers: { 'Cache-Control': 'private, no-store', Vary: 'Cookie' } });
   if (session?.refreshed) {
     response.cookies.set(AUTH_ACCESS_COOKIE, session.refreshed.accessToken, {
       ...authCookieBase,
@@ -114,18 +114,18 @@ export async function GET(request: Request) {
 
   try {
     const [itemsResponse, unreadResponse] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id,type,title,message,href,entity_type,entity_id,read_at,event_count,last_event_at,created_at&order=created_at.desc&limit=${limit}`, {
+      fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id,type,title,message,href,entity_type,entity_id,read_at,event_count,last_event_at,created_at&order=last_event_at.desc.nullslast,created_at.desc&limit=${limit}`, {
         headers: restHeaders(session.accessToken), cache: 'no-store',
       }),
-      fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id&read_at=is.null`, {
-        headers: restHeaders(session.accessToken), cache: 'no-store',
+      fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id&read_at=is.null&limit=1`, {
+        method: 'HEAD', headers: { ...restHeaders(session.accessToken), Prefer: 'count=exact' }, cache: 'no-store',
       }),
     ]);
     if (!itemsResponse.ok || !unreadResponse.ok) throw new Error('NOTIFICATIONS_READ_FAILED');
 
     const rows = await itemsResponse.json() as NotificationRow[];
-    const unread = await unreadResponse.json() as Array<{ id: string }>;
-    return respond({ authenticated: true, notifications: rows.map(serialize), unreadCount: unread.length }, session);
+    const unreadCount = Number(unreadResponse.headers.get('content-range')?.split('/')[1] || 0);
+    return respond({ authenticated: true, notifications: rows.map(serialize), unreadCount }, session);
   } catch {
     return respond({ error: 'تعذر تحميل الإشعارات الآن.' }, session, 500);
   }
@@ -154,7 +154,10 @@ export async function POST(request: Request) {
       cache: 'no-store',
     });
     if (!response.ok) throw new Error('NOTIFICATION_UPDATE_FAILED');
-    return respond({ saved: true, action, id: id || null, readAt: now }, session);
+    const countResponse = await fetch(`${SUPABASE_URL}/rest/v1/member_notifications?select=id&read_at=is.null&limit=1`, { method:'HEAD',headers:{...restHeaders(session.accessToken),Prefer:'count=exact'},cache:'no-store' });
+    if (!countResponse.ok) throw new Error('COUNT_FAILED');
+    const unreadCount = Number(countResponse.headers.get('content-range')?.split('/')[1] || 0);
+    return respond({ saved: true, action, id: id || null, readAt: now, unreadCount }, session);
   } catch {
     return respond({ error: 'تعذر تحديث حالة الإشعار الآن.' }, session, 500);
   }

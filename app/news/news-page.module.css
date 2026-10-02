@@ -443,3 +443,13 @@
   .liveLabel i,.monitorStatus i,.refreshBadge i { animation: none; }
   .monitorBrand,.topicList span,.emptyActions a { transition: none; transform: none; }
 }
+
+.filters { display:grid; grid-template-columns:2fr 1fr 1fr; gap:14px; padding:22px; background:#fffdf6; border:1px solid #e0e8dc; border-radius:20px; }
+.filters label { display:grid; gap:8px; font-size:14px; font-weight:800; color:#204c3e; }
+.filters input,.filters select { min-width:0; width:100%; min-height:48px; padding:10px 14px; border:1px solid #cfdbd3; border-radius:12px; background:#fff; color:#173d31; font:inherit; font-size:16px; }
+.filters :is(input,select):focus-visible { outline:3px solid #d8b86a; outline-offset:2px; }
+.resultsHead {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0;color:#526c60;font-size:14px;}
+.resultsHead button {min-height:44px;padding:8px 16px;border:1px solid #bbd0c2;border-radius:10px;background:#fff;font:inherit;color:#18513d;cursor:pointer;}
+.heroContent p {font-size:clamp(15px,1.3vw,18px);line-height:2;}
+.monitorMetrics div span {line-height:1.8;}
+@media(max-width:640px){.filters{grid-template-columns:1fr 1fr;padding:16px;gap:12px;}.filters label:first-child{grid-column:1/-1;}.resultsHead{align-items:flex-start;font-size:13px;}.grid{gap:18px;}}

@@ -7,6 +7,7 @@ import {
   sameOrigin,
 } from '@/lib/auth/supabase-rest';
 import { normalizeRouteSlug } from '@/lib/site';
+import { isMeasuredPath } from '@/lib/operational-analytics';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -191,6 +192,11 @@ export async function POST(request: Request) {
   }
 
   const sourcePath = clean(body?.sourcePath, 240);
+  if (!isMeasuredPath(sourcePath)) return NextResponse.json({ accepted: false }, { status: 202 });
+  const eventId = clean(body?.eventId, 36);
+  if (eventId && !/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(eventId)) {
+    return NextResponse.json({ error: 'حدث غير صالح.' }, { status: 400 });
+  }
   const pathContext = inferPathContext(sourcePath);
   const requestVillage = clean(body?.village, 100);
   const requestCategory = clean(body?.category, 100);
@@ -204,6 +210,7 @@ export async function POST(request: Request) {
 
   const resultCountValue = Number(body?.resultCount);
   const payload = {
+    ...(eventId ? { event_id: eventId } : {}),
     event_type: eventType,
     session_id: sessionId,
     visitor_id: visitorId,
@@ -225,20 +232,21 @@ export async function POST(request: Request) {
     utm_content: clean(body?.utmContent, 180) || null,
   };
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/directory_analytics_events`, {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/directory_analytics_events${eventId ? '?on_conflict=event_id' : ''}`, {
     method: 'POST',
     headers: {
       apikey: SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
       'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
+      Prefer: 'return=minimal,resolution=ignore-duplicates',
     },
     body: JSON.stringify(payload),
     cache: 'no-store',
-  });
+    signal: AbortSignal.timeout(8000),
+  }).catch(() => null);
 
-  if (!response.ok) {
-    return NextResponse.json({ accepted: false }, { status: 202 });
+  if (!response?.ok) {
+    console.error('[directory-analytics] Event write failed', response?.status || 'network');
+    return NextResponse.json({ accepted: false, error: 'تعذر تسجيل القياس.' }, { status: 503 });
   }
   return NextResponse.json({ accepted: true }, { status: 201 });
 }

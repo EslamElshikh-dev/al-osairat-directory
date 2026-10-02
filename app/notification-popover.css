@@ -379,4 +379,5 @@
     animation: none;
     transition: none;
   }
-}
+}.notification-popover__panel{max-height:min(560px,calc(100dvh - 140px));display:flex;flex-direction:column}.notification-popover__body{overflow:auto;overscroll-behavior:contain}.notification-popover__item{min-height:74px}.notification-popover__copy strong{font-size:14px;line-height:1.7}.notification-popover__copy p{font-size:13px;line-height:1.8}.notification-popover__icon.type-owner_submission,.notification-popover__icon.type-owner_listing_change{background:#e6f1e7;color:#245c3f}.notification-popover__item:focus-visible{outline:2px solid #b08b40;outline-offset:-3px}.welcome-blessing p{font-size:14px;line-height:1.9}.welcome-blessing button{width:40px;height:40px;min-width:40px}.welcome-blessing strong{font-size:14px}@media(max-width:560px){.notification-popover__panel{max-height:calc(100dvh - 190px);width:min(360px,calc(100vw - 24px))}.welcome-blessing{width:calc(100vw - 24px);gap:8px;padding:12px}.welcome-blessing__mark{display:none}}
+@media(max-width:520px){.welcome-blessing{grid-template-columns:1fr auto;}}

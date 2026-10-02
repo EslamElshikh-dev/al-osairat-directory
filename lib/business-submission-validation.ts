@@ -67,13 +67,24 @@ export type BusinessSubmissionValidationInput = {
   phone: string;
   whatsapp: string;
   googleMapsUrl: string;
+  websiteUrl?: string;
+  description?: string;
 };
+
+export function normalizeBusinessWebsite(value: unknown) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url = new URL(value.trim().startsWith('www.') ? `https://${value.trim()}` : value.trim());
+    if (url.protocol !== 'https:' || url.username || url.password || !url.hostname.includes('.')
+      || /^(localhost|127\.|10\.|192\.168\.|0\.)/.test(url.hostname) || url.hostname.includes(':')) return '';
+    return url.toString();
+  } catch { return ''; }
+}
 
 export function validateBusinessSubmissionInput(input: BusinessSubmissionValidationInput) {
   if (input.businessName.trim().length < 2) return 'اكتب اسم النشاط بشكل صحيح.';
   if (!input.category.trim()) return 'اختر قسم النشاط.';
-  if (!input.village.trim()) return 'اختر القرية.';
-  if (input.locationDetails.trim().length < 3) return 'اكتب وصفًا واضحًا لموقع النشاط داخل القرية.';
+  if (input.description !== undefined && input.description.trim().length < 10) return 'اكتب تفاصيل النشاط في 10 أحرف على الأقل.';
 
   const phone = input.phone.trim();
   const whatsapp = input.whatsapp.trim();
@@ -91,8 +102,9 @@ export function validateBusinessSubmissionInput(input: BusinessSubmissionValidat
     return 'رابط خرائط Google غير صحيح. استخدم رابطًا مباشرًا من Google Maps.';
   }
 
-  if (!phone && !whatsapp && !mapsUrl) {
-    return 'أضف وسيلة تواصل واحدة على الأقل: هاتف أو واتساب أو رابط خرائط Google.';
+  if (input.websiteUrl && !normalizeBusinessWebsite(input.websiteUrl)) return 'أضف رابط موقع صحيحًا يبدأ بـ https://.';
+  if (!phone && !whatsapp) {
+    return 'أضف رقم اتصال أو واتساب للتواصل مع النشاط.';
   }
 
   return '';

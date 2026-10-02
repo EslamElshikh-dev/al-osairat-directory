@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { businessImageUrl } from '@/lib/business-images';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type ReviewStatus = 'pending' | 'needs_changes' | 'approved' | 'rejected';
@@ -22,6 +23,8 @@ type Submission = {
   hours: string;
   description: string;
   googleMapsUrl: string;
+  websiteUrl: string;
+  imagePaths: string[];
   status: ReviewStatus;
   reviewNote: string;
   createdAt: string;
@@ -140,6 +143,12 @@ export function AdminDashboard() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [tab, setTab] = useState<Tab>('submissions');
+  useEffect(() => {
+    const params=new URLSearchParams(window.location.search);
+    const target=params.get('tab');
+    if (target==='submissions'||target==='changes'||target==='claims') setTab(target);
+    if (params.get('request')) setFilter('all');
+  }, []);
   const [filter, setFilter] = useState<'open' | 'all' | ReviewStatus>('open');
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [savingKey, setSavingKey] = useState('');
@@ -164,6 +173,14 @@ export function AdminDashboard() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(()=>{
+    if(loading||!data)return;
+    const id=new URLSearchParams(window.location.search).get('request');
+    if(!id||!/^[a-f0-9-]{36}$/i.test(id))return;
+    const card=document.getElementById(`request-${id}`);
+    if(card){card.scrollIntoView({block:'center'});card.focus({preventScroll:true});}
+  },[loading,data,tab]);
 
   const currentItems = useMemo(() => {
     if (!data) return [] as Array<Submission | Claim | ChangeRequest>;
@@ -329,7 +346,7 @@ export function AdminDashboard() {
             <div className="admin-empty"><strong>لا توجد عناصر في هذا العرض</strong><p>غيّر الفلتر أو حدّث البيانات.</p></div>
           ) : tab === 'submissions' ? (
             (currentItems as Submission[]).map((item) => (
-              <article className="admin-review-card" key={item.id}>
+              <article className="admin-review-card" key={item.id} id={`request-${item.id}`} tabIndex={-1}>
                 <div className="admin-card__head">
                   <div><span>طلب إضافة نشاط</span><h2>{item.businessName}</h2><p>{item.memberName} · {item.categoryLabel} · {item.village}{item.locality ? ` · ${item.locality}` : ''}</p></div>
                   {item.publishedListing ? <span className="admin-status admin-status--published">منشور</span> : <StatusBadge status={item.status} />}
@@ -340,6 +357,8 @@ export function AdminDashboard() {
                   <div><span>المواعيد</span><b>{item.hours || '—'}</b></div><div><span>تاريخ الإرسال</span><b>{formatDate(item.createdAt)}</b></div>
                 </div>
                 {item.description && <div className="admin-long-text"><span>وصف النشاط</span><p>{item.description}</p></div>}
+                {item.imagePaths?.length ? <div className="admin-business-photos">{item.imagePaths.map((path,index)=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer"><span>صورة {index+1}</span>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={businessImageUrl(path)} width={180} height={130} alt={`صورة ${index+1} لنشاط ${item.businessName}`} loading="lazy" /></a>)}</div> : null}
+                {item.websiteUrl ? <a className="admin-map-link" href={item.websiteUrl} target="_blank" rel="noopener noreferrer">الموقع الإلكتروني للنشاط</a> : null}
                 {item.googleMapsUrl && <a className="admin-map-link" href={item.googleMapsUrl} target="_blank" rel="noreferrer">فتح رابط خرائط Google ↗</a>}
                 {item.publishedListing && <div className="admin-listing-reference admin-published-reference"><div><span>تم النشر</span><strong>{formatDate(item.publishedAt)}</strong></div><Link href={`/listing/${item.publishedListing.slug}`} target="_blank">فتح النشاط المنشور ↗</Link></div>}
                 <div className="admin-review-box">
@@ -364,7 +383,7 @@ export function AdminDashboard() {
             ))
           ) : (
             (currentItems as ChangeRequest[]).map((item) => (
-              <article className="admin-review-card admin-review-card--change" key={item.id}>
+              <article className="admin-review-card admin-review-card--change" key={item.id} id={`request-${item.id}`} tabIndex={-1}>
                 <div className="admin-card__head">
                   <div><span>طلب تعديل بيانات نشاط</span><h2>{item.listing?.title || displayValue(item.snapshot.title)}</h2><p>{item.memberName} · {item.listing?.categoryLabel || 'نشاط'} · {item.listing?.village || displayValue(item.snapshot.village)}</p></div>
                   {item.appliedAt ? <span className="admin-status admin-status--published">تم التطبيق</span> : <StatusBadge status={item.status} />}

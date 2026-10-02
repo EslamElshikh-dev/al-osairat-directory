@@ -16,6 +16,8 @@ type PublishedBusinessRow = {
   hours: string | null;
   description: string | null;
   google_maps_url: string | null;
+  website_url: string | null;
+  image_paths: string[];
   published_at: string;
   updated_at: string;
 };
@@ -47,12 +49,14 @@ function serialize(row: PublishedBusinessRow): PublishedListing {
     source: 'user_collected',
     sourceStatus: 'cross_checked',
     googleMapsUrl: row.google_maps_url || undefined,
+    websiteUrl: row.website_url || undefined,
+    imagePaths: row.image_paths || [],
     publishedAt: row.published_at,
     lastUpdatedAt: row.updated_at || row.published_at,
   };
 }
 
-const publishedSelect = 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,published_at,updated_at';
+const publishedSelect = 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,website_url,image_paths,published_at,updated_at';
 
 export async function getPublishedListings(filters?: { category?: DirectoryCategory; village?: string }) {
   const params = new URLSearchParams({

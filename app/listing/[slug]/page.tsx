@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { businessImageUrl } from '@/lib/business-images';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { categoryById, listings, type DirectoryListing } from '@/lib/data';
@@ -133,6 +134,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           containedInPlace: { '@type': 'AdministrativeArea', name: 'مركز العسيرات، سوهاج، مصر' },
         },
     url: `${siteConfig.url}/listing/${listing.slug}`,
+    ...(listing.websiteUrl ? { sameAs: [listing.websiteUrl] } : {}),
     ...(listing.lastUpdatedAt ? { dateModified: listing.lastUpdatedAt } : {}),
     ...((listing.googlePlaceId || listing.googleMapsUrl) ? { hasMap: maps } : {}),
   };
@@ -184,6 +186,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <p>{listing.location}</p>
             <div className="detail-actions detail-actions--hero">
               <FavoriteButton listingId={listing.id} variant="hero" showLabel />
+              {listing.websiteUrl ? <a className="button button--outline-light" href={listing.websiteUrl} target="_blank" rel="noopener noreferrer">الموقع الإلكتروني</a> : null}
               {phone && <a className="button button--light" href={phone}>اتصال مباشر</a>}
               {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer">واتساب</a>}
               <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer">فتح في الخرائط</a>
@@ -212,6 +215,8 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </aside>
         </div>
       </section>
+      {listing.imagePaths?.length ? <section className="shell published-business-gallery" aria-label="صور النشاط"><h2>صور النشاط</h2><div>{listing.imagePaths.map((path,index)=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={businessImageUrl(path)} width={440} height={300} alt={`${listing.title} — صورة ${index+1}`} loading="lazy" /></a>)}</div></section> : null}
+
 
       <section className="shell living-status-strip" aria-label="حالة النشاط داخل الدليل">
         <article className={`living-status-card is-${trust.key}`}>
