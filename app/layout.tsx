@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { AnalyticsTracker } from '@/components/analytics-tracker';
 import { GoogleAnalyticsLoader } from '@/components/google-analytics-loader';
+import { MetaPixel, MetaPixelNoScript } from '@/components/meta-pixel';
 import { DeferredSand } from '@/components/deferred-sand';
 import { PwaSetup } from '@/components/pwa-setup';
 import { WelcomeBlessing } from '@/components/welcome-blessing';
@@ -181,6 +182,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MobileNav />
         <GoogleAnalyticsLoader />
         <AnalyticsTracker />
+        <Suspense fallback={null}><MetaPixel /></Suspense>
+        <MetaPixelNoScript />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
