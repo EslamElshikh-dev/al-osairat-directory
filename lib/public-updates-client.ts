@@ -1,6 +1,6 @@
 export type PublicUpdate = {
   id: string;
-  type: 'news' | 'job' | 'article';
+  type: 'news' | 'job' | 'article' | 'activity';
   title: string;
   summary: string;
   href: string;

@@ -11,6 +11,7 @@ const labels: Record<Update['type'], string> = {
   news: 'خبر',
   job: 'وظيفة',
   article: 'مقال',
+  activity: 'نشاط',
 };
 
 export function UpdatesTicker() {
@@ -46,10 +47,10 @@ export function UpdatesTicker() {
         if (!active) return;
         setItems(updates.filter((item) =>
           item && typeof item.id === 'string'
-          && (item.type === 'job' || item.type === 'news' || item.type === 'article')
+          && (item.type === 'job' || item.type === 'news' || item.type === 'article' || item.type === 'activity')
           && typeof item.title === 'string' && typeof item.href === 'string'
           && item.href.startsWith('/') && !item.href.startsWith('//')
-        ).slice(0, 9));
+        ).slice(0, 12));
       } catch {
         // Keep the navigation links available when updates cannot load.
       }

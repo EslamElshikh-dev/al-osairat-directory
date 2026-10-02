@@ -5,7 +5,6 @@ import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { MobileNav } from './mobile-nav';
 import { AccountButton } from './auth/account-button';
 import { NotificationBell } from './auth/notification-bell';
-import { PublicUpdates } from './public-updates';
 import { GlobalSearch } from './global-search';
 import footerStyles from './site-footer.module.css';
 
@@ -29,7 +28,6 @@ export function SiteHeader() {
 
         <div className="header-actions">
           <GlobalSearch />
-          <PublicUpdates />
           <NotificationBell />
           <AccountButton />
           <Link prefetch={false} href="/emergency" className="header-emergency" aria-label="أرقام الطوارئ والخدمات المهمة">

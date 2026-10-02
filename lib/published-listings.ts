@@ -58,11 +58,12 @@ function serialize(row: PublishedBusinessRow): PublishedListing {
 
 const publishedSelect = 'listing_id,slug,title,category,sub_category,location,village,locality,phone,whatsapp,hours,description,google_maps_url,website_url,image_paths,published_at,updated_at';
 
-export async function getPublishedListings(filters?: { category?: DirectoryCategory; village?: string }) {
+export async function getPublishedListings(filters?: { category?: DirectoryCategory; village?: string; limit?: number }) {
   const params = new URLSearchParams({
     select: publishedSelect,
     order: 'published_at.desc',
   });
+  if (filters?.limit) params.set('limit', String(Math.min(50, Math.max(1, Math.floor(filters.limit)))));
   if (filters?.category) params.set('category', `eq.${filters.category}`);
   if (filters?.village) params.set('village', `eq.${filters.village}`);
 

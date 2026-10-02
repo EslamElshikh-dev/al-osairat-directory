@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { blogArticles } from '@/lib/blog-published';
 import { getLocalJobs } from '@/lib/jobs';
 import { getStoredLocalNews } from '@/lib/news-persistence';
+import { getPublishedListings } from '@/lib/published-listings';
 import { newsItemPath } from '@/lib/news';
 
 export const runtime = 'nodejs';
@@ -9,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 type Update = {
   id: string;
-  type: 'news' | 'job' | 'article';
+  type: 'news' | 'job' | 'article' | 'activity';
   title: string;
   summary: string;
   href: string;
@@ -17,9 +18,10 @@ type Update = {
 };
 
 export async function GET() {
-  const [jobsResult, newsResult] = await Promise.all([
+  const [jobsResult, newsResult, publishedListings] = await Promise.all([
     getLocalJobs(),
     getStoredLocalNews(12).catch(() => undefined),
+    getPublishedListings({ limit: 12 }).catch(() => []),
   ]);
   const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
   const recent = (date: string) => {
@@ -27,6 +29,13 @@ export async function GET() {
     return Number.isFinite(time) && time >= cutoff && time <= Date.now() + 60_000;
   };
   const candidates: Update[] = [
+    ...publishedListings.filter((listing) => recent(listing.publishedAt)).map((listing) => ({
+      id: `activity:${listing.id}:${listing.publishedAt}`, type: 'activity' as const,
+      title: `انضم للدليل: ${listing.title}`.slice(0, 140),
+      summary: `نشاط معتمد في ${listing.village || 'العسيرات'}`,
+      href: `/listing/${encodeURIComponent(listing.slug)}`,
+      publishedAt: listing.publishedAt,
+    })),
     ...jobsResult.jobs
       .filter((job) => job.kind === 'offer' && recent(job.published_at))
       .map((job) => ({
@@ -57,14 +66,14 @@ export async function GET() {
       })),
   ].sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
   // Show recent content from each source, even when one source publishes in a batch.
-  const counts: Record<Update['type'], number> = { news: 0, job: 0, article: 0 };
+  const counts: Record<Update['type'], number> = { news: 0, job: 0, article: 0, activity: 0 };
   const balanced = candidates.filter((item) => {
     if (counts[item.type] >= 3) return false;
     counts[item.type] += 1;
     return true;
   });
   const updates = [...balanced, ...candidates.filter((item) => !balanced.includes(item))]
-    .slice(0, 9)
+    .slice(0, 12)
     .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
   return NextResponse.json({ updates }, {
     headers: { 'Cache-Control': 'public, max-age=60, s-maxage=120, stale-while-revalidate=300' },
