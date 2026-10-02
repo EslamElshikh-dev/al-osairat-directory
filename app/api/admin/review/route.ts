@@ -24,6 +24,8 @@ type SubmissionRow = {
   hours: string | null;
   description: string | null;
   google_maps_url: string | null;
+  website_url: string | null;
+  image_paths: string[];
   status: ReviewStatus;
   review_note: string | null;
   created_at: string;
@@ -101,7 +103,7 @@ export async function GET() {
 
   try {
     const [submissions, claims, ownerships, profiles, publishedListings, changeRequests, staticListings] = await Promise.all([
-      readRows<SubmissionRow>('business_submissions?select=id,user_id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,status,review_note,created_at,updated_at,reviewed_at,published_listing_id,published_at&order=created_at.desc', session.accessToken),
+      readRows<SubmissionRow>('business_submissions?select=id,user_id,business_name,category,sub_category,village,locality,location_details,phone,whatsapp,hours,description,google_maps_url,website_url,image_paths,status,review_note,created_at,updated_at,reviewed_at,published_listing_id,published_at&order=created_at.desc', session.accessToken),
       readRows<ClaimRow>('business_ownership_claims?select=id,user_id,listing_id,relationship,phone,proof_method,proof_details,status,review_note,created_at,updated_at,reviewed_at&order=created_at.desc', session.accessToken),
       readRows<OwnershipRow>('listing_ownerships?select=listing_id,user_id,relationship,claim_id,approved_at&order=approved_at.desc', session.accessToken),
       readRows<ProfileRow>('profiles?select=id,full_name,phone,village,locality', session.accessToken).catch(() => []),
@@ -132,6 +134,8 @@ export async function GET() {
         hours: row.hours || '',
         description: row.description || '',
         googleMapsUrl: row.google_maps_url || '',
+        websiteUrl: row.website_url || '',
+        imagePaths: row.image_paths || [],
         status: row.status,
         reviewNote: row.review_note || '',
         createdAt: row.created_at,

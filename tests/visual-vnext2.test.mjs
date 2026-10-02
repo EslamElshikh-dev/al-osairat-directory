@@ -16,9 +16,10 @@ test('Blog exposes the editorial reading compass', () => {
 });
 
 test('News has a meaningful empty state', () => {
-  const news = read('app/news/news-index.tsx');
+  const news = read('components/news-explorer.tsx');
   assert.match(news, /styles\.emptyState/);
-  assert.match(news, /المرصد شغال/);
+  assert.match(news, /لا توجد أخبار تطابق بحثك/);
+  assert.match(news, /جرّب كلمة أخرى/);
 });
 
 test('Sand carries the local VNext.2 voice', () => {

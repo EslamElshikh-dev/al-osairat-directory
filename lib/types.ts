@@ -39,6 +39,8 @@ export interface DirectoryListing {
   googlePlaceId?: string;
   googleMapsPlusCode?: string;
   googleMapsUrl?: string;
+  websiteUrl?: string;
+  imagePaths?: string[];
   lastUpdatedAt?: string;
 }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import styles from './updates-ticker.module.css';
 import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
 
@@ -17,6 +17,14 @@ export function UpdatesTicker() {
   const [items, setItems] = useState<Update[]>([]);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(true);
+  const groupRef = useRef<HTMLDivElement>(null);
+  const [duration,setDuration] = useState(86);
+  useEffect(()=>{
+    const group=groupRef.current;if(!group)return;
+    const measure=()=>setDuration(Math.max(40,Math.round(group.scrollWidth/38)));
+    const observer=new ResizeObserver(measure);observer.observe(group);measure();
+    return()=>observer.disconnect();
+  },[items]);
   const rootRef = useRef<HTMLElement>(null);
   useEffect(() => {
     let inView = true;
@@ -62,12 +70,12 @@ export function UpdatesTicker() {
     };
   }, []);
 
-  return <section ref={rootRef} className={styles.root} data-paused={paused || !visible} data-empty={!items.length} dir="rtl" aria-label="آخر أخبار وفرص دليل العسيرات">
+  return <section ref={rootRef} className={styles.root} style={{'--ticker-duration':`${duration}s`} as CSSProperties} data-paused={paused || !visible} data-empty={!items.length} dir="rtl" aria-label="آخر أخبار وفرص دليل العسيرات">
     <div className={styles.heading}><i aria-hidden="true" /><span><small>نبض العسيرات</small><strong>الجديد عندنا</strong></span></div>
     {items.length ? <>
       <div className={styles.viewport}>
         <div className={styles.track}>
-          <div className={styles.group}>
+          <div ref={groupRef} className={styles.group}>
             {items.map((item) => <Link prefetch={false} className={styles.item} href={item.href} key={item.id}>
               <span>{labels[item.type]}</span><strong>{item.title}</strong><b aria-hidden="true">←</b>
             </Link>)}

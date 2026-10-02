@@ -215,3 +215,12 @@
 .root[data-empty='true'] { grid-template-columns: auto minmax(0, 1fr); }
 
 .root[data-paused='true'] .track { will-change: auto; }
+
+/* Keep comfortable touch targets and a steady reading speed on every screen. */
+.root { min-height:48px; }
+.item,.control { min-height:48px; }
+.item strong { font-size:14px; }
+.item > span { font-size:11px; }
+.item:focus-visible { outline:2px solid #f0c66d;outline-offset:-5px;background:#1c4c3c; }
+@media(max-width:720px){.root{grid-template-columns:auto minmax(0,1fr) 44px;}.control{width:44px;}.heading{min-width:92px;}.heading strong{font-size:12px;}.item strong{font-size:13px;}.item{padding-inline:18px;}.fallback{min-height:48px;font-size:12px;}}
+@media(prefers-reduced-motion:reduce){.control{display:none;}.root{grid-template-columns:auto minmax(0,1fr);}}

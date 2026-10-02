@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { validateBusinessSubmissionInput, normalizeBusinessWebsite } from '../lib/business-submission-validation.ts';
+import { imageMime, businessImagePathPattern } from '../lib/business-images.ts';
+import { analyticsStorage, isMeasuredPath } from '../lib/operational-analytics.ts';
+const valid={businessName:'نشاط تجريبي',category:'shops',village:'',locationDetails:'',phone:'01012345678',whatsapp:'',googleMapsUrl:'',description:'خدمات نشاط محلي لأهل العسيرات'};
+test('optional address and photos do not prevent a complete submission',()=>assert.equal(validateBusinessSubmissionInput(valid),''));
+test('a maps link cannot replace the required contact number',()=>assert.notEqual(validateBusinessSubmissionInput({...valid,phone:'',googleMapsUrl:'https://maps.app.goo.gl/example'}),''));
+test('WhatsApp accepts Arabic digits and rejects landlines',()=>{assert.equal(validateBusinessSubmissionInput({...valid,phone:'',whatsapp:'٠١٠١٢٣٤٥٦٧٨'}),'');assert.notEqual(validateBusinessSubmissionInput({...valid,phone:'',whatsapp:'0931234567'}),'');});
+test('website links exclude unsafe protocols and embedded credentials',()=>{for(const value of ['javascript:alert(1)','http://example.com','https://user:pass@example.com','https://127.0.0.1','https://localhost']) assert.equal(normalizeBusinessWebsite(value),'');assert.equal(normalizeBusinessWebsite('www.example.com'),'https://www.example.com/');});
+test('image validation checks file signatures and rejects script content',()=>{assert.equal(imageMime(new TextEncoder().encode('<svg onload="alert(1)">')),null);assert.equal(imageMime(new Uint8Array([255,216,255,224,0,0,0,0,0,0,0,0]))?.type,'image/jpeg');assert.equal(businessImagePathPattern.test('../private/test.jpg'),false);});
+test('admin and API routes are excluded from visit counts',()=>{for(const path of ['/admin','/admin/settings','/api/jobs','//example.com'])assert.equal(isMeasuredPath(path),false);for(const path of ['/','/news','/listing/local'])assert.equal(isMeasuredPath(path),true);});
+test('blocked browser storage keeps a stable in-memory identity',()=>{globalThis.window={get localStorage(){throw new Error('Storage blocked');}};analyticsStorage('localStorage','test-visitor','visitor-id');assert.equal(analyticsStorage('localStorage','test-visitor'),'visitor-id');delete globalThis.window;});

@@ -8,18 +8,20 @@ export function WelcomeBlessing() {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     try {
-      if (!window.localStorage.getItem(KEY)) {
-        window.localStorage.setItem(KEY, 'seen');
-        const timeout = window.setTimeout(() => setVisible(true), 1500);
-        return () => window.clearTimeout(timeout);
-      }
+      if (window.localStorage.getItem(KEY)) return;
     } catch { /* Private browsing may disallow storage. */ }
+    const timeout = window.setTimeout(() => {
+      setVisible(true);
+      // Mark only after actually showing it: effect cleanup must not consume the first visit.
+      try { window.localStorage.setItem(KEY, 'seen'); } catch {}
+    }, 1200);
+    return () => window.clearTimeout(timeout);
   }, []);
   if (!visible) return null;
 
   return <aside className="welcome-blessing" aria-label="رسالة ترحيب" role="status">
     <span className="welcome-blessing__mark" aria-hidden="true">✦</span>
-    <div><strong>يا مرحب بأهل العسيرات</strong><p>اللهم صل وسلم وزد وبارك على سيدنا محمد</p></div>
+    <div><strong>نورت الدليل 🤍</strong><p>اللهم صل وسلم وزد وبارك على سيدنا محمد، نورت الدليل 🤍.</p></div>
     <button type="button" onClick={() => setVisible(false)} aria-label="إغلاق رسالة الترحيب">×</button>
   </aside>;
 }

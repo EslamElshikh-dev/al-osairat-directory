@@ -7,7 +7,11 @@ const EXPECTED_TOKEN_SHA256 = '9005b67e2135db28cc45fb788271755db56243e2393bed17e
 const PLACES = ['جزيرة أولاد حمزة', 'عوامر العسيرات', 'الأحايوة غرب', 'أولاد جبارة', 'أولاد بهيج', 'أولاد حمزة', 'الرشايدة', 'النويرات', 'الشهداء', 'المساعيد'];
 const CENTERS = ['أخميم الجديدة', 'سوهاج الجديدة', 'أخميم', 'البلينا', 'جرجا', 'دار السلام', 'جهينة', 'ساقلتة', 'طما', 'طهطا', 'المراغة', 'المنشأة', 'الكوثر', 'الكوامل'];
 const googleNews = (query: string) => 'https://news.google.com/rss/search?q=' + encodeURIComponent(query + ' when:14d') + '&hl=ar&gl=EG&ceid=EG:ar';
+const indexed = (query: string) => 'https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss&setlang=ar-eg&cc=eg';
 const feeds = [
+  { name: 'وظائف مفهرسة · WUZZUF', url: indexed('site:wuzzuf.net/jobs/ Sohag jobs') },
+  { name: 'وظائف مفهرسة · شغلني', url: indexed('site:shaghalni.com/وظائف/ سوهاج') },
+  { name: 'إعلانات وزارة العمل', url: googleNews('وزارة العمل سوهاج فرص عمل') },
   { name: 'سوهاج 24', url: 'https://www.sohag24.com/feeds/posts/default?alt=rss' },
   { name: 'أخبار Google · سوهاج', url: googleNews('وظائف سوهاج مطلوب') },
   { name: 'أخبار Google · جنوب سوهاج', url: googleNews('وظائف البلينا جرجا دار السلام العسيرات') },
@@ -36,7 +40,7 @@ function norm(value: string) {
   return value.toLowerCase().replace(/[أإآ]/g, 'ا').replace(/[ةه]/g, 'ه').replace(/ى/g, 'ي').replace(/[\u064b-\u065f\u0670]/g, '');
 }
 function placeFor(value: string) {
-  const text = norm(value).replace(/دارالسلام/g, 'دار السلام');
+  const text = norm(value).replace(/\bsohag\b/g, 'سوهاج').replace(/دارالسلام/g, 'دار السلام');
   if (!text.includes('سوهاج') && !text.includes('العسيرات')) return '';
   if (/(دار السلام.{0,12}القاهره|القاهره.{0,12}دار السلام)/.test(text) && !text.includes('سوهاج')) return '';
   const local = PLACES.find((place) => text.includes(norm(place)));
@@ -64,7 +68,7 @@ function readRss(xml: string, sourceName: string) {
     const text = norm(`${title} ${snippet}`);
     const locationEvidence = `${title} ${snippet.slice(0, 260)}`;
     if (!url || title.length < 5 || !Number.isFinite(age) || age < -86_400_000 || age > 14 * 86_400_000) return [];
-    if (!/(وظيف|توظيف|مطلوب|تعيين|فرص عمل|فرصه عمل|شاغر|انضم)/.test(text)) return [];
+    if (!/(وظيف|توظيف|مطلوب|تعيين|فرص عمل|فرصه عمل|شاغر|انضم|\bjobs?\b|\bhiring\b|\bvacanc(?:y|ies)\b)/.test(text)) return [];
     if (/(دوره تدريبيه|منحه دراسيه|نتائج التقديم|نتيجه مسابقه)/.test(text)) return [];
     const village = placeFor(locationEvidence);
     if (!village) return [];

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 type NotificationItem = {
@@ -20,7 +20,7 @@ type NotificationItem = {
 function formatDate(value: string) {
   try {
     return new Intl.DateTimeFormat('ar-EG', {
-      day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit',
+      day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Africa/Cairo',
     }).format(new Date(value));
   } catch {
     return '';
@@ -28,6 +28,7 @@ function formatDate(value: string) {
 }
 
 function iconFor(type: string) {
+  if (type.startsWith('owner_')) return '+';
   if (type.includes('thread_update')) return '◎';
   if (type.includes('helpful_received')) return '✓';
   if (type.includes('review_reply')) return '↩';
@@ -50,10 +51,9 @@ export function NotificationCenter() {
   const [savingId, setSavingId] = useState('');
   const [error, setError] = useState('');
 
-  const unreadCount = useMemo(() => items.filter((item) => !item.readAt).length, [items]);
-
-  const broadcast = useCallback((nextItems: NotificationItem[]) => {
-    const count = nextItems.filter((item) => !item.readAt).length;
+  const [unreadCount, setUnreadCount] = useState(0);
+  const broadcast = useCallback((count: number) => {
+    setUnreadCount(count);
     window.dispatchEvent(new CustomEvent('notifications:changed', { detail: { unreadCount: count } }));
   }, []);
 
@@ -67,6 +67,7 @@ export function NotificationCenter() {
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل الإشعارات.');
       const nextItems = payload.notifications || [];
       setItems(nextItems);
+      setUnreadCount(Number(payload.unreadCount || 0));
       window.dispatchEvent(new CustomEvent('notifications:changed', { detail: { unreadCount: Number(payload.unreadCount || 0) } }));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل الإشعارات.');
@@ -92,7 +93,7 @@ export function NotificationCenter() {
         const now = new Date().toISOString();
         const nextItems = items.map((current) => current.id === item.id ? { ...current, readAt: now } : current);
         setItems(nextItems);
-        broadcast(nextItems);
+        broadcast(Number((await response.json()).unreadCount || 0));
       } catch {
         setError('تعذر تحديث الإشعار الآن.');
         setSavingId('');
@@ -100,7 +101,7 @@ export function NotificationCenter() {
       }
       setSavingId('');
     }
-    if (navigate) router.push(item.href || '/account');
+    if (navigate) router.push(item.href?.startsWith('/') && !item.href.startsWith('//') && !item.href.includes('\\') ? item.href : '/account');
   }
 
   async function markAllRead() {
@@ -118,7 +119,7 @@ export function NotificationCenter() {
       const now = new Date().toISOString();
       const nextItems = items.map((item) => item.readAt ? item : { ...item, readAt: now });
       setItems(nextItems);
-      broadcast(nextItems);
+      broadcast(Number((await response.json()).unreadCount || 0));
     } catch {
       setError('تعذر تحديد الإشعارات كمقروءة الآن.');
     } finally {

@@ -35,6 +35,7 @@ function formatDate(value: string) {
       month: 'short',
       hour: 'numeric',
       minute: '2-digit',
+      timeZone: 'Africa/Cairo',
     }).format(new Date(value));
   } catch {
     return '';
@@ -42,6 +43,7 @@ function formatDate(value: string) {
 }
 
 function iconFor(type: string) {
+  if (type.startsWith('owner_')) return '+';
   if (type.includes('thread_update')) return '◎';
   if (type.includes('helpful_received')) return '✓';
   if (type.includes('review_reply')) return '↩';
@@ -69,6 +71,7 @@ export function NotificationBell() {
   const [savingId, setSavingId] = useState('');
 
   const load = useCallback(() => {
+    if (document.visibilityState !== 'visible') return Promise.resolve();
     return fetch('/api/notifications?limit=1', { cache: 'no-store', credentials: 'same-origin' })
       .then(async (response) => {
         if (response.status === 401) {
@@ -131,7 +134,7 @@ export function NotificationBell() {
 
       setVisible(true);
       void load();
-      if (timer === null) timer = window.setInterval(load, 60_000);
+      if (timer === null) timer = window.setInterval(() => { void load(); if (open && document.visibilityState === 'visible') void loadMenu(); }, 15_000);
     };
 
     const unsubscribe = subscribeClientSession(syncForSession);
@@ -196,20 +199,25 @@ export function NotificationBell() {
           credentials: 'same-origin',
           body: JSON.stringify({ action: 'read', id: item.id }),
         });
+        if (!response.ok) throw new Error('READ_FAILED');
         if (response.ok) {
+          const payload = await response.json();
           const now = new Date().toISOString();
           setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, readAt: now } : entry));
-          setUnreadCount((current) => Math.max(0, current - 1));
+          setUnreadCount(Number(payload.unreadCount || 0));
           window.dispatchEvent(new CustomEvent('notifications:changed', {
-            detail: { unreadCount: Math.max(0, unreadCount - 1) },
+            detail: { unreadCount: Number(payload.unreadCount || 0) },
           }));
         }
+      } catch {
+        setMenuError('تعذر تحديث حالة الإشعار، حاول مرة أخرى.');
+        return;
       } finally {
         setSavingId('');
       }
     }
     setOpen(false);
-    router.push(item.href || '/account#notifications');
+    router.push(item.href?.startsWith('/') && !item.href.startsWith('//') && !item.href.includes('\\') ? item.href : '/account#notifications');
   }
 
   return (

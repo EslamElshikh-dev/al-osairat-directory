@@ -143,7 +143,7 @@ export function MyBusinessesPanel() {
   function startEditing(business: Business, requestId = '') {
     setEditingId(business.listingId);
     setEditingRequestId(requestId);
-    setForm(formFromBusiness(business));
+    setForm({ ...formFromBusiness(business), ...(requestId ? requests.find(item=>item.id===requestId)?.changes : {}) } as FormState);
     setError('');
     setMessage('');
   }
@@ -165,8 +165,7 @@ export function MyBusinessesPanel() {
     if (!form || !editingId || saving) return;
 
     if (form.title.trim().length < 2) return setError('اكتب اسم النشاط بشكل صحيح.');
-    if (form.location.trim().length < 3) return setError('اكتب وصفًا واضحًا لموقع النشاط.');
-    if (!allowedVillages.some((item) => item.name === form.village)) return setError('اختر قرية صحيحة داخل مركز العسيرات.');
+    if (form.village !== 'مركز العسيرات' && !allowedVillages.some((item) => item.name === form.village)) return setError('اختر قرية صحيحة داخل مركز العسيرات.');
     if (form.phone.trim() && !isValidEgyptianPhone(form.phone)) return setError('رقم الهاتف غير صحيح.');
     if (form.whatsapp.trim() && !isValidEgyptianMobile(form.whatsapp)) return setError('رقم واتساب غير صحيح.');
     if (form.googleMapsUrl.trim() && !normalizeGoogleMapsUrl(form.googleMapsUrl)) return setError('رابط خرائط Google غير صحيح.');
@@ -259,9 +258,9 @@ export function MyBusinessesPanel() {
                     <div className="my-business-edit-grid">
                       <label><span>اسم النشاط *</span><input value={form.title} onChange={(e) => update('title', e.target.value)} maxLength={120} required /></label>
                       <label><span>التخصص أو الخدمة</span><input value={form.subCategory} onChange={(e) => update('subCategory', e.target.value)} maxLength={120} /></label>
-                      <label><span>القرية *</span><select value={form.village} onChange={(e) => setForm((current) => current ? { ...current, village: e.target.value, locality: '' } : current)} required>{allowedVillages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}</select></label>
+                      <label><span>القرية *</span><select value={form.village} onChange={(e) => setForm((current) => current ? { ...current, village: e.target.value, locality: '' } : current)} required><option value="مركز العسيرات">مركز العسيرات</option>{allowedVillages.map((item) => <option key={item.slug} value={item.name}>{item.name}</option>)}</select></label>
                       <label><span>التابع / النجع</span><input value={form.locality} onChange={(e) => update('locality', e.target.value)} list={`owned-localities-${business.listingId}`} maxLength={100} /><datalist id={`owned-localities-${business.listingId}`}>{(selectedVillage?.localities || []).map((item) => <option value={item} key={item} />)}</datalist></label>
-                      <label className="wide"><span>وصف الموقع *</span><input value={form.location} onChange={(e) => update('location', e.target.value)} maxLength={240} required /></label>
+                      <label className="wide"><span>العنوان · اختياري</span><input value={form.location} onChange={(e) => update('location', e.target.value)} maxLength={240} /></label>
                       <label><span>رقم الهاتف</span><input dir="ltr" inputMode="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} maxLength={24} placeholder="01xxxxxxxxx" /></label>
                       <label><span>رقم واتساب</span><input dir="ltr" inputMode="tel" value={form.whatsapp} onChange={(e) => update('whatsapp', e.target.value)} maxLength={24} placeholder="01xxxxxxxxx" /></label>
                       <label><span>مواعيد العمل</span><input value={form.hours} onChange={(e) => update('hours', e.target.value)} maxLength={180} /></label>
@@ -282,7 +281,7 @@ export function MyBusinessesPanel() {
       ) : (
         <div className="my-businesses-empty">
           <strong>لا توجد أنشطة مرتبطة بحسابك حتى الآن</strong>
-          <p>بعد اعتماد مطالبة ملكية نشاط، سيظهر النشاط هنا تلقائيًا وتقدر ترسل تعديلات بياناته للمراجعة.</p>
+          <p>بعد اعتماد نشاطك الجديد أو مطالبة ملكيته، سيظهر هنا لتتابع بياناته وترسل أي تعديل للمراجعة.</p>
         </div>
       )}
 

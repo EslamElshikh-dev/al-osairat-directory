@@ -197,3 +197,5 @@
 @media (prefers-reduced-motion:reduce) {
   .mobile-nav__sand-avatar { transition: none; }
 }
+
+.welcome-blessing p{font-size:14px;line-height:1.9}.welcome-blessing strong{font-size:14px}.welcome-blessing button{width:40px;height:40px;min-width:40px}@media(max-width:560px){.welcome-blessing{width:calc(100vw - 24px);grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:12px}.welcome-blessing__mark{display:none}}

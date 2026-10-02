@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
+import { analyticsStorage, isMeasuredPath, newAnalyticsId } from '@/lib/operational-analytics';
 import {
   initializeAnalyticsQueue,
   isGoogleAnalyticsLoaded,
@@ -81,20 +82,22 @@ function createClientId() {
 function operationalSessionId() {
   if (typeof window === 'undefined') return '';
   const key = 'osayrat:analytics-session';
-  const existing = window.sessionStorage.getItem(key);
-  if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
+  const existing = analyticsStorage('sessionStorage', key);
+  const lastActive = Number(analyticsStorage('sessionStorage', `${key}:active`));
+  analyticsStorage('sessionStorage', `${key}:active`, String(Date.now()));
+  if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing) && Date.now() - lastActive < 30 * 60_000) return existing;
   const created = createClientId();
-  window.sessionStorage.setItem(key, created);
+  analyticsStorage('sessionStorage', key, created);
   return created;
 }
 
 function operationalVisitorId() {
   if (typeof window === 'undefined') return '';
   const key = 'osayrat:analytics-visitor';
-  const existing = window.localStorage.getItem(key);
+  const existing = analyticsStorage('localStorage', key);
   if (existing && /^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
   const created = createClientId();
-  window.localStorage.setItem(key, created);
+  analyticsStorage('localStorage', key, created);
   return created;
 }
 
@@ -104,7 +107,7 @@ function getAttribution(): Attribution {
   }
 
   const key = 'osayrat:analytics-attribution';
-  const existing = window.sessionStorage.getItem(key);
+  const existing = analyticsStorage('sessionStorage', key);
   if (existing) {
     try {
       const parsed = JSON.parse(existing) as Attribution;
@@ -123,12 +126,14 @@ function getAttribution(): Attribution {
     utmTerm: String(params.get('utm_term') || '').slice(0, 180),
     utmContent: String(params.get('utm_content') || '').slice(0, 180),
   };
-  window.sessionStorage.setItem(key, JSON.stringify(created));
+  analyticsStorage('sessionStorage', key, JSON.stringify(created));
   return created;
 }
 
 function sendOperationalEvent(event: OperationalEvent) {
   if (typeof window === 'undefined') return;
+  if (!isMeasuredPath(window.location.pathname)) return;
+  if (!['usayrat.online', 'www.usayrat.online'].includes(window.location.hostname)) return;
   if (navigator.webdriver || /bot|crawl|spider|headlesschrome|playwright|puppeteer|lighthouse/i.test(navigator.userAgent)) return;
   const sessionId = operationalSessionId();
   const visitorId = operationalVisitorId();
@@ -142,6 +147,7 @@ function sendOperationalEvent(event: OperationalEvent) {
     keepalive: true,
     body: JSON.stringify({
       ...event,
+      eventId: newAnalyticsId(),
       sessionId,
       visitorId,
       sourcePath: window.location.pathname,
@@ -206,6 +212,7 @@ function trackMutation(path: string, body: Record<string, unknown>) {
 export function AnalyticsTracker() {
   const pathname = usePathname();
   const previousPageUrl = useRef<string | null>(null);
+  const lastMeasuredPath = useRef('');
 
   useReportWebVitals(reportWebVital);
 
@@ -235,15 +242,18 @@ export function AnalyticsTracker() {
     }
     previousPageUrl.current = currentUrl;
 
-    sendOperationalEvent({
-      eventType: 'page_view',
-      ...(listingSlug ? { listingSlug } : {}),
-    });
-
-    if (listingSlug) {
-      trackEvent('view_listing', { content_type: 'directory_listing' });
-      sendOperationalEvent({ eventType: 'view_listing', listingSlug });
-    }
+    const measure = () => {
+      if (document.visibilityState !== 'visible' || lastMeasuredPath.current === pathname) return;
+      lastMeasuredPath.current = pathname;
+      sendOperationalEvent({ eventType: 'page_view', ...(listingSlug ? { listingSlug } : {}) });
+      if (listingSlug) {
+        trackEvent('view_listing', { content_type: 'directory_listing' });
+        sendOperationalEvent({ eventType: 'view_listing', listingSlug });
+      }
+    };
+    measure();
+    document.addEventListener('visibilitychange', measure);
+    return () => document.removeEventListener('visibilitychange', measure);
   }, [pathname]);
 
   useEffect(() => {

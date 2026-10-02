@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BrandMark } from '@/components/brand-mark';
-import { NewsCard } from '@/components/news-card';
+import { NewsExplorer } from '@/components/news-explorer';
 import { NewsRefreshPulse } from '@/components/news-refresh-pulse';
 import { getLocalNews, newsSourceCatalog, type NewsTopic } from '@/lib/news';
 import { NEWS_PAGE_SIZE, newsPageHref, paginateNews } from '@/lib/news-pagination';
@@ -28,6 +28,8 @@ const topicOrder: NewsTopic[] = ['خدمات وتنمية', 'الصحة', 'ال�
 
 export async function NewsIndex({ page = 1 }: { page?: number }) {
   const feed = await getLocalNews();
+  const checkedAt = Date.parse(feed.checkedAt);
+  const fresh = Number.isFinite(checkedAt) && Date.now() - checkedAt < 65 * 60_000 && feed.connectedSourceCount > 0;
   const topicCounts = new Map<NewsTopic, number>();
 
   for (const item of feed.items) topicCounts.set(item.topic, (topicCounts.get(item.topic) || 0) + 1);
@@ -101,7 +103,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
             <h1>أخبار <em>العسيرات وقراها</em> في مكان واحد.</h1>
             <p>
               نلتقط التغطيات التي تذكر مركز العسيرات أو إحدى قراه، نزيل التكرار، ثم نعرض داخل الدليل
-              موجز الخبر وبياناته الموثقة، مع إظهار الناشر والرابط الأصلي بوضوح ودون تكلفة ذكاء اصطناعي.
+              موجز الخبر وتاريخه، مع إظهار الناشر والرابط الأصلي بوضوح. ابحث باسم قريتك أو اختَر الموضوع والمصدر الذي يهمك.
             </p>
             <div className={styles.heroActions}>
               <a href="#latest-news" className="button button--light">شاهد أحدث الأخبار</a>
@@ -112,12 +114,12 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
           <aside className={styles.monitor} aria-label="حالة مرصد أخبار العسيرات">
             <div className={styles.monitorBrand}><BrandMark /></div>
             <div className={styles.monitorHead}>
-              <div><span>حالة المرصد</span><strong>يعمل تلقائيًا</strong></div>
-              <span className={styles.monitorStatus}><i aria-hidden="true" /> مباشر</span>
+              <div><span>حالة المرصد</span><strong>{fresh ? 'آخر فحص حديث' : 'آخر أخبار محفوظة'}</strong></div>
+              <span className={styles.monitorStatus}><i aria-hidden="true" /> {fresh ? 'محدّث' : 'بانتظار التحديث'}</span>
             </div>
             <div className={styles.monitorMetrics}>
               <div><strong>{feed.items.length}</strong><span>تغطية متاحة</span></div>
-              <div><strong>{feed.connectedSourceCount}/{feed.totalSourceCount}</strong><span>قنوات متصلة</span></div>
+              <div><strong>{feed.connectedSourceCount}/{feed.totalSourceCount}</strong><span>قنوات استجابت في آخر فحص</span></div>
               <div><strong>30</strong><span>دقيقة بين التحديثات التلقائية</span></div>
             </div>
             <p>آخر فحص: <time dateTime={feed.checkedAt}>{dateTimeFormatter.format(new Date(feed.checkedAt))}</time></p>
@@ -151,28 +153,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
           </div>
         ) : null}
 
-        <p className={styles.pageSummary} aria-live="polite">
-          عرض الأخبار من {pagination.startItem} إلى {pagination.endItem} من إجمالي {pagination.totalItems}
-        </p>
-
-        {pagination.pageItems.length ? (
-          <div className={styles.grid}>
-            {pagination.pageItems.map((item) => <NewsCard key={item.id} item={item} />)}
-          </div>
-        ) : (
-          <div className={styles.emptyState} role="status">
-            <span aria-hidden="true"><BrandMark /></span>
-            <div>
-              <strong>المرصد شغال… بس مفيش تغطية جديدة معروضة الآن.</strong>
-              <p>جرّب الرجوع للرئيسية أو استكشف أخبار القرى والمحتوى المحلي، وسيظهر أي خبر موثّق هنا تلقائيًا عند التقاطه.</p>
-            </div>
-            <div className={styles.emptyActions}>
-              <Link href="/villages">استكشف القرى</Link>
-              <Link href="/blog">اقرأ مدونة العسيرات</Link>
-            </div>
-          </div>
-        )}
-
+        <NewsExplorer items={feed.items} pageItems={pagination.pageItems} start={pagination.startItem} end={pagination.endItem}>
         {pagination.totalPages > 1 ? (
           <nav className={styles.pagination} aria-label="صفحات أخبار العسيرات">
             {pagination.currentPage > 1 ? (
@@ -194,6 +175,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
             ) : <span className={styles.pageDirectionDisabled} aria-disabled="true">التالي</span>}
           </nav>
         ) : null}
+        </NewsExplorer>
       </section>
 
       <section id="news-method" className={styles.methodSection}>
@@ -202,7 +184,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
             <span className="eyebrow eyebrow--dark">سياسة الرصد والنشر</span>
             <h2>تجميع مسؤول يحافظ على الدقة وحقوق المصدر.</h2>
             <p>
-              يعرض الدليل الموجز والبيانات المتاحة من القنوات الرسمية دون نسخ المقال أو صوره أو تشغيل نموذج مدفوع.
+              يعرض الدليل الموجز والبيانات المتاحة من القنوات الرسمية مع الحفاظ على حقوق الناشر وإتاحة الرابط الأصلي.
               أما النص الكامل فيظل مقتصرًا على المواد الأصلية أو التي يملك الدليل إذنًا واضحًا بإعادة نشرها.
             </p>
             <ol>
@@ -215,7 +197,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
           <aside className={styles.sources} aria-labelledby="news-sources-title">
             <div className={styles.sourcesHead}>
               <span>قائمة المصادر</span>
-              <h2 id="news-sources-title">المصادر المتصلة حاليًا</h2>
+              <h2 id="news-sources-title">مصادر نتابعها</h2>
             </div>
             <div className={styles.sourceList}>
               {newsSourceCatalog.map((source) => (
