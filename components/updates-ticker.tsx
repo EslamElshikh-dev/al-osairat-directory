@@ -50,7 +50,7 @@ export function UpdatesTicker() {
           && (item.type === 'job' || item.type === 'news' || item.type === 'article' || item.type === 'activity')
           && typeof item.title === 'string' && typeof item.href === 'string'
           && item.href.startsWith('/') && !item.href.startsWith('//')
-        ).slice(0, 9));
+        ).slice(0, 12));
       } catch {
         // Keep the navigation links available when updates cannot load.
       }
