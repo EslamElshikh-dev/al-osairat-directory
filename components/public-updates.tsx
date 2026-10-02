@@ -7,7 +7,7 @@ import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-clien
 
 type Update = PublicUpdate;
 const STORAGE_KEY = 'osairat:public-updates:seen:v1';
-const labels = { news: 'خبر', job: 'وظيفة', article: 'مقال' };
+const labels = { news: 'خبر', job: 'وظيفة', article: 'مقال', activity: 'نشاط' };
 
 function seenIds(): string[] {
   try {

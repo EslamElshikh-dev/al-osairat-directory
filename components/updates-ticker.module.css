@@ -216,11 +216,16 @@
 
 .root[data-paused='true'] .track { will-change: auto; }
 
-/* Keep comfortable touch targets and a steady reading speed on every screen. */
-.root { min-height:48px; }
-.item,.control { min-height:48px; }
-.item strong { font-size:14px; }
-.item > span { font-size:11px; }
-.item:focus-visible { outline:2px solid #f0c66d;outline-offset:-5px;background:#1c4c3c; }
-@media(max-width:720px){.root{grid-template-columns:auto minmax(0,1fr) 44px;}.control{width:44px;}.heading{min-width:92px;}.heading strong{font-size:12px;}.item strong{font-size:13px;}.item{padding-inline:18px;}.fallback{min-height:48px;font-size:12px;}}
+/* A compact, quiet strip; the bell contains the complete update details. */
+.root { min-height:34px; grid-template-columns:auto minmax(0,1fr) 36px; box-shadow:none; }
+.heading { min-width:110px; padding-block:3px; padding-inline-end:12px; }
+.heading i,.heading small { display:none; }
+.heading strong { font-size:12px; }
+.item,.control,.fallback { min-height:34px; }
+.control { width:36px; }
+.item { padding-inline:18px; }
+.item strong { font-size:12px; }
+.item > span { padding:1px 6px; font-size:10px; }
+.item:focus-visible { outline:2px solid #f0c66d;outline-offset:-3px;background:#1c4c3c; }
+@media(max-width:720px){.root{min-height:32px;grid-template-columns:78px minmax(0,1fr) 32px;}.heading{min-width:78px;padding-inline:6px;}.heading strong{font-size:11px;}.control{width:32px;}.item,.control,.fallback{min-height:32px;}.item{padding-inline:12px;}.item strong{font-size:12px;}.fallback{font-size:11px;}}
 @media(prefers-reduced-motion:reduce){.control{display:none;}.root{grid-template-columns:auto minmax(0,1fr);}}

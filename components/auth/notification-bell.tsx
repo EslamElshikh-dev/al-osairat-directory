@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -64,11 +65,42 @@ export function NotificationBell() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
+  const [updates, setUpdates] = useState<PublicUpdate[]>([]);
+  const [seen, setSeen] = useState<string[]>([]);
+  const [updatesError, setUpdatesError] = useState('');
+  const [updatesLoading, setUpdatesLoading] = useState(true);
+  const loadUpdates = useCallback(async () => {
+    try {
+      const list = await loadPublicUpdates();
+      setUpdates(list.filter((item) => item.href?.startsWith('/') && !item.href.startsWith('//') && !item.href.includes('\\')));
+      setUpdatesError('');
+    } catch { setUpdatesError('تعذر تحميل تحديثات الدليل.'); }
+    finally { setUpdatesLoading(false); }
+  }, []);
+  useEffect(() => {
+    try {
+      const stored: unknown = JSON.parse(localStorage.getItem('osairat:public-updates:seen:v1') || '[]');
+      if (Array.isArray(stored)) setSeen(stored.filter((id): id is string => typeof id === 'string').slice(-100));
+    } catch { /* Read state is optional in private browsing. */ }
+    const timer = window.setTimeout(() => { void loadUpdates(); }, 1200);
+    const onVisible = () => { if (document.visibilityState === 'visible') void loadUpdates(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { window.clearTimeout(timer); document.removeEventListener('visibilitychange', onVisible); };
+  }, [loadUpdates]);
+
+  function readPublicUpdate(id: string) {
+    const next = [...new Set([...seen, id])].slice(-100);
+    setSeen(next);
+    try { localStorage.setItem('osairat:public-updates:seen:v1', JSON.stringify(next)); } catch {}
+    setOpen(false);
+  }
+  const publicUnread = updates.filter((item) => !seen.includes(item.id) && Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000).length;
   const [unreadCount, setUnreadCount] = useState(0);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [menuLoading, setMenuLoading] = useState(false);
   const [menuError, setMenuError] = useState('');
   const [savingId, setSavingId] = useState('');
+  const totalUnread = unreadCount + publicUnread;
 
   const load = useCallback(() => {
     if (document.visibilityState !== 'visible') return Promise.resolve();
@@ -96,7 +128,8 @@ export function NotificationBell() {
       if (response.status === 401) {
         setClientSessionUser(null);
         setVisible(false);
-        setOpen(false);
+        setUnreadCount(0);
+        setItems([]);
         return;
       }
       const data = await response.json().catch(() => ({}));
@@ -126,7 +159,6 @@ export function NotificationBell() {
       if (!user) {
         stopPolling();
         setVisible(false);
-        setOpen(false);
         setUnreadCount(0);
         setItems([]);
         return;
@@ -134,6 +166,7 @@ export function NotificationBell() {
 
       setVisible(true);
       void load();
+      if (open) void loadMenu();
       if (timer === null) timer = window.setInterval(() => { void load(); if (open && document.visibilityState === 'visible') void loadMenu(); }, 15_000);
     };
 
@@ -144,7 +177,7 @@ export function NotificationBell() {
       const detail = (event as CustomEvent<{ unreadCount?: number }>).detail;
       if (typeof detail?.unreadCount === 'number') setUnreadCount(detail.unreadCount);
       else void ensureClientSession().then((user) => { if (user) void load(); });
-      if (open) void loadMenu();
+      if (open) void ensureClientSession().then((user) => { if (user) void loadMenu(); });
     };
     const handleVisibility = () => {
       if (document.visibilityState !== 'visible') return;
@@ -178,14 +211,12 @@ export function NotificationBell() {
     };
   }, [open]);
 
-  if (!visible) return null;
-
-  const badge = unreadCount > 99 ? '99+' : String(unreadCount);
+  const badge = totalUnread > 99 ? '99+' : String(totalUnread);
 
   function toggleMenu() {
     const nextOpen = !open;
     setOpen(nextOpen);
-    if (nextOpen) void loadMenu();
+    if (nextOpen) { void loadUpdates(); if (visible) void loadMenu(); }
   }
 
   async function openNotification(item: NotificationItem) {
@@ -224,31 +255,32 @@ export function NotificationBell() {
     <div className={`notification-popover${open ? ' is-open' : ''}`} ref={rootRef}>
       <button
         type="button"
-        className={`notification-bell${unreadCount ? ' has-unread' : ''}`}
-        aria-label={unreadCount ? `لديك ${unreadCount} إشعارات غير مقروءة` : 'الإشعارات'}
-        aria-haspopup="menu"
+        className={`notification-bell${totalUnread ? ' has-unread' : ''}`}
+        aria-label={totalUnread ? `الإشعارات، ${totalUnread} غير مقروءة` : 'الإشعارات'}
+        aria-haspopup="dialog"
+        aria-controls="osairat-notification-panel"
         aria-expanded={open}
         title="الإشعارات"
         onClick={toggleMenu}
       >
         <BellIcon />
-        {unreadCount > 0 && <span>{badge}</span>}
+        {totalUnread > 0 && <span>{badge}</span>}
       </button>
 
       {open ? (
-        <div className="notification-popover__panel" role="menu" aria-label="آخر الإشعارات">
+        <div id="osairat-notification-panel" className="notification-popover__panel" role="dialog" aria-label="آخر الإشعارات">
           <div className="notification-popover__head">
             <div>
               <span>آخر التحديثات</span>
               <strong>الإشعارات</strong>
             </div>
-            <span className={unreadCount ? 'has-unread' : ''}>
-              {unreadCount ? `${unreadCount} جديد` : 'كلها مقروءة'}
-            </span>
+            <button type="button" className="notification-popover__close" aria-label="إغلاق الإشعارات" onClick={() => setOpen(false)}>×</button>
           </div>
 
           <div className="notification-popover__body">
-            {menuLoading ? (
+            <p className="notification-popover__welcome">اللهم صل وسلم وزد وبارك على سيدنا محمد، نورت الدليل 🤍.</p>
+            {visible && <h3 className="notification-popover__section">تحديثات حسابك وطلباتك {unreadCount ? `(${unreadCount} غير مقروءة)` : ''}</h3>}
+            {visible && (menuLoading ? (
               <div className="notification-popover__loading" aria-live="polite">
                 <span /><span /><span />
               </div>
@@ -263,7 +295,6 @@ export function NotificationBell() {
                   <button
                     key={item.id}
                     type="button"
-                    role="menuitem"
                     className={`notification-popover__item${item.readAt ? ' is-read' : ' is-unread'}`}
                     onClick={() => void openNotification(item)}
                     disabled={savingId === item.id}
@@ -287,11 +318,17 @@ export function NotificationBell() {
                 <strong>لا توجد إشعارات جديدة</strong>
                 <small>ستظهر هنا تحديثات طلباتك والردود الجديدة على تقييماتك.</small>
               </div>
-            )}
+            ))}
+            <h3 className="notification-popover__section">أحداث الدليل · أنشطة وأخبار وفرص</h3>
+            {updatesLoading ? <p className="notification-popover__state">جارٍ تحميل التحديثات…</p> : updatesError ? <div className="notification-popover__state"><p>{updatesError}</p><button type="button" onClick={() => void loadUpdates()}>إعادة المحاولة</button></div> : updates.length ? <div className="notification-popover__list">
+              {updates.map((item) => <Link prefetch={false} className={`notification-popover__item is-public${!seen.includes(item.id) && Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000 ? ' is-unread' : ' is-read'}`} href={item.href} key={item.id} onClick={() => readPublicUpdate(item.id)}>
+                <span className="notification-popover__copy"><span><strong>{item.title}</strong>{!seen.includes(item.id) && Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000 ? <i>جديد</i> : null}</span><small>{item.summary}</small><time dateTime={item.publishedAt}>{formatDate(item.publishedAt)}</time></span><span className="notification-popover__arrow" aria-hidden="true">←</span>
+              </Link>)}
+            </div> : <p className="notification-popover__state">لا توجد أحداث منشورة حديثًا.</p>}
           </div>
 
-          <Link href="/account#notifications" className="notification-popover__footer" onClick={() => setOpen(false)}>
-            <span>عرض كل الإشعارات</span>
+          <Link href={visible ? "/account#notifications" : "/news"} className="notification-popover__footer" onClick={() => setOpen(false)}>
+            <span>{visible ? "عرض كل إشعارات حسابك" : "تصفح الأخبار"}</span>
             <b aria-hidden="true">←</b>
           </Link>
         </div>
