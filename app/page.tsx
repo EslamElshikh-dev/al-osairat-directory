@@ -82,9 +82,11 @@ export default async function HomePage() {
       <section className="us-hero" aria-labelledby="us-hero-title">
         <div className="shell us-hero__grid">
           <div className="us-hero__copy">
+            <div className="us-hero__intro">
             <div className="us-hero__eyebrow"><span>من قلب سوهاج</span><span>من أهل البلد، لأهل البلد</span></div>
             <h1 id="us-hero-title">العسيرات…<br /><em>أقرب لك.</em></h1>
             <p>دكتور تطمّن عنده، صنعة تحتاجها، أو شغل قريب منك.<br className="us-desktop-break" /> دوّر في بلدك وقراها… والباقي علينا.</p>
+            </div>
             <SmartLocalCompass villages={villages.filter((village) => village.name !== 'مركز العسيرات').map(({ name, slug }) => ({ name, slug }))} />
             <div className="us-hero__stats" aria-label="تغطية دليل العسيرات">
               <span><b>{allListings.length.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>

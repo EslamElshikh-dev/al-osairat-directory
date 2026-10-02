@@ -17,7 +17,7 @@ body > main { animation: none; }
 .us-hero__eyebrow > span:first-child::before { content: ''; width: 20px; height: 2px; background: #b88c35; }
 .us-hero h1 { margin: 17px 0 12px; max-width: 100%; color: var(--us-green); font-size: clamp(2.7rem, 5.5vw, 4.8rem); line-height: 1.21; letter-spacing: -.045em; }
 .us-hero h1 em { color: #9a711f; font-style: normal; }
-.us-hero__copy > p { margin: 0; max-width: 48ch; color: #566c60; font-size: 1rem; line-height: 1.9; }
+.us-hero__intro > p { margin: 0; max-width: 48ch; color: #566c60; font-size: 1rem; line-height: 1.9; }
 .us-hero__stats { display: flex; gap: 0; margin-top: 23px; }
 .us-hero__stats > span { display: flex; flex-direction: column; gap: 5px; padding-inline: 22px; border-inline-end: 1px solid #d9e1d6; }
 .us-hero__stats > span:first-child { padding-inline-start: 0; }
@@ -129,7 +129,7 @@ body > main { animation: none; }
   .us-hero h1 em { display: inline-block; }
   .us-hero__eyebrow > span:first-child { padding: 5px 10px; border: 1px solid #e7ddbd; border-radius: 30px; background: #fff9e8; }
   .us-hero__eyebrow > span:first-child::before { width: 5px; height: 5px; border-radius: 50%; }
-  .us-hero__copy > p { max-width: 37ch; font-size: .9375rem; line-height: 1.85; }
+  .us-hero__intro > p { max-width: 37ch; font-size: .9375rem; line-height: 1.85; }
   .us-desktop-break { display: none; }
   .us-hero__stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 15px; }
   .us-hero__stats > span { min-width: 0; align-items: center; gap: 5px; padding: 13px 4px; border: 1px solid #e0e5d7; border-radius: 14px; background: #ffffffb8; }
@@ -213,3 +213,12 @@ body > main { animation: none; }
 .us-news-share__actions button { background: #163f30; color: #fff; }
 .us-news-share > span:empty { display: none; }
 .us-news-share > span { font-size: .8125rem; }
+
+/* On phones the complete introduction and hero image precede the search compass. */
+@media (max-width:760px) {
+  .us-hero__copy { display:contents; }
+  .us-hero__intro { order:0;min-width:0; }
+  .us-hero__grid > .us-hero__copy > .us-hero__stats { order:1;margin-top:0; }
+  .us-hero__grid > .us-place { order:2; }
+  .us-hero__grid > .us-hero__copy > .smart-compass { order:3;margin-top:0; }
+}
