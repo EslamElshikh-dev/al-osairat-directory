@@ -53,9 +53,10 @@ import './smart-local-compass.css';
 import './header-vnext.css';
 import './osairat-refresh.css';
 import './usayrat-design.css';
+import './rider-brand.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
-const socialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20260926`;
+const socialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20261003-rider`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -75,10 +76,9 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: [
-      { url: '/favicon.png', type: 'image/png', sizes: '96x96' },
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/brand/usayrat-rider-favicon.png', type: 'image/png', sizes: '96x96' },
     ],
-    shortcut: '/favicon.png',
+    shortcut: '/brand/usayrat-rider-favicon.png',
     apple: [{ url: '/app-icons/apple-touch-icon.png', type: 'image/png', sizes: '180x180' }],
   },
   openGraph: {
@@ -125,7 +125,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         url: siteConfig.url,
         logo: {
           '@type': 'ImageObject',
-          url: `${siteConfig.url}/icon.svg`,
+          url: `${siteConfig.url}/brand/usayrat-rider-logo.webp`,
         },
       },
       {

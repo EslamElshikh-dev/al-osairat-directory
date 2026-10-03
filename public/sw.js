@@ -1,4 +1,4 @@
-const OFFLINE_CACHE = 'osairat-offline-v1';
+const OFFLINE_CACHE = 'osairat-offline-rider-v2';
 const OFFLINE_PAGE = '/offline.html';
 const OFFLINE_ASSETS = [OFFLINE_PAGE, '/app-icons/icon-192.png'];
 

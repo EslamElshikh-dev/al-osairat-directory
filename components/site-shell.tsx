@@ -16,7 +16,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="shell site-header__inner">
         <Link prefetch={false} href="/" className="brand site-header__brand" aria-label="دليل وموسوعة العسيرات - الرئيسية">
-          <span className="brand__emblem"><BrandMark /></span>
+          <span className="brand__emblem"><BrandMark eager /></span>
           <span className="brand__copy">
             <strong>دليل العسيرات</strong>
             <small>الموسوعة المحلية لمركز العسيرات</small>
@@ -72,7 +72,7 @@ export async function Footer() {
       <div className={`shell ${footerStyles.shell}`}>
         <section className={footerStyles.masthead} aria-labelledby="site-footer-title">
           <div className={footerStyles.identity}>
-            <span className={footerStyles.emblem}><BrandMark /></span>
+            <span className={footerStyles.emblem}><BrandMark full /></span>
             <div className={footerStyles.identityCopy}>
               <span className={footerStyles.kicker}>من أهل البلد، لأهل البلد</span>
               <h2 id="site-footer-title">دليل وموسوعة العسيرات</h2>

@@ -1,5 +1,7 @@
 'use client';
 
+import { BrandMark } from '@/components/brand-mark';
+
 import Link from 'next/link';
 import { useEffect } from 'react';
 
@@ -13,11 +15,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
       <div className="shell status-page__shell">
         <section className="status-card status-card--error" role="alert" aria-labelledby="page-error-title">
           <span className="status-card__mark" aria-hidden="true">
-            <span className="brand-mark">
-              <span className="brand-mark__ring" />
-              <span className="brand-mark__dot" />
-              <span className="brand-mark__line" />
-            </span>
+            <BrandMark />
           </span>
           <span className="status-card__eyebrow">تعذر إكمال الطلب</span>
           <h1 id="page-error-title">حدث خطأ مؤقت</h1>

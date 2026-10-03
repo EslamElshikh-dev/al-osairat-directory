@@ -1,3 +1,4 @@
+import { BrandMark } from '@/components/brand-mark';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -29,7 +30,7 @@ export default async function AdminPage() {
         <div className="shell workspace-hero__grid">
           <div className="workspace-hero__copy">
             <span className="workspace-hero__kicker">
-              <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /></span>
+              <BrandMark />
               مركز تشغيل الدليل
             </span>
             <h1>مركز إدارة <em>دليل العسيرات</em></h1>
@@ -46,7 +47,7 @@ export default async function AdminPage() {
           <aside className="workspace-hero__panel workspace-hero__panel--admin" aria-label="جلسة الإدارة الحالية">
             <span className="workspace-hero__panel-label">جلسة إدارة موثقة · غير مفهرسة</span>
             <div className="workspace-hero__panel-brand">
-              <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /><span className="brand-mark__line" /></span>
+              <BrandMark />
               <div><small>مدير الدليل</small><strong>{session.displayName}</strong></div>
             </div>
             <div className="workspace-hero__metrics">

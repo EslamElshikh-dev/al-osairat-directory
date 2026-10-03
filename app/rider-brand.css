@@ -1,0 +1,10 @@
+/* Approved rider identity: compact emblem in tools, full logo in footer. */
+.brand-mark--rider { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+.brand-mark--rider img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.brand-mark--compact { width: 32px; height: 32px; }
+.brand-mark--full { width: 132px; height: 132px; }
+.site-header .brand__emblem { width: 58px; height: 58px; flex-basis: 58px; border: 0; background: transparent; box-shadow: none; border-radius: 0; }
+.site-header .brand__emblem .brand-mark { width: 58px; height: 58px; transform: none; }
+.auth-side__mark .brand-mark { filter: none; }
+@media (max-width: 760px) { .site-header .brand__emblem, .site-header .brand__emblem .brand-mark { width: 46px; height: 46px; flex-basis: 46px; } }
+@media (max-width: 390px) { .site-header__brand { flex-basis: 46px; min-width: 46px; } }

@@ -1,3 +1,4 @@
+import { BrandMark } from '@/components/brand-mark';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TransportSubmissionForm } from '@/components/transport-submission-form';
@@ -18,7 +19,7 @@ export default function AddTransportPage() {
         <div className="shell workspace-hero__grid">
           <div className="workspace-hero__copy">
             <span className="workspace-hero__kicker">
-              <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /></span>
+              <BrandMark />
               المواصلات المحلية
             </span>
             <h1>أضف سائقًا أو <em>وسيلة مواصلات</em></h1>
@@ -31,7 +32,7 @@ export default function AddTransportPage() {
           <aside className="workspace-hero__panel" aria-label="خطوات إضافة وسيلة مواصلات">
             <span className="workspace-hero__panel-label">قبل النشر</span>
             <div className="workspace-hero__panel-brand">
-              <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /><span className="brand-mark__line" /></span>
+              <BrandMark />
               <strong>بيانات واضحة ومراجعة بشرية</strong>
             </div>
             <div className="workspace-hero__metrics">

@@ -49,7 +49,7 @@ export default function BlogPage() {
           url: siteConfig.url,
           logo: {
             '@type': 'ImageObject',
-            url: `${siteConfig.url}/icon.svg`,
+            url: `${siteConfig.url}/brand/usayrat-rider-logo.webp`,
           },
         },
       },

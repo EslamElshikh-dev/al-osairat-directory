@@ -116,7 +116,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
       '@type': 'Organization',
       name: siteConfig.name,
       url: siteConfig.url,
-      logo: { '@type': 'ImageObject', url: `${siteConfig.url}/icon.svg` },
+      logo: { '@type': 'ImageObject', url: `${siteConfig.url}/brand/usayrat-rider-logo.webp` },
     },
     citation: item.url,
   } : {

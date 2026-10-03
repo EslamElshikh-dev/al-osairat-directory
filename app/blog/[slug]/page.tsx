@@ -116,7 +116,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
           url: siteConfig.url,
           logo: {
             '@type': 'ImageObject',
-            url: `${siteConfig.url}/icon.svg`,
+            url: `${siteConfig.url}/brand/usayrat-rider-logo.webp`,
           },
         },
         isPartOf: {

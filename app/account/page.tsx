@@ -1,3 +1,4 @@
+import { BrandMark } from '@/components/brand-mark';
 import type { Metadata } from 'next';
 import { AccountPanel } from '@/components/auth/account-panel';
 import { OwnedListingPerformance } from '@/components/auth/owned-listing-performance';
@@ -11,7 +12,7 @@ export default function AccountPage() {
         <div className="shell workspace-hero__grid">
           <div className="workspace-hero__copy">
             <span className="workspace-hero__kicker">
-              <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /></span>
+              <BrandMark />
               مساحة العضو
             </span>
             <h1>حسابك داخل <em>دليل العسيرات</em></h1>
@@ -30,7 +31,7 @@ export default function AccountPage() {
           <aside className="workspace-hero__panel" aria-label="مزايا حساب العضو">
             <span className="workspace-hero__panel-label">مركز العضوية</span>
             <div className="workspace-hero__panel-brand">
-              <span className="brand-mark" aria-hidden="true"><span className="brand-mark__ring" /><span className="brand-mark__dot" /><span className="brand-mark__line" /></span>
+              <BrandMark />
               <strong>كل أدواتك في مكان واحد</strong>
             </div>
             <div className="workspace-hero__metrics">
