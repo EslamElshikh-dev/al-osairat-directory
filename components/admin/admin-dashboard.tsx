@@ -115,6 +115,7 @@ const changeFieldLabels: Record<string, string> = {
   hours: 'مواعيد العمل',
   description: 'الوصف',
   googleMapsUrl: 'رابط خرائط Google',
+  imagePaths: 'صور النشاط والغلاف',
 };
 
 function formatDate(value: string | null) {
@@ -395,7 +396,7 @@ export function AdminDashboard() {
                       <span>{changeFieldLabels[key] || key}</span>
                       <div><small>الحالي</small><b>{displayValue(item.snapshot[key])}</b></div>
                       <i aria-hidden="true">←</i>
-                      <div className="is-new"><small>المطلوب</small><b>{displayValue(nextValue)}</b></div>
+                      <div className="is-new"><small>المطلوب</small><b>{key==='imagePaths' && Array.isArray(nextValue) ? `${nextValue.length} صور؛ الأولى هي الغلاف` : displayValue(nextValue)}</b>{key==='imagePaths' && Array.isArray(nextValue) ? <div className="business-photo-grid">{nextValue.filter((path):path is string=>typeof path==='string').map(path=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={businessImageUrl(path)} alt="صورة النشاط المطلوب اعتمادها" width={140} height={100}/></a>)}</div>:null}</div>
                     </div>
                   ))}
                 </div>

@@ -1,3 +1,4 @@
+import { isFamilyQuery, searchFamilyRegistry } from '@/lib/family-search';
 import { NextResponse } from 'next/server';
 import { blogArticles } from '@/lib/blog-published';
 import { categories, categoryById, villages } from '@/lib/data';
@@ -52,6 +53,11 @@ export async function GET(request: Request) {
   }
 
   try {
+    if (isFamilyQuery(query)) {
+      const familyArticle = blogArticles.find(article => article.slug === 'famous-families-al-osairat');
+      const items = familyArticle ? searchFamilyRegistry(familyArticle,query) : [];
+      return NextResponse.json({query,items,total:items.length});
+    }
     const allListings = await getPublicDirectoryListings();
     const listingItems = queryDirectoryListings(allListings, { query, page: 1 }).items;
 

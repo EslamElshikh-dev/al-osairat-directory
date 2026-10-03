@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { BusinessPhotoPicker } from './business-photo-picker';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { villages } from '@/lib/data/base';
@@ -29,6 +30,7 @@ type Business = {
   googleMapsUrl: string;
   relationship: string;
   approvedAt: string;
+  imagePaths: string[];
 };
 
 type ChangeRequest = {
@@ -45,7 +47,7 @@ type ChangeRequest = {
   appliedAt: string | null;
 };
 
-type FormState = Pick<Business, 'title' | 'subCategory' | 'location' | 'village' | 'locality' | 'phone' | 'whatsapp' | 'hours' | 'description' | 'googleMapsUrl'>;
+type FormState = Pick<Business, 'title' | 'subCategory' | 'location' | 'village' | 'locality' | 'phone' | 'whatsapp' | 'hours' | 'description' | 'googleMapsUrl' | 'imagePaths'>;
 
 const allowedVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
 
@@ -73,6 +75,7 @@ const fieldLabels: Record<string, string> = {
   hours: 'مواعيد العمل',
   description: 'الوصف',
   googleMapsUrl: 'رابط خرائط Google',
+  imagePaths: 'صور النشاط والغلاف',
 };
 
 function formatDate(value: string | null) {
@@ -96,6 +99,7 @@ function formFromBusiness(business: Business): FormState {
     hours: business.hours,
     description: business.description,
     googleMapsUrl: business.googleMapsUrl,
+    imagePaths: business.imagePaths || [],
   };
 }
 
@@ -107,6 +111,7 @@ export function MyBusinessesPanel() {
   const [editingRequestId, setEditingRequestId] = useState('');
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
+  const [photosBusy, setPhotosBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
@@ -162,7 +167,7 @@ export function MyBusinessesPanel() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!form || !editingId || saving) return;
+    if (!form || !editingId || saving || photosBusy) return;
 
     if (form.title.trim().length < 2) return setError('اكتب اسم النشاط بشكل صحيح.');
     if (form.village !== 'مركز العسيرات' && !allowedVillages.some((item) => item.name === form.village)) return setError('اختر قرية صحيحة داخل مركز العسيرات.');
@@ -253,6 +258,7 @@ export function MyBusinessesPanel() {
                   </div>
                 )}
 
+                {!business.imagePaths?.length && !isEditing && <div className="my-business-photo-reminder"><strong>خلّي الناس تتعرف على نشاطك بصورة واضحة</strong><p>نشاطك منشور؛ أضف صورة حقيقية للمكان أو الخدمة واختار الغلاف، وبعد مراجعتها تظهر في البطاقة وصفحة النشاط.</p><button type="button" onClick={()=>startEditing(business,canRevise ? openRequest!.id : '')} disabled={Boolean(openRequest && !canRevise)}>إضافة صور للنشاط</button></div>}
                 {isEditing && (
                   <form className="my-business-edit-form" onSubmit={submit}>
                     <div className="my-business-edit-grid">
@@ -267,10 +273,11 @@ export function MyBusinessesPanel() {
                       <label><span>رابط خرائط Google</span><input dir="ltr" value={form.googleMapsUrl} onChange={(e) => update('googleMapsUrl', e.target.value)} maxLength={500} placeholder="https://maps.app.goo.gl/..." /></label>
                       <label className="wide"><span>وصف النشاط</span><textarea rows={4} value={form.description} onChange={(e) => update('description', e.target.value)} maxLength={800} /><small>{form.description.length}/800</small></label>
                     </div>
+                    <BusinessPhotoPicker paths={form.imagePaths} onChange={paths=>update('imagePaths',paths)} onBusy={setPhotosBusy} disabled={saving}/>
                     <div className="my-business-edit-note">لن يتم تغيير الصفحة العامة الآن. ستظهر التعديلات فقط بعد اعتمادها من إدارة الدليل.</div>
                     <div className="my-business-edit-actions">
                       <button type="button" onClick={cancelEditing} disabled={saving}>إلغاء</button>
-                      <button type="submit" disabled={saving}>{saving ? 'جارٍ إرسال التعديلات…' : editingRequestId ? 'إعادة الإرسال للمراجعة' : 'إرسال التعديلات للمراجعة'}</button>
+                      <button type="submit" disabled={saving || photosBusy}>{saving ? 'جارٍ إرسال التعديلات…' : editingRequestId ? 'إعادة الإرسال للمراجعة' : 'إرسال التعديلات للمراجعة'}</button>
                     </div>
                   </form>
                 )}

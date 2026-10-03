@@ -1,11 +1,12 @@
+import { placeFor, LOCALITIES, norm } from './places.ts';
+import { scanVerifiedSources } from './verified-sources.ts';
+import { dedupeJobs } from './job-dedupe.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 // Only public feeds and indexed results qualify. Preserve the original link and
 // require an explicit Sohag location so names shared with other cities do not match.
 // The token stays in Supabase Vault; only its one-way digest is deployed.
 const EXPECTED_TOKEN_SHA256 = '9005b67e2135db28cc45fb788271755db56243e2393bed17e2cfb49d71f9ce9a';
-const PLACES = ['جزيرة أولاد حمزة', 'عوامر العسيرات', 'الأحايوة غرب', 'أولاد جبارة', 'أولاد بهيج', 'أولاد حمزة', 'الرشايدة', 'النويرات', 'الشهداء', 'المساعيد'];
-const CENTERS = ['أخميم الجديدة', 'سوهاج الجديدة', 'أخميم', 'البلينا', 'جرجا', 'دار السلام', 'جهينة', 'ساقلتة', 'طما', 'طهطا', 'المراغة', 'المنشأة', 'الكوثر', 'الكوامل'];
 const googleNews = (query: string) => 'https://news.google.com/rss/search?q=' + encodeURIComponent(query + ' when:14d') + '&hl=ar&gl=EG&ceid=EG:ar';
 const indexed = (query: string) => 'https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss&setlang=ar-eg&cc=eg';
 const feeds = [
@@ -21,6 +22,13 @@ const feeds = [
   { name: 'فيسبوك العام · نتائج مفهرسة', url: 'https://www.bing.com/search?q=' + encodeURIComponent('site:facebook.com/groups/ سوهاج وظائف مطلوب') + '&format=rss&setlang=ar-eg&cc=eg' },
 ];
 
+const hiring = '(وظائف OR مطلوب OR "فرص عمل" OR hiring OR vacancy)';
+const villageGroups = Array.from({length: Math.ceil(LOCALITIES.length/10)}, (_,i)=>LOCALITIES.slice(i*10,i*10+10).map(place=>`"${place}"`).join(' OR '));
+feeds.push(
+  ...villageGroups.map((group,i)=>({name:`أخبار Google · نجوع العسيرات ${i+1}`,url:googleNews(`${hiring} سوهاج (${group})`)})),
+  {name:'منشورات العسيرات العامة · نتائج مفهرسة',url:indexed(`site:facebook.com (العسيرات OR "جزيرة أولاد حمزة" OR "أولاد جبارة") سوهاج ${hiring}`)},
+);
+
 function plain(value: string, limit: number) {
   return value.replace(/<[^>]*>/g, ' ').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, limit);
 }
@@ -35,22 +43,6 @@ function decode(value: string) {
 }
 function field(xml: string, tag: string) {
   return decode(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'i').exec(xml)?.[1] || '').trim();
-}
-function norm(value: string) {
-  return value.toLowerCase().replace(/[أإآ]/g, 'ا').replace(/[ةه]/g, 'ه').replace(/ى/g, 'ي').replace(/[\u064b-\u065f\u0670]/g, '');
-}
-function placeFor(value: string) {
-  const text = norm(value).replace(/\bsohag\b/g, 'سوهاج').replace(/دارالسلام/g, 'دار السلام');
-  if (!text.includes('سوهاج') && !text.includes('العسيرات')) return '';
-  if (/(دار السلام.{0,12}القاهره|القاهره.{0,12}دار السلام)/.test(text) && !text.includes('سوهاج')) return '';
-  const local = PLACES.find((place) => text.includes(norm(place)));
-  const centers = CENTERS.filter((place) => text.includes(norm(place)) && !CENTERS.some((other) => other !== place && norm(other).includes(norm(place)) && text.includes(norm(other))));
-  const osairat = text.includes('العسيرات');
-  if (centers.length > 1 || (centers.length && (local || osairat))) return 'محافظة سوهاج';
-  if (local) return local;
-  if (osairat) return 'مركز العسيرات';
-  if (centers.length) return centers[0];
-  return /(?:مدينه|مركز) سوهاج/.test(text) ? 'سوهاج' : 'محافظة سوهاج';
 }
 function safeUrl(value: string) {
   try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : ''; }
@@ -126,8 +118,13 @@ Deno.serve(async (request) => {
   if (claimError) return reply({ ok: false, error: 'state_unavailable' }, 503);
   if (!claim?.length) return reply({ ok: true, skipped: true });
 
-  const scans = await Promise.all(feeds.map(scan));
-  const jobs = [...new Map(scans.flatMap((item) => item.jobs).map((item) => [item.source_url, item])).values()];
+  const scans = await Promise.all([...feeds.map(scan), scanVerifiedSources()]);
+  const {data: recent, error: readError} = await db.from('osairat_jobs')
+    .select('source_url,title,organization,village,published_at').eq('origin','external')
+    .gte('published_at',new Date(Date.now()-31*86_400_000).toISOString()).order('published_at',{ascending:false}).limit(1000);
+  if (readError) return reply({ok:false,error:'deduplication_unavailable'},503);
+  // Keep rejected/closed adverts in the identity set so a renamed URL cannot revive them.
+  const jobs = dedupeJobs(scans.flatMap(item=>item.jobs), recent || []);
   const { data: saved, error: saveError } = jobs.length
     ? await db.from('osairat_jobs').upsert(jobs, { onConflict: 'source_url', ignoreDuplicates: true }).select('id')
     : { data: [], error: null };

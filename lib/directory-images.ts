@@ -1,3 +1,4 @@
+import { businessImagePathPattern, businessImageUrl } from './business-images';
 import type { DirectoryCategory, DirectoryListing } from './types';
 import activityImageManifest from './data/activity-image-manifest.json';
 
@@ -100,7 +101,9 @@ export function imageForCategory(category: DirectoryCategory): DirectoryImage {
   return directoryImages[category];
 }
 
-export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category' | 'title' | 'subCategory'>): DirectoryImage {
+export function imageForListing(listing: Pick<DirectoryListing, 'id' | 'category' | 'title' | 'subCategory' | 'imagePaths'>): DirectoryImage {
+  const approvedPhoto = listing.imagePaths?.find((path) => businessImagePathPattern.test(path));
+  if (approvedPhoto) return { src: businessImageUrl(approvedPhoto), alt: `صورة النشاط مقدمة من صاحبه — ${listing.title}`, kind: 'sourced', label: 'صورة من صاحب النشاط' };
   const customImage = curatedListingImages[listing.id] || listingImages[listing.id];
   if (customImage) {
     if (customImage.sourceKind === 'owner_photo') {

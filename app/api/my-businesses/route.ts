@@ -1,3 +1,4 @@
+import { businessImagePathPattern } from '@/lib/business-images';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { categoryById, listings, villages, type DirectoryListing } from '@/lib/data';
@@ -133,6 +134,7 @@ function editableSnapshot(listing: DirectoryListing) {
     hours: listing.hours || '',
     description: listing.description || '',
     googleMapsUrl: listing.googleMapsUrl || '',
+    imagePaths: listing.imagePaths || [],
   };
 }
 
@@ -152,6 +154,7 @@ function serializeBusiness(listing: DirectoryListing, ownership: OwnershipRow) {
     hours: listing.hours || '',
     description: listing.description || '',
     googleMapsUrl: listing.googleMapsUrl || '',
+    imagePaths: listing.imagePaths || [],
     relationship: ownership.relationship,
     approvedAt: ownership.approved_at,
   };
@@ -233,8 +236,10 @@ export async function POST(request: Request) {
     hours: clean(body?.hours, 180),
     description: cleanMultiline(body?.description, 800),
     googleMapsUrl: clean(body?.googleMapsUrl, 500),
+    imagePaths: body.imagePaths === undefined ? listing.imagePaths || [] : body.imagePaths,
   };
 
+  if (!Array.isArray(finalState.imagePaths) || finalState.imagePaths.length > 3 || finalState.imagePaths.some((path:unknown)=>typeof path!=='string'||!businessImagePathPattern.test(path)) || new Set(finalState.imagePaths).size!==finalState.imagePaths.length) return respond({error:'أرفق حتى ٣ صور صحيحة للنشاط.'},session,400);
   if (finalState.title.length < 2) return respond({ error: 'اكتب اسم النشاط بشكل صحيح.' }, session, 400);
   if (finalState.village !== 'مركز العسيرات' && !villageNames.has(finalState.village)) return respond({ error: 'اختر قرية من قرى مركز العسيرات.' }, session, 400);
   if (finalState.phone && !isValidEgyptianPhone(finalState.phone)) return respond({ error: 'رقم الهاتف غير صحيح.' }, session, 400);
@@ -249,9 +254,9 @@ export async function POST(request: Request) {
   }
 
   const snapshot = editableSnapshot(listing);
-  const changes: Record<string, string> = {};
+  const changes: Record<string, string | string[]> = {};
   (Object.keys(finalState) as Array<keyof typeof finalState>).forEach((key) => {
-    if (finalState[key] !== snapshot[key]) changes[key] = finalState[key];
+    if (JSON.stringify(finalState[key]) !== JSON.stringify(snapshot[key])) changes[key] = finalState[key];
   });
   if (!Object.keys(changes).length) return respond({ error: 'لم تغيّر أي بيانات في النشاط.' }, session, 400);
 

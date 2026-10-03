@@ -41,11 +41,12 @@ export function BusinessPhotoPicker({paths,onChange,onBusy,disabled=false}:{path
   }
   return <fieldset className="business-photo-picker" disabled={disabled||uploading}>
     <legend>صور النشاط <small>اختياري</small></legend>
-    <p>حتى ٣ صور واضحة للمكان أو الخدمات. نجهّز حجمها تلقائيًا، وتظهر للناس بعد اعتماد النشاط.</p>
+    <p>حتى ٣ صور واضحة للمكان أو الخدمات. الصورة الأولى هي غلاف النشاط. نجهّز حجمها تلقائيًا، وتظهر للناس بعد اعتماد النشاط.</p>
     <div className="business-photo-grid">{paths.map((path,index)=><figure key={path}>
       {/* Authenticated, same-origin media; private submissions must not use a shared image cache. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={businessImageUrl(path)} alt={`صورة النشاط ${index+1}`} width={160} height={120} />
+      {index===0?<figcaption>غلاف النشاط</figcaption>:<button className="business-cover-choice" type="button" onClick={()=>onChange([path,...paths.filter(item=>item!==path)])}>اجعلها الغلاف</button>}
       <button type="button" onClick={()=>onChange(paths.filter(item=>item!==path))} aria-label={`إزالة الصورة ${index+1}`}>×</button>
     </figure>)}</div>
     <label className="business-photo-upload"><input ref={input} type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={disabled||uploading||paths.length>=3} onChange={event=>void upload(event.target.files)} /><span>{uploading?'جارٍ تجهيز الصور ورفعها…':paths.length>=3?'تم إرفاق ٣ صور':'اختيار صور من جهازك'}</span></label>

@@ -1,0 +1,10 @@
+/* Shared improvements adapted to Usayrat's existing emerald and gold identity. */
+.listing-contact-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.listing-contact-actions .button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
+.detail-actions--hero .button { display: inline-flex; align-items: center; gap: 8px; }
+.business-photo-grid figure { position: relative; }
+.business-photo-grid figcaption, .business-photo-grid .business-cover-choice { position: static; display: block; width: 100%; margin-top: 6px; border: 1px solid #d1bd83; border-radius: 8px; padding: 6px; background: #f8f4e8; color: #174b3b; font-size: 12px; line-height: 1.5; }
+@media(max-width:620px) { .listing-contact-actions .button:first-child { flex-basis: 100%; } .listing-contact-actions .button { flex: 1 1 auto; } .detail-actions--hero { gap: 8px; } .detail-actions--hero .button { min-height: 44px; padding: 8px 12px; } }
+
+.family-search-route,.my-business-photo-reminder { margin-block: 16px; padding: 16px; border: 1px solid #d6c58e; border-radius: 16px; background: #f8f4e8; color: #174b3b; }
+.my-business-photo-reminder button { background:#174b3b; color:#fff; border:0; padding:10px 16px; border-radius:10px; min-height:44px; }

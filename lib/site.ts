@@ -1,4 +1,5 @@
 import type { DirectoryListing } from './data';
+import { normalizeEgyptianPhone, isValidEgyptianMobile } from './business-submission-validation';
 
 export const siteConfig = {
   name: 'دليل وموسوعة العسيرات',
@@ -56,10 +57,12 @@ export function phoneHref(phone?: string) {
 }
 
 export function whatsappHref(listing: DirectoryListing) {
-  const phone = listing.whatsapp || listing.phone;
-  if (!phone || phone.length < 10 || phone === '0') return undefined;
-  const normalized = phone.replace(/\D/g, '').replace(/^0/, '20');
-  return `https://wa.me/${normalized}`;
+  const raw = listing.whatsapp || listing.phone;
+  if (!raw) return undefined;
+  const normalized = normalizeEgyptianPhone(raw);
+  // A phone fallback is a possible WhatsApp contact, not proof of an account.
+  if (!isValidEgyptianMobile(normalized)) return undefined;
+  return `https://wa.me/20${normalized.slice(1)}`;
 }
 
 export function googleMapsHref(listing: DirectoryListing) {

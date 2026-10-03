@@ -50,6 +50,8 @@ export default async function JobsPage() {
     <section className={`shell ${styles.sourceDirectory}`} aria-labelledby="job-sources-title">
       <div><span className="eyebrow eyebrow--dark">وسّع دائرة البحث</span><h2 id="job-sources-title">مصادر أخرى لفرص سوهاج</h2><p>روابط مباشرة لمنصات التوظيف والمصادر المحلية. كل منصة تعرض فرصها وشروط التقديم؛ ظهور الرابط لا يعني اعتماد كل إعلان فيها.</p></div>
       <div className={styles.sourceCards}>
+        <a href="https://forasna.com/a/وظائف-سوهاج" target="_blank" rel="noopener noreferrer"><strong>فرصنا <span aria-hidden="true">↗</span></strong><span>فرص الشركات والمهن في سوهاج</span></a>
+        <a href="https://egjobank.com/jobs/in/sohag" target="_blank" rel="noopener noreferrer"><strong>بنك الوظائف المصري <span aria-hidden="true">↗</span></strong><span>إعلانات بتفاصيل ومواعيد تقديم</span></a>
         <a href="https://wuzzuf.net/a/jobs-in-sohag" target="_blank" rel="noopener noreferrer"><strong>WUZZUF <span aria-hidden="true">↗</span></strong><span>وظائف الشركات في سوهاج</span></a>
         <a href="https://shaghalni.com/hiring-center/employers" target="_blank" rel="noopener noreferrer"><strong>شغلني <span aria-hidden="true">↗</span></strong><span>مراكز توظيف تشمل فرع سوهاج</span></a>
         <a href="https://www.sohag24.com/" target="_blank" rel="noopener noreferrer"><strong>سوهاج 24 <span aria-hidden="true">↗</span></strong><span>إعلانات وأخبار محلية</span></a>

@@ -1,3 +1,4 @@
+import { isFamilyQuery } from '@/lib/family-search';
 import Link from 'next/link';
 import { categories, villages, type DirectoryCategory } from '@/lib/data';
 import { createDirectoryHref, type DirectoryQueryResult } from '@/lib/directory-query';
@@ -163,6 +164,8 @@ export function DirectoryExplorer({
           ))}
         </nav>
       </div>
+
+      {isFamilyQuery(query) && <aside className="family-search-route"><strong>بتدور على عائلات العسيرات؟</strong><p>اطّلع على الأسماء والمعلومات الواردة في سجل العائلات المنشور، مع مصادره وملاحظاته.</p><Link href="/blog/famous-families-al-osairat">افتح سجل عائلات العسيرات</Link></aside>}
 
       <div className="results-bar results-bar--premium results-bar--discovery">
         <div className="results-bar__identity">

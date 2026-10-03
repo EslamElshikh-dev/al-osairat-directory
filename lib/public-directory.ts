@@ -30,7 +30,8 @@ export const getPublicDirectoryListings = cache(async function getPublicDirector
 
   const canonicalListings = await getCanonicalDirectoryListings();
   if (canonicalListings && canonicalSnapshotHasReleaseParity(canonicalListings, releaseListings)) {
-    return canonicalListings;
+    const releaseById = new Map(releaseListings.map(item=>[item.id,item]));
+    return canonicalListings.map(item=>({...item,imagePaths:releaseById.get(item.id)?.imagePaths || item.imagePaths}));
   }
 
   return releaseListings;

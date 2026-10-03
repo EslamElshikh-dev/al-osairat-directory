@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { categoryById, type DirectoryListing } from '@/lib/data';
 import { imageForListing } from '@/lib/directory-images';
 import { latestScanImageForListing } from '@/lib/latest-scan-images';
-import { googleMapsHref, phoneHref, sourceLabel } from '@/lib/site';
+import { googleMapsHref, phoneHref, sourceLabel, whatsappHref } from '@/lib/site';
+import { ContactIcon } from './contact-icon';
 import { BrandMark } from './brand-mark';
 import { CategoryVisual } from './category-visual';
 import { FavoriteButton } from './favorite-button';
@@ -18,7 +19,8 @@ function compactReviewDate(value?: string) {
 export function ListingCard({ listing, compact = false }: { listing: DirectoryListing; compact?: boolean }) {
   const category = categoryById[listing.category];
   const phone = phoneHref(listing.phone);
-  const image = latestScanImageForListing(listing) || imageForListing(listing);
+  const whatsapp = whatsappHref(listing);
+  const image = listing.imagePaths?.length ? imageForListing(listing) : latestScanImageForListing(listing) || imageForListing(listing);
   const reviewDate = compactReviewDate(listing.lastUpdatedAt);
   const hasRating = typeof listing.rating === 'number' && listing.reviewCount > 0;
 
@@ -27,7 +29,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
       {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
 
       <Link prefetch={false} href={`/listing/${listing.slug}`} className="listing-card__media" aria-label={`عرض ${listing.title}`}>
-        <Image src={image.src} alt={image.alt} fill sizes={compact ? '(max-width: 620px) 100vw, 360px' : '(max-width: 620px) 100vw, (max-width: 1100px) 50vw, 360px'} />
+        <Image unoptimized={image.src.startsWith('/api/')} src={image.src} alt={image.alt} fill sizes={compact ? '(max-width: 620px) 100vw, 360px' : '(max-width: 620px) 100vw, (max-width: 1100px) 50vw, 360px'} />
         <span className="directory-media__shade" aria-hidden="true" />
         <span className="directory-media__label">{image.label}</span>
         <span className="listing-card__media-category">{category.shortLabel}</span>
@@ -78,19 +80,20 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
         </div>
       )}
 
-      <div className="listing-card__actions">
+      <div className="listing-card__actions listing-contact-actions">
         <Link prefetch={false} href={`/listing/${listing.slug}`} className="button button--primary">
           <span className="sr-only">{listing.title}: </span>
           عرض التفاصيل
         </Link>
         {phone && (
           <a href={phone} className="button button--soft" aria-label={`اتصال بـ ${listing.title}`}>
-            اتصال
+            <ContactIcon kind="call" compact /><span>اتصال</span>
           </a>
         )}
+        {whatsapp && <a href={whatsapp} className="button button--soft" target="_blank" rel="noreferrer" aria-label={`واتساب ${listing.title}`}><ContactIcon kind="whatsapp" compact /><span>واتساب</span></a>}
         {(listing.googlePlaceId || listing.googleMapsUrl) && (
           <a href={googleMapsHref(listing)} target="_blank" rel="noreferrer" className="button button--ghost" aria-label={`فتح موقع ${listing.title} على الخريطة`}>
-            الخريطة
+            <ContactIcon kind="map" compact /><span>الخريطة</span>
           </a>
         )}
       </div>

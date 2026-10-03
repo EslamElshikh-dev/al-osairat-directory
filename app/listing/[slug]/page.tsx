@@ -9,6 +9,7 @@ import { getPublicDirectoryListings } from '@/lib/public-directory';
 import { isVillageCategoryLandingEligible, villageCategoryLandingPath, villageForListing } from '@/lib/programmatic-seo';
 import { isFallbackScope, isListingIndexable, villagePathByName } from '@/lib/seo-growth';
 import { googleMapsHref, normalizeRouteSlug, phoneHref, siteConfig, sourceDescription, sourceLabel, verificationStatusLabel, whatsappHref } from '@/lib/site';
+import { ContactIcon } from '@/components/contact-icon';
 import { ListingCard } from '@/components/listing-card';
 import { FavoriteButton } from '@/components/favorite-button';
 import { ListingReport } from '@/components/listing-report';
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     : category.shortLabel;
   const location = listing.location.length <= 48 ? listing.location : listing.village;
   const description = `${listing.title}، ${service} في ${location}. بيانات التواصل والموقع ضمن دليل العسيرات.`;
-  const image = latestScanImageForListing(listing) || imageForListing(listing);
+  const image = listing.imagePaths?.length ? imageForListing(listing) : latestScanImageForListing(listing) || imageForListing(listing);
 
   return buildPageMetadata({
     title,
@@ -98,7 +99,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   const fallbackScope = isFallbackScope(listing.village);
   const villagePath = villagePathByName(listing.village);
   const scopeLabel = fallbackScope ? 'مركز العسيرات' : `${listing.village} · مركز العسيرات`;
-  const coverImage = latestScanImageForListing(listing) || imageForListing(listing);
+  const coverImage = listing.imagePaths?.length ? imageForListing(listing) : latestScanImageForListing(listing) || imageForListing(listing);
   const freshness = listingFreshness(listing);
   const trust = listingTrust(listing);
   const livingUpdatedLabel = formatLivingDate(listing.lastUpdatedAt);
@@ -187,15 +188,15 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <div className="detail-actions detail-actions--hero">
               <FavoriteButton listingId={listing.id} variant="hero" showLabel />
               {listing.websiteUrl ? <a className="button button--outline-light" href={listing.websiteUrl} target="_blank" rel="noopener noreferrer">الموقع الإلكتروني</a> : null}
-              {phone && <a className="button button--light" href={phone}>اتصال مباشر</a>}
-              {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer">واتساب</a>}
-              <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer">فتح في الخرائط</a>
+              {phone && <a className="button button--light" href={phone}><ContactIcon kind="call" animate /><span>اتصال مباشر</span></a>}
+              {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer"><ContactIcon kind="whatsapp" animate /><span>واتساب</span></a>}
+              <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer"><ContactIcon kind="map" animate /><span>فتح في الخرائط</span></a>
             </div>
           </div>
 
           <aside className="detail-hero__summary" aria-label="ملخص بيانات النشاط">
             <div className="detail-hero__media">
-              <Image src={coverImage.src} alt={coverImage.alt} fill priority sizes="(max-width: 760px) 100vw, 390px" />
+              <Image unoptimized={coverImage.src.startsWith('/api/')} src={coverImage.src} alt={coverImage.alt} fill priority sizes="(max-width: 760px) 100vw, 390px" />
               <span className="directory-media__shade" aria-hidden="true" />
               <span className="directory-media__label">{coverImage.label}</span>
               {(listing.googlePlaceId || listing.googleMapsUrl) && (

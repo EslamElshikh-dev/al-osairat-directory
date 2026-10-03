@@ -1,7 +1,7 @@
 import { villages } from '@/lib/data/base';
 
 // Keep the directory's home area first while accepting jobs from all Sohag centers.
-export const osairatJobAreas = ['مركز العسيرات', ...villages.map((village) => village.name).filter((name) => name !== 'مركز العسيرات')];
+export const osairatJobAreas = [...new Set(['مركز العسيرات', ...villages.flatMap((village) => [village.name, ...(village.localities || [])])])];
 export const sohagCenters = ['سوهاج', 'أخميم', 'البلينا', 'جرجا', 'دار السلام', 'جهينة', 'ساقلتة', 'طما', 'طهطا', 'المراغة', 'المنشأة'];
 export const widerJobAreas = [...sohagCenters, 'الكوثر', 'سوهاج الجديدة', 'أخميم الجديدة', 'الكوامل', 'محافظة سوهاج'];
 export const jobAreas = [...osairatJobAreas, ...widerJobAreas];

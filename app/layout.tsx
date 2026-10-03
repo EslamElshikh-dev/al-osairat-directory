@@ -54,6 +54,7 @@ import './header-vnext.css';
 import './osairat-refresh.css';
 import './usayrat-design.css';
 import './rider-brand.css';
+import './usayrat-enhancements.css';
 
 const rootTitle = 'دليل العسيرات | الموسوعة المحلية الشاملة لمركز العسيرات';
 const socialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20261003-rider`;

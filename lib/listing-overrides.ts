@@ -3,6 +3,7 @@ import { fetchSupabasePublicJson } from '@/lib/supabase-public-fetch';
 import type { DirectoryListing, SourceStatus } from '@/lib/types';
 
 type EditableListingFields = {
+  imagePaths?: string[];
   title?: string;
   subCategory?: string;
   location?: string;
@@ -56,6 +57,7 @@ export function applyListingOverride(listing: DirectoryListing, row?: ListingOve
   const fields = row.fields;
   return {
     ...listing,
+    imagePaths: Array.isArray(fields.imagePaths) ? fields.imagePaths : listing.imagePaths,
     title: optionalValue(fields.title) || listing.title,
     subCategory: Object.prototype.hasOwnProperty.call(fields, 'subCategory') ? optionalValue(fields.subCategory) : listing.subCategory,
     location: optionalValue(fields.location) || listing.location,
