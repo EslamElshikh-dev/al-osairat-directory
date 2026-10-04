@@ -63,6 +63,7 @@ function iconFor(type: string) {
 export function NotificationBell() {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const acknowledgingRef = useRef(false);
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [updates, setUpdates] = useState<PublicUpdate[]>([]);
@@ -143,6 +144,28 @@ export function NotificationBell() {
     }
   }, []);
 
+  // A notification that has been rendered in the open panel is already seen.
+  // Mark only the visible IDs, leaving later arrivals and older hidden rows new.
+  useEffect(() => {
+    if (!open || menuLoading || acknowledgingRef.current) return;
+    const ids = items.filter((item) => !item.readAt).map((item) => item.id);
+    if (!ids.length) return;
+    acknowledgingRef.current = true;
+    void fetch('/api/notifications', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ action: 'read_many', ids }),
+    }).then(async (response) => {
+      if (!response.ok) throw new Error('READ_FAILED');
+      const payload = await response.json();
+      const readAt = payload.readAt || new Date().toISOString();
+      setItems((current) => current.map((item) => ids.includes(item.id) ? { ...item, readAt } : item));
+      setUnreadCount(Number(payload.unreadCount || 0));
+      window.dispatchEvent(new CustomEvent('notifications:changed', { detail: { unreadCount: Number(payload.unreadCount || 0) } }));
+    }).catch(() => setMenuError('تعذر حفظ الاطلاع على الإشعارات.')).finally(() => { acknowledgingRef.current = false; });
+  }, [open, menuLoading, items]);
+
   useEffect(() => {
     let active = true;
     let timer: number | null = null;
@@ -216,7 +239,15 @@ export function NotificationBell() {
   function toggleMenu() {
     const nextOpen = !open;
     setOpen(nextOpen);
-    if (nextOpen) { void loadUpdates(); if (visible) void loadMenu(); }
+    if (nextOpen) {
+      void loadUpdates().then((list) => {
+        const recentlyPublished = list.filter((item) => Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000).map((item) => item.id);
+        const next = [...new Set([...seen, ...recentlyPublished])].slice(-100);
+        setSeen(next);
+        try { localStorage.setItem('osairat:public-updates:seen:v1', JSON.stringify(next)); } catch {}
+      });
+      if (visible) void loadMenu();
+    }
   }
 
   async function openNotification(item: NotificationItem) {

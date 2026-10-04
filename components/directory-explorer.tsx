@@ -1,7 +1,7 @@
 import { isFamilyQuery } from '@/lib/family-search';
 import Link from 'next/link';
 import { categories, villages, type DirectoryCategory } from '@/lib/data';
-import { createDirectoryHref, type DirectoryQueryResult } from '@/lib/directory-query';
+import { canonicalizeDirectoryQuery, createDirectoryHref, type DirectoryQueryResult } from '@/lib/directory-query';
 import {
   getTransportDestinationLabel,
   getTransportVehicleLabel,
@@ -43,6 +43,9 @@ export function DirectoryExplorer({
   const hasActiveFilter = Boolean(query || village !== 'all' || category || hasTransportFilter);
   const quickVillages = villages.filter((item) => item.name !== 'مركز العسيرات');
   const activeVillage = village !== 'all' ? villages.find((item) => item.name === village) : undefined;
+  const matchedLocality = query ? villages.find((item) =>
+    item.localities.some((locality) => canonicalizeDirectoryQuery(locality) === canonicalizeDirectoryQuery(query)),
+  ) : undefined;
 
   return (
     <div className="explorer explorer--premium explorer--discovery-v4">
@@ -284,13 +287,17 @@ export function DirectoryExplorer({
                 استكشف {activeVillage.name}
               </Link>
             )}
+            {matchedLocality && <Link href={`/villages/${matchedLocality.slug}#localities`} className="button button--soft">اعرف موقع «{query}» داخل {matchedLocality.name}</Link>}
             {category && (
               <Link href={createDirectoryHref(pathname, { village, vehicle, destination })} className="button button--ghost">
                 عرض كل {categories.find((item) => item.id === category)?.shortLabel || 'القسم'}
               </Link>
             )}
             <Link href="/directory" className="button button--ghost">كل الدليل</Link>
+            {query && <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${query} ${village !== 'all' ? village : 'مركز العسيرات'} سوهاج`)}`} target="_blank" rel="noopener noreferrer" className="button button--soft">ابحث على خرائط Google ↗</a>}
+            <Link href="/account#business-submissions" className="button button--ghost">تعرف نشاط مناسب؟ أضفه للدليل</Link>
           </div>
+          {query && <small>نتائج الخرائط مصدر خارجي؛ تحقق من بيانات النشاط قبل التواصل. السجلات المنشورة هنا تُراجع قبل اعتمادها.</small>}
         </div>
       )}
     </div>

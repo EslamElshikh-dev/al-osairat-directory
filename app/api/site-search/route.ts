@@ -141,6 +141,26 @@ export async function GET(request: Request) {
       });
     }
 
+    // Suggest the right section for unmet requests without presenting a broad
+    // category as though it were a verified matching business.
+    if (!listingResults.length) {
+      const fallback = [
+        { pattern: /اجهزه كهربائيه|ادوات منزليه/, category: 'shops', title: 'استكشف قسم المحلات' },
+        { pattern: /سيراميك|بلاط/, category: 'crafts', title: 'استكشف قسم الحرفيين' },
+        { pattern: /باطنه|طبيب باطنه/, category: 'doctors', title: 'استكشف قسم الأطباء' },
+      ].find((item) => item.pattern.test(normalizedQuery));
+      if (fallback) navigationCandidates.push({
+        score: 95,
+        item: {
+          kind: 'category',
+          title: fallback.title,
+          subtitle: 'بدائل من القسم؛ لا توجد نتيجة مطابقة موثقة لهذا البحث حاليًا.',
+          href: `/directory/${fallback.category}`,
+          badge: 'اقتراح قسم',
+        },
+      });
+    }
+
     const seen = new Set(listingResults.map((item) => item.href));
     const navigationResults = navigationCandidates
       .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title, 'ar'))

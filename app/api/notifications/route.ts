@@ -137,14 +137,20 @@ export async function POST(request: Request) {
   if (!session) return NextResponse.json({ error: 'يلزم تسجيل الدخول أولًا.' }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
-  const action = body?.action === 'read_all' ? 'read_all' : body?.action === 'read' ? 'read' : '';
+  const action = body?.action === 'read_many' ? 'read_many' : body?.action === 'read_all' ? 'read_all' : body?.action === 'read' ? 'read' : '';
   const id = typeof body?.id === 'string' ? body.id.trim() : '';
-  if (!action || (action === 'read' && !id)) return respond({ error: 'بيانات الإشعار غير صحيحة.' }, session, 400);
+  const ids = Array.isArray(body?.ids) ? body.ids.filter((value: unknown): value is string => typeof value === 'string') : [];
+  const uuid = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+  if (!action || (action === 'read' && !uuid.test(id)) || (action === 'read_many' && (!ids.length || ids.length > 50 || ids.some((value: string) => !uuid.test(value))))) {
+    return respond({ error: 'بيانات الإشعار غير صحيحة.' }, session, 400);
+  }
 
   const now = new Date().toISOString();
   const filter = action === 'read_all'
     ? 'read_at=is.null'
-    : `id=eq.${encodeURIComponent(id)}&read_at=is.null`;
+    : action === 'read_many'
+      ? `id=in.(${ids.join(',')})&read_at=is.null`
+      : `id=eq.${id}&read_at=is.null`;
 
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/member_notifications?${filter}`, {

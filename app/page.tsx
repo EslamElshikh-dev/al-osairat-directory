@@ -91,6 +91,7 @@ export default async function HomePage() {
             <Image src="/images/directory/hero-al-osairat.webp" alt="مشهد تعبيري لحقول وقرى العسيرات عند الشروق" fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 40vw, 490px" />
             <div className="us-place__top"><span><BrandMark /></span><small>صورة تعبيرية</small></div>
             <div className="us-place__caption"><span>هنا جذورنا، وهنا حكايتنا</span><strong>بلد واحدة.<br />وحكايات كتير.</strong><Link prefetch={false} href="/villages">اكتشف قرى العسيرات</Link></div>
+            <span className="us-place__seal" aria-hidden="true"><b>العسيرات</b><small>ناسها · قراها · خدماتها</small></span>
             <span className="us-place__coordinate" aria-hidden="true">العسيرات / سوهاج / مصر</span>
           </aside>
           <div className="us-hero__search">

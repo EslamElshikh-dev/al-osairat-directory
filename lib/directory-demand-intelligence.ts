@@ -47,13 +47,13 @@ const categoryRules: Array<{ category: DirectoryCategory; pattern: RegExp }> = [
   { category: 'education', pattern: /(مدرس|تعليم|حضان|روض|معهد|سنتر|دروس|ازهر)/ },
   { category: 'transport', pattern: /(مواصل|نقل|سواق|سائق|ميكروباص|توك توك|تاكسي|اتوبيس|حافل)/ },
   { category: 'restaurants', pattern: /(مطعم|اكل|طعام|وجبات|كشري|مشويات|بيتزا|حلواني)/ },
-  { category: 'crafts', pattern: /(سباك|كهربا|نجار|حداد|نقاش|صيانه|فني|حرفي|تشطيب)/ },
+  { category: 'crafts', pattern: /(سباك|كهربا|نجار|حداد|نقاش|صيانه|فني|حرفي|تشطيب|سيراميك|بلاط)/ },
   { category: 'lawyers', pattern: /(محامي|محاماه|قانون|استشاره قانون)/ },
   { category: 'worship', pattern: /(مسجد|جامع|كنيس|عباده)/ },
   { category: 'clerics', pattern: /(ماذون|شيخ|زواج)/ },
   { category: 'government', pattern: /(بريد|وحده صحي|مجلس|حكوم|سجل مدني|شرطه)/ },
   { category: 'community', pattern: /(ديوان|مندر|جمعيه|عائله|مجلس عائلي)/ },
-  { category: 'shops', pattern: /(محل|متجر|مكتبه|موبايل|ملابس|احذيه|بقال|سوبر ماركت|اثاث)/ },
+  { category: 'shops', pattern: /(محل|متجر|مكتبه|موبايل|ملابس|احذيه|بقال|سوبر ماركت|اثاث|اجهزه كهربائيه|ادوات منزليه)/ },
 ];
 
 function validCategory(value: string): DirectoryCategory | '' {

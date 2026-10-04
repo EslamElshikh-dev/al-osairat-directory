@@ -24,6 +24,8 @@ export type SandNavigationAction = {
 
 export const sandNavigationActions: SandNavigationAction[] = [
   { label: 'تثبيت دليل العسيرات', href: '/install', aliases: ['تثبيت دليل العسيرات', 'تثبيت التطبيق', 'تحميل التطبيق', 'حمل الدليل', 'الدليل على الموبايل'] },
+  { label: 'حسابي وطلباتي', href: '/account', aliases: ['حسابي', 'الملف الشخصي', 'طلباتي', 'حالة طلبي', 'تابع نشاطي', 'تعديل نشاطي', 'إشعاراتي'] },
+  { label: 'إضافة نشاط إلى الدليل', href: '/account#business-submissions', aliases: ['اضف نشاط', 'أضف نشاط', 'تسجيل نشاط', 'انشر نشاطي', 'سجل محلي', 'اضافة نشاط', 'إضافة نشاط'] },
   {
     label: 'أخبار العسيرات',
     href: '/news',

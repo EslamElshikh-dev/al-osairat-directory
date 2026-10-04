@@ -11,6 +11,8 @@ import { AdminJobs } from '@/components/admin/admin-jobs';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
 import { AdminListingReports } from '@/components/admin/admin-listing-reports';
 import { AdminCommunityReports } from '@/components/admin/admin-community-reports';
+import { AdminMembers } from '@/components/admin/admin-members';
+import { AdminSandInsights } from '@/components/admin/admin-sand-insights';
 import { resolveAdminSession } from '@/lib/auth/admin-server';
 
 export const metadata: Metadata = {
@@ -41,6 +43,8 @@ export default async function AdminPage() {
               <a href="#directory-intelligence">الطلب والبحث</a>
               <a href="#data-quality">سلطة البيانات</a>
               <a href="#admin-requests">صندوق المراجعة</a>
+              <a href="#admin-members">الأعضاء</a>
+              <a href="#admin-sand">سند</a>
               <a href="#admin-jobs">وظائف العسيرات</a>
             </nav>
           </div>
@@ -68,16 +72,20 @@ export default async function AdminPage() {
           <a href="#analytics-overview"><span>01</span>ملخص الأداء</a>
           <a href="#admin-discovery"><span>02</span>الزيارات والصفحات</a>
           <a href="#directory-intelligence"><span>03</span>الطلب والفجوات</a>
-          <a href="#data-quality"><span>03</span>جودة البيانات</a>
-          <a href="#authority-batch"><span>04</span>دفعة التوثيق</a>
-          <a href="#admin-requests"><span>05</span>طلبات الأعضاء</a>
-          <a href="#listing-reports"><span>06</span>بلاغات الأنشطة</a>
-          <a href="#community-reports"><span>07</span>بلاغات المجتمع</a>
-          <a href="#admin-jobs"><span>08</span>الوظائف</a>
+          <a href="#admin-members"><span>04</span>الحسابات المسجلة</a>
+          <a href="#admin-sand"><span>05</span>إحصائيات سند</a>
+          <a href="#data-quality"><span>06</span>جودة البيانات</a>
+          <a href="#authority-batch"><span>07</span>دفعة التوثيق</a>
+          <a href="#admin-requests"><span>08</span>طلبات الأعضاء</a>
+          <a href="#listing-reports"><span>09</span>بلاغات الأنشطة</a>
+          <a href="#community-reports"><span>10</span>بلاغات المجتمع</a>
+          <a href="#admin-jobs"><span>11</span>الوظائف</a>
         </nav>
         <AdminDiscoveryInsights />
         <AdminAnalyticsDashboard />
         <AdminDirectoryIntelligence />
+        <AdminMembers />
+        <AdminSandInsights />
         <AdminDataQuality />
         <AdminAuthorityBatch />
         <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>

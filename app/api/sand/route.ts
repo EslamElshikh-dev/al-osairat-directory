@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sameOrigin } from '@/lib/auth/supabase-rest';
+import { sameOrigin, SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/auth/supabase-rest';
 import { villages } from '@/lib/data';
 import { generateSandAiReply, hasConfiguredSandProvider } from '@/lib/sand/agent';
 import { getSandDirectoryGrounding, getSandEmergencyGrounding } from '@/lib/sand/grounding';
@@ -172,6 +172,29 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 48,
       priority: 'low',
     });
+  }
+
+  // Aggregate only response quality signals. Never persist the question,
+  // answer, visitor identity, contact information, or conversation history.
+  if (!/bot|crawl|spider|headlesschrome|playwright|puppeteer|lighthouse/i.test(request.headers.get('user-agent') || '')) {
+    const metric = await fetch(`${SUPABASE_URL}/rest/v1/sand_requests`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({
+        mode,
+        intent: plan.intent,
+        data_source: grounding?.source || 'none',
+        result_count: Math.min(10000, Math.max(0, grounding?.total || 0)),
+        duration_ms: Math.min(60000, Date.now() - startedAt),
+      }),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(1800),
+    }).catch(() => null);
+    if (!metric?.ok) console.warn('[sand] metrics write unavailable', metric?.status || 'network');
   }
 
   return response;
