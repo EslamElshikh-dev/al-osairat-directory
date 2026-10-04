@@ -81,18 +81,10 @@ export default async function HomePage() {
     <main id="main-content" className="home-redesign">
       <section className="us-hero" aria-labelledby="us-hero-title">
         <div className="shell us-hero__grid">
-          <div className="us-hero__copy">
-            <div className="us-hero__intro">
+          <div className="us-hero__intro">
             <div className="us-hero__eyebrow"><span>من قلب سوهاج</span><span>من أهل البلد، لأهل البلد</span></div>
             <h1 id="us-hero-title">العسيرات…<br /><em>أقرب لك.</em></h1>
             <p>دكتور تطمّن عنده، صنعة تحتاجها، أو شغل قريب منك.<br className="us-desktop-break" /> دوّر في بلدك وقراها… والباقي علينا.</p>
-            </div>
-            <SmartLocalCompass villages={villages.filter((village) => village.name !== 'مركز العسيرات').map(({ name, slug }) => ({ name, slug }))} />
-            <div className="us-hero__stats" aria-label="تغطية دليل العسيرات">
-              <span><b>{allListings.length.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
-              <span><b>{directoryStats.villages.toLocaleString('ar-EG')}</b><small>قرى تجمعنا</small></span>
-              <span><b>{googleVerifiedCount.toLocaleString('ar-EG')}</b><small>مرجع على الخرائط</small></span>
-            </div>
           </div>
           <aside className="us-place" aria-label="العسيرات، محافظة سوهاج">
             <Image src="/images/directory/hero-al-osairat.webp" alt="مشهد تعبيري لحقول وقرى العسيرات عند الشروق" fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 40vw, 490px" />
@@ -100,6 +92,14 @@ export default async function HomePage() {
             <div className="us-place__caption"><span>هنا جذورنا، وهنا حكايتنا</span><strong>بلد واحدة.<br />وحكايات كتير.</strong><Link prefetch={false} href="/villages">اكتشف قرى العسيرات</Link></div>
             <span className="us-place__coordinate" aria-hidden="true">العسيرات / سوهاج / مصر</span>
           </aside>
+          <div className="us-hero__search">
+            <SmartLocalCompass villages={villages.filter((village) => village.name !== 'مركز العسيرات').map(({ name, slug }) => ({ name, slug }))} />
+          </div>
+          <div className="us-hero__stats" aria-label="تغطية دليل العسيرات">
+            <span><b>{allListings.length.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
+            <span><b>{directoryStats.villages.toLocaleString('ar-EG')}</b><small>قرى تجمعنا</small></span>
+            <span><b>{googleVerifiedCount.toLocaleString('ar-EG')}</b><small>مرجع على الخرائط</small></span>
+          </div>
         </div>
         <nav className="shell us-section-nav" aria-label="اكتشف الصفحة">
           <span>خُد لك لفة</span><a href="#services">الخدمات</a><a href="#villages">القرى</a><a href="#latest-news">الأخبار</a><a href="#stories">حكايات بلدنا</a><Link prefetch={false} href="/install">الدليل على موبايلك</Link>

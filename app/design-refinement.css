@@ -1,0 +1,194 @@
+/* A clearer editorial rhythm for the existing pine-and-gold identity. */
+.home-redesign .us-hero {
+  background: radial-gradient(circle at 76% 4%, #eaf1e5 0, transparent 32%), #f8f9f5;
+}
+.home-redesign .us-hero__grid {
+  grid-template-columns: minmax(0, 1.16fr) minmax(0, .84fr);
+  grid-template-rows: auto auto auto;
+  grid-template-areas: "intro place" "search place" "stats place";
+  column-gap: clamp(30px, 4vw, 60px);
+  row-gap: 0;
+  align-items: stretch;
+}
+.home-redesign .us-hero__intro { grid-area: intro; align-self: end; min-width: 0; padding-top: 32px; }
+.home-redesign .us-hero__intro h1 { max-width: 11ch; }
+.home-redesign .us-hero__search { grid-area: search; min-width: 0; }
+.home-redesign .us-hero__search .smart-compass { margin-top: 22px; }
+.home-redesign .us-hero__stats { grid-area: stats; align-self: start; margin-block: 23px 34px; }
+.home-redesign .us-place { grid-area: place; min-height: 530px; height: 100%; border-radius: 108px 26px 26px 26px; }
+.home-redesign .us-place__caption a { border-color: #e8cc8b9c; background: #214938d9; }
+.home-redesign .us-place__caption a:hover { background: #315d45; }
+.home-redesign .us-section-nav { margin-top: 8px; }
+.home-redesign .us-section-nav a { transition: color .18s ease; }
+.home-redesign .us-section-nav a:hover { color: #946b23; }
+
+.home-redesign .home-route-rail { padding-top: 44px; padding-bottom: 12px; }
+.home-redesign .home-route-rail__intro {
+  display: block;
+  margin-bottom: 21px;
+  padding: 0;
+}
+.home-redesign .home-route-rail__intro .eyebrow { display: block; }
+.home-redesign .home-route-rail__intro h2 {
+  max-width: none;
+  margin: 5px 0 3px;
+  color: #173b30;
+  font-size: clamp(1.55rem, 2.5vw, 2.2rem);
+  line-height: 1.4;
+}
+.home-redesign .home-route-rail__intro p {
+  max-width: 58ch;
+  color: #68796b;
+  font-size: .875rem;
+  line-height: 1.8;
+}
+.home-redesign .home-route-rail__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(156px, auto);
+  gap: 12px;
+  overflow: visible;
+  padding: 0;
+  scroll-snap-type: none;
+}
+.home-redesign .home-route-card {
+  min-height: 156px;
+  padding: 19px 21px;
+  border: 1px solid #dce6da;
+  border-radius: 20px;
+  background: #fffefb;
+}
+.home-redesign .home-route-card::before {
+  top: -48px;
+  left: -30px;
+  width: 90px;
+  height: 90px;
+  border-color: #cda95b36;
+  box-shadow: 0 0 0 17px #cda95b0b;
+}
+.home-redesign .home-route-card__index {
+  margin-bottom: 5px;
+  color: #a5803a;
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+}
+.home-redesign .home-route-card__kicker {
+  display: block;
+  color: #936f30;
+  font-size: .6875rem;
+  line-height: 1.5;
+}
+.home-redesign .home-route-card strong { margin-top: 4px; color: #173e32; font-size: 1.08rem; line-height: 1.5; }
+.home-redesign .home-route-card small { margin-top: 4px; color: #63756b; font-size: .78125rem; line-height: 1.7; }
+.home-redesign .home-route-card__cta { padding-top: 9px; color: #805e24; font-size: .78125rem; }
+.home-redesign .home-route-card--primary {
+  grid-column: span 2;
+  grid-row: span 2;
+  min-height: 324px;
+  padding: clamp(25px, 3vw, 42px);
+  border-color: #39594c;
+  background: radial-gradient(circle at 2% 0, #bba05d29 0, transparent 35%), linear-gradient(145deg, #143b31, #22523f);
+  box-shadow: inset 0 1px 0 #ffffff1b;
+}
+.home-redesign .home-route-card--primary::before {
+  top: auto;
+  left: -66px;
+  bottom: -125px;
+  width: 310px;
+  height: 310px;
+  border-color: #dfc6893b;
+  box-shadow: 0 0 0 32px #e4cf9710, 0 0 0 65px #e4cf9707;
+}
+.home-redesign .home-route-card--primary .home-route-card__index { color: #e8ce91; font-size: .875rem; margin-bottom: 20px; }
+.home-redesign .home-route-card--primary .home-route-card__kicker { color: #e4c57e; font-size: .8125rem; }
+.home-redesign .home-route-card--primary strong { max-width: 16ch; color: #fff; font-size: clamp(1.7rem, 2.7vw, 2.4rem); line-height: 1.35; }
+.home-redesign .home-route-card--primary small { max-width: 38ch; color: #e1eee4; font-size: .9375rem; line-height: 1.85; }
+.home-redesign .home-route-card--primary .home-route-card__cta {
+  width: fit-content;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid #dfc8827d;
+  border-radius: 11px;
+  color: #faebc0;
+  background: #ffffff14;
+  font-size: .875rem;
+}
+.home-redesign .home-route-card--jobs { background: #fcf7e9; border-color: #e6d9b4; }
+
+.home-redesign .us-category-card { border-color: #dce5d9; border-radius: 21px; }
+.home-redesign .us-category-card__media { height: 166px; margin-bottom: 19px; }
+.home-redesign .us-category-card__number { top: 135px; background: #164231; }
+.home-redesign .us-category-card h3 { font-size: 1.16rem; }
+.home-redesign .us-category-card__arrow { padding-top: 18px; }
+.home-redesign .home-village-discovery { background: linear-gradient(155deg, #eaf1e9, #f1f3e9); }
+.home-redesign .home-village-card { border-color: #d3dfd0; background: #fffdfa; }
+.home-redesign .home-village-card__index { color: #aa8133; font-size: .8125rem; }
+.home-redesign .home-village-card h3 { margin-top: 17px; color: #173e32; }
+.home-redesign .home-village-card__cta { color: #805e24; }
+.home-redesign :is(.home-route-card, .us-category-card, .home-village-card):focus-visible,
+.home-redesign .us-section-nav a:focus-visible,
+.home-redesign .us-place__caption a:focus-visible {
+  outline: 3px solid #ae8230;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+  .home-redesign .us-hero__grid { grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: 0 25px; }
+  .home-redesign .us-place { min-height: 510px; border-top-left-radius: 72px; }
+  .home-redesign .home-route-rail__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-redesign .home-route-card { min-height: 150px; }
+  .home-redesign .home-route-card--primary { min-height: 270px; }
+}
+
+@media (max-width: 760px) {
+  .home-redesign .us-hero { padding-top: 22px; }
+  .home-redesign .us-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "intro" "place" "search" "stats";
+    gap: 16px;
+  }
+  .home-redesign .us-hero__intro { padding-top: 0; }
+  .home-redesign .us-hero__intro h1 { max-width: none; margin-block: 11px 9px; }
+  .home-redesign .us-place { min-height: 275px; border-radius: 54px 20px 20px 20px; }
+  .home-redesign .us-place__caption { bottom: 21px; }
+  .home-redesign .us-place__caption strong { max-width: 18ch; line-height: 1.3; }
+  .home-redesign .us-hero__search .smart-compass { margin-top: 0; }
+  .home-redesign .us-hero__stats { margin: 0 0 6px; }
+  .home-redesign .us-section-nav { margin-top: 12px; }
+  .home-redesign .home-route-rail { padding-top: 28px; }
+  .home-redesign .home-route-rail__intro { margin-bottom: 14px; }
+  .home-redesign .home-route-rail__intro .eyebrow { display: block; }
+  .home-redesign .home-route-rail__intro h2 { font-size: 1.32rem; }
+  .home-redesign .home-route-rail__intro p { display: block; font-size: .8125rem; }
+  .home-redesign .home-route-rail__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .home-redesign .home-route-card { min-height: 153px; padding: 15px; border-radius: 18px; }
+  .home-redesign .home-route-card__index { margin-bottom: 8px; }
+  .home-redesign .home-route-card__kicker { display: none; }
+  .home-redesign .home-route-card strong { font-size: .9375rem; line-height: 1.5; }
+  .home-redesign .home-route-card small { display: none; }
+  .home-redesign .home-route-card__cta { font-size: .75rem; }
+  .home-redesign .home-route-card--primary { grid-row: auto; min-height: 200px; padding: 22px; }
+  .home-redesign .home-route-card--primary .home-route-card__index { margin-bottom: 9px; }
+  .home-redesign .home-route-card--primary .home-route-card__kicker,
+  .home-redesign .home-route-card--primary small { display: block; }
+  .home-redesign .home-route-card--primary strong { font-size: 1.5rem; }
+  .home-redesign .home-route-card--primary small { font-size: .8125rem; line-height: 1.7; }
+  .home-redesign .home-route-card--primary .home-route-card__cta { margin-top: 13px; }
+  .home-redesign .us-category-card { min-height: 132px; border-radius: 17px; }
+  .home-redesign .us-category-card__media { height: 48px; margin: 0; }
+  .home-redesign .us-category-card__number { top: auto; }
+  .home-redesign .home-village-card { border-radius: 17px; }
+}
+
+@media (max-width: 360px) {
+  .home-redesign .us-hero__grid { gap: 13px; }
+  .home-redesign .us-place { min-height: 260px; }
+  .home-redesign .home-route-card { min-height: 160px; padding: 13px; }
+  .home-redesign .home-route-card strong { font-size: .875rem; }
+  .home-redesign .home-route-card__cta { font-size: .6875rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-redesign .us-section-nav a { transition: none; }
+}
