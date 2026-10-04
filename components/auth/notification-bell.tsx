@@ -75,7 +75,8 @@ export function NotificationBell() {
       const list = await loadPublicUpdates();
       setUpdates(list.filter((item) => item.href?.startsWith('/') && !item.href.startsWith('//') && !item.href.includes('\\')));
       setUpdatesError('');
-    } catch { setUpdatesError('تعذر تحميل تحديثات الدليل.'); }
+      return list;
+    } catch { setUpdatesError('تعذر تحميل تحديثات الدليل.'); return []; }
     finally { setUpdatesLoading(false); }
   }, []);
   useEffect(() => {
