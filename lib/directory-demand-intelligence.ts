@@ -61,7 +61,7 @@ function validCategory(value: string): DirectoryCategory | '' {
   return categories.some((item) => item.id === value) ? value as DirectoryCategory : '';
 }
 
-function inferCategory(term: string, explicit: string) {
+export function inferCategory(term: string, explicit: string) {
   const selected = validCategory(explicit);
   if (selected) return selected;
   const normalized = canonicalizeDirectoryQuery(term);

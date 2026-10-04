@@ -2,6 +2,7 @@ import { isFamilyQuery } from '@/lib/family-search';
 import Link from 'next/link';
 import { categories, villages, type DirectoryCategory } from '@/lib/data';
 import { canonicalizeDirectoryQuery, createDirectoryHref, type DirectoryQueryResult } from '@/lib/directory-query';
+import { inferCategory } from '@/lib/directory-demand-intelligence';
 import {
   getTransportDestinationLabel,
   getTransportVehicleLabel,
@@ -46,6 +47,7 @@ export function DirectoryExplorer({
   const matchedLocality = query ? villages.find((item) =>
     item.localities.some((locality) => canonicalizeDirectoryQuery(locality) === canonicalizeDirectoryQuery(query)),
   ) : undefined;
+  const suggestedCategory = !category && query ? inferCategory(query, '') : '';
 
   return (
     <div className="explorer explorer--premium explorer--discovery-v4">
@@ -288,6 +290,7 @@ export function DirectoryExplorer({
               </Link>
             )}
             {matchedLocality && <Link href={`/villages/${matchedLocality.slug}#localities`} className="button button--soft">اعرف موقع «{query}» داخل {matchedLocality.name}</Link>}
+            {suggestedCategory && <Link href={`/directory/${suggestedCategory}`} className="button button--primary">استكشف {categories.find((item) => item.id === suggestedCategory)?.shortLabel || 'القسم المناسب'}</Link>}
             {category && (
               <Link href={createDirectoryHref(pathname, { village, vehicle, destination })} className="button button--ghost">
                 عرض كل {categories.find((item) => item.id === category)?.shortLabel || 'القسم'}
