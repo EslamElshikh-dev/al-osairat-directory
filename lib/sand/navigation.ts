@@ -92,7 +92,17 @@ const contextResetAliases = new Set(
 );
 
 export function sandNavigationHref(value: string) {
-  return navigationAliasMap.get(normalizeNavigationValue(value)) || '';
+  const normalized = normalizeNavigationValue(value);
+  const exact = navigationAliasMap.get(normalized);
+  if (exact) return exact;
+
+  // Natural questions about adding a listing should reach the actual member form.
+  if (/(اضف|اضيف|اضافه|اسجل|انشر|تسجيل|نشر)\s+نشاط(?:ي|\s|$)/.test(normalized)
+    || (/(فين|ازاي|كيف|رابط|مكان)/.test(normalized) && /نشاطي|نشاط جديد/.test(normalized))) {
+    return '/account#business-submissions';
+  }
+
+  return '';
 }
 
 export function isSandContextResetCommand(value: string) {
