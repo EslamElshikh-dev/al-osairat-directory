@@ -14,6 +14,7 @@ import { CommunityLibraryPanel } from './community-library-panel';
 import { AdminAccessCard } from './admin-access-card';
 import { ensureClientSession, setClientSessionUser } from './client-session';
 import { ProfileAvatar } from './profile-avatar';
+import { rememberMemberReturnFromHash } from '@/lib/auth/member-return';
 
 type User = {
   localId: string;
@@ -60,13 +61,19 @@ export function AccountPanel() {
     void ensureClientSession()
       .then((nextUser) => {
         if (!active) return;
-        if (!nextUser) router.replace('/account/login');
+        if (!nextUser) { rememberMemberReturnFromHash(); router.replace('/account/login'); }
         else setUser(nextUser as User);
       })
-      .catch(() => { if (active) router.replace('/account/login'); })
+      .catch(() => { if (active) { rememberMemberReturnFromHash(); router.replace('/account/login'); } })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [router]);
+
+  useEffect(() => {
+    if (user && window.location.hash === '#business-submissions') {
+      requestAnimationFrame(() => document.getElementById('business-submissions')?.scrollIntoView({ block: 'start' }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;

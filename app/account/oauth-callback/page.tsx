@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setClientSessionUser, type ClientSessionUser } from '@/components/auth/client-session';
+import { consumeMemberReturn } from '@/lib/auth/member-return';
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function OAuthCallbackPage() {
         const data = await response.json() as { user?: ClientSessionUser };
         if (!active) return;
         setClientSessionUser(data.user ?? null);
-        router.replace('/account');
+        router.replace(consumeMemberReturn());
         router.refresh();
       } catch (reason) {
         if (!active || controller.signal.aborted) return;

@@ -5,6 +5,7 @@ import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useState } from 'reac
 import { useRouter } from 'next/navigation';
 import { evaluatePassword, PASSWORD_MIN_LENGTH, passwordPolicyError } from '@/lib/auth/password-policy';
 import { setClientSessionUser, type ClientSessionUser } from '@/components/auth/client-session';
+import { consumeMemberReturn } from '@/lib/auth/member-return';
 
 type ApiResult = { error?: string; verificationSent?: boolean; user?: ClientSessionUser };
 
@@ -163,7 +164,7 @@ export function LoginForm() {
         password: String(form.get('password') || ''),
       });
       setClientSessionUser(result.user ?? null);
-      router.replace('/account');
+      router.replace(consumeMemberReturn());
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذر تسجيل الدخول.');
@@ -215,7 +216,7 @@ export function RegisterForm() {
         setBusy(false);
       } else {
         setClientSessionUser(result.user ?? null);
-        router.replace('/account');
+        router.replace(consumeMemberReturn());
         router.refresh();
       }
     } catch (err) {
