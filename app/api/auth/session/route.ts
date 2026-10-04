@@ -4,6 +4,7 @@ import { AUTH_ACCESS_COOKIE, AUTH_REFRESH_COOKIE, authCookieBase, getUser, mapMe
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+const sessionHeaders = { 'Cache-Control': 'private, no-store', Vary: 'Cookie' };
 
 export async function GET() {
   const store = await cookies();
@@ -13,7 +14,7 @@ export async function GET() {
   if (accessToken) {
     try {
       const user = await getUser(accessToken);
-      return NextResponse.json({ user: mapMember(user) });
+      return NextResponse.json({ user: mapMember(user) }, { headers: sessionHeaders });
     } catch {
       // Try refreshing below.
     }
@@ -22,17 +23,17 @@ export async function GET() {
   if (refreshToken) {
     try {
       const session = await refreshSession(refreshToken);
-      const response = NextResponse.json({ user: mapMember(session.user) });
+      const response = NextResponse.json({ user: mapMember(session.user) }, { headers: sessionHeaders });
       response.cookies.set(AUTH_ACCESS_COOKIE, session.access_token, { ...authCookieBase, maxAge: Math.max(300, (session.expires_in || 3600) - 60) });
       response.cookies.set(AUTH_REFRESH_COOKIE, session.refresh_token, { ...authCookieBase, maxAge: 60 * 60 * 24 * 30 });
       return response;
     } catch {
-      const response = NextResponse.json({ user: null });
+      const response = NextResponse.json({ user: null }, { headers: sessionHeaders });
       response.cookies.set(AUTH_ACCESS_COOKIE, '', { ...authCookieBase, maxAge: 0 });
       response.cookies.set(AUTH_REFRESH_COOKIE, '', { ...authCookieBase, maxAge: 0 });
       return response;
     }
   }
 
-  return NextResponse.json({ user: null });
+  return NextResponse.json({ user: null }, { headers: sessionHeaders });
 }

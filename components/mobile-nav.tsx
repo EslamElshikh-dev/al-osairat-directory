@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link, { useLinkStatus } from 'next/link';
 import { Fragment } from 'react';
 import { usePathname } from 'next/navigation';
@@ -113,6 +113,7 @@ export function MobileNav() {
                       height={43}
                       sizes="43px"
                       loading="eager"
+                      fetchPriority="high"
                     />
                   </span>
                   <span className="mobile-nav__label">سَند</span>

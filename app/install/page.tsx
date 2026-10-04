@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { CopyInstallLink, InstallAction } from '@/components/pwa-setup';
 import { siteConfig } from '@/lib/site';

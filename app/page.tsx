@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { categories, directoryStats, villages } from '@/lib/data';
 import { ListingCard } from '@/components/listing-card';

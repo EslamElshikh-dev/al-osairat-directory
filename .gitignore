@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Supabase CLI local metadata
 /supabase/.temp/
+
+# Rebuilt content-hashed responsive images
+/public/images/mobile/

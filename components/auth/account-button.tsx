@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -10,6 +10,7 @@ import {
   refreshClientSession,
   subscribeClientSession,
   updateClientSessionUser,
+  readProfileHint,
 } from './client-session';
 
 type ProfileUpdatedDetail = { displayName?: string; avatarUrl?: string };
@@ -29,6 +30,28 @@ export function AccountButton() {
   const [user, setUser] = useState<ClientSessionUser | null>(null);
   const [ready, setReady] = useState(false);
   const [failedAvatarUrl, setFailedAvatarUrl] = useState('');
+  const [hint, setHint] = useState<{displayName: string; avatarUrl: string} | null>(null);
+  const [openedAt, setOpenedAt] = useState<string | null>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const open = openedAt === pathname;
+
+  useEffect(() => { setHint(readProfileHint()); }, []);
+  useEffect(() => {
+    if (!open) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (!root.current?.contains(event.target as Node)) setOpenedAt(null);
+    };
+    const closeEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setOpenedAt(null); trigger.current?.focus(); }
+    };
+    document.addEventListener('pointerdown', closeOutside);
+    document.addEventListener('keydown', closeEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside);
+      document.removeEventListener('keydown', closeEscape);
+    };
+  }, [open]);
 
   useEffect(() => {
     let active = true;
@@ -61,6 +84,7 @@ export function AccountButton() {
   useEffect(() => {
     const previous = previousPath.current;
     previousPath.current = pathname;
+    setOpenedAt(null);
 
     const completedLogin =
       (previous === '/account/login' || previous === '/account/register') && pathname === '/account';
@@ -72,20 +96,26 @@ export function AccountButton() {
   }, [pathname]);
 
   const label = user ? (user.displayName?.split(' ')[0] || 'حسابي') : 'دخول';
+  const avatarUrl = user?.avatarUrl || (!ready ? hint?.avatarUrl : '') || '';
 
   return (
-    <Link
-      href={user ? '/account' : '/account/login'}
+    <div className="account-menu" ref={root}>
+    <button
+      ref={trigger}
+      type="button"
+      onClick={() => setOpenedAt(open ? null : pathname)}
       className={`account-trigger${user ? ' is-signed-in' : ''}`}
-      aria-label={user ? `حساب ${user.displayName}` : 'تسجيل الدخول أو إنشاء حساب'}
+      aria-label={user ? `قائمة حساب ${user.displayName}` : 'افتح قائمة الحساب'}
+      aria-expanded={open}
+      aria-controls="account-menu-links"
       title={ready && user ? user.displayName : 'حساب الأعضاء'}
     >
-      <span className={`account-trigger__icon${user?.avatarUrl ? ' has-photo' : ''}`} aria-hidden="true">
+      <span className={`account-trigger__icon${avatarUrl ? ' has-photo' : ''}`} aria-hidden="true">
         <AccountIcon />
-        {user?.avatarUrl && failedAvatarUrl !== user.avatarUrl ? (
+        {avatarUrl && failedAvatarUrl !== avatarUrl ? (
           <Image
-            key={user.avatarUrl}
-            src={user.avatarUrl}
+            key={avatarUrl}
+            src={avatarUrl}
             alt=""
             width={32}
             height={32}
@@ -94,11 +124,24 @@ export function AccountButton() {
             fetchPriority="high"
             unoptimized
             referrerPolicy="no-referrer"
-            onError={() => setFailedAvatarUrl(user.avatarUrl)}
+            onError={() => setFailedAvatarUrl(avatarUrl)}
           />
         ) : null}
       </span>
       <span className="account-trigger__label">{ready ? label : 'حسابي'}</span>
-    </Link>
+    </button>
+    {open && <nav id="account-menu-links" className="account-menu__links" aria-label="حساب العضو" onClick={() => setOpenedAt(null)}>
+      {user ? <>
+        <strong>{user.displayName}</strong>
+        <Link prefetch={false} href="/account">حسابي</Link>
+        <Link prefetch={false} href="/account#account-profile">الملف الشخصي</Link>
+        <Link prefetch={false} href="/account#my-businesses">أنشطتي</Link>
+        <Link prefetch={false} href="/account#account-favorites">المفضلة</Link>
+      </> : <>
+        <Link prefetch={false} href="/account/login">تسجيل الدخول</Link>
+        <Link prefetch={false} href="/account/register">إنشاء حساب</Link>
+      </>}
+    </nav>}
+    </div>
   );
 }

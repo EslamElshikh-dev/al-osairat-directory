@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { jobAreas } from '@/lib/jobs-geography';
 import { getLocalJobs } from '@/lib/jobs';

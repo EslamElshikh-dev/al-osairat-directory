@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './pwa-install-banner.module.css';

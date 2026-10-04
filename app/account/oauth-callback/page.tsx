@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { setClientSessionUser, type ClientSessionUser } from '@/components/auth/client-session';
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
@@ -48,7 +49,9 @@ export default function OAuthCallbackPage() {
           throw new Error(data?.error || 'تعذر إكمال تسجيل الدخول.');
         }
 
+        const data = await response.json() as { user?: ClientSessionUser };
         if (!active) return;
+        setClientSessionUser(data.user ?? null);
         router.replace('/account');
         router.refresh();
       } catch (reason) {

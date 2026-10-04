@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Fragment } from 'react';
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArticleReadingProgress } from '@/components/article-reading-progress';

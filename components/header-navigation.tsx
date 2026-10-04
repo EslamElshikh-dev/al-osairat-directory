@@ -18,6 +18,7 @@ export function HeaderNavigation() {
   const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const active = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
+  useEffect(() => { setOpenedAt(null); }, [pathname]);
 
   useEffect(() => {
     if (!open) return;

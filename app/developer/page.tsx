@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { DeveloperChapterNav } from '@/components/developer-chapter-nav';
 import { DeveloperWorkShowcase } from '@/components/developer-work-showcase';

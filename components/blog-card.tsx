@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import type { BlogArticle } from '@/lib/blog';
 import { blogBySlug } from '@/lib/blog-published';

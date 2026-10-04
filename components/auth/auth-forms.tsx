@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { evaluatePassword, PASSWORD_MIN_LENGTH, passwordPolicyError } from '@/lib/auth/password-policy';
+import { setClientSessionUser, type ClientSessionUser } from '@/components/auth/client-session';
 
-type ApiResult = { error?: string; verificationSent?: boolean };
+type ApiResult = { error?: string; verificationSent?: boolean; user?: ClientSessionUser };
 
 type PasswordInputProps = {
   id: string;
@@ -157,10 +158,11 @@ export function LoginForm() {
     const form = new FormData(event.currentTarget);
     setBusy(true); setError('');
     try {
-      await submitAuth('/api/auth/login', {
+      const result = await submitAuth('/api/auth/login', {
         email: String(form.get('email') || ''),
         password: String(form.get('password') || ''),
       });
+      setClientSessionUser(result.user ?? null);
       router.replace('/account');
       router.refresh();
     } catch (err) {
@@ -212,6 +214,7 @@ export function RegisterForm() {
         setVerificationSent(true);
         setBusy(false);
       } else {
+        setClientSessionUser(result.user ?? null);
         router.replace('/account');
         router.refresh();
       }

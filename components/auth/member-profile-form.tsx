@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { villages } from '@/lib/data/base';
+import { ProfileAvatar } from './profile-avatar';
 
 export type EditableMemberProfile = {
   fullName: string;
@@ -112,11 +113,7 @@ export function MemberProfileForm({ onSaved }: { onSaved?: (profile: EditableMem
           <p>هذه البيانات خاصة بحسابك ولا تعدّل أي سجل تجاري أو خدمة منشورة في الدليل.</p>
         </div>
         <div className={`member-profile-avatar${profile.avatarUrl ? ' has-photo' : ''}`} aria-label="صورة الحساب الحالية">
-          {profile.avatarUrl ? (
-            <img src={profile.avatarUrl} alt="" referrerPolicy="no-referrer" />
-          ) : (
-            <span aria-hidden="true">{profile.fullName.trim().charAt(0) || 'ع'}</span>
-          )}
+          <ProfileAvatar src={profile.avatarUrl} name={profile.fullName} size={72} />
           <small>{profile.avatarUrl ? 'صورة Google' : 'صورة الحساب'}</small>
         </div>
       </div>

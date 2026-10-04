@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import {
   developerProjectFilters,

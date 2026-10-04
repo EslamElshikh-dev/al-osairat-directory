@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from '@/components/site-image';
 import Link from 'next/link';
 import { categoryById, type DirectoryListing } from '@/lib/data';
 import { imageForListing } from '@/lib/directory-images';

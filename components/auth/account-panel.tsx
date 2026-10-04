@@ -12,7 +12,8 @@ import { FollowingFeedPanel } from './following-feed-panel';
 import { CommunityProgressPanel } from './community-progress-panel';
 import { CommunityLibraryPanel } from './community-library-panel';
 import { AdminAccessCard } from './admin-access-card';
-import { refreshClientSession } from './client-session';
+import { ensureClientSession, setClientSessionUser } from './client-session';
+import { ProfileAvatar } from './profile-avatar';
 
 type User = {
   localId: string;
@@ -56,7 +57,7 @@ export function AccountPanel() {
 
   useEffect(() => {
     let active = true;
-    void refreshClientSession()
+    void ensureClientSession()
       .then((nextUser) => {
         if (!active) return;
         if (!nextUser) router.replace('/account/login');
@@ -101,7 +102,9 @@ export function AccountPanel() {
 
   async function logout() {
     setLoggingOut(true);
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => null);
+    const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => null);
+    if (!response?.ok) { setLoggingOut(false); return; }
+    setClientSessionUser(null);
     router.replace('/');
     router.refresh();
   }
@@ -109,22 +112,16 @@ export function AccountPanel() {
   if (loading) return <div className="account-loading" role="status" aria-live="polite" aria-busy="true"><span aria-hidden="true" /><p>جارٍ تحميل حسابك…</p></div>;
   if (!user) return null;
 
-  const initial = user.displayName.trim().charAt(0) || 'ع';
-
   return (
     <div className="account-dashboard account-dashboard--upgraded">
       <section className="account-profile-card account-profile-card--upgraded" id="account-overview">
         <div className={`account-avatar${user.avatarUrl ? ' has-photo' : ''}`}>
-          {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt={`صورة ${user.displayName}`} referrerPolicy="no-referrer" />
-          ) : (
-            <span aria-hidden="true">{initial}</span>
-          )}
+          <ProfileAvatar src={user.avatarUrl} name={user.displayName} />
         </div>
         <div className="account-profile-copy">
           <span className="account-kicker">عضو دليل العسيرات</span>
           <h2>{user.displayName}</h2>
-          <p>{user.email}</p>
+          <p dir="ltr">{user.email}</p>
           <div className="account-profile-badges">
             <span className={`account-status${user.emailVerified ? ' is-verified' : ''}`}>
               <i aria-hidden="true" />

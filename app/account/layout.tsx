@@ -11,6 +11,7 @@ import '../member-profile.css';
 import '../business-submissions.css';
 import '../ownership-claims.css';
 import '../my-businesses.css';
+import '../mobile-stability.css';
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
