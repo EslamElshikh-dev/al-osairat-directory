@@ -60,3 +60,90 @@
 @media (max-width: 360px) {
   .admin-sand-metrics { grid-template-columns: 1fr; }
 }
+
+/* Keep the administration hero inside the phone viewport, including browsers
+   whose CSS viewport falls between the usual phone and tablet breakpoints. */
+@media (max-width: 780px) {
+  .admin-page--premium { overflow-x: clip; }
+  .workspace-hero--admin .workspace-hero__grid,
+  .admin-page--premium .admin-workspace-shell {
+    box-sizing: border-box;
+    width: min(100% - 28px, 1180px);
+    max-width: 100%;
+    min-width: 0;
+  }
+  .workspace-hero--admin .workspace-hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding-block: 30px 52px;
+  }
+  .workspace-hero--admin :is(.workspace-hero__copy, .workspace-hero__panel) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .workspace-hero--admin .workspace-hero__copy h1 {
+    max-width: 100%;
+    margin-top: 15px;
+    font-size: clamp(30px, 7.5vw, 43px);
+    line-height: 1.25;
+    letter-spacing: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+  .workspace-hero--admin .workspace-hero__copy h1 em { white-space: normal; }
+  .workspace-hero--admin .workspace-hero__copy > p {
+    max-width: 100%;
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+  .workspace-hero--admin .workspace-hero__links {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 19px;
+    overflow-x: auto;
+    scroll-padding-inline: 10px;
+  }
+  .workspace-hero--admin .workspace-hero__panel {
+    padding: 18px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .workspace-hero--admin .workspace-hero__panel-brand strong { overflow-wrap: anywhere; }
+  .workspace-hero--admin .workspace-hero__metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .workspace-hero--admin .workspace-hero__metrics span { min-width: 0; padding: 10px; }
+  .workspace-hero--admin .workspace-hero__admin-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .workspace-hero--admin .workspace-hero__admin-actions a {
+    min-width: 0;
+    text-align: center;
+  }
+  .admin-page--premium .admin-section-nav--premium {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+  }
+  .admin-page--premium :is(.analytics-admin, .admin-live-panel, .admin-workspace) {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 440px) {
+  .workspace-hero--admin .workspace-hero__grid,
+  .admin-page--premium .admin-workspace-shell { width: min(100% - 24px, 1180px); }
+  .workspace-hero--admin .workspace-hero__copy h1 { font-size: clamp(29px, 8.4vw, 37px); }
+  .workspace-hero--admin .workspace-hero__metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace-hero--admin .workspace-hero__metrics span:last-child { grid-column: 1 / -1; }
+}
