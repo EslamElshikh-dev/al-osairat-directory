@@ -155,6 +155,37 @@
 .home-redesign .us-category-card__number { top: 135px; background: #164231; }
 .home-redesign .us-category-card h3 { font-size: 1.16rem; }
 .home-redesign .us-category-card__arrow { padding-top: 18px; }
+.home-redesign .us-category-card--emergency {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 24px;
+  min-height: 180px;
+  padding: 12px 12px 12px 24px;
+  border-color: #e8d9b8;
+  background: linear-gradient(110deg, #fbf6e9, #fffefa);
+}
+.home-redesign .us-category-card--emergency .us-category-card__media {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 100%;
+  height: 154px;
+  margin: 0;
+  border-radius: 14px;
+}
+.home-redesign .us-category-card--emergency .us-category-card__number {
+  position: static;
+  grid-column: 3;
+  grid-row: 1;
+  align-self: end;
+  justify-self: end;
+  border-color: #fbf6e9;
+}
+.home-redesign .us-category-card--emergency h3 { grid-column: 2; grid-row: 1; align-self: end; font-size: 1.5rem; }
+.home-redesign .us-category-card--emergency > p { grid-column: 2; grid-row: 2; align-self: start; font-size: .875rem; }
+.home-redesign .us-category-card--emergency .us-category-card__arrow { grid-column: 3; grid-row: 2; align-self: start; white-space: nowrap; }
 .home-redesign .us-category-card__arrow b,
 .home-redesign .home-village-card__cta b { display: inline-block; transition: transform .2s ease; }
 .home-redesign .home-village-discovery { background: linear-gradient(155deg, #eaf1e9, #f1f3e9); }
@@ -252,6 +283,19 @@
   .home-redesign .us-category-card { min-height: 132px; border-radius: 17px; background: radial-gradient(circle at 0 100%, #e8f0e66e, transparent 70%), #fffefa; box-shadow: none; }
   .home-redesign .us-category-card__media { height: 48px; margin: 0; }
   .home-redesign .us-category-card__number { top: auto; }
+  .home-redesign .us-category-card--emergency {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-rows: 48px;
+    gap: 8px;
+    min-height: 82px;
+    padding: 14px;
+    background: #fbf5e6;
+  }
+  .home-redesign .us-category-card--emergency .us-category-card__media { grid-column: 1; grid-row: 1; width: 48px; height: 48px; border-radius: 14px; }
+  .home-redesign .us-category-card--emergency .us-category-card__number { grid-column: 3; grid-row: 1; align-self: center; border: 0; color: #82601e; background: none; }
+  .home-redesign .us-category-card--emergency h3 { grid-column: 2; grid-row: 1; align-self: center; font-size: 1rem; }
+  .home-redesign .us-category-card--emergency > p,
+  .home-redesign .us-category-card--emergency .us-category-card__arrow { display: none; }
   .home-redesign .home-village-card { border-radius: 17px; }
   .home-redesign .home-village-card__mark { top: 15px; left: 15px; width: 36px; height: 36px; border-radius: 12px; }
   .home-redesign .home-village-card__mark svg { width: 24px; height: 24px; }
