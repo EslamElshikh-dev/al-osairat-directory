@@ -7,6 +7,7 @@ import { ListingCard } from '@/components/listing-card';
 import { BlogCard } from '@/components/blog-card';
 import { CategoryVisual } from '@/components/category-visual';
 import { BrandMark } from '@/components/brand-mark';
+import { HomeRouteIcon } from '@/components/home-route-icon';
 import { FaqSection } from '@/components/faq-section';
 import { HomeMemberReviews } from '@/components/home-member-reviews';
 import { SmartLocalCompass } from '@/components/smart-local-compass';
@@ -115,6 +116,7 @@ export default async function HomePage() {
         <div className="home-route-rail__grid">
           <Link prefetch={false} href="/directory" className="home-route-card home-route-card--primary">
             <span className="home-route-card__index" aria-hidden="true">01</span>
+            <HomeRouteIcon kind="directory" />
             <span className="home-route-card__kicker">بحث مباشر</span>
             <strong>عايز خدمة دلوقتي؟</strong>
             <small>ابحث بالاسم أو التخصص أو القرية، ووصل للنتيجة في أقل خطوات.</small>
@@ -122,6 +124,7 @@ export default async function HomePage() {
           </Link>
           <Link prefetch={false} href="/villages" className="home-route-card">
             <span className="home-route-card__index" aria-hidden="true">02</span>
+            <HomeRouteIcon kind="village" />
             <span className="home-route-card__kicker">حسب المكان</span>
             <strong>ابدأ من قريتك</strong>
             <small>استكشف كل قرية وما نُشر فيها من خدمات ونجوع وتوابع.</small>
@@ -129,6 +132,7 @@ export default async function HomePage() {
           </Link>
           <Link prefetch={false} href="/community" className="home-route-card">
             <span className="home-route-card__index" aria-hidden="true">03</span>
+            <HomeRouteIcon kind="community" />
             <span className="home-route-card__kicker">نبض الناس</span>
             <strong>شوف المجتمع بيقول إيه</strong>
             <small>نقاشات وتجارب وردود أعضاء الدليل في مساحة محلية واحدة.</small>
@@ -136,6 +140,7 @@ export default async function HomePage() {
           </Link>
           <Link prefetch={false} href="/news" className="home-route-card">
             <span className="home-route-card__index" aria-hidden="true">04</span>
+            <HomeRouteIcon kind="news" />
             <span className="home-route-card__kicker">آخر المستجدات</span>
             <strong>اعرف الجديد في العسيرات</strong>
             <small>موجز أخبار محلي مرتب مع الرجوع للمصدر الأصلي عند القراءة.</small>
@@ -143,6 +148,7 @@ export default async function HomePage() {
           </Link>
           <Link prefetch={false} href="/jobs" className="home-route-card home-route-card--jobs">
             <span className="home-route-card__index" aria-hidden="true">05</span>
+            <HomeRouteIcon kind="jobs" />
             <span className="home-route-card__kicker">رزق أهل البلد</span>
             <strong>شغل قريب من دارك</strong>
             <small>فرص العسيرات وقراها، ووظائف مراكز سوهاج كلها في مكان واحد.</small>
@@ -202,6 +208,7 @@ export default async function HomePage() {
             {villageDiscovery.map((village, index) => (
               <Link prefetch={false} key={village.slug} href={`/villages/${village.slug}`} className="home-village-card">
                 <span className="home-village-card__index">{String(index + 1).padStart(2, '0')}</span>
+                <span className="home-village-card__mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" focusable="false"><path d="M24 41s12-11 12-22a12 12 0 1 0-24 0c0 11 12 22 12 22Z" /><circle cx="24" cy="19" r="4" /><path d="M11 41h26" /></svg></span>
                 <div>
                   <h3>{village.name}</h3>
                   <p>{village.description}</p>
