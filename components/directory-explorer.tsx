@@ -290,7 +290,7 @@ export function DirectoryExplorer({
               </Link>
             )}
             {matchedLocality && <Link href={`/villages/${matchedLocality.slug}#localities`} className="button button--soft">اعرف موقع «{query}» داخل {matchedLocality.name}</Link>}
-            {suggestedCategory && <Link href={`/directory/${suggestedCategory}`} className="button button--primary">استكشف {categories.find((item) => item.id === suggestedCategory)?.shortLabel || 'القسم المناسب'}</Link>}
+            {suggestedCategory && <Link href={`/directory/${suggestedCategory}`} className="button button--primary">استكشف قسم {suggestedCategory === 'crafts' ? 'الحرفيين' : categories.find((item) => item.id === suggestedCategory)?.shortLabel || 'الخدمات'}</Link>}
             {category && (
               <Link href={createDirectoryHref(pathname, { village, vehicle, destination })} className="button button--ghost">
                 عرض كل {categories.find((item) => item.id === category)?.shortLabel || 'القسم'}
