@@ -27,7 +27,7 @@
   content: '';
   position: absolute;
   inset: 11px;
-  z-index: 1;
+  z-index: 0;
   border: 1px solid #ffebbb70;
   border-radius: inherit;
   pointer-events: none;
