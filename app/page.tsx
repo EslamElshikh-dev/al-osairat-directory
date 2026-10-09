@@ -32,6 +32,12 @@ export default async function HomePage() {
     .slice(0, 6);
   const emergency = allListings.filter((item) => item.category === 'emergency');
   const googleVerifiedCount = allListings.filter((item) => item.sourceStatus === 'google_verified').length;
+  const villageServices = [
+    { id: 'doctors', label: 'دكتور' },
+    { id: 'pharmacies', label: 'صيدلية' },
+    { id: 'crafts', label: 'حرفي' },
+    { id: 'transport', label: 'مواصلات' },
+  ] as const;
   const villageDiscovery = villages
     .filter((village) => village.name !== 'مركز العسيرات')
     .map((village) => ({
@@ -85,7 +91,7 @@ export default async function HomePage() {
         <div className="shell us-hero__grid">
           <div className="us-hero__intro">
             <div className="us-hero__eyebrow"><span>من قلب سوهاج</span><span>من أهل البلد، لأهل البلد</span></div>
-            <h1 id="us-hero-title">العسيرات…<br /><em>أقرب لك.</em></h1>
+            <h1 id="us-hero-title">العسيرات…<br /><em>بلدك بين إيديك.</em></h1>
             <p>دكتور تطمّن عنده، صنعة تحتاجها، أو شغل قريب منك.<br className="us-desktop-break" /> دوّر في بلدك وقراها… والباقي علينا.</p>
           </div>
           <div className="us-hero__search">
@@ -96,12 +102,17 @@ export default async function HomePage() {
             <span><b>{directoryStats.villages.toLocaleString('ar-EG')}</b><small>قرى تجمعنا</small></span>
             <span><b>{googleVerifiedCount.toLocaleString('ar-EG')}</b><small>مرجع على الخرائط</small></span>
           </div>
-          <aside className="us-place" aria-label="العسيرات، محافظة سوهاج">
-            <Image src="/images/directory/hero-al-osairat.webp" alt="مشهد تعبيري لحقول وقرى العسيرات عند الشروق" fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 40vw, 490px" />
-            <div className="us-place__top"><span><BrandMark /></span><small>صورة تعبيرية</small></div>
-            <div className="us-place__caption"><span>هنا جذورنا، وهنا حكايتنا</span><strong>بلد واحدة.<br />وحكايات كتير.</strong><Link prefetch={false} href="/villages">اكتشف قرى العسيرات</Link></div>
-            <span className="us-place__seal" aria-hidden="true"><b>العسيرات</b><small>ناسها · قراها · خدماتها</small></span>
-            <span className="us-place__coordinate" aria-hidden="true">العسيرات / سوهاج / مصر</span>
+          <aside className={`us-place ${styles.postcard}`} aria-label="العسيرات، محافظة سوهاج">
+            <div className={styles.postcardPhoto}>
+              <Image src="/images/directory/hero-al-osairat.webp" alt="مشهد تعبيري لحقول وقرى العسيرات عند الشروق" fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 40vw, 490px" />
+              <div className={styles.postcardTop}><span>من قلب الصعيد</span><small>صورة تعبيرية</small></div>
+              <div className={styles.postcardStamp} aria-hidden="true"><BrandMark /><span>العسيرات<br /><small>سوهاج · مصر</small></span></div>
+              <div className={styles.postcardCaption}><span>هنا جذورنا، وهنا حكايتنا</span><strong>بلد لها روح.</strong><p>وحكاية في كل طريق.</p></div>
+            </div>
+            <div className={styles.postcardFooter}>
+              <div><small>ناسها · قراها · خدماتها</small><strong>{directoryStats.villages.toLocaleString('ar-EG')} قرى… وبلد واحدة</strong></div>
+              <Link prefetch={false} href="/villages">اكتشف قرى العسيرات <b aria-hidden="true">←</b></Link>
+            </div>
           </aside>
         </div>
         <nav className="shell us-section-nav" aria-label="اكتشف الصفحة">
@@ -112,8 +123,8 @@ export default async function HomePage() {
       <section className="home-route-rail shell" aria-labelledby="home-route-title">
         <div className="home-route-rail__intro">
           <span className="eyebrow eyebrow--dark">من هنا تبدأ</span>
-          <h2 id="home-route-title">اختار أقصر طريق للمعلومة</h2>
-          <p>بدل ما تلف في صفحات كثيرة، ادخل من الباب المناسب لاحتياجك مباشرة.</p>
+          <h2 id="home-route-title">كل مشوار… وله باب</h2>
+          <p>خدمة محتاجها، حكاية تحبها، أو فرصة مستنيها. اختار مشوارك وابدأ من هنا.</p>
         </div>
         <div className="home-route-rail__grid">
           <Link prefetch={false} href="/directory" className="home-route-card home-route-card--primary">
@@ -123,6 +134,7 @@ export default async function HomePage() {
             <strong>عايز خدمة دلوقتي؟</strong>
             <small>ابحث بالاسم أو التخصص أو القرية، ووصل للنتيجة في أقل خطوات.</small>
             <span className="home-route-card__cta">افتح الدليل <b aria-hidden="true">←</b></span>
+            <span className={styles.routeCoverage}>{allListings.length.toLocaleString('ar-EG')} سجل منشور · {categories.length.toLocaleString('ar-EG')} قسم</span>
           </Link>
           <Link prefetch={false} href="/villages" className="home-route-card">
             <span className="home-route-card__index" aria-hidden="true">02</span>
@@ -163,8 +175,9 @@ export default async function HomePage() {
         <div className="section-heading section-heading--editorial">
           <div>
             <span className="eyebrow eyebrow--dark">أقسام الموسوعة</span>
-            <h2>ابدأ بنوع الخدمة التي تحتاج إليها</h2>
-            <p>الأقسام مرتبة لتصل إلى المعلومة أو المكان بأقل عدد من الخطوات.</p>
+            <h2>مشاوير يومك… أقرب مما تتخيل</h2>
+            <p>صحتك، بيتك، وشغلك. كل قسم يفتح لك بابًا للخدمات المنشورة في بلدك وقراها.</p>
+            <small className={styles.serviceNote}>صور الأقسام تعبيرية للتوضيح.</small>
           </div>
           <Link prefetch={false} href="/directory" className="text-link text-link--arrow">عرض الدليل بالكامل <b aria-hidden="true">←</b></Link>
         </div>
@@ -173,13 +186,13 @@ export default async function HomePage() {
             const count = allListings.filter((item) => item.category === category.id).length;
             const categoryImage = imageForCategory(category.id);
             return (
-              <Link prefetch={false} key={category.id} href={`/directory/${category.id}`} className={`us-category-card us-category-card--${category.id}`}>
+              <Link prefetch={false} key={category.id} href={`/directory/${category.id}`} className={`us-category-card us-category-card--${category.id}${category.id === 'doctors' || category.id === 'pharmacies' ? ' us-category-card--spotlight' : ''}`}>
                 <div className="us-category-card__media">
                   <Image
                     src={categoryImage.src}
                     alt={categoryImage.alt}
                     fill
-                    sizes="(max-width: 760px) 96px, (max-width: 1100px) 30vw, 280px"
+                    sizes={category.id === 'doctors' || category.id === 'pharmacies' ? '(max-width: 360px) 80px, (max-width: 760px) 96px, (max-width: 1000px) 38vw, 240px' : '(max-width: 760px) 48px, 80px'}
                   />
                   <span className="us-category-card__media-shade" aria-hidden="true" />
                   <CategoryVisual category={category.id} size="md" />
@@ -206,6 +219,7 @@ export default async function HomePage() {
             <Link prefetch={false} href="/villages" className="text-link text-link--arrow">كل قرى العسيرات <b aria-hidden="true">←</b></Link>
           </div>
 
+          <div className={styles.villageHorizon} aria-hidden="true" />
           <div className="home-village-grid">
             {villageDiscovery.map((village, index) => (
               <Link prefetch={false} key={village.slug} href={`/villages/${village.slug}`} className="home-village-card">
@@ -224,6 +238,17 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+          <form className={styles.villageJourney} action="/directory" method="get" aria-labelledby="village-journey-title">
+            <div><span>مشوار من قريتك</span><h3 id="village-journey-title">قريتك الأول… والخدمة بعدها</h3><p>اختار القرية، واضغط على الخدمة علشان تشوف اللي نُشر فيها.</p></div>
+            <div className={styles.journeyControls}>
+              <label htmlFor="journey-village">ابدأ من قريتك</label>
+              <select id="journey-village" name="village" defaultValue="all">
+                <option value="all">كل العسيرات</option>
+                {villages.filter((village) => village.name !== 'مركز العسيرات').map((village) => <option key={village.slug} value={village.name}>{village.name}</option>)}
+              </select>
+              <div>{villageServices.map((service) => <button key={service.id} type="submit" formAction={`/directory/${service.id}`}>{service.label}<b aria-hidden="true">←</b></button>)}</div>
+            </div>
+          </form>
         </div>
       </section>
 
