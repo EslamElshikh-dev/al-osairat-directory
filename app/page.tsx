@@ -184,7 +184,9 @@ export default async function HomePage() {
         <div className="category-grid category-grid--editorial">
           {categories.map((category) => {
             const count = allListings.filter((item) => item.category === category.id).length;
-            const categoryImage = imageForCategory(category.id);
+            const categoryImage = category.id === 'pharmacies'
+              ? { src: '/images/directory/blog-health-services.webp', alt: 'مشهد تعبيري لصيدلانية تستقبل أحد أهل القرية وسط أرفف الدواء' }
+              : imageForCategory(category.id);
             return (
               <Link prefetch={false} key={category.id} href={`/directory/${category.id}`} className={`us-category-card us-category-card--${category.id}${category.id === 'doctors' || category.id === 'pharmacies' ? ' us-category-card--spotlight' : ''}`}>
                 <div className="us-category-card__media">

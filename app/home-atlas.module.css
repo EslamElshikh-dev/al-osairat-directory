@@ -149,7 +149,7 @@
 .home:global(.home-redesign) :global(.us-category-card--spotlight) { grid-column: span 3; grid-template-columns: minmax(145px, .85fr) minmax(0, 1fr) auto; min-height: 250px; padding: 12px; gap: 14px 20px; background: #f1f5ec; border-color: #d2ddc6; }
 .home:global(.home-redesign) :global(.us-category-card--pharmacies) { background: #f8f1df; border-color: #e7d9b4; }
 .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__media) { width: 100%; min-height: 224px; border-radius: 14px; }
-.home:global(.home-redesign) :global(.us-category-card--spotlight .directory-media__label) { display: block; top: auto; bottom: 10px; inset-inline: 10px; width: fit-content; font-size: .6875rem; }
+.home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__media .directory-media__label) { display: block; top: auto; bottom: 10px; inset-inline: 10px; width: fit-content; font-size: .6875rem; }
 .home:global(.home-redesign) :global(.us-category-card--spotlight h3) { margin-top: 16px; font-size: 1.6rem; }
 .home:global(.home-redesign) :global(.us-category-card--spotlight > p) { font-size: .9375rem; }
 .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__number) { margin-top: 17px; background: #ffffffa3; padding: 7px; }
@@ -351,6 +351,7 @@
   .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__media) { width: 96px; height: auto; grid-row: 1 / 4; min-height: 176px; }
   .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__media > img) { display: block; }
   .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__media .category-visual) { display: none; }
+  .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__media .directory-media__label) { display: none; }
   .home:global(.home-redesign) :global(.us-category-card--spotlight h3) { grid-column: 2; grid-row: 1; margin: 7px 0 0; font-size: 1.2rem; }
   .home:global(.home-redesign) :global(.us-category-card--spotlight .us-category-card__number) { grid-column: 3; grid-row: 1; }
   .home:global(.home-redesign) :global(.us-category-card--spotlight > p) { display: block; grid-column: 2 / 4; grid-row: 2; font-size: .875rem; }
