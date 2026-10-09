@@ -16,7 +16,7 @@ import { buildArticleMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
 
 const authorName = 'المهندس إسلام الشيخ';
-const authorUrl = 'https://www.eslam-elshikh.com/about/';
+const authorUrl = `${siteConfig.url}/developer/`;
 
 export function generateStaticParams() {
   return blogArticles.map((article) => ({ slug: article.slug }));
@@ -107,8 +107,11 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         articleBody,
         author: {
           '@type': 'Person',
+          '@id': 'https://www.eslam-elshikh.com/#person',
           name: authorName,
+          alternateName: 'Eslam Elshikh',
           url: authorUrl,
+          sameAs: ['https://www.eslam-elshikh.com/about/', 'https://www.wikidata.org/wiki/Q138800449', 'https://github.com/EslamElshikh-dev'],
         },
         publisher: {
           '@type': 'Organization',
@@ -172,7 +175,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
             <div className="article-hero__author">
               <span className="article-hero__author-mark" aria-hidden="true"><BrandMark compact /></span>
               <span>إعداد وتحرير</span>
-              <a href={authorUrl} target="_blank" rel="noreferrer">{authorName}</a>
+              <Link href="/developer" rel="author">{authorName}</Link>
             </div>
           </div>
           <figure className="article-hero__visual">
