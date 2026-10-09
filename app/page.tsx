@@ -17,6 +17,7 @@ import { blogArticles } from '@/lib/blog-published';
 import { siteConfig } from '@/lib/site';
 import { imageForCategory } from '@/lib/directory-images';
 import { getPublicDirectoryListings } from '@/lib/public-directory';
+import styles from './home-atlas.module.css';
 
 export const metadata: Metadata = {
   alternates: {
@@ -79,7 +80,7 @@ export default async function HomePage() {
   };
 
   return (
-    <main id="main-content" className="home-redesign">
+    <main id="main-content" className={`home-redesign ${styles.home}`}>
       <section className="us-hero" aria-labelledby="us-hero-title">
         <div className="shell us-hero__grid">
           <div className="us-hero__intro">
@@ -184,7 +185,7 @@ export default async function HomePage() {
                   <CategoryVisual category={category.id} size="md" />
                   <span className="directory-media__label">صورة تعبيرية</span>
                 </div>
-                <span className="us-category-card__number">{String(count).padStart(2, '0')}</span>
+                <span className="us-category-card__number"><b>{count.toLocaleString('ar-EG')}</b><small>سجل</small></span>
                 <h3>{category.shortLabel}</h3>
                 <p>{category.description}</p>
                 <span className="us-category-card__arrow">استكشف القسم <b aria-hidden="true">←</b></span>
@@ -198,9 +199,9 @@ export default async function HomePage() {
         <div className="shell">
           <div className="section-heading section-heading--editorial">
             <div>
-              <span className="eyebrow eyebrow--dark">اكتشف حسب القرية</span>
-              <h2>ابدأ من المكان الأقرب لك</h2>
-              <p>قرى العسيرات الأعلى تغطية في الدليل حاليًا، مرتبة تلقائيًا حسب عدد السجلات المنشورة.</p>
+              <span className="eyebrow eyebrow--dark">قرى تجمعنا</span>
+              <h2>كل قرية… باب لحكاية</h2>
+              <p>ابدأ من قريتك وشوف خدماتها ونجوعها. القرى هنا مرتبة حسب عدد السجلات المنشورة في الدليل.</p>
             </div>
             <Link prefetch={false} href="/villages" className="text-link text-link--arrow">كل قرى العسيرات <b aria-hidden="true">←</b></Link>
           </div>
@@ -208,16 +209,17 @@ export default async function HomePage() {
           <div className="home-village-grid">
             {villageDiscovery.map((village, index) => (
               <Link prefetch={false} key={village.slug} href={`/villages/${village.slug}`} className="home-village-card">
-                <span className="home-village-card__index">{String(index + 1).padStart(2, '0')}</span>
+                <span className="home-village-card__index" aria-hidden="true">{(index + 1).toLocaleString('ar-EG', { minimumIntegerDigits: 2 })}</span>
                 <span className="home-village-card__mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" focusable="false"><path d="M24 41s12-11 12-22a12 12 0 1 0-24 0c0 11 12 22 12 22Z" /><circle cx="24" cy="19" r="4" /><path d="M11 41h26" /></svg></span>
                 <div>
                   <h3>{village.name}</h3>
                   <p>{village.description}</p>
                 </div>
                 <div className="home-village-card__meta">
-                  <span><b>{village.count}</b> سجل منشور</span>
-                  <span><b>{village.localities.length}</b> تابع ونجع</span>
+                  <span><b>{village.count.toLocaleString('ar-EG')}</b> سجل منشور</span>
+                  <span><b>{village.localities.length.toLocaleString('ar-EG')}</b> تابع ونجع</span>
                 </div>
+                {village.localities.length > 0 && <div className={styles.localities}><small>من نجوعها وتوابعها</small><div>{village.localities.slice(0, 2).map((locality) => <span key={locality}>{locality}</span>)}</div></div>}
                 <span className="home-village-card__cta">استكشف القرية <b aria-hidden="true">←</b></span>
               </Link>
             ))}
@@ -266,14 +268,14 @@ export default async function HomePage() {
         <div className="shell">
           <div className="section-heading section-heading--editorial">
             <div>
-              <span className="eyebrow eyebrow--dark">من مدونة العسيرات</span>
-              <h2>اعرف المكان قبل أن تبحث فيه</h2>
-              <p>محتوى محلي يضيف سياقًا للقرى والمعالم والشخصيات والمعلومات المرتبطة بالعسيرات.</p>
+              <span className="eyebrow eyebrow--dark">حكايات بلدنا</span>
+              <h2>ورا كل مكان… حكاية تستاهل</h2>
+              <p>اقرأ عن القرى والمعالم وناس العسيرات، مع مراجع تقدر ترجع لها.</p>
             </div>
             <Link prefetch={false} href="/blog" className="text-link text-link--arrow">كل المقالات <b aria-hidden="true">←</b></Link>
           </div>
           <div className="blog-grid blog-grid--home">
-            {blogArticles.slice(0, 3).map((article) => <BlogCard key={article.slug} article={article} />)}
+            {blogArticles.slice(0, 3).map((article, index) => <BlogCard key={article.slug} article={article} featured={index === 0} />)}
           </div>
         </div>
       </section>
