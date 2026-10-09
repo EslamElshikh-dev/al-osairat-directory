@@ -88,13 +88,6 @@ export default async function HomePage() {
             <h1 id="us-hero-title">العسيرات…<br /><em>أقرب لك.</em></h1>
             <p>دكتور تطمّن عنده، صنعة تحتاجها، أو شغل قريب منك.<br className="us-desktop-break" /> دوّر في بلدك وقراها… والباقي علينا.</p>
           </div>
-          <aside className="us-place" aria-label="العسيرات، محافظة سوهاج">
-            <Image src="/images/directory/hero-al-osairat.webp" alt="مشهد تعبيري لحقول وقرى العسيرات عند الشروق" fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 40vw, 490px" />
-            <div className="us-place__top"><span><BrandMark /></span><small>صورة تعبيرية</small></div>
-            <div className="us-place__caption"><span>هنا جذورنا، وهنا حكايتنا</span><strong>بلد واحدة.<br />وحكايات كتير.</strong><Link prefetch={false} href="/villages">اكتشف قرى العسيرات</Link></div>
-            <span className="us-place__seal" aria-hidden="true"><b>العسيرات</b><small>ناسها · قراها · خدماتها</small></span>
-            <span className="us-place__coordinate" aria-hidden="true">العسيرات / سوهاج / مصر</span>
-          </aside>
           <div className="us-hero__search">
             <SmartLocalCompass villages={villages.filter((village) => village.name !== 'مركز العسيرات').map(({ name, slug }) => ({ name, slug }))} />
           </div>
@@ -103,6 +96,13 @@ export default async function HomePage() {
             <span><b>{directoryStats.villages.toLocaleString('ar-EG')}</b><small>قرى تجمعنا</small></span>
             <span><b>{googleVerifiedCount.toLocaleString('ar-EG')}</b><small>مرجع على الخرائط</small></span>
           </div>
+          <aside className="us-place" aria-label="العسيرات، محافظة سوهاج">
+            <Image src="/images/directory/hero-al-osairat.webp" alt="مشهد تعبيري لحقول وقرى العسيرات عند الشروق" fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 40vw, 490px" />
+            <div className="us-place__top"><span><BrandMark /></span><small>صورة تعبيرية</small></div>
+            <div className="us-place__caption"><span>هنا جذورنا، وهنا حكايتنا</span><strong>بلد واحدة.<br />وحكايات كتير.</strong><Link prefetch={false} href="/villages">اكتشف قرى العسيرات</Link></div>
+            <span className="us-place__seal" aria-hidden="true"><b>العسيرات</b><small>ناسها · قراها · خدماتها</small></span>
+            <span className="us-place__coordinate" aria-hidden="true">العسيرات / سوهاج / مصر</span>
+          </aside>
         </div>
         <nav className="shell us-section-nav" aria-label="اكتشف الصفحة">
           <span>خُد لك لفة</span><a href="#services">الخدمات</a><a href="#villages">القرى</a><a href="#latest-news">الأخبار</a><a href="#stories">حكايات بلدنا</a><Link prefetch={false} href="/install">الدليل على موبايلك</Link>

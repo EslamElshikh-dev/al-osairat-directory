@@ -197,6 +197,7 @@
 .home:global(.home-redesign) :global(.blog-grid--home .blog-card--featured .blog-card__body) { flex: 1; padding: 28px; justify-content: flex-start; }
 .home:global(.home-redesign) :global(.blog-grid--home .blog-card--featured h3) { font-size: clamp(1.35rem, 2.1vw, 1.7rem); line-height: 1.6; }
 .home:global(.home-redesign) :global(.blog-grid--home .blog-card__visual-title) { font-size: .75rem; }
+.home:global(.home-redesign) :global(.blog-grid--home .blog-card:not(.blog-card--featured) .blog-card__brand) { display: none; }
 .home:global(.home-redesign) :global(.section--maps-featured .listing-card) { background: #fff; border: 1px solid #d5dfd1; }
 .home:global(.home-redesign) :global(.section--maps-featured .listing-card__actions .button) { min-height: 44px; }
 
