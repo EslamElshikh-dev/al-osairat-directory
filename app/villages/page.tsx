@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { categories, getListingsByVillage, villages } from '@/lib/data';
+import { categories, villages } from '@/lib/data';
 import { BrandMark } from '@/components/brand-mark';
 import { buildPageMetadata } from '@/lib/metadata';
 import { isFallbackScope } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
 import styles from './notebook.module.css';
 
 export const metadata: Metadata = buildPageMetadata({
@@ -14,9 +15,11 @@ export const metadata: Metadata = buildPageMetadata({
   imageAlt: 'قرى مركز العسيرات وتوابعها',
 });
 
-export default function VillagesPage() {
+export default async function VillagesPage() {
   const mainVillages = villages.filter((village) => !isFallbackScope(village.name));
-  const totalListings = mainVillages.reduce((sum, village) => sum + getListingsByVillage(village.name).length, 0);
+  const catalog = await getPublicDirectoryListings();
+  const villageRecords = mainVillages.map((village) => ({ village, items: catalog.filter((listing) => listing.village === village.name && listing.category !== 'emergency') }));
+  const totalListings = villageRecords.reduce((sum, entry) => sum + entry.items.length, 0);
   const totalLocalities = mainVillages.reduce((sum, village) => sum + village.localities.length, 0);
   const pageUrl = `${siteConfig.url}/villages`;
   const structuredData = {
@@ -101,8 +104,7 @@ export default function VillagesPage() {
         </div>
 
         <div className={styles.cards}>
-          {mainVillages.map((village, index) => {
-            const villageListings = getListingsByVillage(village.name);
+          {villageRecords.map(({ village, items: villageListings }, index) => {
             const count = villageListings.length;
             const services = categories.map((category) => ({ category, count: villageListings.filter((listing) => listing.category === category.id).length }))
               .filter((entry) => entry.count > 0).sort((a, b) => b.count - a.count).slice(0, 3);

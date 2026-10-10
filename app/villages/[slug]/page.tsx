@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categories, villageBySlug, villages } from '@/lib/data';
+import { categories, villageBySlug, villages, type DirectoryListing } from '@/lib/data';
 import { createDirectoryHref, queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
 import { getPublicDirectoryListings } from '@/lib/public-directory';
@@ -23,6 +23,10 @@ type VillageSearchParams = { page?: string };
 
 async function loadVillageCatalog() {
   return getPublicDirectoryListings();
+}
+
+function villageRecordImage(listing: DirectoryListing) {
+  return listing.imagePaths?.length ? imageForListing(listing) : latestScanImageForListing(listing) || imageForListing(listing);
 }
 
 export function generateStaticParams() {
@@ -96,10 +100,11 @@ export default async function VillagePage({
   const allListings = await loadVillageCatalog();
   const villageListings = allListings.filter((item) => item.village === village.name && item.category !== 'emergency');
   const recentListings = sortListingsByFreshness(villageListings, 4);
-  const notebookListing = villageListings.find((item) => imageForListing(item).kind === 'sourced') || recentListings[0] || villageListings[0];
-  const notebookImage = notebookListing
-    ? (notebookListing.imagePaths?.length ? imageForListing(notebookListing) : latestScanImageForListing(notebookListing) || imageForListing(notebookListing))
-    : null;
+  const notebookListing = villageListings.find((item) => villageRecordImage(item).kind === 'sourced')
+    || recentListings.find((item) => villageRecordImage(item).src.endsWith('.webp'))
+    || villageListings.find((item) => villageRecordImage(item).src.endsWith('.webp'))
+    || recentListings[0] || villageListings[0];
+  const notebookImage = notebookListing ? villageRecordImage(notebookListing) : null;
   const freshListingCount = villageListings.filter((item) => listingFreshness(item).key === 'fresh').length;
   const trustedListingCount = villageListings.filter(
     (item) => item.sourceStatus === 'google_verified' || item.sourceStatus === 'cross_checked',
@@ -362,7 +367,7 @@ export default async function VillagePage({
             <ol className="village-recent-activity__timeline">
               {recentListings.map((item) => {
                 const category = categories.find((entry) => entry.id === item.category);
-                const image = item.imagePaths?.length ? imageForListing(item) : latestScanImageForListing(item) || imageForListing(item);
+                const image = villageRecordImage(item);
                 return (
                   <li key={item.id} className={styles.recentCard}>
                     <Link href={`/listing/${item.slug}`} className={styles.recentImage} aria-label={`عرض ${item.title}`}>
