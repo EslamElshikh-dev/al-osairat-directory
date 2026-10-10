@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getListingsByVillage, villages } from '@/lib/data';
+import { categories, villages } from '@/lib/data';
 import { BrandMark } from '@/components/brand-mark';
 import { buildPageMetadata } from '@/lib/metadata';
 import { isFallbackScope } from '@/lib/seo-growth';
 import { siteConfig } from '@/lib/site';
+import { getPublicDirectoryListings } from '@/lib/public-directory';
+import styles from './notebook.module.css';
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'قرى مركز العسيرات وتوابعها',
@@ -13,9 +15,11 @@ export const metadata: Metadata = buildPageMetadata({
   imageAlt: 'قرى مركز العسيرات وتوابعها',
 });
 
-export default function VillagesPage() {
+export default async function VillagesPage() {
   const mainVillages = villages.filter((village) => !isFallbackScope(village.name));
-  const totalListings = mainVillages.reduce((sum, village) => sum + getListingsByVillage(village.name).length, 0);
+  const catalog = await getPublicDirectoryListings();
+  const villageRecords = mainVillages.map((village) => ({ village, items: catalog.filter((listing) => listing.village === village.name && listing.category !== 'emergency') }));
+  const totalListings = villageRecords.reduce((sum, entry) => sum + entry.items.length, 0);
   const totalLocalities = mainVillages.reduce((sum, village) => sum + village.localities.length, 0);
   const pageUrl = `${siteConfig.url}/villages`;
   const structuredData = {
@@ -58,63 +62,77 @@ export default function VillagesPage() {
   };
 
   return (
-    <main id="main-content" className="page-main interior-redesign">
+    <main id="main-content" className={`page-main interior-redesign ${styles.page}`}>
       <section className="geo-hero">
         <div className="shell geo-hero__grid">
           <div className="geo-hero__copy">
             <span className="catalog-hero__kicker"><BrandMark compact /> الجغرافيا المحلية</span>
-            <h1>قرى مركز <em>العسيرات</em></h1>
-            <p>استكشف الدليل حسب القرية والتوابع المحلية، مع فصل واضح لنطاق العسيرات عن المراكز والمدن المجاورة.</p>
+            <h1>قرى العسيرات…<br /><em>بلد واحدة تجمعنا.</em></h1>
+            <p>كل قرية لها ناسها ونجوعها ومشاويرها. افتح دفتر قريتك، واكتشف الخدمات والأماكن المنشورة فيها.</p>
             <div className="catalog-hero__actions">
               <Link href="#villages-grid" className="button button--light">استكشف القرى</Link>
               <Link href="/directory" className="button button--outline-light">فتح الدليل الشامل</Link>
             </div>
           </div>
 
-          <aside className="geo-hero__panel" aria-label="ملخص القرى">
-            <span className="geo-hero__mark" aria-hidden="true"><BrandMark /></span>
-            <strong>مركز العسيرات · سوهاج</strong>
-            <p>تنظيم محلي يساعدك على الوصول إلى الخدمة بحسب القرية أو النجع أو التابع.</p>
+          <aside className={styles.heroBook} aria-label="ملخص القرى">
+            <div className={styles.bookStamp}><BrandMark compact /><span>دفتر البلد<small>العسيرات · سوهاج</small></span></div>
+            <strong className={styles.bookNumber}>{mainVillages.length.toLocaleString('ar-EG')}</strong>
+            <p className={styles.bookTitle}>قرى. حكايات. مشاوير.</p>
+            <span className={styles.bookNote}>أسماء نعرفها… وتفاصيل تقرّبنا.</span>
             <div className="catalog-hero__metrics">
-              <span><b>{mainVillages.length.toLocaleString('ar-EG')}</b><small>قرى أساسية</small></span>
               <span><b>{totalLocalities.toLocaleString('ar-EG')}</b><small>توابع مسماة</small></span>
               <span><b>{totalListings.toLocaleString('ar-EG')}</b><small>سجلًا مرتبطًا</small></span>
             </div>
+            <div className={styles.bookHorizon} aria-hidden="true" />
           </aside>
         </div>
       </section>
 
       <section id="villages-grid" className="shell page-section villages-showcase">
+        <nav className={styles.jumpNav} aria-label="انتقل إلى قرية">
+          <span>قريتك من هنا</span>
+          {mainVillages.map((village) => <a key={village.slug} href={`#village-${village.slug}`}>{village.name}</a>)}
+        </nav>
         <div className="section-heading interior-section-heading">
           <div>
             <span className="eyebrow eyebrow--dark">استكشف حسب المكان</span>
-            <h2>صفحة مستقلة لكل قرية</h2>
-            <p>تعرض كل صفحة الأقسام المتاحة والتوابع والأنشطة المنشورة في النطاق نفسه.</p>
+            <h2>ابدأ باسم تعرفه… واكتشف الباقي</h2>
+            <p>دفتر لكل قرية، يجمع الخدمات المنشورة وأسماء النجوع والتوابع تحت نطاقها.</p>
           </div>
           <span className="interior-section-heading__count">{mainVillages.length.toLocaleString('ar-EG')} قرى</span>
         </div>
 
-        <div className="village-grid village-grid--premium">
-          {mainVillages.map((village, index) => {
-            const count = getListingsByVillage(village.name).length;
+        <div className={styles.cards}>
+          {villageRecords.map(({ village, items: villageListings }, index) => {
+            const count = villageListings.length;
+            const services = categories.map((category) => ({ category, count: villageListings.filter((listing) => listing.category === category.id).length }))
+              .filter((entry) => entry.count > 0).sort((a, b) => b.count - a.count).slice(0, 3);
             return (
-              <Link href={`/villages/${village.slug}`} key={village.slug} className="village-card">
-                <div className="village-card__head">
-                  <span className="village-card__visual" aria-hidden="true"><BrandMark compact /></span>
-                  <span className="village-card__index">{String(index + 1).padStart(2, '0')}</span>
+              <article id={`village-${village.slug}`} key={village.slug} className={`${styles.villageCard} ${index === 0 ? styles.featuredCard : ''}`}>
+                <div className={styles.cardHead}>
+                  <span>دفتر قرية</span>
+                  <span className={styles.cardIndex} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                 </div>
-                <h2>{village.name}</h2>
-                <p>{village.description}</p>
-                <div className="village-card__meta">
-                  <span><b>{count.toLocaleString('ar-EG')}</b> سجل</span>
-                  <span><b>{village.localities.length.toLocaleString('ar-EG')}</b> تابعًا ونجعًا</span>
+                <h2 className={styles.cardTitle}><Link href={`/villages/${village.slug}`}>{village.name}<span aria-hidden="true">↗</span></Link></h2>
+                <p className={styles.cardDescription}>{village.description}</p>
+                <div className={styles.cardMetrics}>
+                  <span><b>{count.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
+                  <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>نجع وتابع</small></span>
                 </div>
-                <div className="village-card__localities" aria-label={`أشهر توابع ${village.name}`}>
-                  {village.localities.slice(0, 4).map((locality) => <span key={locality}>{locality}</span>)}
-                  {village.localities.length > 4 && <span>+{(village.localities.length - 4).toLocaleString('ar-EG')}</span>}
-                </div>
-                <span className="village-card__cta">فتح دليل القرية ←</span>
-              </Link>
+                {services.length > 0 && <nav className={styles.serviceLinks} aria-label={`خدمات منشورة في ${village.name}`}>
+                  {services.map(({ category, count: serviceCount }) => <Link key={category.id} href={`/directory/${category.id}?village=${encodeURIComponent(village.name)}`}>
+                    {category.shortLabel}<b>{serviceCount.toLocaleString('ar-EG')}</b>
+                  </Link>)}
+                </nav>}
+                {village.localities.length > 0 && <details className={styles.localityDetails}>
+                  <summary>نجوع {village.name} وتوابعها<span aria-hidden="true">＋</span></summary>
+                  <div className={styles.localityLinks}>
+                    {village.localities.map((locality) => <Link key={locality} href={`/directory?village=${encodeURIComponent(village.name)}&q=${encodeURIComponent(locality)}`}>{locality}</Link>)}
+                  </div>
+                </details>}
+                <Link href={`/villages/${village.slug}`} className={styles.cardFooter}>افتح دفتر {village.name}<span aria-hidden="true">←</span></Link>
+              </article>
             );
           })}
         </div>

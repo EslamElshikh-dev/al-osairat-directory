@@ -1,0 +1,29 @@
+.card:global(.listing-card) { padding: 18px; overflow: hidden; border: 1px solid #d6ddcb; border-radius: 18px; background: #fffdf6; box-shadow: 0 5px 0 #e6e8da; }
+.card:global(.listing-card) :global(.listing-card__media) { height: 166px; margin: -18px -18px 17px; border-radius: 0; }
+.card:global(.listing-card) :global(.listing-card__media .directory-media__shade) { background: linear-gradient(180deg, #1528180d 35%, #1027199c); }
+.card:global(.listing-card) :global(.listing-card__media .directory-media__label) { position: absolute; inset-inline-start: 11px; inset-inline-end: auto; top: auto; bottom: 11px; max-width: calc(100% - 22px); padding: 6px 9px; border-radius: 7px; background: #123d30e6; font-size: .66rem; line-height: 1.5; }
+.card:global(.listing-card) :global(.listing-card__media-category) { top: 11px; bottom: auto; inset-inline-start: 11px; inset-inline-end: auto; padding: 6px 10px; border: 1px solid #ffffff88; border-radius: 8px; color: #183e2d; background: #fff8e6f0; font-size: .72rem; }
+.card:global(.listing-card) :global(.favorite-control--card) { inset-inline-start: auto; inset-inline-end: 10px; top: 10px; }
+.card:global(.listing-card) :global(.listing-card__header) { gap: 11px; }
+.card:global(.listing-card) :global(.listing-card__watermark) { display: none; }
+.card:global(.listing-card) :global(.listing-card__category) { color: #805e23; font-size: .7rem; }
+.card:global(.listing-card) :global(.listing-card__specialty) { color: #68705a; font-size: .78rem; line-height: 1.8; }
+.card:global(.listing-card) :global(.listing-card__top h3) { font-size: 1.08rem; line-height: 1.8; }
+.card:global(.listing-card) :global(.listing-card__location) { font-size: .82rem; line-height: 1.9; color: #69715e; }
+.card:global(.listing-card) :global(.listing-card__trust-row) { gap: 7px; margin-top: 14px; }
+.card:global(.listing-card) :global(.listing-card__trust-chip) { padding: 6px 9px; font-size: .65rem; border-radius: 8px; }
+.card:global(.listing-card) :global(.listing-card__trust-row time) { font-size: .69rem; color: #70775e; }
+.card:global(.listing-card) :global(.listing-card__meta) { gap: 6px; }
+.card:global(.listing-card) :global(.listing-card__meta > span) { font-size: .71rem; }
+.card:global(.listing-card) :global(.listing-card__actions) { gap: 7px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed #d1d9c1; }
+.card:global(.listing-card) :global(.listing-card__actions .button) { min-height: 44px; padding: 10px 12px; border-radius: 10px; font-size: .76rem; }
+.card:global(.listing-card) :global(.listing-card__source) { margin-top: 13px; color: #7b7357; font-size: .69rem; line-height: 1.7; }
+.card:global(.listing-card--compact) :global(.listing-card__media) { height: 154px; }
+.card:global(.listing-card) a:focus-visible { outline: 3px solid #b38d43; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .card:global(.listing-card) { padding: 16px; border-radius: 16px; box-shadow: 0 3px 0 #e6e8da; }
+  .card:global(.listing-card) :global(.listing-card__media) { display: block; height: 144px; margin: -16px -16px 14px; }
+  .card:global(.listing-card) :global(.listing-card__top h3) { font-size: 1rem; }
+  .card:global(.listing-card) :global(.listing-card__media > img) { transform: none; transition: none; }
+}
+@media (prefers-reduced-motion: reduce) { .card:global(.listing-card) :global(.listing-card__media > img) { transition: none; } }

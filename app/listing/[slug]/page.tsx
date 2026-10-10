@@ -21,6 +21,7 @@ import { latestScanImageForListing } from '@/lib/latest-scan-images';
 import { MemberReviews } from '@/components/member-reviews';
 import { SandContextLink } from '@/components/sand-context-link';
 import { formatLivingDate, getLivingRelatedListings, listingFreshness, listingTrust } from '@/lib/living-directory';
+import styles from '../listing-detail.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -164,7 +165,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
   };
 
   return (
-    <main id="main-content" className="page-main interior-redesign">
+    <main id="main-content" className={`page-main interior-redesign ${styles.page}`}>
       <section className="detail-hero detail-hero--premium">
         <div className="shell detail-hero__premium-grid">
           <div className="detail-hero__content">
@@ -192,11 +193,15 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
               {whatsapp && <a className="button button--outline-light" href={whatsapp} target="_blank" rel="noreferrer"><ContactIcon kind="whatsapp" animate /><span>واتساب</span></a>}
               <a className="button button--outline-light" href={maps} target="_blank" rel="noreferrer"><ContactIcon kind="map" animate /><span>فتح في الخرائط</span></a>
             </div>
+            <div className={styles.beforeVisit}>
+              <span aria-hidden="true"><ContactIcon kind={phone ? 'call' : 'map'} compact /></span>
+              <div><strong>قبل ما تتحرك</strong><p>{phone ? 'اتصل للاستفسار عن المواعيد والخدمة قبل الزيارة.' : 'راجع العنوان ومرجع المكان قبل الزيارة.'}</p></div>
+            </div>
           </div>
 
           <aside className="detail-hero__summary" aria-label="ملخص بيانات النشاط">
             <div className="detail-hero__media">
-              <Image unoptimized={coverImage.src.startsWith('/api/')} src={coverImage.src} alt={coverImage.alt} fill priority sizes="(max-width: 760px) 100vw, 390px" />
+              <Image unoptimized={coverImage.src.startsWith('/api/')} src={coverImage.src} alt={coverImage.alt} fill priority sizes="(max-width: 1000px) 90vw, 480px" />
               <span className="directory-media__shade" aria-hidden="true" />
               <span className="directory-media__label">{coverImage.label}</span>
               {(listing.googlePlaceId || listing.googleMapsUrl) && (
@@ -205,7 +210,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
                 </a>
               )}
             </div>
-            <span className="catalog-hero__summary-label">بيانات موثقة داخل الدليل</span>
+            <span className="catalog-hero__summary-label">بطاقة النشاط في الدليل</span>
             <div className="detail-hero__summary-brand"><span aria-hidden="true"><BrandMark compact /></span><strong>{dataSourceLabel}</strong></div>
             <div className="detail-hero__summary-list">
               <span><small>القسم</small><b>{category.shortLabel}</b></span>
@@ -216,7 +221,14 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </aside>
         </div>
       </section>
-      {listing.imagePaths?.length ? <section className="shell published-business-gallery" aria-label="صور النشاط"><h2>صور النشاط</h2><div>{listing.imagePaths.map((path,index)=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={businessImageUrl(path)} width={440} height={300} alt={`${listing.title} — صورة ${index+1}`} loading="lazy" /></a>)}</div></section> : null}
+      <nav className={`shell ${styles.sectionNav}`} aria-label="انتقل داخل صفحة النشاط">
+        <span>المعلومة اللي تحتاجها</span>
+        <a href="#listing-info">بيانات النشاط</a>
+        {nearby.length > 0 && <a href="#listing-related">أنشطة مشابهة</a>}
+        <a href="#listing-community-reviews">آراء المجتمع</a>
+        <a href="#living-journey-title">كمّل مشوارك</a>
+      </nav>
+      {listing.imagePaths?.length ? <section className="shell published-business-gallery" aria-label="صور النشاط"><h2>صور النشاط</h2><div>{listing.imagePaths.map((path,index)=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer"><Image unoptimized src={businessImageUrl(path)} width={440} height={300} alt={`${listing.title} — صورة ${index+1}`} loading="lazy" /></a>)}</div></section> : null}
 
 
       <section className="shell living-status-strip" aria-label="حالة النشاط داخل الدليل">
@@ -248,7 +260,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="shell detail-layout detail-layout--premium">
-        <article className="detail-card detail-card--premium">
+        <article id="listing-info" className="detail-card detail-card--premium">
           <div className="detail-card__heading">
             <span className="detail-card__mark" aria-hidden="true"><BrandMark compact /></span>
             <div><span>بيانات النشاط</span><h2>المعلومات الأساسية</h2></div>
@@ -285,7 +297,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <div className="living-timeline__heading">
               <span>نبض السجل</span>
               <h2 id="living-timeline-title">رحلة البيانات والمجتمع</h2>
-              <p>خط زمني مختصر لما نعرفه عن السجل بدون اختراع أحداث أو تواريخ غير متاحة.</p>
+              <p>المصدر المرتبط بالنشاط، وآخر مراجعة مسجلة، وتجارب الأعضاء في مكان واحد.</p>
             </div>
             <ol>
               <li className="is-source">
@@ -312,11 +324,11 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </section>
         </article>
 
-        <aside className="detail-aside detail-aside--premium">
+        <aside id="listing-related" className="detail-aside detail-aside--premium">
           <div className="detail-aside__heading">
             <span className="eyebrow eyebrow--dark">اكتشاف ذكي</span>
             <h2>أنشطة مشابهة ومفيدة</h2>
-            <p>{fallbackScope ? 'نرتب البدائل بحسب القسم والتشابه وجودة البيانات داخل مركز العسيرات.' : `نبدأ بالأقرب إلى ${listing.village} والتخصص نفسه، ثم نوسّع الاختيارات عند الحاجة بدل ترك المسار بلا بدائل.`}</p>
+            <p>{fallbackScope ? 'اختيارات بحسب القسم والتشابه وجودة البيانات داخل مركز العسيرات.' : `اختيارات من ${listing.village} أو القسم نفسه. سبب الاقتراح ظاهر فوق كل بطاقة.`}</p>
           </div>
           <div className="detail-aside__list">
             {nearby.length ? nearby.map((match) => (

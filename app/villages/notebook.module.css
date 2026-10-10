@@ -1,0 +1,169 @@
+.page:global(.interior-redesign) { background: #f7f4eb; }
+.page:global(.interior-redesign) :global(.geo-hero),
+.page:global(.interior-redesign) :global(.village-hero) { background: radial-gradient(ellipse at 5% 0, #44604566, transparent 55%), #173e32; }
+.page:global(.interior-redesign) :global(.geo-hero)::after,
+.page:global(.interior-redesign) :global(.village-hero)::after { opacity: .3; }
+.page:global(.interior-redesign) :global(.geo-hero__grid) { grid-template-columns: minmax(0, 1.35fr) minmax(300px, .75fr); gap: 64px; padding-block: 50px 58px; }
+.page:global(.interior-redesign) :global(.geo-hero__copy) h1 { font-size: clamp(2.5rem, 4.6vw, 4.4rem); line-height: 1.4; letter-spacing: -.04em; }
+.page:global(.interior-redesign) :global(.geo-hero__copy) > p,
+.page:global(.interior-redesign) :global(.village-hero__content) > p { color: #d3dfcf; font-size: 1rem; line-height: 2; }
+.heroBook { position: relative; overflow: hidden; padding: 28px 30px 75px; border: 1px solid #e6d9b5; border-radius: 7px 26px 26px 7px; color: #173e32; background: repeating-linear-gradient(0deg, transparent 0 33px, #a58b5021 33px 34px), #faf4e3; box-shadow: -9px 9px 0 -3px #d7c79f, -16px 16px 0 -7px #a294722e, 0 22px 50px #071b1540; transform: rotate(-2deg); }
+.heroBook::before { content: ''; position: absolute; inset-block: 0; inset-inline-end: 20px; width: 1px; background: #bf955547; }
+.bookStamp { position: relative; display: flex; align-items: center; gap: 13px; width: fit-content; padding: 10px 14px; border: 1px dashed #8e743c; border-radius: 8px; background: #faf6eaca; }
+.bookStamp > span { font-size: .9rem; font-weight: 800; }
+.bookStamp small { display: block; color: #766440; font-size: .72rem; margin-top: 4px; }
+.bookNumber { display: block; margin-top: 20px; color: #805f24; font-size: 5rem; line-height: 1.1; }
+.bookTitle { margin: 9px 0; font-size: 1.3rem; font-weight: 900; }
+.bookNote { color: #647053; font-size: .8rem; }
+.page .heroBook :global(.catalog-hero__metrics) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
+.page .heroBook :global(.catalog-hero__metrics) > span { padding: 12px 0; border: 0; border-radius: 0; background: transparent; }
+.page .heroBook :global(.catalog-hero__metrics) b { color: #173e32; font-size: 1.7rem; }
+.page .heroBook :global(.catalog-hero__metrics) small { color: #62694f; font-size: .75rem; }
+.bookHorizon { position: absolute; inset-inline: 0; bottom: 3px; height: 65px; opacity: .64; background: url('/brand/village-horizon.svg') center bottom / 125% auto no-repeat; }
+.jumpNav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px 0 26px; margin-bottom: 22px; border-bottom: 1px solid #d7dccd; }
+.jumpNav > span { margin-inline-end: 8px; color: #806024; font-size: .8rem; font-weight: 800; }
+.jumpNav a { display: flex; align-items: center; min-height: 44px; padding: 9px 14px; border: 1px solid #d8dfd1; border-radius: 12px; color: #244838; background: #fffdf6; font-size: .8rem; font-weight: 700; }
+.cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.villageCard { position: relative; min-width: 0; grid-column: span 2; display: flex; flex-direction: column; padding: 25px; overflow: hidden; scroll-margin-top: 125px; border: 1px solid #d7dece; border-radius: 20px; color: #173e32; background: #fffdf7; box-shadow: 0 5px 0 #e9e6d9; }
+.featuredCard { grid-column: span 4; border-color: #beab77; background: radial-gradient(ellipse at 5% 0, #f4e7be, transparent 60%), #fbf5e4; }
+.cardHead { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+.cardHead > span:first-child { color: #7e6843; font-size: .75rem; font-weight: 750; }
+.cardIndex { color: #a49673; font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.cardTitle { margin: 18px 0 10px; font-size: 1.7rem; line-height: 1.5; }
+.featuredCard .cardTitle { font-size: clamp(1.8rem, 3vw, 2.4rem); }
+.cardTitle a { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; color: inherit; }
+.cardTitle a > span { color: #98743b; font-size: 1.4rem; }
+.cardDescription { min-height: 78px; margin: 0; color: #64705c; font-size: .875rem; line-height: 1.9; }
+.featuredCard .cardDescription { min-height: 72px; max-width: 550px; }
+.cardMetrics { display: flex; gap: 32px; margin-block: 20px 22px; }
+.cardMetrics span { display: grid; gap: 5px; }
+.cardMetrics b { font-size: 1.6rem; line-height: 1.2; }
+.cardMetrics small { color: #66725b; font-size: .75rem; }
+.serviceLinks { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 17px; }
+.serviceLinks a { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 8px 11px; border: 1px solid #d6decb; border-radius: 10px; color: #3c543e; background: #edf1e4; font-size: .75rem; }
+.serviceLinks b { color: #83612b; font-weight: 750; }
+.localityDetails { margin-block: 0 18px; border-block: 1px dashed #c9cfbb; }
+.localityDetails summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; padding-block: 11px; color: #556847; cursor: pointer; font-size: .8rem; font-weight: 750; list-style: none; }
+.localityDetails summary::-webkit-details-marker,
+.localityMore summary::-webkit-details-marker { display: none; }
+.localityDetails summary > span { font-size: 1.2rem; transition: transform .2s ease; }
+.localityDetails[open] summary > span { transform: rotate(45deg); }
+.localityLinks { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 15px; }
+.localityLinks a { display: flex; align-items: center; min-height: 40px; padding: 7px 10px; border: 1px solid #d8dfce; border-radius: 8px; color: #3e573c; background: #f6f8ed; font-size: .78rem; }
+.cardFooter { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 46px; margin-top: auto; padding-top: 5px; color: #805e23; font-size: .82rem; font-weight: 800; }
+.cardFooter > span { font-size: 1.3rem; transition: transform .2s ease; }
+.page:global(.interior-redesign) :global(.village-hero__premium-grid) { grid-template-columns: minmax(0, 1.25fr) minmax(300px, .8fr); gap: 55px; align-items: center; padding-block: 40px 55px; }
+.page:global(.interior-redesign) :global(.village-hero__content) h1 { font-size: clamp(2.4rem, 4.6vw, 4.5rem); line-height: 1.35; }
+.page:global(.interior-redesign) :global(.village-hero .breadcrumbs) { color: #d0ddc4; font-size: .78rem; opacity: 1; }
+.page:global(.interior-redesign) :global(.village-hero-search) { margin-top: 23px; padding: 11px 14px; border: 1px solid #b6ca9e77; border-radius: 15px; background: #fffbef; }
+.page:global(.interior-redesign) :global(.village-hero-search__field) { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.page:global(.interior-redesign) :global(.village-hero-search__field > span) { display: grid; place-items: center; }
+.page:global(.interior-redesign) :global(.village-hero-search__field input) { min-width: 0; width: 100%; min-height: 46px; padding: 9px 0; border: 0; background: transparent; color: #224a36; font: inherit; font-size: 1rem; }
+.page:global(.interior-redesign) :global(.village-hero-search__field input)::placeholder { color: #717c61; font-size: .85rem; }
+.page:global(.interior-redesign) :global(.village-hero-search__field input):focus-visible { outline: 2px solid #b89542; outline-offset: 2px; border-radius: 6px; }
+.page:global(.interior-redesign) :global(.village-hero-search__field button) { min-height: 46px; padding: 11px 17px; border: 1px solid #254e39; border-radius: 10px; background: #244c37; color: #fff9e6; font-size: .85rem; }
+.page:global(.interior-redesign) :global(.village-hero-categories) { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 16px; }
+.page:global(.interior-redesign) :global(.village-hero-categories > span) { color: #d4deb8; font-size: .75rem; margin-inline-end: 5px; }
+.page:global(.interior-redesign) :global(.village-hero-categories a) { display: flex; align-items: center; min-height: 40px; padding: 8px 12px; border: 1px solid #bed0a64d; border-radius: 10px; color: #f5edd7; background: #ffffff09; font-size: .75rem; }
+.page:global(.interior-redesign) :global(.village-hero-categories a):focus-visible { outline: 3px solid #e2c270; outline-offset: 3px; }
+.page:global(.interior-redesign) :global(.village-hero__summary) { overflow: hidden; padding: 24px; border-color: #d3c39a; color: #173e32; background: #fcf6e7; border-radius: 8px 24px 24px 8px; box-shadow: -6px 7px 0 -2px #c6b488; transform: rotate(-1deg); }
+.page:global(.interior-redesign) :global(.village-hero__summary .catalog-hero__summary-label) { color: #89642e; font-size: .875rem; }
+.page:global(.interior-redesign) :global(.village-hero__summary .catalog-hero__metrics) { gap: 9px; }
+.page:global(.interior-redesign) :global(.village-hero__summary .catalog-hero__metrics) > span { padding: 12px 6px; border-color: #d4d5bb; background: #f1efde; }
+.page:global(.interior-redesign) :global(.village-hero__summary .catalog-hero__metrics) b { color: #173e32; font-size: 1.65rem; }
+.page:global(.interior-redesign) :global(.village-hero__summary .catalog-hero__metrics) small { color: #65705a; font-size: .7rem; }
+.page:global(.interior-redesign) :global(.village-hero__summary .catalog-hero__summary-cta) { color: #7c5d28; border-color: #d1c8a9; font-size: .8rem; }
+.recordCover { display: block; padding-top: 16px; margin-top: 16px; border-top: 1px dashed #cabe9b; }
+.recordImage { position: relative; display: block; height: 180px; overflow: hidden; border: 5px solid #fffdf6; border-radius: 12px; background: #e4ead8; }
+.recordImage > img { object-fit: cover; }
+.recordLabel { position: absolute; inset-inline-start: 9px; bottom: 9px; padding: 5px 9px; border-radius: 8px; color: #fff; background: #163a30e6; font-size: .68rem; }
+.recordCopy { display: grid; gap: 6px; padding-top: 12px; }
+.recordCopy small { color: #7a724c; font-size: .72rem; }
+.recordCopy strong { color: #274c37; font-size: .92rem; line-height: 1.7; }
+.page:global(.interior-redesign) :global(.village-living-pulse) { margin-top: 25px; padding: 22px; border: 1px solid #d3d9c5; border-radius: 20px; box-shadow: none; background: #fffdf5; }
+.page:global(.interior-redesign) :global(.village-living-pulse__intro) strong { font-size: 1rem; }
+.page:global(.interior-redesign) :global(.village-living-pulse__metrics) { gap: 12px; }
+.page:global(.interior-redesign) :global(.village-living-pulse__metrics article) { padding: 16px; background: #f0f3e7; border-radius: 14px; }
+.page:global(.interior-redesign) :global(.village-living-pulse__metrics article b) { font-size: 1.8rem; }
+.page:global(.interior-redesign) :global(.village-living-pulse__metrics article span) { font-size: .85rem; }
+.page:global(.interior-redesign) :global(.village-living-pulse__metrics article small) { font-size: .72rem; line-height: 1.8; }
+.page:global(.interior-redesign) :global(.localities-panel),
+.page:global(.interior-redesign) :global(.village-category-section),
+.page:global(.interior-redesign) :global(.village-recent-activity) { border-radius: 20px; border-color: #d8dcc8; box-shadow: none; background: #fffdf7; }
+.page:global(.interior-redesign) :global(.village-category-link) { min-height: 94px; padding: 16px; background: #fcfcf6; }
+.page:global(.interior-redesign) :global(.village-category-link__copy > span) { font-size: .94rem; line-height: 1.7; }
+.page:global(.interior-redesign) :global(.village-category-link__copy small) { font-size: .74rem; }
+.page:global(.interior-redesign) :global(.village-category-link > strong) { min-width: 42px; height: 42px; font-size: 1rem; background: #f5edcf; }
+.localityMore { flex-basis: 100%; margin-top: 5px; }
+.localityMore summary { display: flex; align-items: center; min-height: 46px; padding: 10px 12px; width: fit-content; border-radius: 10px; color: #805e23; background: #f7f0d9; font-size: .85rem; cursor: pointer; list-style: none; }
+.localityMore .localityLinks { padding-block: 12px 0; }
+.page:global(.interior-redesign) :global(.village-recent-activity__timeline) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0; }
+.page:global(.interior-redesign) :global(.village-recent-activity__timeline)::before { display: none; }
+.page:global(.interior-redesign) .recentCard { display: grid; grid-template-columns: 94px minmax(0, 1fr); gap: 14px; padding: 15px; border: 1px solid #d9dfcd; border-radius: 14px; background: #f7f8ee; }
+.recentImage { position: relative; align-self: start; overflow: hidden; height: 84px; border-radius: 10px; background: #e0e7d5; }
+.recentImage > img { object-fit: cover; }
+.page:global(.interior-redesign) .recentText { min-width: 0; }
+.page:global(.interior-redesign) .recentText > small { display: block; color: #7b7152; font-size: .7rem; line-height: 1.7; }
+.page:global(.interior-redesign) .recentText > a { display: block; margin-top: 6px; font-size: .91rem; line-height: 1.75; }
+.page:global(.interior-redesign) .recentText > p { font-size: .76rem; line-height: 1.8; }
+.page:global(.interior-redesign) .recentText .recentLabel { display: block; margin-top: 6px; color: #7a785c; font-size: .66rem; }
+.page:global(.interior-redesign) :global(.village-recent-activity__timeline) .recentCard > b { grid-column: 2; justify-self: start; font-size: .7rem; }
+.page:global(.interior-redesign) :global(.village-living-journey) { background: #193e31; color: #fff; box-shadow: none; }
+.page:global(.interior-redesign) :global(.village-living-journey h2) { color: #faf4db; font-size: 1.45rem; line-height: 1.7; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a) { min-height: 110px; border-color: #66806766; background: #ffffff0a; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a strong) { color: #f7f7ed; font-size: .88rem; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a small) { color: #c9d5bd; font-size: .72rem; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a span) { color: #e6c57a; font-size: .78rem; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a.is-current) { background: #f6edce; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a.is-current strong),
+.page:global(.interior-redesign) :global(.village-living-journey nav a.is-current small) { color: #234a35; }
+.page:global(.interior-redesign) :global(.village-living-journey nav a.is-current span) { color: #886122; }
+.page :is(.jumpNav a, .cardTitle a, .serviceLinks a, .localityDetails summary, .localityLinks a, .cardFooter, .recordCover, .localityMore summary):focus-visible { outline: 3px solid #b79040; outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .jumpNav a:hover, .serviceLinks a:hover, .localityLinks a:hover { background: #e4ecd8; border-color: #a1b494; }
+  .cardFooter:hover > span { transform: translateX(-5px); }
+  .cardTitle a:hover { color: #906525; }
+}
+@media (max-width: 1000px) {
+  .page:global(.interior-redesign) :global(.geo-hero__grid),
+  .page:global(.interior-redesign) :global(.village-hero__premium-grid) { gap: 30px; grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr); }
+  .villageCard, .featuredCard { grid-column: span 3; }
+  .cardDescription, .featuredCard .cardDescription { min-height: 0; }
+}
+@media (max-width: 760px) {
+  .page:global(.interior-redesign) :global(.geo-hero__grid),
+  .page:global(.interior-redesign) :global(.village-hero__premium-grid) { grid-template-columns: minmax(0, 1fr); padding-block: 30px 38px; gap: 28px; }
+  .page:global(.interior-redesign) :global(.geo-hero__copy) h1,
+  .page:global(.interior-redesign) :global(.village-hero__content) h1 { font-size: clamp(2.1rem, 8vw, 3rem); line-height: 1.5; }
+  .page:global(.interior-redesign) :global(.geo-hero__copy) > p,
+  .page:global(.interior-redesign) :global(.village-hero__content) > p { font-size: .92rem; }
+  .heroBook { width: calc(100% - 12px); margin-inline: auto; padding: 20px 24px 65px; transform: none; }
+  .bookNumber { font-size: 3.6rem; margin-top: 16px; }
+  .bookTitle { font-size: 1.2rem; }
+  .bookNote { font-size: .75rem; }
+  .jumpNav { gap: 6px; padding-block: 15px 20px; }
+  .jumpNav > span { flex-basis: 100%; margin-bottom: 6px; }
+  .jumpNav a { flex: 1 0 auto; justify-content: center; padding: 8px 11px; font-size: .75rem; }
+  .cards { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .villageCard, .featuredCard { grid-column: auto; padding: 21px; }
+  .cardTitle, .featuredCard .cardTitle { font-size: 1.65rem; }
+  .page:global(.interior-redesign) :global(.village-hero__summary) { transform: none; }
+  .page:global(.interior-redesign) :global(.village-hero-search) { padding: 9px 11px; }
+  .page:global(.interior-redesign) :global(.village-hero-search__field) { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+  .page:global(.interior-redesign) :global(.village-hero-search__field > span) { display: none; }
+  .page:global(.interior-redesign) :global(.village-hero-search__field button) { padding: 10px 12px; font-size: .8rem; }
+  .recordImage { height: 172px; }
+  .page:global(.interior-redesign) :global(.village-living-pulse) { padding: 17px; }
+  .page:global(.interior-redesign) :global(.village-living-pulse__metrics) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .page:global(.interior-redesign) :global(.village-living-pulse__metrics article) { padding: 13px 10px; }
+  .page:global(.interior-redesign) :global(.village-recent-activity__timeline) { grid-template-columns: minmax(0, 1fr); }
+  .page:global(.interior-redesign) .recentCard { grid-template-columns: 80px minmax(0, 1fr); gap: 12px; padding: 12px; }
+  .recentImage { height: 74px; }
+  .page:global(.interior-redesign) :global(.village-category-link) { min-height: 84px; padding: 12px; }
+}
+@media (max-width: 360px) {
+  .page:global(.interior-redesign) :global(.village-living-pulse__metrics) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cardFooter > span, .localityDetails summary > span { transition: none; }
+}

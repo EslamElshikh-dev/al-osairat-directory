@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categories, villageBySlug, villages } from '@/lib/data';
+import { categories, villageBySlug, villages, type DirectoryListing } from '@/lib/data';
 import { createDirectoryHref, queryDirectoryListings } from '@/lib/directory-query';
 import { buildPageMetadata } from '@/lib/metadata';
 import { getPublicDirectoryListings } from '@/lib/public-directory';
@@ -14,11 +14,19 @@ import { normalizeRouteSlug, siteConfig } from '@/lib/site';
 import { getLowCoverageCategories, getUndercoveredVillages, villageCategoryDirectoryHref } from '@/lib/discovery';
 import { SandContextLink } from '@/components/sand-context-link';
 import { formatLivingDate, listingFreshness, sortListingsByFreshness } from '@/lib/living-directory';
+import Image from '@/components/site-image';
+import { imageForListing } from '@/lib/directory-images';
+import { latestScanImageForListing } from '@/lib/latest-scan-images';
+import styles from '../notebook.module.css';
 
 type VillageSearchParams = { page?: string };
 
-async function loadVillageCatalog(_villageName: string) {
+async function loadVillageCatalog() {
   return getPublicDirectoryListings();
+}
+
+function villageRecordImage(listing: DirectoryListing) {
+  return listing.imagePaths?.length ? imageForListing(listing) : latestScanImageForListing(listing) || imageForListing(listing);
 }
 
 export function generateStaticParams() {
@@ -36,7 +44,7 @@ export async function generateMetadata({
   const village = villageBySlug[normalizeRouteSlug(slug)];
   if (!village) return {};
 
-  const allListings = await loadVillageCatalog(village.name);
+  const allListings = await loadVillageCatalog();
   const page = Math.max(1, Number(query.page || 1) || 1);
   const fallbackScope = isFallbackScope(village.name);
   const hubIndexable = isVillageHubIndexable(allListings, village.name);
@@ -89,9 +97,14 @@ export default async function VillagePage({
 
   const fallbackScope = isFallbackScope(village.name);
 
-  const allListings = await loadVillageCatalog(village.name);
+  const allListings = await loadVillageCatalog();
   const villageListings = allListings.filter((item) => item.village === village.name && item.category !== 'emergency');
   const recentListings = sortListingsByFreshness(villageListings, 4);
+  const notebookListing = villageListings.find((item) => villageRecordImage(item).kind === 'sourced')
+    || recentListings.find((item) => villageRecordImage(item).src.endsWith('.webp'))
+    || villageListings.find((item) => villageRecordImage(item).src.endsWith('.webp'))
+    || recentListings[0] || villageListings[0];
+  const notebookImage = notebookListing ? villageRecordImage(notebookListing) : null;
   const freshListingCount = villageListings.filter((item) => listingFreshness(item).key === 'fresh').length;
   const trustedListingCount = villageListings.filter(
     (item) => item.sourceStatus === 'google_verified' || item.sourceStatus === 'cross_checked',
@@ -168,7 +181,7 @@ export default async function VillagePage({
   };
 
   return (
-    <main id="main-content" className="page-main interior-redesign village-discovery-v4">
+    <main id="main-content" className={`page-main interior-redesign village-discovery-v4 ${styles.page}`}>
       <section className="village-hero village-hero--premium village-hero--search-first">
         <div className="shell village-hero__premium-grid">
           <div className="village-hero__content">
@@ -224,7 +237,7 @@ export default async function VillagePage({
           </div>
 
           <aside className="village-hero__summary" aria-label={fallbackScope ? 'ملخص النطاق التجميعي' : `ملخص ${village.name}`}>
-            <span className="catalog-hero__summary-label">{fallbackScope ? 'ملخص النطاق' : 'ملخص القرية'}</span>
+            <span className="catalog-hero__summary-label">{fallbackScope ? 'دفتر النطاق' : `دفتر ${village.name}`}</span>
             <div className="catalog-hero__metrics">
               <span><b>{result.total.toLocaleString('ar-EG')}</b><small>سجل منشور</small></span>
               {!fallbackScope && <span><b>{village.localities.length.toLocaleString('ar-EG')}</b><small>تابعًا ونجعًا</small></span>}
@@ -233,9 +246,25 @@ export default async function VillagePage({
             {!fallbackScope && (
               <Link href={`/directory?village=${encodeURIComponent(village.name)}`} className="catalog-hero__summary-cta">افتح نتائج القرية فقط ←</Link>
             )}
+            {notebookListing && notebookImage && <Link href={`/listing/${notebookListing.slug}`} className={styles.recordCover}>
+              <span className={styles.recordImage}>
+                <Image unoptimized={notebookImage.src.startsWith('/api/')} src={notebookImage.src} alt={notebookImage.alt} fill sizes="(max-width: 760px) 85vw, 420px" />
+                <span className={styles.recordLabel}>{notebookImage.label}</span>
+              </span>
+              <span className={styles.recordCopy}><small>من الأماكن المنشورة {fallbackScope ? 'في هذا النطاق' : `في ${village.name}`}</small><strong>{notebookListing.title} ←</strong></span>
+            </Link>}
           </aside>
         </div>
       </section>
+
+      <nav className={`shell ${styles.jumpNav}`} aria-label={`انتقل داخل دليل ${village.name}`}>
+        <span>في هذا الدفتر</span>
+        {categorySummary.length > 0 && <a href="#village-services-title">الخدمات</a>}
+        {village.localities.length > 0 && <a href="#localities">النجوع والتوابع</a>}
+        {!fallbackScope && recentListings.length > 0 && <a href="#village-recent-activity-title">آخر مراجعة</a>}
+        <a href="#village-listings">كل الأنشطة</a>
+        <a href="#village-living-journey-title">كمّل مشوارك</a>
+      </nav>
 
       {!fallbackScope && (
         <section className="shell village-living-pulse" aria-label={`نبض البيانات في ${village.name}`}>
@@ -260,7 +289,7 @@ export default async function VillagePage({
               <div><span>نطاقات محلية</span><h2>التوابع والنجوع المسجلة بالاسم</h2></div>
             </div>
             <div>
-              {village.localities.map((locality) => (
+              {village.localities.slice(0, 8).map((locality) => (
                 <Link
                   key={locality}
                   href={`/directory?village=${encodeURIComponent(village.name)}&q=${encodeURIComponent(locality)}`}
@@ -268,6 +297,10 @@ export default async function VillagePage({
                   {locality}<b aria-hidden="true">←</b>
                 </Link>
               ))}
+              {village.localities.length > 8 && <details className={styles.localityMore}>
+                <summary>شوف باقي النجوع والتوابع · {(village.localities.length - 8).toLocaleString('ar-EG')} أسماء ↓</summary>
+                <div className={styles.localityLinks}>{village.localities.slice(8).map((locality) => <Link key={locality} href={`/directory?village=${encodeURIComponent(village.name)}&q=${encodeURIComponent(locality)}`}>{locality}</Link>)}</div>
+              </details>}
             </div>
           </div>
         )}
@@ -276,8 +309,8 @@ export default async function VillagePage({
           <section className="village-balance-panel" aria-labelledby="village-balance-title">
             <div className="village-balance-panel__copy">
               <span className="eyebrow eyebrow--dark">اكتشاف متوازن</span>
-              <h2 id="village-balance-title">أقسام موجودة وتستحق استكشافًا أكبر</h2>
-              <p>بدل عرض الأقسام الأكثر كثافة فقط، نبرز هنا الخدمات ذات الحضور الأقل داخل {village.name} حتى يكون الوصول للمحتوى المحلي أكثر توازنًا.</p>
+              <h2 id="village-balance-title">خدمات أخرى في {village.name}</h2>
+              <p>أقسام قد تحتاجها أثناء مشوارك، مع عدد السجلات المنشورة في كل قسم.</p>
             </div>
             <nav className="village-balance-panel__links" aria-label={`أقسام أقل تغطية في ${village.name}`}>
               {lowCoverageCategories.map(({ category, count }) => (
@@ -327,20 +360,24 @@ export default async function VillagePage({
               <div>
                 <span className="eyebrow eyebrow--dark">آخر حركة موثقة</span>
                 <h2 id="village-recent-activity-title">سجلات راجعناها مؤخرًا في {village.name}</h2>
-                <p>نعرض هنا أحدث تواريخ المراجعة المسجلة فعلًا داخل الدليل؛ لا تعني أن النشاط نفسه قام بتحديث بياناته في ذلك اليوم.</p>
+                <p>أحدث تواريخ المراجعة المسجلة في الدليل. التاريخ يخص مراجعة البيانات المنشورة.</p>
               </div>
               <Link href={`/directory?village=${encodeURIComponent(village.name)}`}>كل أنشطة القرية ←</Link>
             </div>
             <ol className="village-recent-activity__timeline">
-              {recentListings.map((item, index) => {
+              {recentListings.map((item) => {
                 const category = categories.find((entry) => entry.id === item.category);
+                const image = villageRecordImage(item);
                 return (
-                  <li key={item.id}>
-                    <span className="village-recent-activity__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-                    <div>
+                  <li key={item.id} className={styles.recentCard}>
+                    <Link href={`/listing/${item.slug}`} className={styles.recentImage} aria-label={`عرض ${item.title}`}>
+                      <Image unoptimized={image.src.startsWith('/api/')} src={image.src} alt={image.alt} fill sizes="94px" />
+                    </Link>
+                    <div className={styles.recentText}>
                       <small>{formatLivingDate(item.lastUpdatedAt)} · {category?.shortLabel || 'نشاط محلي'}</small>
                       <Link href={`/listing/${item.slug}`}>{item.title}</Link>
                       <p>{item.locality ? `${item.locality} · ${village.name}` : item.location}</p>
+                      <span className={styles.recentLabel}>{image.label}</span>
                     </div>
                     <b className={`is-${listingFreshness(item).key}`}>{listingFreshness(item).label}</b>
                   </li>
@@ -398,7 +435,7 @@ export default async function VillagePage({
             <div>
               <span className="eyebrow eyebrow--dark">استكشف قرى أخرى</span>
               <h2 id="village-neighbor-discovery-title">قرى نوسّع حضورها داخل الدليل</h2>
-              <p>روابط مباشرة لقرى لديها محتوى منشور لكن تغطيتها الحالية أقل من غيرها، حتى لا تتركز الحركة في الصفحات الأقوى فقط.</p>
+              <p>افتح دفتر قرية أخرى واستكشف الخدمات المنشورة فيها.</p>
             </div>
             <nav>
               {undercoveredVillages.map(({ village: candidate, listingCount, categoryCount }) => (
