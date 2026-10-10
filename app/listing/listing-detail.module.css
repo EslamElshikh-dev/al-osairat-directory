@@ -1,0 +1,105 @@
+.page:global(.interior-redesign) { background: #f7f4eb; }
+.page:global(.interior-redesign) :global(.detail-hero) { background: radial-gradient(ellipse at 10% 0, #50623e55, transparent 52%), #173e32; }
+.page:global(.interior-redesign) :global(.detail-hero)::after { opacity: .3; }
+.page:global(.interior-redesign) :global(.detail-hero__premium-grid) { min-height: 0; grid-template-columns: minmax(0, 1.25fr) minmax(330px, .85fr); align-items: center; gap: 55px; padding-block: 42px 55px; }
+.page:global(.interior-redesign) :global(.detail-hero__content) h1 { margin-block: 22px 14px; font-size: clamp(2.25rem, 4.5vw, 4.1rem); line-height: 1.45; letter-spacing: -.035em; text-wrap: balance; }
+.page:global(.interior-redesign) :global(.detail-hero__content) > p { margin-top: 0; color: #d3dfca; font-size: 1rem; line-height: 2; }
+.page:global(.interior-redesign) :global(.detail-hero__scope) { color: #c4d3ba; font-size: .8rem; }
+.page:global(.interior-redesign) :global(.detail-actions--hero) { gap: 9px; }
+.page:global(.interior-redesign) :global(.detail-actions--hero .button) { min-height: 48px; font-size: .82rem; }
+.page:global(.interior-redesign) :global(.detail-hero__summary) { padding: 14px 14px 22px; overflow: hidden; border: 1px solid #d5c7a1; border-radius: 24px 8px 8px 24px; background: #fcf8eb; color: #173e32; box-shadow: 7px 8px 0 -3px #c6b98e; }
+.page:global(.interior-redesign) :global(.detail-hero__media) { height: 285px; margin: 0 0 21px; border: 4px solid #fffdf5; border-radius: 15px; }
+.page:global(.interior-redesign) :global(.detail-hero__media .directory-media__shade) { background: linear-gradient(180deg, #0b221724, transparent 40%, #10271b66); }
+.page:global(.interior-redesign) :global(.detail-hero__media .directory-media__label) { position: absolute; inset-inline-start: 10px; inset-inline-end: auto; top: auto; bottom: 10px; font-size: .7rem; padding: 7px 10px; border-radius: 8px; }
+.page:global(.interior-redesign) :global(.detail-hero__media-source) { top: 10px; inset-inline-start: auto; inset-inline-end: 10px; max-width: 200px; font-size: .72rem; padding: 9px 11px; }
+.page:global(.interior-redesign) :global(.detail-hero__summary .catalog-hero__summary-label) { padding-inline: 10px; color: #866128; font-size: .76rem; }
+.page:global(.interior-redesign) :global(.detail-hero__summary-brand) { margin-top: 12px; padding: 10px; border: 0; background: #eef0e1; }
+.page:global(.interior-redesign) :global(.detail-hero__summary-brand strong) { color: #38593d; font-size: .9rem; }
+.page:global(.interior-redesign) :global(.detail-hero__summary-list) { gap: 0; padding-inline: 10px; }
+.page:global(.interior-redesign) :global(.detail-hero__summary-list span) { min-height: 44px; padding-inline: 0; border-color: #d6d8bf; }
+.page:global(.interior-redesign) :global(.detail-hero__summary-list small) { color: #6b735b; font-size: .75rem; }
+.page:global(.interior-redesign) :global(.detail-hero__summary-list b) { color: #244938; font-size: .81rem; line-height: 1.7; }
+.beforeVisit { display: flex; align-items: start; gap: 13px; margin-top: 24px; padding: 16px 18px; max-width: 540px; border: 1px solid #c5d2ae33; border-radius: 13px; background: #ffffff07; }
+.beforeVisit > span { display: grid; flex: 0 0 36px; place-items: center; width: 36px; height: 36px; border-radius: 10px; color: #e8cd89; background: #c6ae5126; }
+.beforeVisit strong { font-size: .85rem; color: #eedda7; }
+.beforeVisit p { margin: 5px 0 0; color: #ccdabf; font-size: .81rem; line-height: 1.9; }
+.sectionNav { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; padding-block: 22px; border-bottom: 1px solid #d3d9c6; }
+.sectionNav > span { color: #866128; margin-inline-end: 12px; font-size: .8rem; font-weight: 800; }
+.sectionNav a { display: flex; align-items: center; min-height: 44px; padding: 10px 16px; border: 1px solid #d5dcc9; border-radius: 11px; background: #fffcf2; color: #305139; font-size: .82rem; font-weight: 750; }
+.sectionNav a:focus-visible { outline: 3px solid #af883d; outline-offset: 3px; }
+.page:global(.interior-redesign) :global(.living-status-strip) { margin-block: 24px 0; padding: 0; gap: 12px; border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+.page:global(.interior-redesign) :global(.living-status-card) { min-height: 118px; padding: 18px 15px; border-color: #d4ddc7; border-radius: 16px; background: #fffdf5; }
+.page:global(.interior-redesign) :global(.living-status-card small) { font-size: .72rem; color: #6f785e; }
+.page:global(.interior-redesign) :global(.living-status-card strong) { font-size: .88rem; line-height: 1.7; }
+.page:global(.interior-redesign) :global(.living-status-card p) { font-size: .75rem; line-height: 1.85; color: #68765e; }
+.page:global(.interior-redesign) :global(.detail-layout--premium) { padding-block: 30px 42px; gap: 28px; grid-template-columns: minmax(0, 1.5fr) minmax(290px, .75fr); }
+.page:global(.interior-redesign) :global(.detail-card--premium) { padding: 28px; border-color: #d5d9c6; border-radius: 20px; background: #fffdf7; box-shadow: none; scroll-margin-top: 125px; }
+.page:global(.interior-redesign) :global(.detail-card__heading h2) { font-size: 1.45rem; }
+.page:global(.interior-redesign) :global(.detail-card__heading span) { font-size: .72rem; }
+.page:global(.interior-redesign) :global(.detail-grid > div) { min-height: 100px; padding: 18px; border-color: #dbe0cd; background: #f4f5e9; border-radius: 13px; }
+.page:global(.interior-redesign) :global(.detail-grid > div span) { font-size: .78rem; color: #747c62; }
+.page:global(.interior-redesign) :global(.detail-grid > div strong) { font-size: .93rem; line-height: 1.85; }
+.page:global(.interior-redesign) :global(.detail-description) { padding: 22px; background: #fbf5e6; border-color: #e3dabf; }
+.page:global(.interior-redesign) :global(.detail-description p) { font-size: .94rem; line-height: 2; }
+.page:global(.interior-redesign) :global(.source-panel) { padding: 22px; border-color: #d5dbc5; border-radius: 16px; background: #eef3e7; }
+.page:global(.interior-redesign) :global(.source-panel p) { font-size: .86rem; line-height: 1.95; }
+.page:global(.interior-redesign) :global(.source-panel__heading span) { font-size: .75rem; }
+.page:global(.interior-redesign) :global(.source-panel__heading strong) { font-size: .98rem; }
+.page:global(.interior-redesign) :global(.living-timeline) { padding: 22px; background: #f9f5e8; border-color: #e0d8bf; border-radius: 16px; }
+.page:global(.interior-redesign) :global(.living-timeline__heading h2) { font-size: 1.35rem; }
+.page:global(.interior-redesign) :global(.living-timeline__heading p) { font-size: .82rem; line-height: 1.9; }
+.page:global(.interior-redesign) :global(.living-timeline li) { padding-block: 14px; }
+.page:global(.interior-redesign) :global(.living-timeline li > span) { border-color: #f9f5e8; }
+.page:global(.interior-redesign) :global(.living-timeline li small) { font-size: .72rem; }
+.page:global(.interior-redesign) :global(.living-timeline li strong) { font-size: .89rem; line-height: 1.8; }
+.page:global(.interior-redesign) :global(.living-timeline li p) { font-size: .79rem; line-height: 1.85; }
+.page:global(.interior-redesign) :global(.detail-aside__heading) { padding: 20px; border: 1px solid #d6dcc7; border-radius: 16px; background: #e9efde; }
+.page:global(.interior-redesign) :global(.detail-aside__heading h2) { font-size: 1.2rem; }
+.page:global(.interior-redesign) :global(.detail-aside__heading p) { margin-bottom: 0; font-size: .82rem; line-height: 1.9; }
+.page:global(.interior-redesign) :global(.living-related-card) { padding-top: 35px; }
+.page:global(.interior-redesign) :global(.living-related-card__reasons) { position: static; margin: -29px 10px 8px; }
+.page:global(.interior-redesign) :global(.living-related-card__reasons span) { padding: 7px 9px; font-size: .68rem; box-shadow: none; }
+.page:global(.interior-redesign) :global(.living-journey) { background: #173e32; box-shadow: none; border-radius: 20px; }
+.page:global(.interior-redesign) :global(.living-journey__intro h2) { color: #f3e5b8; font-size: clamp(1.4rem, 2.4vw, 2rem); line-height: 1.7; }
+.page:global(.interior-redesign) :global(.living-journey__intro p) { color: #c1d1b9; font-size: .86rem; line-height: 1.9; }
+.page:global(.interior-redesign) :global(.living-journey__rail a) { min-height: 112px; border-color: #91a57c44; background: #ffffff09; }
+.page:global(.interior-redesign) :global(.living-journey__rail a small) { color: #c4d1b4; font-size: .72rem; }
+.page:global(.interior-redesign) :global(.living-journey__rail a strong) { color: #fff8df; font-size: .88rem; line-height: 1.8; }
+.page:global(.interior-redesign) :global(.living-journey__rail a span) { color: #e7cb80; }
+.page:global(.interior-redesign) :global(.living-journey__rail a.is-current) { background: #f4eccf; }
+.page:global(.interior-redesign) :global(.living-journey__rail a.is-current small),
+.page:global(.interior-redesign) :global(.living-journey__rail a.is-current strong) { color: #294c35; }
+.page:global(.interior-redesign) :global(.living-journey__rail a.is-current span) { color: #846127; }
+.page:global(.interior-redesign) :global(.published-business-gallery) { margin-top: 24px; padding: 22px; border: 1px solid #d8ddc8; border-radius: 18px; background: #fffdf4; }
+.page:global(.interior-redesign) :global(.published-business-gallery h2) { margin-top: 0; font-size: 1.4rem; }
+.page:global(.interior-redesign) :global(.published-business-gallery img) { border-radius: 12px; }
+.page:global(.interior-redesign) :global(.living-reviews-section) { scroll-margin-top: 125px; }
+@media (hover: hover) and (pointer: fine) { .sectionNav a:hover { border-color: #a0b590; background: #e5eeda; } }
+@media (max-width: 1000px) {
+  .page:global(.interior-redesign) :global(.detail-hero__premium-grid) { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .page:global(.interior-redesign) :global(.detail-hero__summary) { max-width: none; }
+  .page:global(.interior-redesign) :global(.detail-hero__media) { height: 300px; }
+  .page:global(.interior-redesign) :global(.living-status-strip) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .page:global(.interior-redesign) :global(.detail-layout--premium) { grid-template-columns: minmax(0, 1fr); }
+  .page:global(.interior-redesign) :global(.detail-aside__list) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+}
+@media (max-width: 760px) {
+  .page:global(.interior-redesign) :global(.detail-hero__premium-grid) { padding-block: 28px 38px; }
+  .page:global(.interior-redesign) :global(.detail-hero__content) h1 { font-size: clamp(2rem, 8vw, 2.9rem); line-height: 1.5; }
+  .page:global(.interior-redesign) :global(.detail-hero__content) > p { font-size: .92rem; }
+  .page:global(.interior-redesign) :global(.detail-hero__media) { height: 230px; }
+  .page:global(.interior-redesign) :global(.detail-hero__summary) { border-radius: 18px; padding: 12px 12px 17px; }
+  .beforeVisit { padding: 13px; }
+  .sectionNav { gap: 7px; padding-block: 18px; }
+  .sectionNav > span { flex-basis: 100%; margin-bottom: 4px; }
+  .sectionNav a { flex: 1 0 auto; justify-content: center; padding: 9px 12px; font-size: .78rem; }
+  .page:global(.interior-redesign) :global(.living-status-strip) { gap: 10px; }
+  .page:global(.interior-redesign) :global(.living-status-card) { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px; }
+  .page:global(.interior-redesign) :global(.detail-card--premium) { padding: 18px; }
+  .page:global(.interior-redesign) :global(.detail-grid > div) { padding: 14px; }
+  .page:global(.interior-redesign) :global(.living-timeline),
+  .page:global(.interior-redesign) :global(.source-panel),
+  .page:global(.interior-redesign) :global(.detail-description) { padding: 17px; }
+  .page:global(.interior-redesign) :global(.detail-aside__list) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 360px) { .page:global(.interior-redesign) :global(.living-status-strip) { grid-template-columns: minmax(0, 1fr); } }

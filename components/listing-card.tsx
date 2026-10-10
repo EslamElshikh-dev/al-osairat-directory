@@ -8,6 +8,7 @@ import { ContactIcon } from './contact-icon';
 import { BrandMark } from './brand-mark';
 import { CategoryVisual } from './category-visual';
 import { FavoriteButton } from './favorite-button';
+import styles from './listing-card.module.css';
 
 function compactReviewDate(value?: string) {
   if (!value) return null;
@@ -25,7 +26,7 @@ export function ListingCard({ listing, compact = false }: { listing: DirectoryLi
   const hasRating = typeof listing.rating === 'number' && listing.reviewCount > 0;
 
   return (
-    <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''}`}>
+    <article className={`listing-card listing-card--${listing.category}${compact ? ' listing-card--compact' : ''} ${styles.card}`}>
       {listing.category !== 'emergency' && <FavoriteButton listingId={listing.id} variant="card" />}
 
       <Link prefetch={false} href={`/listing/${listing.slug}`} className="listing-card__media" aria-label={`عرض ${listing.title}`}>
