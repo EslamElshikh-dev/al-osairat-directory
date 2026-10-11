@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from '@/components/site-image';
 import { BlogCard } from '@/components/blog-card';
 import { BlogDiscoveryControls } from '@/components/blog-discovery-controls';
 import { BrandMark } from '@/components/brand-mark';
@@ -7,6 +8,7 @@ import { blogArticles } from '@/lib/blog-published';
 import { getBlogDiscoveryTopic, normalizeBlogSearchText } from '@/lib/blog-discovery';
 import { buildPageMetadata } from '@/lib/metadata';
 import { siteConfig } from '@/lib/site';
+import styles from './editorial.module.css';
 
 const title = 'مدونة العسيرات: التاريخ والقرى ودليل الخدمات';
 const description = 'مقالات موثقة وأدلة عملية عن مركز العسيرات بمحافظة سوهاج: التاريخ والقرى والمعالم والشخصيات والصحة والتعليم والمواصلات والأسواق والخدمات المحلية.';
@@ -26,6 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  const coverArticle = blogArticles[0];
   const blogEditorialMetrics = {
     articles: blogArticles.length,
     sections: blogArticles.reduce((sum, article) => sum + article.sections.length, 0),
@@ -73,30 +76,28 @@ export default function BlogPage() {
   };
 
   return (
-    <main id="main-content" className="blog-main">
-      <section className="blog-hero">
-        <div className="shell blog-hero__grid">
-          <div className="blog-hero__content">
-            <nav className="breadcrumbs breadcrumbs--dark" aria-label="مسار التنقل">
-              <Link href="/">الرئيسية</Link><span>/</span><span>المدونة</span>
-            </nav>
-            <span className="eyebrow">موسوعة المكان والناس</span>
-            <h1>حكايات <em>العسيرات</em>… موثقة ومكتوبة لتبقى.</h1>
-            <p>
-              مساحة محلية تجمع التاريخ والجغرافيا والمعالم والناس مع أدلة عملية للصحة والتعليم والمواصلات والخدمات،
-              بصياغة عربية واضحة ومصادر يمكن الرجوع إليها بدل أن تضيع المعلومة بين الروايات المتفرقة.
-            </p>
-            <div className="blog-hero__actions">
-              <a href="#articles" className="button button--light">ابدأ القراءة</a>
-              <Link href="/villages" className="button button--outline-light">استكشف القرى</Link>
-            </div>
+    <main id="main-content" className={`blog-main ${styles.journal}`}>
+      <section className={styles.cover} aria-labelledby="blog-cover-title">
+        <div className="shell">
+          <nav className={`breadcrumbs ${styles.breadcrumbs}`} aria-label="مسار التنقل">
+            <Link prefetch={false} href="/">الرئيسية</Link><span>/</span><span>المدونة</span>
+          </nav>
+          <div className={styles.masthead}>
+            <div><span>ذاكرة المكان… وحكايات الناس</span><h1 id="blog-cover-title">حكايات <em>العسيرات.</em></h1><p>بلد تستاهل نعرفها أكتر. اقرأ عن قراها وناسها، وخُد من الحكاية طريقًا لمشوارك.</p></div>
+            <a href="#articles" className={styles.browse}>اختار حكايتك <span aria-hidden="true">↓</span></a>
           </div>
-          <aside className="blog-hero__seal" aria-label="هوية مدونة العسيرات">
-            <span className="blog-hero__seal-mark" aria-hidden="true"><BrandMark /></span>
-            <span>مدونة</span>
-            <strong>العسيرات</strong>
-            <small>تاريخ · مكان · ناس</small>
-          </aside>
+          <div className={styles.coverGrid}>
+            <Link prefetch={false} href={`/blog/${coverArticle.slug}`} className={styles.coverPhoto}>
+              <Image src={coverArticle.image} alt={coverArticle.imageAlt} fill preload sizes="(max-width: 760px) 92vw, (max-width: 1100px) 60vw, 750px" />
+              <span className={styles.photoLabel}>صورة تعبيرية</span>
+              <div className={styles.coverCaption}><span>{coverArticle.category} · {coverArticle.readingTime}</span><h2>{coverArticle.title}</h2><span className={styles.coverCta}>افتح أول صفحة <b aria-hidden="true">←</b></span></div>
+            </Link>
+            <aside className={styles.shelf} aria-label="مسارات قراءة مختارة">
+              <div className={styles.shelfTitle}><BrandMark compact /><span>على رف القراءة<strong>مكان. تاريخ. ناس.</strong></span></div>
+              <nav>{blogArticles.slice(1, 4).map((article, index) => <Link prefetch={false} href={`/blog/${article.slug}`} key={article.slug}><span className={styles.shelfNumber}>{(index + 1).toLocaleString('ar-EG')}</span><span><small>{article.category}</small><strong>{article.title}</strong><em>{article.readingTime} <b aria-hidden="true">←</b></em></span></Link>)}</nav>
+              <Link prefetch={false} href="/villages" className={styles.shelfVillage}>كمّل الحكاية من قريتك <b aria-hidden="true">←</b></Link>
+            </aside>
+          </div>
         </div>
       </section>
 
@@ -111,6 +112,43 @@ export default function BlogPage() {
           <span><b>{blogEditorialMetrics.questions.toLocaleString('ar-EG')}</b><small>سؤالًا مباشرًا</small></span>
         </div>
         <Link href="#articles" className="blog-compass__cta">اختار موضوعك <b aria-hidden="true">↓</b></Link>
+      </section>
+
+      <section id="articles" className="section section--muted blog-listing-section">
+        <div className="shell">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow eyebrow--dark">موسوعة متجددة</span>
+              <h2>ملفات بحثية عن مركز العسيرات</h2>
+            </div>
+            <span className="blog-count">{blogArticles.length.toLocaleString('ar-EG')} مقالات</span>
+          </div>
+          <BlogDiscoveryControls total={blogArticles.length} />
+          <div className="blog-grid blog-grid--discoverable">
+            {blogArticles.map((article, index) => {
+              const searchableText = normalizeBlogSearchText([
+                article.title,
+                article.description,
+                article.category,
+                article.eyebrow,
+                ...article.sections.map((section) => section.heading),
+                ...article.faq.map((item) => item.question),
+              ].join(' '));
+
+              return (
+                <div
+                  key={article.slug}
+                  className={`blog-discovery-card-shell${index === 0 ? ' blog-discovery-card-shell--featured' : ''}`}
+                  data-blog-discovery-card
+                  data-blog-topic={getBlogDiscoveryTopic(article.slug)}
+                  data-blog-search={searchableText}
+                >
+                  <BlogCard article={article} featured={index === 0} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       <section className="section shell blog-intro">
@@ -172,43 +210,6 @@ export default function BlogPage() {
           <Link href="/directory/pharmacies"><span>صيدليات العسيرات</span><small>الصيدليات وبيانات التواصل</small></Link>
           <Link href="/directory/community"><span>الدواوين والمنادر</span><small>المجتمع المحلي والعائلات</small></Link>
         </nav>
-      </section>
-
-      <section id="articles" className="section section--muted blog-listing-section">
-        <div className="shell">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow eyebrow--dark">موسوعة متجددة</span>
-              <h2>ملفات بحثية عن مركز العسيرات</h2>
-            </div>
-            <span className="blog-count">{blogArticles.length.toLocaleString('ar-EG')} مقالات</span>
-          </div>
-          <BlogDiscoveryControls total={blogArticles.length} />
-          <div className="blog-grid blog-grid--discoverable">
-            {blogArticles.map((article, index) => {
-              const searchableText = normalizeBlogSearchText([
-                article.title,
-                article.description,
-                article.category,
-                article.eyebrow,
-                ...article.sections.map((section) => section.heading),
-                ...article.faq.map((item) => item.question),
-              ].join(' '));
-
-              return (
-                <div
-                  key={article.slug}
-                  className={`blog-discovery-card-shell${index === 0 ? ' blog-discovery-card-shell--featured' : ''}`}
-                  data-blog-discovery-card
-                  data-blog-topic={getBlogDiscoveryTopic(article.slug)}
-                  data-blog-search={searchableText}
-                >
-                  <BlogCard article={article} featured={index === 0} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </section>
 
       <section className="section shell blog-editorial-note">

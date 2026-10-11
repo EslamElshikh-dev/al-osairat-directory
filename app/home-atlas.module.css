@@ -235,6 +235,12 @@
 .journeyControls button b { font-weight: 500; }
 .journeyControls :is(select, button):focus-visible { outline: 3px solid #866420; outline-offset: 3px; }
 
+.storyMasthead { padding-bottom: 22px; margin-bottom: 0; border-bottom: 3px double #a4b296; }
+.home .storyMasthead h2 { font-size: clamp(1.8rem, 3.3vw, 2.7rem); line-height: 1.6; }
+.storyRoutes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-block: 18px 26px; color: #738063; font-size: .8125rem; }
+.storyRoutes a { display: inline-flex; align-items: center; min-height: 44px; padding: 7px 13px; border: 1px solid #d4ddc4; border-radius: 7px; background: #fffcf2; color: #48623f; }
+.storyRoutes a:focus-visible { outline: 3px solid #967330; outline-offset: 3px; }
+
 /* A long read beside two shorter entry points, retaining real article metadata. */
 .home:global(.home-redesign) :global(.home-blog-section) { background: #f1f4ec; }
 .home:global(.home-redesign) :global(.blog-grid--home) {

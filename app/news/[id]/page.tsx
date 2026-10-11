@@ -163,7 +163,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   };
 
   return (
-    <main id="main-content" className={styles.main}>
+    <main id="main-content" className={`${styles.main} ${styles.editorial}`}>
       <header className={styles.hero} data-topic={item.topic}>
         <div className={styles.heroPattern} aria-hidden="true" />
         <div className={`shell ${styles.heroShell}`}>
