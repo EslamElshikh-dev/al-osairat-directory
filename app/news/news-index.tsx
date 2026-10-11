@@ -29,6 +29,8 @@ const topicOrder: NewsTopic[] = ['خدمات وتنمية', 'الصحة', 'ال�
 export async function NewsIndex({ page = 1 }: { page?: number }) {
   const feed = await getLocalNews();
   const checkedAt = Date.parse(feed.checkedAt);
+  // This async Server Component checks the persisted feed's age on the server.
+  // eslint-disable-next-line react-hooks/purity
   const fresh = Number.isFinite(checkedAt) && Date.now() - checkedAt < 65 * 60_000 && feed.connectedSourceCount > 0;
   const topicCounts = new Map<NewsTopic, number>();
 
@@ -90,7 +92,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
   };
 
   return (
-    <main id="main-content" className={styles.main}>
+    <main id="main-content" className={`${styles.main} ${styles.editorial}`}>
       <NewsRefreshPulse />
       <section className={styles.hero}>
         <div className={styles.heroGlow} aria-hidden="true" />
@@ -100,7 +102,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
               <Link href="/">الرئيسية</Link><span>/</span><span>الأخبار</span>
             </nav>
             <span className={styles.liveLabel}><i aria-hidden="true" /> رصد آلي من مصادر موثوقة</span>
-            <h1>أخبار <em>العسيرات وقراها</em> في مكان واحد.</h1>
+            <h1>أخبار <em>العسيرات.</em><small>نبض بلدك وقراها.</small></h1>
             <p>
               نلتقط التغطيات التي تذكر مركز العسيرات أو إحدى قراه، نزيل التكرار، ثم نعرض داخل الدليل
               موجز الخبر وتاريخه، مع إظهار الناشر والرابط الأصلي بوضوح. ابحث باسم قريتك أو اختَر الموضوع والمصدر الذي يهمك.

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fragment } from 'react';
 import Image from '@/components/site-image';
+import styles from '../reading.module.css';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArticleReadingProgress } from '@/components/article-reading-progress';
@@ -153,7 +154,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
   };
 
   return (
-    <main id="main-content" className="article-page">
+    <main id="main-content" className={`article-page ${styles.reading}`}>
       <ArticleReadingProgress />
       <header className="article-hero">
         <div className="shell article-hero__shell article-hero__shell--visual">
@@ -207,16 +208,18 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
 
       <div className="shell article-layout">
         <aside className="article-toc" aria-label="محتويات المقال">
-          <span className="article-toc__label">في هذا المقال</span>
-          <nav>
-            {article.sections.map((section, index) => (
-              <a key={section.id} href={`#${section.id}`}>
-                <span>{String(index + 1).padStart(2, '0')}</span>{section.heading}
-              </a>
-            ))}
-            <a href="#faq"><span>؟</span>الأسئلة الشائعة</a>
-            <a href="#sources"><span>↗</span>المصادر</a>
-          </nav>
+          <details open className={styles.contents}>
+            <summary>في هذا المقال <b aria-hidden="true">+</b></summary>
+            <nav>
+              {article.sections.map((section, index) => (
+                <a key={section.id} href={`#${section.id}`}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>{section.heading}
+                </a>
+              ))}
+              <a href="#faq"><span>؟</span>الأسئلة الشائعة</a>
+              <a href="#sources"><span>↗</span>المصادر</a>
+            </nav>
+          </details>
           <Link href="/blog" className="article-toc__back">← كل مقالات العسيرات</Link>
         </aside>
 

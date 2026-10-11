@@ -27,16 +27,21 @@ const dateFormatter = new Intl.DateTimeFormat('ar-EG', {
   day: 'numeric',
   timeZone: 'Africa/Cairo',
 });
+const dayMonthFormatter = new Intl.DateTimeFormat('ar-EG', {
+  day: 'numeric', month: 'long', timeZone: 'Africa/Cairo',
+});
 
-export function NewsCard({ item, compact = false }: { item: LocalNewsItem; compact?: boolean }) {
+export function NewsCard({ item, compact = false, featured = false }: { item: LocalNewsItem; compact?: boolean; featured?: boolean }) {
   const publishedDate = dateFormatter.format(new Date(item.publishedAt));
+  const dateParts = dayMonthFormatter.formatToParts(new Date(item.publishedAt));
 
   return (
-    <article className={`${styles.card}${compact ? ` ${styles.compact}` : ''}`}>
+    <article className={`${styles.card}${compact ? ` ${styles.compact}` : ''}${featured ? ` ${styles.featured}` : ''}`}>
       <div className={styles.visual} data-topic={item.topic}>
+        <span className={styles.dateline} aria-hidden="true"><b>{dateParts.find((part) => part.type === 'day')?.value}</b><small>{dateParts.find((part) => part.type === 'month')?.value}</small></span>
         <span className={styles.icon}>{topicIcons[item.topic]}</span>
         <span className={styles.topic}>{item.topic}</span>
-        <span className={styles.pattern} aria-hidden="true" />
+        {featured ? <span className={styles.edition}>من أخبار العسيرات</span> : null}
       </div>
 
       <div className={styles.body}>

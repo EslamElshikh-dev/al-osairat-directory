@@ -293,7 +293,7 @@ export default async function HomePage() {
 
       <section id="stories" className="section section--muted home-blog-section home-blog-section--editorial">
         <div className="shell">
-          <div className="section-heading section-heading--editorial">
+          <div className={`section-heading section-heading--editorial ${styles.storyMasthead}`}>
             <div>
               <span className="eyebrow eyebrow--dark">حكايات بلدنا</span>
               <h2>ورا كل مكان… حكاية تستاهل</h2>
@@ -301,6 +301,7 @@ export default async function HomePage() {
             </div>
             <Link prefetch={false} href="/blog" className="text-link text-link--arrow">كل المقالات <b aria-hidden="true">←</b></Link>
           </div>
+          <nav className={styles.storyRoutes} aria-label="مسارات حكايات البلد"><span>اقلب الصفحة على…</span><Link prefetch={false} href="/blog/origin-name-al-osairat">أصل الحكاية</Link><Link prefetch={false} href="/blog/al-osairat-landmarks">معالم بلدنا</Link><Link prefetch={false} href="/blog/famous-families-al-osairat">الناس والعائلات</Link></nav>
           <div className="blog-grid blog-grid--home">
             {blogArticles.slice(0, 3).map((article, index) => <BlogCard key={article.slug} article={article} featured={index === 0} />)}
           </div>
