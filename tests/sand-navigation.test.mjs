@@ -4,6 +4,8 @@ import { isSandContextResetCommand, sandNavigationHref } from '../lib/sand/navig
 
 test('Sand navigation understands normalized site destinations', () => {
   assert.equal(sandNavigationHref('أخبار العسيرات'), '/news');
+  assert.equal(sandNavigationHref('أحدث أخبار العسيرات'), '/news');
+  assert.equal(sandNavigationHref('آخر أخبار العسيرات'), '/news');
   assert.equal(sandNavigationHref('الاخبار'), '/news');
   assert.equal(sandNavigationHref('افتح القرى'), '/villages');
   assert.equal(sandNavigationHref('النجوع'), '/localities');

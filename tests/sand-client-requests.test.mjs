@@ -98,7 +98,7 @@ test('resetting Sand during a response body discards the old body and preserves 
 });
 
 test('Sand navigation commands open the real route without an API request', () => {
-  for (const [prompt, path] of [['أخبار العسيرات', '/news'], ['قرى العسيرات', '/villages'], ['خدمات الدليل', '/directory']]) {
+  for (const [prompt, path] of [['أخبار العسيرات', '/news'], ['أحدث أخبار العسيرات', '/news'], ['قرى العسيرات', '/villages'], ['خدمات الدليل', '/directory']]) {
     const app = client();
     find(app.render(prompt), (node) => node.type === 'form').props.onSubmit({ preventDefault() {} });
     assert.deepEqual(app.paths, [path]);
