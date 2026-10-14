@@ -33,11 +33,14 @@ test('V2.9 uses next image for Google-backed member avatars', async () => {
   const config = await readProjectFile('next.config.ts');
   const member = await readProjectFile('app/members/[slug]/page.tsx');
   const accountButton = await readProjectFile('components/auth/account-button.tsx');
+  const image = await readProjectFile('components/site-image.tsx');
+  assert.match(image, /import Image,.*from 'next\/image'/);
+  assert.match(image, /<Image \{\.\.\.props\}/);
   assert.match(config, /hostname: 'lh3\.googleusercontent\.com'/);
-  assert.match(member, /import Image from 'next\/image'/);
+  assert.match(member, /import Image from '@\/components\/site-image'/);
   assert.match(member, /width=\{118\}/);
-  assert.match(accountButton, /import Image from 'next\/image'/);
-  assert.match(accountButton, /width=\{31\}/);
+  assert.match(accountButton, /import Image from '@\/components\/site-image'/);
+  assert.match(accountButton, /width=\{32\}/);
 });
 
 test('V2.9 sitemap uses lightweight cached public member slugs', async () => {

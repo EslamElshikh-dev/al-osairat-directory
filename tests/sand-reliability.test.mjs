@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { classifySandMessage } from '../lib/sand/safety.ts';
 import { directSandReply } from '../lib/sand/persona.ts';
+import { sandNavigationHref } from '../lib/sand/navigation.ts';
 
 const readProjectFile = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
@@ -73,10 +74,10 @@ test('Sand launcher keeps the visible invitation inside the clickable hit target
 test('Sand navigation suggestions open real routes and never become directory searches', async () => {
   const source = await readProjectFile('components/sand-assistant.tsx');
 
-  assert.match(source, /'أخبار العسيرات': '\/news'/);
-  assert.match(source, /'قرى العسيرات': '\/villages'/);
-  assert.match(source, /'خدمات الدليل': '\/directory'/);
-  assert.match(source, /navigationSuggestionHref\(text\)/);
+  assert.equal(sandNavigationHref('أخبار العسيرات'), '/news');
+  assert.equal(sandNavigationHref('قرى العسيرات'), '/villages');
+  assert.equal(sandNavigationHref('خدمات الدليل'), '/directory');
+  assert.match(source, /const navigationHref = sandNavigationHref\(text\)/);
   assert.match(source, /router\.push\(navigationHref\)/);
   assert.match(source, /<Link key=\{suggestion\} href=\{href\}/);
 });
@@ -111,7 +112,7 @@ test('Sand can cancel an active request and stops in-flight work when the panel 
   assert.match(component, /function cancelActiveRequest\(\)/);
   assert.match(component, /activeRequest\.abort\(\)/);
   assert.match(component, /function closePanel\(\)/);
-  assert.match(component, /cancelActiveRequest\(\);\s*setOpen\(false\)/);
+  assert.match(component, /cancelActiveRequest\(\);\s*restoreTriggerFocusRef\.current = true;\s*setOpen\(false\)/);
   assert.match(component, /aria-label="إيقاف الطلب الجاري"/);
   assert.match(component, /className="sand-composer__cancel"/);
   assert.match(component, /if \(event\.key === 'Escape'\) closePanel\(\)/);

@@ -66,9 +66,12 @@ test('member profile exposes follower count and follow control without follower 
 
 test('Community V2.3 is discoverable through navigation and sitemap', async () => {
   const shell = await readProjectFile('components/site-shell.tsx');
+  const navigation = await readProjectFile('components/header-navigation.tsx');
   const sitemap = await readProjectFile('app/sitemap.ts');
 
-  assert.match(shell, /href="\/community"/);
-  assert.match(shell, /نبض المجتمع/);
+  assert.match(navigation, /\['\/community', 'المجتمع'\]/);
+  assert.match(navigation, /routes\.map/);
+  assert.match(shell, /href: '\/community'/);
+  assert.match(shell, /footerRoutes\.map/);
   assert.match(sitemap, /absoluteUrl\('\/community'\)/);
 });

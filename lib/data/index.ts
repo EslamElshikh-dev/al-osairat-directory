@@ -1,5 +1,5 @@
 import type { DirectoryCategory, DirectoryListing } from '../types';
-import { normalizeDirectoryListing } from '../directory-query';
+import { mergeDirectoryListings } from '../directory-query';
 import { categories, villages } from './base';
 import { doctors } from './doctors';
 import { pharmacies } from './pharmacies';
@@ -108,7 +108,10 @@ const rawListings: DirectoryListing[] = [
   ...awladAliCenterServicesScan20260917,
 ];
 
-export const listings: DirectoryListing[] = rawListings.map(normalizeDirectoryListing);
+// Scan batches can include records already present in an earlier batch.
+// Use the same latest-record precedence as the public directory before exposing
+// counts, static routes, and search snapshots.
+export const listings: DirectoryListing[] = mergeDirectoryListings(rawListings);
 
 export const categoryById = Object.fromEntries(
   categories.map((category) => [category.id, category]),

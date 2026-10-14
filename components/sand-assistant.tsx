@@ -292,6 +292,10 @@ export function SandAssistant({ initialPrompt = '' }: { initialPrompt?: string }
         signal: controller.signal,
       });
       const data = await response.json().catch(() => ({})) as Partial<SandApiResponse> & { error?: string };
+      // Closing/resetting the panel invalidates this request even if a response
+      // body finished after fetch had already resolved.
+      if (requestRef.current !== controller) return;
+      if (controller.signal.aborted) throw new DOMException('Request aborted', 'AbortError');
       if (!response.ok || !data.message) throw new Error(data.error || 'تعذر الوصول إلى سَند الآن.');
 
       const payload = data as SandApiResponse;

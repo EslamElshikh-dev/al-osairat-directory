@@ -323,6 +323,13 @@ function detectCategory(normalized: string) {
 }
 
 function detectVillage(normalized: string, villages: VillageLike[]) {
+  // The directory's broad administrative scope is not a fuzzy village name.
+  // In particular, «العسيرات» must never be approximated as «النويرات».
+  const withoutScope = (value: string) => value.split(' ')
+    .filter((token) => !tokenVariants(token).some((variant) =>
+      ['العسيرات', 'عسيرات', 'سوهاج'].includes(variant)))
+    .join(' ');
+  const villageMessage = withoutScope(normalized);
   const officialTokens = new Set(
     villages.flatMap((village) => normalizeSandIntent(village.name).split(' ').filter(Boolean)),
   );
@@ -338,8 +345,10 @@ function detectVillage(normalized: string, villages: VillageLike[]) {
         ? clean.split(' ').filter((token) => !directionalVillageTokens.has(token)).join(' ')
         : '';
       const score = Math.max(
-        phraseScore(normalized, candidate),
-        relaxedOfficial && relaxedOfficial !== clean ? phraseScore(normalized, relaxedOfficial) - 4 : 0,
+        ` ${normalized} `.includes(` ${clean} `) ? 120 + clean.split(' ').length * 4 : 0,
+        phraseScore(villageMessage, withoutScope(clean)),
+        relaxedOfficial && relaxedOfficial !== clean
+          ? phraseScore(villageMessage, withoutScope(relaxedOfficial)) - 4 : 0,
       ) + (index === 0 ? 12 : 0);
       if (score > (winner?.score || 0)) winner = { name: village.name, phrase: candidate, score };
     }

@@ -42,7 +42,8 @@ test('community library API enforces same-origin writes and verified members', a
 
   assert.match(route, /sameOrigin/);
   assert.match(route, /أكد بريدك الإلكتروني أولًا/);
-  assert.match(route, /\['save', 'unsave', 'watch', 'unwatch'\]/);
+  assert.match(route, /const targetActions = \['save', 'unsave', 'watch', 'unwatch', 'mark_seen', 'mute', 'unmute'\]/);
+  assert.match(route, /!targetActions\.includes\(action\)/);
   assert.match(route, /أنت صاحب التقييم وستصلك الردود تلقائيًا/);
   assert.match(route, /status=eq\.published/);
 });

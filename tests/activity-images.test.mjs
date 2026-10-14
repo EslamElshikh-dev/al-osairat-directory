@@ -33,7 +33,8 @@ test('every registered activity has one distinct, optimized image file', () => {
 test('production build renders all individual WebP files from the manifest', () => {
   const packageJson = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 
-  assert.equal(packageJson.scripts.prebuild, 'node scripts/render-activity-images.mjs');
+  assert.equal(packageJson.scripts.prebuild, 'node scripts/render-activity-images.mjs && node scripts/prepare-mobile-images.mjs');
+  assert.ok(existsSync(path.join(root, 'scripts/prepare-mobile-images.mjs')));
   assert.ok(existsSync(path.join(root, 'scripts/render-activity-images.mjs')));
   assert.equal(packedSeedNames.size, 24);
 });

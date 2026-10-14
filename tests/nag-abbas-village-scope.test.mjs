@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { nagAbbasFollowupScan20260917 } from '../lib/data/nag-abbas-followup-scan-2026-09-17.ts';
+import { require as tsxRequire } from 'tsx/cjs/api';
+const { nagAbbasFollowupScan20260917 } = tsxRequire('../lib/data/nag-abbas-followup-scan-2026-09-17.ts', import.meta.url);
 
 test('Nag Abbas records belong to Awlad Gabara', () => {
   const nagAbbas = nagAbbasFollowupScan20260917.filter((x) => x.locality === 'نجع عباس');

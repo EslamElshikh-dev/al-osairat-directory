@@ -37,7 +37,7 @@ test('site-wide security policy covers core sources and blocks unsafe embedding'
 
   assert.match(config, /Content-Security-Policy/);
   assert.match(config, /object-src 'none'/);
-  assert.match(config, /frame-ancestors 'self'/);
+  assert.match(config, /frame-ancestors 'none'/);
   assert.match(config, /https:\/\/\*\.supabase\.co/);
   assert.match(config, /https:\/\/www\.googletagmanager\.com/);
 });
@@ -54,7 +54,9 @@ test('route loading state is meaningful and keeps the footer from jumping into v
 
   assert.match(source, /status-page--loading/);
   assert.match(source, /aria-busy="true"/);
-  assert.match(source, /نرتب لك دليل العسيرات/);
+  assert.match(source, /role="status"/);
+  assert.match(source, /aria-label="جاري تحميل دليل العسيرات"/);
+  assert.match(source, /directory-loading-preview__grid/);
   assert.doesNotMatch(source, /return null/);
 });
 

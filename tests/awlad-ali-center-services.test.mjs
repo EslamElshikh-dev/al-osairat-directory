@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { awladAliCenterServicesScan20260917 } from '../lib/data/awlad-ali-center-services-scan-2026-09-17.ts';
-import { listings } from '../lib/data/index.ts';
+import { require as tsxRequire } from 'tsx/cjs/api';
+const { awladAliCenterServicesScan20260917 } = tsxRequire('../lib/data/awlad-ali-center-services-scan-2026-09-17.ts', import.meta.url);
+const { listings } = tsxRequire('../lib/data/index.ts', import.meta.url);
 
 test('Awlad Ali and Al Usayrat center batch is verified and duplicate-safe', () => {
   assert.equal(awladAliCenterServicesScan20260917.length, 3);
@@ -23,5 +24,15 @@ test('Awlad Ali and Al Usayrat center batch is verified and duplicate-safe', () 
   for (const item of awladAliCenterServicesScan20260917) {
     assert.equal(listings.filter((listing) => listing.id === item.id).length, 1, item.id);
     assert.equal(listings.filter((listing) => listing.slug === item.slug).length, 1, item.slug);
+  }
+});
+
+test('the combined snapshot has unique IDs and slugs and retains the latest Nuwairat records', () => {
+  assert.equal(new Set(listings.map((item) => item.id)).size, listings.length);
+  assert.equal(new Set(listings.map((item) => item.slug)).size, listings.length);
+  for (const id of ['shops-الراعي-للتجارة-النويرات', 'restaurants-مقهى-النويرات']) {
+    const item = listings.find((listing) => listing.id === id);
+    assert.equal(item?.lastUpdatedAt, '2026-09-16');
+    assert.ok(item?.googlePlaceId);
   }
 });

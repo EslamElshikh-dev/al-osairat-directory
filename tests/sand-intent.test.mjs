@@ -180,3 +180,16 @@ test('explicit follow-up language can still inherit the previous village', () =>
   assert.equal(plan.village, 'النويرات');
   assert.equal(plan.resolvedFromHistory, true);
 });
+
+test('the directory scope never becomes a fuzzy match for Nuwairat', () => {
+  for (const message of ['صيدلية في العسيرات', 'دكتور في سوهاج', 'خدمات العسيرات']) {
+    const plan = planSandRequest(message, [], villages);
+    assert.equal(plan.village, undefined, message);
+  }
+});
+
+test('removing broad scope preserves explicit villages and their spelling variants', () => {
+  for (const message of ['صيدلية في عوامر العسيرات', 'صيدليه ف عوامر العسيرات']) {
+    assert.equal(planSandRequest(message, [], villages).village, 'عوامر العسيرات');
+  }
+});

@@ -16,7 +16,9 @@ test('search includes broad category intent terms without creating a separate se
 test('listing detail uses ranked related discovery and keeps return paths to village and category', async () => {
   const source = await readProjectFile('app/listing/[slug]/page.tsx');
 
-  assert.match(source, /getRelatedListings\(listing, comparableListings, 4\)/);
+  assert.match(source, /getLivingRelatedListings\(listing, comparableListings, 4\)/);
+  assert.match(source, /match\.reasons\.map/);
+  assert.match(source, /ListingCard listing=\{match\.listing\}/);
   assert.match(source, /استكشف كل أنشطة/);
   assert.match(source, /villageCategoryDirectoryHref\(listing\.village, listing\.category\)/);
   assert.match(source, /كل .* في العسيرات/);

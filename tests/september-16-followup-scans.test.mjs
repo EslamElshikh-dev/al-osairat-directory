@@ -46,8 +46,12 @@ test('Shuhada follow-up adds five cross-checked essential village records', () =
   assert.ok(shuhadaFollowupScan20260916.some((x) => x.id === 'worship-كنيسة-السيدة-العذراء-مريم-والشهيد-ابانوب-الشهداء'));
 });
 
-test('Masaeed follow-up adds five verified or cross-checked gaps', () => {
-  assert.equal(masaeedFollowupScan20260916.length, 5);
+test('Masaeed follow-up includes the September 17 post office addition', () => {
+  assert.equal(masaeedFollowupScan20260916.length, 6);
+  const postOffice = masaeedFollowupScan20260916.find((x) => x.id === 'government-مكتب-بريد-المساعيد');
+  assert.equal(postOffice?.googlePlaceId, 'ChIJTVWysRZMTxQRneygY5_1o54');
+  assert.equal(postOffice?.lastUpdatedAt, '2026-09-17');
+  assert.ok(masaeedFollowupScan20260916.every((x) => ['google_verified', 'cross_checked'].includes(x.sourceStatus)));
   assertUnique(masaeedFollowupScan20260916);
   assert.ok(masaeedFollowupScan20260916.every((x) => x.village === 'المساعيد'));
   assert.equal(masaeedFollowupScan20260916.filter((x) => x.category === 'worship').length, 2);
