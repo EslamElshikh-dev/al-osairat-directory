@@ -67,6 +67,9 @@ async function authRequest<T>(path: string, init: RequestInit = {}, accessToken?
     ...init,
     headers: { ...headers(accessToken), ...(init.headers || {}) },
     cache: 'no-store',
+    signal: init.signal
+      ? AbortSignal.any([init.signal, AbortSignal.timeout(10_000)])
+      : AbortSignal.timeout(10_000),
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {

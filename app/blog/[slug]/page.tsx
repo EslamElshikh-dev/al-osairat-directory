@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { Fragment } from 'react';
 import Image from '@/components/site-image';
@@ -420,7 +421,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }} />
     </main>
   );
 }

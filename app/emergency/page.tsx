@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { listings } from '@/lib/data';
 import { CategoryVisual } from '@/components/category-visual';
@@ -88,7 +89,7 @@ export default function EmergencyPage() {
           ))}
         </div>
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }} />
     </main>
   );
 }

@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -369,7 +370,7 @@ export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }}
       />
     </main>
   );

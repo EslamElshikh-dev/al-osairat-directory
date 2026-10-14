@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -190,7 +191,7 @@ export default async function ServiceIntentPage({
         </section>
       )}
 
-      {page === 1 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />}
+      {page === 1 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }} />}
     </main>
   );
 }

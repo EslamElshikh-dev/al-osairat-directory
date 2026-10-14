@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '@/components/brand-mark';
@@ -140,7 +141,7 @@ export default function LocalitiesPage() {
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }} />
     </main>
   );
 }

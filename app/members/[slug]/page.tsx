@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Image from '@/components/site-image';
 import Link from 'next/link';
@@ -231,7 +232,7 @@ export default async function MemberPublicProfilePage({
         )}
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(schema) }} />
     </main>
   );
 }

@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Image from '@/components/site-image';
@@ -331,8 +332,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(faqSchema) }} />
     </main>
   );
 }

@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BrandMark } from '@/components/brand-mark';
@@ -221,7 +222,7 @@ export async function NewsIndex({ page = 1 }: { page?: number }) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{ __html: jsonLdStringify(collectionSchema) }}
       />
     </main>
   );

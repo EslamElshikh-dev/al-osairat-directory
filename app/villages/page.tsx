@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { categories, villages } from '@/lib/data';
@@ -145,7 +146,7 @@ export default async function VillagesPage() {
           <Link href="/localities" className="button button--light">استكشف النجوع والتوابع</Link>
         </div>
       </section>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }} />
     </main>
   );
 }

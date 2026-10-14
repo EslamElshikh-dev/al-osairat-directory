@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { AnalyticsTracker } from '@/components/analytics-tracker';
@@ -189,7 +190,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MetaPixelNoScript />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdStringify(siteSchema) }}
         />
       </body>
     </html>

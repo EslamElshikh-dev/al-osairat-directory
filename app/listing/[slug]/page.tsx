@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Image from '@/components/site-image';
 import { businessImageUrl } from '@/lib/business-images';
@@ -391,7 +392,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
         />
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }} />
     </main>
   );
 }

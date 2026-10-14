@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from '@/components/site-image';
@@ -225,7 +226,7 @@ export default function BlogPage() {
         <Link href="/directory" className="button button--primary">استكشف دليل الخدمات</Link>
       </section>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(itemList) }} />
     </main>
   );
 }

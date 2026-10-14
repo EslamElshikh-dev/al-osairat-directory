@@ -1,3 +1,4 @@
+import { jsonLdStringify } from '@/lib/json-ld';
 import Image from '@/components/site-image';
 import Link from 'next/link';
 import { jobAreas } from '@/lib/jobs-geography';
@@ -58,6 +59,6 @@ export default async function JobsPage() {
       </div>
       <p className={styles.sourceNote}>الفرص المنقولة داخل الدليل تحمل مصدرها وتاريخها، وتُستبعد تلقائيًا بعد انتهاء مدتها. تأكد من استمرار التقديم لدى صاحب الإعلان.</p>
     </section>
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdStringify(schema) }} />
   </main>;
 }
