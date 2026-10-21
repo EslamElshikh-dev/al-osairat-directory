@@ -82,33 +82,35 @@ export function AdminAuthorityBatch() {
 
   const selected = useMemo(() => items.find((item) => item.id === selectedId) || null, [items, selectedId]);
 
-  const load = useCallback(async (keepSelection = true) => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/authority-batch', { cache: 'no-store' });
+  const loadData = useCallback((selection: string | null = null) => {
+    return fetch('/api/admin/authority-batch', { cache: 'no-store' }).then(async (response) => {
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل الدفعة.');
       const nextItems = Array.isArray(payload.items) ? payload.items as AuthorityBatchItem[] : [];
+      setError('');
       setItems(nextItems);
-      if (keepSelection && selectedId) {
-        const refreshed = nextItems.find((item) => item.id === selectedId);
+      if (selection) {
+        const refreshed = nextItems.find((item) => item.id === selection);
         if (refreshed) setDraft(toDraft(refreshed));
         else {
           setSelectedId(null);
           setDraft(null);
         }
       }
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل دفعة التوثيق ذات الأولوية.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
-  }, [selectedId]);
+    });
+  }, []);
 
-  useEffect(() => {
-    void load(false);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  function load(keepSelection = true) {
+    setLoading(true);
+    setError('');
+    return loadData(keepSelection ? selectedId : null);
+  }
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   function selectItem(item: AuthorityBatchItem) {
     setSelectedId(item.id);

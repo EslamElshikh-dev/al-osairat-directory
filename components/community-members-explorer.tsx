@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from '@/components/site-image';
 import { useMemo, useState } from 'react';
 import type { PublicMemberDirectoryEntry } from '@/lib/community-profiles';
 
@@ -148,7 +149,7 @@ export function CommunityMembersExplorer({ members }: { members: PublicMemberDir
                 <header>
                   <span className={'community-member-card__avatar' + (member.avatarUrl ? ' has-photo' : '')}>
                     {member.avatarUrl ? (
-                      <img src={member.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
+                      <Image unoptimized width={48} height={48} src={member.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
                     ) : <span aria-hidden="true">{initial}</span>}
                   </span>
                   <div>

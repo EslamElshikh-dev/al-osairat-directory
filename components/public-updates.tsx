@@ -1,20 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './public-updates.module.css';
-import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
+import { loadPublicUpdates, PUBLIC_UPDATES_SEEN_KEY, parseSeenUpdateIds, type PublicUpdate } from '@/lib/public-updates-client';
+
+import { useLocalStorageValue, setLocalStorageValue } from '@/lib/use-browser-state';
 
 type Update = PublicUpdate;
-const STORAGE_KEY = 'osairat:public-updates:seen:v1';
 const labels = { news: 'خبر', job: 'وظيفة', article: 'مقال', activity: 'نشاط' };
-
-function seenIds(): string[] {
-  try {
-    const value: unknown = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
-    return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string').slice(-100) : [];
-  } catch { return []; }
-}
 
 function dateLabel(value: string) {
   try {
@@ -28,32 +22,28 @@ export function PublicUpdates() {
   const root = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [updates, setUpdates] = useState<Update[]>([]);
-  const [unread, setUnread] = useState(0);
+  const storedSeen = useLocalStorageValue(PUBLIC_UPDATES_SEEN_KEY);
+  const seen = useMemo(() => parseSeenUpdateIds(storedSeen), [storedSeen]);
+  const [recentCutoff, setRecentCutoff] = useState(0);
   const [error, setError] = useState('');
+  const unread = open ? 0 : updates.filter((item) => !seen.includes(item.id) && Date.parse(item.publishedAt) >= recentCutoff).length;
 
-  const load = useCallback(async () => {
-    try {
-      const list = await loadPublicUpdates();
-      setUpdates(list);
-      const seen = new Set(seenIds());
-      const recentCutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
-      setUnread(list.filter((item) => !seen.has(item.id) && Date.parse(item.publishedAt) >= recentCutoff).length);
-      setError('');
-    } catch {
-      setError('تعذر تحميل الإضافات الآن.');
-    }
-  }, []);
+  const load = useCallback(() => loadPublicUpdates().then((list) => {
+    setUpdates(list);
+    setRecentCutoff(Date.now() - 14 * 86400_000);
+    setError('');
+  }).catch(() => {
+    setError('تعذر تحميل الإضافات الآن.');
+  }), [setRecentCutoff]);
 
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     if (!open || !updates.length) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(
-        [...new Set([...seenIds(), ...updates.map((item) => item.id)])].slice(-100),
-      ));
-    } catch { /* Optional per-browser read state. */ }
-    setUnread(0);
-  }, [open, updates]);
+    const ids = [...new Set([...seen, ...updates.map((item) => item.id)])].slice(-100);
+    if (ids.some((id) => !seen.includes(id))) {
+      setLocalStorageValue(PUBLIC_UPDATES_SEEN_KEY, JSON.stringify(ids));
+    }
+  }, [open, updates, seen]);
   useEffect(() => {
     const onPointerDown = (event: PointerEvent) => {
       if (root.current && !root.current.contains(event.target as Node)) setOpen(false);
@@ -71,11 +61,6 @@ export function PublicUpdates() {
     if (open) { setOpen(false); return; }
     setOpen(true);
     void load();
-    try {
-      const ids = [...new Set([...seenIds(), ...updates.map((item) => item.id)])].slice(-100);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-    } catch { /* Optional per-browser read state. */ }
-    setUnread(0);
   }
 
   return <div className={styles.root} ref={root}>

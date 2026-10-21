@@ -103,25 +103,29 @@ export function CommunityProgressPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/community-progress', {
-        cache: 'no-store',
-        credentials: 'same-origin',
-      });
+  const loadData = useCallback(() => {
+    return fetch('/api/community-progress', {
+      cache: 'no-store',
+      credentials: 'same-origin',
+    }).then(async (response) => {
       const data = await response.json().catch(() => ({})) as Payload;
       if (!response.ok) throw new Error(data.error || 'تعذر تحميل تقدم المجتمع.');
+      setError('');
       setPayload(data);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل تقدم المجتمع.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   return (
     <section className="account-community-progress" aria-labelledby="community-progress-title">

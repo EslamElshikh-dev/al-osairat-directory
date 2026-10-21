@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { loadPublicUpdates, type PublicUpdate } from '@/lib/public-updates-client';
+import { loadPublicUpdates, PUBLIC_UPDATES_SEEN_KEY, parseSeenUpdateIds, type PublicUpdate } from '@/lib/public-updates-client';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ensureClientSession,
   setClientSessionUser,
   subscribeClientSession,
 } from './client-session';
+
+import { useLocalStorageValue, setLocalStorageValue } from '@/lib/use-browser-state';
 
 type NotificationItem = {
   id: string;
@@ -67,12 +69,15 @@ export function NotificationBell() {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [updates, setUpdates] = useState<PublicUpdate[]>([]);
-  const [seen, setSeen] = useState<string[]>([]);
+  const storedSeen = useLocalStorageValue(PUBLIC_UPDATES_SEEN_KEY);
+  const seen = useMemo(() => parseSeenUpdateIds(storedSeen), [storedSeen]);
+  const [recentCutoff, setRecentCutoff] = useState(0);
   const [updatesError, setUpdatesError] = useState('');
   const [updatesLoading, setUpdatesLoading] = useState(true);
   const loadUpdates = useCallback(async () => {
     try {
       const list = await loadPublicUpdates();
+      setRecentCutoff(Date.now() - 14 * 86400_000);
       setUpdates(list.filter((item) => item.href?.startsWith('/') && !item.href.startsWith('//') && !item.href.includes('\\')));
       setUpdatesError('');
       return list;
@@ -80,10 +85,6 @@ export function NotificationBell() {
     finally { setUpdatesLoading(false); }
   }, []);
   useEffect(() => {
-    try {
-      const stored: unknown = JSON.parse(localStorage.getItem('osairat:public-updates:seen:v1') || '[]');
-      if (Array.isArray(stored)) setSeen(stored.filter((id): id is string => typeof id === 'string').slice(-100));
-    } catch { /* Read state is optional in private browsing. */ }
     const timer = window.setTimeout(() => { void loadUpdates(); }, 1200);
     const onVisible = () => { if (document.visibilityState === 'visible') void loadUpdates(); };
     document.addEventListener('visibilitychange', onVisible);
@@ -92,11 +93,10 @@ export function NotificationBell() {
 
   function readPublicUpdate(id: string) {
     const next = [...new Set([...seen, id])].slice(-100);
-    setSeen(next);
-    try { localStorage.setItem('osairat:public-updates:seen:v1', JSON.stringify(next)); } catch {}
+    setLocalStorageValue(PUBLIC_UPDATES_SEEN_KEY, JSON.stringify(next));
     setOpen(false);
   }
-  const publicUnread = updates.filter((item) => !seen.includes(item.id) && Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000).length;
+  const publicUnread = updates.filter((item) => !seen.includes(item.id) && Date.parse(item.publishedAt) >= recentCutoff).length;
   const [unreadCount, setUnreadCount] = useState(0);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [menuLoading, setMenuLoading] = useState(false);
@@ -244,8 +244,7 @@ export function NotificationBell() {
       void loadUpdates().then((list) => {
         const recentlyPublished = list.filter((item) => Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000).map((item) => item.id);
         const next = [...new Set([...seen, ...recentlyPublished])].slice(-100);
-        setSeen(next);
-        try { localStorage.setItem('osairat:public-updates:seen:v1', JSON.stringify(next)); } catch {}
+        setLocalStorageValue(PUBLIC_UPDATES_SEEN_KEY, JSON.stringify(next));
       });
       if (visible) void loadMenu();
     }
@@ -353,8 +352,8 @@ export function NotificationBell() {
             ))}
             <h3 className="notification-popover__section">أحداث الدليل · أنشطة وأخبار وفرص</h3>
             {updatesLoading ? <p className="notification-popover__state">جارٍ تحميل التحديثات…</p> : updatesError ? <div className="notification-popover__state"><p>{updatesError}</p><button type="button" onClick={() => void loadUpdates()}>إعادة المحاولة</button></div> : updates.length ? <div className="notification-popover__list">
-              {updates.map((item) => <Link prefetch={false} className={`notification-popover__item is-public${!seen.includes(item.id) && Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000 ? ' is-unread' : ' is-read'}`} href={item.href} key={item.id} onClick={() => readPublicUpdate(item.id)}>
-                <span className="notification-popover__copy"><span><strong>{item.title}</strong>{!seen.includes(item.id) && Date.parse(item.publishedAt) >= Date.now() - 14 * 86400_000 ? <i>جديد</i> : null}</span><small>{item.summary}</small><time dateTime={item.publishedAt}>{formatDate(item.publishedAt)}</time></span><span className="notification-popover__arrow" aria-hidden="true">←</span>
+              {updates.map((item) => <Link prefetch={false} className={`notification-popover__item is-public${!seen.includes(item.id) && Date.parse(item.publishedAt) >= recentCutoff ? ' is-unread' : ' is-read'}`} href={item.href} key={item.id} onClick={() => readPublicUpdate(item.id)}>
+                <span className="notification-popover__copy"><span><strong>{item.title}</strong>{!seen.includes(item.id) && Date.parse(item.publishedAt) >= recentCutoff ? <i>جديد</i> : null}</span><small>{item.summary}</small><time dateTime={item.publishedAt}>{formatDate(item.publishedAt)}</time></span><span className="notification-popover__arrow" aria-hidden="true">←</span>
               </Link>)}
             </div> : <p className="notification-popover__state">لا توجد أحداث منشورة حديثًا.</p>}
           </div>

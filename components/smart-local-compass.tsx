@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FormEvent, KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
+import { FormEvent, KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
+
+import { useLocalStorageValue, setLocalStorageValue } from '@/lib/use-browser-state';
 
 type SearchItem = {
   kind: 'listing' | 'category' | 'village' | 'locality' | 'article' | 'page';
@@ -74,7 +76,8 @@ export function SmartLocalCompass({
   const [query, setQuery] = useState(initialQuery);
   const [village, setVillage] = useState(initialVillage || 'all');
   const [items, setItems] = useState<SearchItem[]>([]);
-  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
+  const storedSearches = useLocalStorageValue(recentSearchesKey);
+  const recentSearches = useMemo(() => safeRecentSearches(storedSearches), [storedSearches]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [focused, setFocused] = useState(false);
@@ -84,16 +87,8 @@ export function SmartLocalCompass({
   const panelOpen = focused && canSuggest;
 
   useEffect(() => {
-    try { setRecentSearches(safeRecentSearches(window.localStorage.getItem(recentSearchesKey))); } catch { /* Search works without local storage. */ }
-  }, []);
-
-  useEffect(() => {
     if (!canSuggest) {
       requestRef.current?.abort();
-      setItems([]);
-      setLoading(false);
-      setError('');
-      setActiveIndex(-1);
       return;
     }
 
@@ -110,11 +105,12 @@ export function SmartLocalCompass({
           signal: controller.signal,
         });
         const data = await response.json().catch(() => ({})) as SearchResponse;
+        if (controller.signal.aborted) return;
         if (!response.ok) throw new Error(data.error || 'تعذر البحث الآن.');
         setItems(Array.isArray(data.items) ? data.items.slice(0, 6) : []);
         setActiveIndex(-1);
       } catch (searchError) {
-        if ((searchError as Error)?.name === 'AbortError') return;
+        if (controller.signal.aborted || (searchError as Error)?.name === 'AbortError') return;
         setItems([]);
         setError(searchError instanceof Error ? searchError.message : 'تعذر البحث الآن.');
       } finally {
@@ -125,6 +121,19 @@ export function SmartLocalCompass({
     return () => { window.clearTimeout(timer); requestRef.current?.abort(); };
   }, [canSuggest, normalizedQuery]);
 
+  function changeQuery(next: string) {
+    if (next.trim() === normalizedQuery) {
+      setQuery(next);
+      return;
+    }
+    requestRef.current?.abort();
+    setQuery(next);
+    setItems([]);
+    setLoading(false);
+    setError('');
+    setActiveIndex(-1);
+  }
+
   function rememberSearch(nextQuery: string, nextVillage: string) {
     const cleanQuery = nextQuery.trim().slice(0, 100);
     if (!cleanQuery) return;
@@ -133,12 +142,7 @@ export function SmartLocalCompass({
       { query: cleanQuery, village: nextVillage || 'all' },
       ...recentSearches.filter((item) => item.query !== cleanQuery || item.village !== nextVillage),
     ].slice(0, 3);
-    setRecentSearches(next);
-    try {
-      window.localStorage.setItem(recentSearchesKey, JSON.stringify(next));
-    } catch {
-      // Browsing can continue when storage is unavailable or blocked.
-    }
+    setLocalStorageValue(recentSearchesKey, JSON.stringify(next));
   }
 
   function villageLabel(value: string) {
@@ -180,7 +184,7 @@ export function SmartLocalCompass({
   }
 
   function chooseShortcut(nextQuery: string, nextVillage = village) {
-    setQuery(nextQuery);
+    changeQuery(nextQuery);
     setVillage(nextVillage);
     window.requestAnimationFrame(() => inputRef.current?.focus());
   }
@@ -208,7 +212,7 @@ export function SmartLocalCompass({
               id={`${listId}-query`}
               name="q"
               value={query}
-              onChange={(event) => { setQuery(event.target.value.slice(0, 100)); setActiveIndex(-1); }}
+              onChange={(event) => changeQuery(event.target.value.slice(0, 100))}
               onFocus={() => setFocused(true)}
               onKeyDown={handleInputKeyDown}
               placeholder="دكتور، صيدلية، نجار…"
@@ -221,7 +225,7 @@ export function SmartLocalCompass({
               aria-controls={`${listId}-options`}
               aria-activedescendant={activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined}
             />
-            {query && <button className="smart-compass__clear" type="button" aria-label="مسح البحث" onClick={() => { setQuery(''); inputRef.current?.focus(); }}><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m6 6 8 8M6 14l8-8" /></svg></button>}
+            {query && <button className="smart-compass__clear" type="button" aria-label="مسح البحث" onClick={() => { changeQuery(''); inputRef.current?.focus(); }}><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m6 6 8 8M6 14l8-8" /></svg></button>}
           </div>
 
           {panelOpen && (

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from '@/components/site-image';
 import { useCallback, useEffect, useState } from 'react';
 import { CommunityActivityFeed } from '@/components/community-activity-feed';
 import { CommunityFollowButton } from '@/components/community-follow-button';
@@ -26,7 +27,7 @@ function MemberSuggestion({ member }: { member: PublicMemberDirectoryEntry }) {
       <Link href={'/members/' + member.slug} className="community-follow-suggestion__main">
         <span className={'community-follow-suggestion__avatar' + (member.avatarUrl ? ' has-photo' : '')}>
           {member.avatarUrl ? (
-            <img src={member.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
+            <Image unoptimized width={48} height={48} src={member.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
           ) : <span aria-hidden="true">{initial}</span>}
         </span>
         <span className="community-follow-suggestion__copy">
@@ -54,25 +55,29 @@ export function FollowingFeedPanel() {
   const [markingSeen, setMarkingSeen] = useState(false);
   const [error, setError] = useState('');
 
-  const load = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/community-following-feed?limit=36', {
-        cache: 'no-store',
-        credentials: 'same-origin',
-      });
+  const loadData = useCallback((silent = false) => {
+    return fetch('/api/community-following-feed?limit=36', {
+      cache: 'no-store',
+      credentials: 'same-origin',
+    }).then(async (response) => {
       const data = await response.json().catch(() => ({})) as Payload;
       if (!response.ok) throw new Error(data.error || 'تعذر تحميل Feed المتابعة.');
+      setError('');
       setPayload(data);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل Feed المتابعة.');
-    } finally {
+    }).finally(() => {
       if (!silent) setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  const load = useCallback((silent = false) => {
+    if (!silent) setLoading(true);
+    setError('');
+    return loadData(silent);
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   useEffect(() => {
     const refresh = () => { void load(true); };

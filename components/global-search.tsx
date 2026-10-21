@@ -81,10 +81,6 @@ export function GlobalSearch() {
   useEffect(() => {
     if (!open || !hasQuery) {
       requestRef.current?.abort();
-      setItems([]);
-      setError('');
-      setLoading(false);
-      setActiveIndex(-1);
       return;
     }
 
@@ -100,11 +96,12 @@ export function GlobalSearch() {
           signal: controller.signal,
         });
         const data = await response.json().catch(() => ({})) as SearchResponse;
+        if (controller.signal.aborted) return;
         if (!response.ok) throw new Error(data.error || 'تعذر تنفيذ البحث الآن.');
         setItems(Array.isArray(data.items) ? data.items : []);
         setActiveIndex(-1);
       } catch (searchError) {
-        if ((searchError as Error)?.name === 'AbortError') return;
+        if (controller.signal.aborted || (searchError as Error)?.name === 'AbortError') return;
         setItems([]);
         setError(searchError instanceof Error ? searchError.message : 'تعذر تنفيذ البحث الآن.');
       } finally {
@@ -112,8 +109,21 @@ export function GlobalSearch() {
       }
     }, 180);
 
-    return () => window.clearTimeout(timer);
+    return () => { window.clearTimeout(timer); requestRef.current?.abort(); };
   }, [hasQuery, open, trimmedQuery]);
+
+  function changeQuery(next: string) {
+    if (next.trim() === trimmedQuery) {
+      setQuery(next);
+      return;
+    }
+    requestRef.current?.abort();
+    setQuery(next);
+    setItems([]);
+    setLoading(false);
+    setError('');
+    setActiveIndex(-1);
+  }
 
   function closeAndNavigate(href: string) {
     setOpen(false);
@@ -173,7 +183,7 @@ export function GlobalSearch() {
               ref={inputRef}
               id="global-site-search"
               value={query}
-              onChange={(event) => setQuery(event.target.value.slice(0, 100))}
+              onChange={(event) => changeQuery(event.target.value.slice(0, 100))}
               onKeyDown={handleInputKeyDown}
               placeholder="نشاط، خدمة، قرية، قسم أو مقال…"
               autoComplete="off"
@@ -181,7 +191,7 @@ export function GlobalSearch() {
               aria-controls="global-search-results"
               aria-activedescendant={activeIndex >= 0 ? `global-search-result-${activeIndex}` : undefined}
             />
-            {query ? <button type="button" className="global-search__clear" onClick={() => setQuery('')} aria-label="مسح البحث">مسح</button> : null}
+            {query ? <button type="button" className="global-search__clear" onClick={() => changeQuery('')} aria-label="مسح البحث">مسح</button> : null}
             <button type="submit" className="global-search__submit">بحث</button>
           </form>
 
@@ -221,10 +231,10 @@ export function GlobalSearch() {
               </div>
             ) : (
               <div className="global-search__suggestions">
-                <button type="button" onClick={() => setQuery('صيدلية')}>صيدلية</button>
-                <button type="button" onClick={() => setQuery('طبيب')}>طبيب</button>
-                <button type="button" onClick={() => setQuery('أولاد حمزة')}>أولاد حمزة</button>
-                <button type="button" onClick={() => setQuery('كهربائي')}>كهربائي</button>
+                <button type="button" onClick={() => changeQuery('صيدلية')}>صيدلية</button>
+                <button type="button" onClick={() => changeQuery('طبيب')}>طبيب</button>
+                <button type="button" onClick={() => changeQuery('أولاد حمزة')}>أولاد حمزة</button>
+                <button type="button" onClick={() => changeQuery('كهربائي')}>كهربائي</button>
               </div>
             )}
           </div>

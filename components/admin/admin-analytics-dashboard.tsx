@@ -239,22 +239,26 @@ export function AdminAnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/analytics', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/analytics', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل الإحصاءات.');
+      setError('');
       setData(payload as AnalyticsPayload);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل الإحصاءات.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   const openWork = useMemo(() => {
     if (!data) return 0;

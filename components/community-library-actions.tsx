@@ -25,15 +25,13 @@ export function CommunityLibraryActions({
 }) {
   const router = useRouter();
   const [state, setState] = useState<LibraryState>({ saved: false, watching: false });
-  const [loading, setLoading] = useState(authenticated);
+  const [pending, setLoading] = useState(true);
+  const loading = authenticated && pending;
   const [saving, setSaving] = useState<'save' | 'watch' | ''>('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!authenticated) {
-      setLoading(false);
-      return;
-    }
+    if (!authenticated) return;
 
     let cancelled = false;
     const query = new URLSearchParams({ targetType, targetId });

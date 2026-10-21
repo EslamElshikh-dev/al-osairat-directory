@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from '@/components/site-image';
 import { businessImageUrl } from '@/lib/business-images';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -138,42 +139,43 @@ function StatusBadge({ status }: { status: ReviewStatus }) {
   return <span className={`admin-status admin-status--${status}`}>{statusMeta[status].label}</span>;
 }
 
-export function AdminDashboard() {
+export function AdminDashboard({ initialTab = 'submissions', showAll = false }: {
+  initialTab?: Tab;
+  showAll?: boolean;
+}) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [tab, setTab] = useState<Tab>('submissions');
-  useEffect(() => {
-    const params=new URLSearchParams(window.location.search);
-    const target=params.get('tab');
-    if (target==='submissions'||target==='changes'||target==='claims') setTab(target);
-    if (params.get('request')) setFilter('all');
-  }, []);
-  const [filter, setFilter] = useState<'open' | 'all' | ReviewStatus>('open');
+  const [tab, setTab] = useState<Tab>(initialTab);
+  const [filter, setFilter] = useState<'open' | 'all' | ReviewStatus>(showAll ? 'all' : 'open');
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [savingKey, setSavingKey] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/review', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/review', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر فتح لوحة الإدارة.');
+      setError('');
       setData(payload);
       const seededNotes: Record<string, string> = {};
       [...(payload.submissions || []), ...(payload.claims || []), ...(payload.changeRequests || [])]
         .forEach((item: Submission | Claim | ChangeRequest) => { seededNotes[item.id] = item.reviewNote || ''; });
       setNotes(seededNotes);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر فتح لوحة الإدارة.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   useEffect(()=>{
     if(loading||!data)return;
@@ -295,7 +297,7 @@ export function AdminDashboard() {
     <section className="admin-dashboard" aria-labelledby="admin-review-title">
       <div className="admin-review-head">
         <div className={`admin-avatar${data.admin.avatarUrl ? ' has-photo' : ''}`}>
-          {data.admin.avatarUrl ? <img src={data.admin.avatarUrl} alt="صورة مدير الدليل" referrerPolicy="no-referrer" /> : <span>{initial}</span>}
+          {data.admin.avatarUrl ? <Image unoptimized width={48} height={48} src={data.admin.avatarUrl} alt="صورة مدير الدليل" referrerPolicy="no-referrer" /> : <span>{initial}</span>}
         </div>
         <div className="admin-review-head__copy">
           <span>صندوق المراجعة المركزي</span>
@@ -358,7 +360,7 @@ export function AdminDashboard() {
                   <div><span>المواعيد</span><b>{item.hours || '—'}</b></div><div><span>تاريخ الإرسال</span><b>{formatDate(item.createdAt)}</b></div>
                 </div>
                 {item.description && <div className="admin-long-text"><span>وصف النشاط</span><p>{item.description}</p></div>}
-                {item.imagePaths?.length ? <div className="admin-business-photos">{item.imagePaths.map((path,index)=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer"><span>صورة {index+1}</span>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={businessImageUrl(path)} width={180} height={130} alt={`صورة ${index+1} لنشاط ${item.businessName}`} loading="lazy" /></a>)}</div> : null}
+                {item.imagePaths?.length ? <div className="admin-business-photos">{item.imagePaths.map((path,index)=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer"><span>صورة {index+1}</span><Image unoptimized src={businessImageUrl(path)} width={180} height={130} alt={`صورة ${index+1} لنشاط ${item.businessName}`} loading="lazy" /></a>)}</div> : null}
                 {item.websiteUrl ? <a className="admin-map-link" href={item.websiteUrl} target="_blank" rel="noopener noreferrer">الموقع الإلكتروني للنشاط</a> : null}
                 {item.googleMapsUrl && <a className="admin-map-link" href={item.googleMapsUrl} target="_blank" rel="noreferrer">فتح رابط خرائط Google ↗</a>}
                 {item.publishedListing && <div className="admin-listing-reference admin-published-reference"><div><span>تم النشر</span><strong>{formatDate(item.publishedAt)}</strong></div><Link href={`/listing/${item.publishedListing.slug}`} target="_blank">فتح النشاط المنشور ↗</Link></div>}
@@ -396,7 +398,7 @@ export function AdminDashboard() {
                       <span>{changeFieldLabels[key] || key}</span>
                       <div><small>الحالي</small><b>{displayValue(item.snapshot[key])}</b></div>
                       <i aria-hidden="true">←</i>
-                      <div className="is-new"><small>المطلوب</small><b>{key==='imagePaths' && Array.isArray(nextValue) ? `${nextValue.length} صور؛ الأولى هي الغلاف` : displayValue(nextValue)}</b>{key==='imagePaths' && Array.isArray(nextValue) ? <div className="business-photo-grid">{nextValue.filter((path):path is string=>typeof path==='string').map(path=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={businessImageUrl(path)} alt="صورة النشاط المطلوب اعتمادها" width={140} height={100}/></a>)}</div>:null}</div>
+                      <div className="is-new"><small>المطلوب</small><b>{key==='imagePaths' && Array.isArray(nextValue) ? `${nextValue.length} صور؛ الأولى هي الغلاف` : displayValue(nextValue)}</b>{key==='imagePaths' && Array.isArray(nextValue) ? <div className="business-photo-grid">{nextValue.filter((path):path is string=>typeof path==='string').map(path=><a key={path} href={businessImageUrl(path)} target="_blank" rel="noreferrer"><Image unoptimized src={businessImageUrl(path)} alt="صورة النشاط المطلوب اعتمادها" width={140} height={100}/></a>)}</div>:null}</div>
                     </div>
                   ))}
                 </div>

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   FormEvent,
   KeyboardEvent,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -203,6 +204,23 @@ export function SandAssistant({ initialPrompt = '' }: { initialPrompt?: string }
     return () => window.cancelAnimationFrame(frame);
   }, [open]);
 
+  const cancelActiveRequest = useCallback(() => {
+    const activeRequest = requestRef.current;
+    if (!activeRequest) return false;
+    requestRef.current = null;
+    activeRequest.abort();
+    setLoading(false);
+    setError('');
+    setLastFailedText('');
+    return true;
+  }, []);
+
+  const closePanel = useCallback(() => {
+    cancelActiveRequest();
+    restoreTriggerFocusRef.current = true;
+    setOpen(false);
+  }, [cancelActiveRequest]);
+
   useEffect(() => {
     if (!open) return;
     const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 80);
@@ -214,29 +232,12 @@ export function SandAssistant({ initialPrompt = '' }: { initialPrompt?: string }
       window.clearTimeout(focusTimer);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [open]);
+  }, [open, closePanel]);
 
   useEffect(() => {
     if (!open) return;
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: 'smooth' });
   }, [loading, messages, open]);
-
-  function cancelActiveRequest() {
-    const activeRequest = requestRef.current;
-    if (!activeRequest) return false;
-    requestRef.current = null;
-    activeRequest.abort();
-    setLoading(false);
-    setError('');
-    setLastFailedText('');
-    return true;
-  }
-
-  function closePanel() {
-    cancelActiveRequest();
-    restoreTriggerFocusRef.current = true;
-    setOpen(false);
-  }
 
   function resetConversation() {
     cancelActiveRequest();

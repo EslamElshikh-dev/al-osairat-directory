@@ -104,13 +104,11 @@ export function AdminListingReports() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/reports', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/reports', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'تعذر تحميل البلاغات.');
+      setError('');
       const next = data as ReportsPayload;
       setPayload(next);
       const seededNotes: Record<string, string> = {};
@@ -121,14 +119,20 @@ export function AdminListingReports() {
       });
       setNotes(seededNotes);
       setDrafts(seededDrafts);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل البلاغات.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   const reports = useMemo(() => {
     if (!payload) return [];

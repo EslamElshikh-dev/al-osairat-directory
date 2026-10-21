@@ -4,6 +4,7 @@ import Image from '@/components/site-image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { useHydrated } from '@/lib/use-browser-state';
 import type { ClientSessionUser } from './client-session';
 import {
   ensureClientSession,
@@ -30,13 +31,18 @@ export function AccountButton() {
   const [user, setUser] = useState<ClientSessionUser | null>(null);
   const [ready, setReady] = useState(false);
   const [failedAvatarUrl, setFailedAvatarUrl] = useState('');
-  const [hint, setHint] = useState<{displayName: string; avatarUrl: string} | null>(null);
+  const hydrated = useHydrated();
+  const hint = hydrated ? readProfileHint() : null;
   const [openedAt, setOpenedAt] = useState<string | null>(null);
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setOpenedAt(null);
+  }
   const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const open = openedAt === pathname;
 
-  useEffect(() => { setHint(readProfileHint()); }, []);
   useEffect(() => {
     if (!open) return;
     const closeOutside = (event: PointerEvent) => {
@@ -84,8 +90,6 @@ export function AccountButton() {
   useEffect(() => {
     const previous = previousPath.current;
     previousPath.current = pathname;
-    setOpenedAt(null);
-
     const completedLogin =
       (previous === '/account/login' || previous === '/account/register') && pathname === '/account';
     const possiblyLoggedOut = previous === '/account' && pathname === '/';

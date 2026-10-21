@@ -5,10 +5,10 @@ import vm from 'node:vm';
 import ts from 'typescript';
 // Isolate the registry's matching logic from the directory's full data bundle.
 const canonicalizeDirectoryQuery=value=>value.replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/\s+/g,' ').trim();
-const module={exports:{}};
+const testModule={exports:{}};
 const source=fs.readFileSync(new URL('../lib/family-search.ts',import.meta.url),'utf8');
-vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module,exports:module.exports,require:()=>({canonicalizeDirectoryQuery})});
-const {searchFamilyRegistry,isFamilyQuery}=module.exports;
+vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module: testModule,exports:testModule.exports,require:()=>({canonicalizeDirectoryQuery})});
+const {searchFamilyRegistry,isFamilyQuery}=testModule.exports;
 const article={slug:'existing-registry',sections:[{id:'island',heading:'عائلات جزيرة أولاد حمزة',entries:[{name:'آل حمد',description:'عائلة مستقلة'},{name:'آل أحمد',description:'لا ترتبط بآل حمد'},{name:'بيت حماد',description:'ليس آل حمد'}]}]};
 test('family queries return name tokens, not another family mentioned in the description',()=>{
  assert.equal(isFamilyQuery('عائلة آل حمد'),true);
