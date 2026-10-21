@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   blogDiscoveryTopics,
   normalizeBlogSearchText,
@@ -13,8 +13,10 @@ export function BlogDiscoveryControls({ total }: { total: number }) {
   const [topic, setTopic] = useState<BlogDiscoveryTopic>('all');
   const [visibleCount, setVisibleCount] = useState(total);
 
-  useEffect(() => {
-    const normalizedQuery = normalizeBlogSearchText(query);
+  const updateFilters = useCallback((nextQuery: string, nextTopic: BlogDiscoveryTopic) => {
+    setQuery(nextQuery);
+    setTopic(nextTopic);
+    const normalizedQuery = normalizeBlogSearchText(nextQuery);
     const cards = Array.from(
       document.querySelectorAll<HTMLElement>('[data-blog-discovery-card]'),
     );
@@ -23,7 +25,7 @@ export function BlogDiscoveryControls({ total }: { total: number }) {
     for (const card of cards) {
       const cardTopic = card.dataset.blogTopic || '';
       const cardSearch = card.dataset.blogSearch || '';
-      const matchesTopic = topic === 'all' || cardTopic === topic;
+      const matchesTopic = nextTopic === 'all' || cardTopic === nextTopic;
       const matchesSearch = !normalizedQuery || cardSearch.includes(normalizedQuery);
       const visible = matchesTopic && matchesSearch;
       card.hidden = !visible;
@@ -31,7 +33,7 @@ export function BlogDiscoveryControls({ total }: { total: number }) {
     }
 
     setVisibleCount(count);
-  }, [query, topic]);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -46,18 +48,17 @@ export function BlogDiscoveryControls({ total }: { total: number }) {
       }
 
       if (event.key === 'Escape' && document.activeElement === inputRef.current) {
-        setQuery('');
+        updateFilters('', topic);
         inputRef.current?.blur();
       }
     };
 
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [topic, updateFilters]);
 
   const reset = () => {
-    setQuery('');
-    setTopic('all');
+    updateFilters('', 'all');
     inputRef.current?.focus();
   };
 
@@ -71,7 +72,7 @@ export function BlogDiscoveryControls({ total }: { total: number }) {
             id="blog-search"
             type="search"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => updateFilters(event.target.value, topic)}
             placeholder="مثال: السكان، القطار، العائلات، أصل الاسم…"
             autoComplete="off"
           />
@@ -87,7 +88,7 @@ export function BlogDiscoveryControls({ total }: { total: number }) {
             className={topic === item.value ? 'is-active' : undefined}
             aria-pressed={topic === item.value}
             title={item.hint}
-            onClick={() => setTopic(item.value)}
+            onClick={() => updateFilters(query, item.value)}
           >
             {item.label}
           </button>

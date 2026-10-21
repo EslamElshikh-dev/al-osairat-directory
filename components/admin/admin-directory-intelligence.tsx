@@ -98,22 +98,26 @@ export function AdminDirectoryIntelligence() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/directory-intelligence', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/directory-intelligence', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل ذكاء البحث.');
+      setError('');
       setData(payload as Payload);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل ذكاء البحث.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   const searchConversion = useMemo(() => {
     if (!data?.search.total7d) return 0;

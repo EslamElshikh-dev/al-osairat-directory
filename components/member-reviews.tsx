@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import Image from '@/components/site-image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ReviewThread } from '@/components/review-thread';
 import { CommunityReactions } from '@/components/community-reactions';
 import type { CommunityReactionSummary } from '@/lib/community-reactions';
+import { useHydrated } from '@/lib/use-browser-state';
 
 type ReviewTargetType = 'site' | 'article' | 'listing';
 
@@ -102,7 +104,7 @@ function Avatar({ review }: { review: ReviewItem }) {
   return (
     <span className="member-review-avatar" aria-hidden="true">
       {review.avatarUrl ? (
-        <img src={review.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
+        <Image unoptimized width={48} height={48} src={review.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
       ) : (
         <span>{initial}</span>
       )}
@@ -133,8 +135,12 @@ export function MemberReviews({
 }: MemberReviewsProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const formCardRef = useRef<HTMLDivElement | null>(null);
-  const [activated, setActivated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [observed, setActivated] = useState(false);
+  const hydrated = useHydrated();
+  const activated = observed || (hydrated && (
+    window.location.hash.startsWith('#review-') || !('IntersectionObserver' in window)
+  ));
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -148,13 +154,11 @@ export function MemberReviews({
   const safePageSize = Math.max(1, Math.min(6, Math.round(pageSize)));
   const endpoint = `/api/content-reviews?targetType=${encodeURIComponent(targetType)}&targetKey=${encodeURIComponent(targetKey)}&pageSize=${safePageSize}`;
 
-  const loadInitial = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch(endpoint, { cache: 'no-store' });
+  const loadData = useCallback(() => {
+    return fetch(endpoint, { cache: 'no-store' }).then(async (response) => {
       const data = await response.json() as ReviewsPayload;
       if (!response.ok) throw new Error(data.error || 'تعذر تحميل التقييمات.');
+      setError('');
       setPayload(data);
       if (data.myReview) {
         setRating(data.myReview.rating);
@@ -164,24 +168,23 @@ export function MemberReviews({
         setReviewText('');
         setEditingOwnReview(false);
       }
-    } catch (loadError) {
+    }).catch((loadError: unknown) => {
       setError(loadError instanceof Error ? loadError.message : 'تعذر تحميل التقييمات.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, [endpoint]);
+
+  function loadInitial() {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }
 
   useEffect(() => {
     const node = sectionRef.current;
     if (!node || activated) return;
-    if (window.location.hash.startsWith('#review-')) {
-      setActivated(true);
-      return;
-    }
-    if (!('IntersectionObserver' in window)) {
-      setActivated(true);
-      return;
-    }
+    if (!('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver((entries) => {
       if (entries.some((entry) => entry.isIntersecting)) {
         setActivated(true);
@@ -193,8 +196,8 @@ export function MemberReviews({
   }, [activated, activationMargin]);
 
   useEffect(() => {
-    if (activated) void loadInitial();
-  }, [activated, loadInitial]);
+    if (activated) void loadData();
+  }, [activated, loadData]);
 
   useEffect(() => {
     if (!payload || !window.location.hash.startsWith('#review-')) return;

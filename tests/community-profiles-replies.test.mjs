@@ -39,7 +39,7 @@ test('content review cards link public member profiles and lazy-load reply discu
   assert.match(reviews, /member-review-card__rating-score/);
   assert.match(thread, /\/api\/review-replies/);
   assert.match(thread, /aria-expanded=\{open\}/);
-  assert.match(thread, /if \(next\) await loadReplies\(\)/);
+  assert.match(thread, /if \(open && !payload\) void loadData\(\)/);
   assert.match(thread, /تسجيل الدخول/);
 });
 

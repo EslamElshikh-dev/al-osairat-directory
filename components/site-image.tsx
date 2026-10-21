@@ -8,8 +8,8 @@ const media = manifest as Record<string, MediaEntry>;
 export default function SiteImage(props: ImageProps) {
   const src = typeof props.src === 'string' ? props.src.split('?')[0] : '';
   const entry = media[src];
-  if (!entry || props.unoptimized || props.loader) return <Image {...props} />;
-  return <Image {...props} loader={({ width }) => {
+  if (!entry || props.unoptimized || props.loader) return <Image {...props} alt={props.alt} />;
+  return <Image {...props} alt={props.alt} loader={({ width }) => {
     const size = entry.widths.find(value => value >= width) ?? entry.widths[entry.widths.length - 1];
     return `/images/mobile/${entry.hash}-${size}.webp`;
   }} />;

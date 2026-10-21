@@ -13,12 +13,15 @@ const moreRoutes = [['/members', 'أهل الدليل'], ['/emergency', 'أرق�
 
 export function HeaderNavigation() {
   const pathname = usePathname();
+  return <NavigationMenu key={pathname} pathname={pathname} />;
+}
+
+function NavigationMenu({ pathname }: { pathname: string }) {
   const [openedAt, setOpenedAt] = useState<string | null>(null);
   const open = openedAt === pathname;
   const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const active = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
-  useEffect(() => { setOpenedAt(null); }, [pathname]);
 
   useEffect(() => {
     if (!open) return;

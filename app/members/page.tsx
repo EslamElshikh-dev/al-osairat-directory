@@ -12,14 +12,6 @@ export const metadata: Metadata = buildPageMetadata({
   path: '/members',
 });
 
-function formatJoined(value: string) {
-  try {
-    return new Intl.DateTimeFormat('ar-EG', { month: 'short', year: 'numeric' }).format(new Date(value));
-  } catch {
-    return '';
-  }
-}
-
 export default async function MembersPage() {
   const members = await getPublicMembers();
   const totalContributions = members.reduce((sum, member) => sum + member.contributionCount, 0);

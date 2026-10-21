@@ -115,22 +115,27 @@ export function MyBusinessesPanel() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/my-businesses', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/my-businesses', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل أنشطتك.');
+      setError('');
       setBusinesses(payload.businesses || []);
       setRequests(payload.requests || []);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل أنشطتك.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   const selectedVillage = useMemo(
     () => allowedVillages.find((item) => item.name === form?.village),

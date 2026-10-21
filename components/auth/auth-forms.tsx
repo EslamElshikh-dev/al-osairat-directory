@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, KeyboardEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { evaluatePassword, PASSWORD_MIN_LENGTH, passwordPolicyError } from '@/lib/auth/password-policy';
 import { setClientSessionUser, type ClientSessionUser } from '@/components/auth/client-session';
@@ -252,16 +252,11 @@ export function RegisterForm() {
   );
 }
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ initialEmail = '' }: { initialEmail?: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
-  const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    const requestedEmail = new URLSearchParams(window.location.search).get('email');
-    if (requestedEmail) setEmail(requestedEmail);
-  }, []);
+  const [email, setEmail] = useState(initialEmail);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

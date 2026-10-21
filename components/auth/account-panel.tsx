@@ -78,7 +78,6 @@ export function AccountPanel() {
   useEffect(() => {
     if (!user) return;
     let active = true;
-    setFavoritesLoading(true);
     fetch('/api/favorites?include=items', { cache: 'no-store', credentials: 'same-origin' })
       .then((response) => response.ok ? response.json() : { items: [] })
       .then((data) => { if (active) setFavorites(data.items || []); })

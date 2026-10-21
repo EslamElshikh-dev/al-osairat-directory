@@ -22,9 +22,13 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: {
+  searchParams: Promise<{ tab?: string | string[]; request?: string | string[] }>;
+}) {
   const session = await resolveAdminSession({ allowRefresh: false });
   if (!session) redirect('/account');
+  const params = await searchParams;
+  const initialTab = params.tab === 'changes' || params.tab === 'claims' ? params.tab : 'submissions';
 
   return (
     <main id="main-content" className="admin-page admin-page--premium">
@@ -88,7 +92,7 @@ export default async function AdminPage() {
         <AdminSandInsights />
         <AdminDataQuality />
         <AdminAuthorityBatch />
-        <div id="admin-requests" className="admin-anchor-section"><AdminDashboard /></div>
+        <div id="admin-requests" className="admin-anchor-section"><AdminDashboard key={`${initialTab}:${params.request || ''}`} initialTab={initialTab} showAll={Boolean(params.request)} /></div>
         <AdminListingReports />
         <AdminCommunityReports />
         <AdminJobs />

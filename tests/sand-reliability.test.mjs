@@ -109,9 +109,9 @@ test('Sand can cancel an active request and stops in-flight work when the panel 
     readProjectFile('app/sand-assistant.css'),
   ]);
 
-  assert.match(component, /function cancelActiveRequest\(\)/);
+  assert.match(component, /const cancelActiveRequest = useCallback\(/);
   assert.match(component, /activeRequest\.abort\(\)/);
-  assert.match(component, /function closePanel\(\)/);
+  assert.match(component, /const closePanel = useCallback\(/);
   assert.match(component, /cancelActiveRequest\(\);\s*restoreTriggerFocusRef\.current = true;\s*setOpen\(false\)/);
   assert.match(component, /aria-label="إيقاف الطلب الجاري"/);
   assert.match(component, /className="sand-composer__cancel"/);

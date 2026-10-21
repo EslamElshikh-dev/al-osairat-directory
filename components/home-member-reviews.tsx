@@ -2,6 +2,7 @@
 
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { MemberReviewsProps } from './member-reviews';
+import { useHydrated } from '@/lib/use-browser-state';
 
 type Props = MemberReviewsProps;
 const Reviews = lazy(() => import('./member-reviews').then(({ MemberReviews }) => ({ default: MemberReviews })));
@@ -22,12 +23,11 @@ function Preview({ eyebrow, title, description, className, targetType, targetKey
 export function HomeMemberReviews(props: Props) {
   const root = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const hydrated = useHydrated();
+  const activated = visible || (hydrated && !('IntersectionObserver' in window));
 
   useEffect(() => {
-    if (!('IntersectionObserver' in window)) {
-      setVisible(true);
-      return;
-    }
+    if (!('IntersectionObserver' in window)) return;
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
@@ -40,6 +40,6 @@ export function HomeMemberReviews(props: Props) {
   }, []);
 
   return <div ref={root}>
-    {visible ? <Suspense fallback={<Preview {...props} />}><Reviews {...props} /></Suspense> : <Preview {...props} />}
+    {activated ? <Suspense fallback={<Preview {...props} />}><Reviews {...props} /></Suspense> : <Preview {...props} />}
   </div>;
 }

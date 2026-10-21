@@ -31,7 +31,8 @@ test('recent searches stay private to the device and motion is respectful', () =
   const compass = read('components/smart-local-compass.tsx');
   const css = read('app/smart-local-compass.css');
 
-  assert.match(compass, /window\.localStorage/);
+  assert.match(compass, /useLocalStorageValue\(recentSearchesKey\)/);
+  assert.match(read('lib/use-browser-state.ts'), /window\.localStorage/);
   assert.match(compass, /slice\(0, 3\)/);
   assert.doesNotMatch(compass, /api\/analytics/);
   assert.match(css, /prefers-reduced-motion/);

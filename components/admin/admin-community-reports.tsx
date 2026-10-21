@@ -71,27 +71,31 @@ export function AdminCommunityReports() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/community-reports', {
-        cache: 'no-store',
-        credentials: 'same-origin',
-      });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/community-reports', {
+      cache: 'no-store',
+      credentials: 'same-origin',
+    }).then(async (response) => {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'تعذر تحميل بلاغات المجتمع.');
+      setError('');
       const next = data as Payload;
       setPayload(next);
       setNotes(Object.fromEntries(next.reports.map((report) => [report.id, report.reviewNote || ''])));
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل بلاغات المجتمع.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   const reports = useMemo(() => {
     if (!payload) return [];

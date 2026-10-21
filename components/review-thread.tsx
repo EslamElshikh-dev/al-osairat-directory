@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import Image from '@/components/site-image';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CommunityReactions } from '@/components/community-reactions';
 import type { CommunityReactionSummary } from '@/lib/community-reactions';
+import { useHydrated } from '@/lib/use-browser-state';
 
 type ReplyItem = {
   id: string;
@@ -48,7 +50,7 @@ function ReplyAvatar({ reply }: { reply: ReplyItem }) {
   const avatar = (
     <span className="review-reply-avatar" aria-hidden="true">
       {reply.avatarUrl ? (
-        <img src={reply.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
+        <Image unoptimized width={48} height={48} src={reply.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
       ) : (
         <span>{initial}</span>
       )}
@@ -71,53 +73,53 @@ export function ReviewThread({
   authenticated: boolean;
   emailVerified: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [openOverride, setOpen] = useState<boolean | null>(null);
+  const hydrated = useHydrated();
+  const open = openOverride ?? (hydrated && new URLSearchParams(window.location.search).get('discussion') === reviewId);
   const [payload, setPayload] = useState<RepliesPayload | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const autoOpenedRef = useRef(false);
   const markedReplyRef = useRef('');
 
   const endpoint = `/api/review-replies?reviewId=${encodeURIComponent(reviewId)}`;
 
-  async function loadReplies(force = false) {
+  const loadData = useCallback(() => {
+    return fetch(endpoint, { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
+      const data = await response.json() as RepliesPayload;
+      if (!response.ok) throw new Error(data.error || 'تعذر تحميل الردود.');
+      setError('');
+      setPayload(data);
+      setReplyText(data.myReply?.body || '');
+    }).catch((reason: unknown) => {
+      setError(reason instanceof Error ? reason.message : 'تعذر تحميل الردود.');
+    }).finally(() => {
+      setLoading(false);
+    });
+  }, [endpoint]);
+
+  function loadReplies(force = false) {
     if ((payload && !force) || loading) return;
     setLoading(true);
     setError('');
-    try {
-      const response = await fetch(endpoint, { cache: 'no-store', credentials: 'same-origin' });
-      const data = await response.json() as RepliesPayload;
-      if (!response.ok) throw new Error(data.error || 'تعذر تحميل الردود.');
-      setPayload(data);
-      setReplyText(data.myReply?.body || '');
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'تعذر تحميل الردود.');
-    } finally {
-      setLoading(false);
+    return loadData();
+  }
+
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (next && !payload) {
+      setLoading(true);
+      setError('');
     }
   }
 
-  async function toggle() {
-    const next = !open;
-    setOpen(next);
-    if (next) await loadReplies();
-  }
-
   useEffect(() => {
-    if (autoOpenedRef.current || typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('discussion') !== reviewId) return;
-
-    autoOpenedRef.current = true;
-    setOpen(true);
-    void loadReplies();
-  // The deep-link intent is resolved once for this review instance.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reviewId]);
+    if (open && !payload) void loadData();
+  }, [open, payload, loadData]);
 
   useEffect(() => {
     if (!open || !payload?.replies.length || typeof window === 'undefined') return;

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from '@/components/site-image';
 import { useMemo, useState } from 'react';
 import type { CommunityActivityItem } from '@/lib/community-activity';
 
@@ -91,7 +92,7 @@ export function CommunityActivityFeed({
                   <Link href={'/members/' + item.author.slug} className="community-activity-author">
                     <span className={'community-activity-avatar' + (item.author.avatarUrl ? ' has-photo' : '')}>
                       {item.author.avatarUrl ? (
-                        <img src={item.author.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
+                        <Image unoptimized width={48} height={48} src={item.author.avatarUrl} alt="" loading="lazy" referrerPolicy="no-referrer" />
                       ) : <span aria-hidden="true">{initial}</span>}
                     </span>
                     <span>

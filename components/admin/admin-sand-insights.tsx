@@ -13,17 +13,21 @@ export function AdminSandInsights() {
   const [data, setData] = useState<Insights | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const load = useCallback(async () => {
-    setLoading(true); setError('');
-    try {
-      const response = await fetch('/api/admin/sand-insights', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/sand-insights', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل إحصاءات سند.');
+      setError('');
       setData(payload);
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'تعذر تحميل إحصاءات سند.'); }
-    finally { setLoading(false); }
+    }).catch((cause: unknown) => { setError(cause instanceof Error ? cause.message : 'تعذر تحميل إحصاءات سند.'); }).finally(() => { setLoading(false); });
   }, []);
-  useEffect(() => { void load(); }, [load]);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
+  useEffect(() => { void loadData(); }, [loadData]);
   return <section id="admin-sand" className="admin-live-panel" aria-labelledby="admin-sand-title">
     <header className="admin-live-panel__head"><div><span>سند · مؤشرات مباشرة</span><h2 id="admin-sand-title">كيف يساعد سند أهل العسيرات؟</h2><p>عدد الرسائل ووجود نتائج موثقة، من دون حفظ نص السؤال أو بيانات الزائر. يبدأ القياس من تاريخ تفعيله.</p></div><button type="button" onClick={() => void load()} disabled={loading}>تحديث</button></header>
     {error && <p role="alert" className="admin-live-panel__error">{error}</p>}

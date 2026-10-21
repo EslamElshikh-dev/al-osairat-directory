@@ -24,23 +24,27 @@ export function AdminDiscoveryInsights() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState<7 | 30>(7);
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/admin/discovery', { credentials: 'same-origin', cache: 'no-store' });
+  const loadData = useCallback(() => {
+    return fetch('/api/admin/discovery', { credentials: 'same-origin', cache: 'no-store' }).then(async (response) => {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل المؤشرات.');
-      setInsights(payload); setError('');
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'تعذر تحميل المؤشرات.'); }
-    finally { setLoading(false); }
+      setError('');
+      setInsights(payload);
+    }).catch((cause: unknown) => { setError(cause instanceof Error ? cause.message : 'تعذر تحميل المؤشرات.'); }).finally(() => { setLoading(false); });
   }, []);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    setError('');
+    return loadData();
+  }, [loadData]);
   useEffect(() => {
-    void load();
+    void loadData();
     const refresh = () => { if (document.visibilityState === 'visible') void load(); };
     const timer = window.setInterval(refresh, 60_000);
     document.addEventListener('visibilitychange', refresh);
     return () => { window.clearInterval(timer); document.removeEventListener('visibilitychange', refresh); };
-  }, [load]);
+  }, [load, loadData]);
   const today = insights?.dailySeries.at(-1);
   const series = insights?.dailySeries.slice(-days) || [];
   const max = Math.max(1, ...series.map(day => day.visitors));

@@ -28,11 +28,12 @@ function client() {
       return hooks[index];
     },
     useMemo: (get) => get(),
+    useCallback: (callback) => callback,
     useEffect: () => {},
   };
-  const module = { exports: {} };
+  const testModule = { exports: {} };
   vm.runInNewContext(code, {
-    module, exports: module.exports, AbortController, DOMException,
+    module: testModule, exports: testModule.exports, AbortController, DOMException,
     crypto: globalThis.crypto,
     window: { setTimeout: () => 1, clearTimeout: () => {} },
     fetch: (_url, init) => new Promise((resolve) => { pending.push({ resolve, signal: init.signal }); }),
@@ -47,7 +48,7 @@ function client() {
   });
   function render(prompt = 'صيدلية في الرشايدة') {
     cursor = 0;
-    return module.exports.SandAssistant({ initialPrompt: prompt });
+    return testModule.exports.SandAssistant({ initialPrompt: prompt });
   }
   return { render, pending, paths };
 }

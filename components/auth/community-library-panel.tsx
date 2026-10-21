@@ -82,25 +82,29 @@ export function CommunityLibraryPanel() {
   const [savingKey, setSavingKey] = useState('');
   const [error, setError] = useState('');
 
-  const load = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/community-library', {
-        cache: 'no-store',
-        credentials: 'same-origin',
-      });
+  const loadData = useCallback((silent = false) => {
+    return fetch('/api/community-library', {
+      cache: 'no-store',
+      credentials: 'same-origin',
+    }).then(async (response) => {
       const data = await response.json().catch(() => ({})) as Payload;
       if (!response.ok) throw new Error(data.error || 'تعذر تحميل محفوظات المجتمع.');
+      setError('');
       setPayload(data);
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل محفوظات المجتمع.');
-    } finally {
+    }).finally(() => {
       if (!silent) setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  const load = useCallback((silent = false) => {
+    if (!silent) setLoading(true);
+    setError('');
+    return loadData(silent);
+  }, [loadData]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
 
   useEffect(() => {
     const refresh = () => { void load(true); };

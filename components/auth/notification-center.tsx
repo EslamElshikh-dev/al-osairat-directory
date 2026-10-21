@@ -57,26 +57,24 @@ export function NotificationCenter() {
     window.dispatchEvent(new CustomEvent('notifications:changed', { detail: { unreadCount: count } }));
   }, []);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/notifications?limit=50', { cache: 'no-store', credentials: 'same-origin' });
+  const loadData = useCallback(() => {
+    return fetch('/api/notifications?limit=50', { cache: 'no-store', credentials: 'same-origin' }).then(async (response) => {
       if (response.status === 401) return;
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'تعذر تحميل الإشعارات.');
+      setError('');
       const nextItems = payload.notifications || [];
       setItems(nextItems);
       setUnreadCount(Number(payload.unreadCount || 0));
       window.dispatchEvent(new CustomEvent('notifications:changed', { detail: { unreadCount: Number(payload.unreadCount || 0) } }));
-    } catch (cause) {
+    }).catch((cause: unknown) => {
       setError(cause instanceof Error ? cause.message : 'تعذر تحميل الإشعارات.');
-    } finally {
+    }).finally(() => {
       setLoading(false);
-    }
+    });
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { void loadData(); }, [loadData]);
 
   async function markRead(item: NotificationItem, navigate = true) {
     if (savingId) return;
