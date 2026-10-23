@@ -27,11 +27,18 @@ create table directory_internal.settings (
   measurement_started_at timestamptz not null default now()
 );
 alter table directory_internal.settings enable row level security;
-do $$ begin
-  if (select count(*) from public.admin_members) <> 1 then
+do $$
+declare v_owner_count bigint;
+begin
+  select count(*) into v_owner_count from public.admin_members;
+  if v_owner_count > 1 then
     raise exception 'Exactly one existing owner must be configured before this migration';
+  elsif v_owner_count = 1 then
+    insert into directory_internal.settings(owner_id) select user_id from public.admin_members;
   end if;
-  insert into directory_internal.settings(owner_id) select user_id from public.admin_members;
+  -- An empty installation has no Auth accounts yet. Leave ownership unset;
+  -- a trusted operator must provision it after creating the verified owner.
+  -- Never grant ownership automatically to the first person who signs up.
 end $$;
 
 create or replace function public.is_directory_owner() returns boolean
