@@ -22,6 +22,29 @@ The local test runs PostgreSQL 18.3 through PGlite 0.5.8. Managed production use
 PostgreSQL 17.6. A full Docker Supabase / managed PostgREST acceptance run is a
 separate deployment check; the tests here verify database schema and access rules.
 
+## Free PostgreSQL 17 and HTTP acceptance
+
+`python3 tests/integration/supabase17/run.py` starts disposable Docker services:
+PostgreSQL 17.6, Supabase Auth (GoTrue) and PostgREST. It replays all application
+migrations without implicit Data API grants and tests real signup, password login,
+refresh tokens, verified-UUID owner provisioning, member isolation, moderation,
+column permissions and public/server writes through HTTP. Tokens and users come
+from the real local Auth service; they are not forged member identities.
+
+The dedicated `database-http.yml` workflow runs this on a standard GitHub-hosted
+runner for this public repository, without repository secrets or managed projects.
+It removes containers and volumes even on failure. For a manual run, clean up with
+`docker compose -f tests/integration/supabase17/compose.yml down --volumes`.
+All published ports bind to loopback. Credentials are explicit local test fixtures;
+never reuse them in a deployed environment. Email auto-confirm applies only to the
+disposable Auth service.
+
+The shared test helper supplies Storage schema fixtures and no-op cron/network
+functions. This test does not exercise hosted email, Storage HTTP, schedulers,
+Edge Functions, or managed gateway configuration. The production Data API and
+PostgreSQL checks remain separate evidence; this does not replay historical SQL
+on production or claim that a managed Supabase reset was performed.
+
 ## Directory coverage and owner provisioning
 
 All 34 public directory tables are rebuilt without borrowing production tables.
