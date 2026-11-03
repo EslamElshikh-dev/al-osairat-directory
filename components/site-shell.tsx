@@ -1,3 +1,4 @@
+import { EslamDeveloperSignature } from "./eslam-developer-credit";
 import Link from 'next/link';
 import { directoryStats } from '@/lib/data';
 import { HeaderNavigation } from './header-navigation';
@@ -134,7 +135,7 @@ export async function Footer() {
             <span className={footerStyles.location}><i aria-hidden="true" /> مركز العسيرات · محافظة سوهاج</span>
             <div className={footerStyles.legal}><span>© {new Date().getFullYear()} دليل العسيرات</span><Link prefetch={false} href="/news#news-method">سياسة الأخبار</Link><span>البيانات قابلة للتحديث والمراجعة</span></div>
           </div>
-          <Link prefetch={false} href="/developer" className={footerStyles.signature}><span>تصميم وتطوير</span><b>المهندس إسلام الشيخ</b><span aria-hidden="true">←</span></Link>
+          <EslamDeveloperSignature />
         </div>
       </div>
     </footer>

@@ -63,6 +63,7 @@ const rootTitle = 'دليل العسيرات | الموسوعة المحلية �
 const socialImage = `${siteConfig.url}/images/social-share-v2.jpg?v=20261003-rider`;
 
 export const metadata: Metadata = {
+  creator: "المهندس إسلام الشيخ",
   metadataBase: new URL(siteConfig.url),
   title: {
     default: rootTitle,

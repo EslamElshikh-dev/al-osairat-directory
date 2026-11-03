@@ -6,6 +6,7 @@ import '../admin-analytics.css';
 import '../admin-analytics-insights.css';
 
 export const metadata: Metadata = {
+  creator: "المهندس إسلام الشيخ",
   robots: { index: false, follow: false, noarchive: true, nocache: true },
 };
 

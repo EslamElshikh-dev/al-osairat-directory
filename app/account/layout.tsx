@@ -14,6 +14,7 @@ import '../my-businesses.css';
 import '../mobile-stability.css';
 
 export const metadata: Metadata = {
+  creator: "المهندس إسلام الشيخ",
   robots: { index: false, follow: false },
 };
 

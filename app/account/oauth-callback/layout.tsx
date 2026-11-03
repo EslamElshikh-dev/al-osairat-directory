@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  creator: "المهندس إسلام الشيخ",
   title: 'إكمال تسجيل الدخول',
   robots: {
     index: false,
